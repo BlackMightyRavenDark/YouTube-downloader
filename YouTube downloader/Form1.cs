@@ -432,11 +432,28 @@ namespace YouTube_downloader
         {
             DisableControls();
 
-            //TODO: Implement URL validation (abort on invalid URL)
-            string urlOrId = editSearchUrl.Text;
-            if (string.IsNullOrEmpty(urlOrId) || string.IsNullOrWhiteSpace(urlOrId))
+            string url = editSearchUrl.Text;
+            if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
             {
                 MessageBox.Show("Не введена ссылка!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                EnableControls();
+                return;
+            }
+
+            string videoId = ExtractVideoIdFromUrl(url);
+            if (string.IsNullOrEmpty(videoId) || string.IsNullOrWhiteSpace(videoId))
+            {
+                MessageBox.Show("Не удалось распознать ID видео!", "Ошибатор ошибок",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                EnableControls();
+                return;
+            }
+
+            if (videoId.Length != 11)
+            {
+                MessageBox.Show("Введённый вами или автоматически определённый ID видео " +
+                    $"имеет длину {videoId.Length} символов. Такого не может быть!", "Ошибатор ошибок",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 EnableControls();
                 return;
             }
@@ -450,7 +467,7 @@ namespace YouTube_downloader
             Application.DoEvents();
             scrollBarSearchResults.Value = 0;
 
-            int errorCode = SearchSingleVideo(urlOrId, out string resList);
+            int errorCode = SearchSingleVideo(videoId, out string resList);
             if (errorCode == 200)
             {
                 int count = ParseList(resList);

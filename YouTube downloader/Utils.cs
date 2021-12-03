@@ -471,14 +471,18 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static int SearchSingleVideo(string urlOrId, out string resList)
+        public static int SearchSingleVideo(string videoId, out string resList)
         {
-            JArray jaVideos = new JArray();
-            string id = ExtractVideoId(urlOrId);
-            int errorCode = GetYouTubeVideoInfoEx(id, out string response);
+            int errorCode = GetYouTubeVideoInfoEx(videoId, out string response);
             if (errorCode == 200)
             {
                 JObject j = JObject.Parse(response);
+                if (j == null)
+                {
+                    resList = null;
+                    return 400;
+                }
+                JArray jaVideos = new JArray();
                 jaVideos.Add(j);
                 JObject json = new JObject();
                 json.Add(new JProperty("videos", jaVideos));
@@ -544,17 +548,36 @@ namespace YouTube_downloader
             return FindInFavorites(item, favoritesRootNode);
         }
 
-        public static string ExtractVideoId(string url)
+        public static string ExtractVideoIdFromUrl(string url)
         {
-            if (url.StartsWith("http"))
+            if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
             {
-                url = url.Remove(0, url.LastIndexOf("v=") + 2);
+                return null;
             }
-            if (url.Contains("&"))
+
+            Uri uri;
+            try
             {
-                url = url.Substring(0, url.IndexOf("&"));
+                uri = new Uri(url);
             }
-            return url;
+            catch (Exception ex)
+            {
+                //подразумевается, что юзер ввёл ID видео, а не ссылку.
+                Debug.WriteLine(ex.Message);
+                return url;
+            }
+
+            if (string.IsNullOrEmpty(uri.Query))
+            {
+                return null;
+            }
+            Dictionary<string, string> dict = SplitUrlQueryToDictionary(uri.Query);
+            if (dict == null || !dict.ContainsKey("v"))
+            {
+                return null;
+            }
+          
+            return dict["v"];
         }
 
         public static string LeadZero(int n)
@@ -581,6 +604,10 @@ namespace YouTube_downloader
         public static Dictionary<string,string> SplitStringToKeyValues(
             string inputString, char keySeparaor, char valueSeparator)
         {
+            if (string.IsNullOrEmpty(inputString) || string.IsNullOrWhiteSpace(inputString))
+            {
+                return null;
+            }
             string[] keyValues = inputString.Split(keySeparaor);
             Dictionary<string, string> dict = new Dictionary<string, string>();
             for (int i = 0; i < keyValues.Length; i++)
@@ -589,6 +616,19 @@ namespace YouTube_downloader
                 dict.Add(t[0], t[1]);
             }
             return dict;
+        }
+
+        public static Dictionary<string, string> SplitUrlQueryToDictionary(string urlQuery)
+        {
+            if (string.IsNullOrEmpty(urlQuery) || string.IsNullOrWhiteSpace(urlQuery))
+            {
+                return null;
+            }
+            if (urlQuery[0] == '?')
+            {
+                urlQuery = urlQuery.Remove(0, 1);
+            }
+            return SplitStringToKeyValues(urlQuery, '&', '=');
         }
 
         public static string DecryptCipherSignature(string signatureEncrypted, string algo)
