@@ -1,178 +1,260 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text;
 
 namespace YouTube_downloader
 {
     public sealed class FileDownloader
     {
-        public string url;
-        public long streamSize = 0;
-        public long bytesTransfered = 0;
-        public long rangeFrom;
-        public long rangeTo;
-        public int progressUpdateInterval = 10;
-        private bool stopped = false;
-
-        public int lastErrorCode;
-        public const int DOWNLOAD_ERROR_UNKNOWN = -1;
-        public const int DOWNLOAD_ERROR_ABORTED_BY_USER = -2;
-        public const int DOWNLOAD_ERROR_INCOMPLETE_DATA_READ = -3;
-
-        public delegate void WorkStartDelegate(object sender, long fileSize);
-        public delegate void WorkProgressDelegate(object sender, long bytesTransfered, ref bool stop);
-        public delegate void WorkEndDelegate(object sender, long bytesTransfered, int errorCode);
-        public WorkStartDelegate WorkStart;
-        public WorkProgressDelegate WorkProgress;
-        public WorkEndDelegate WorkEnd;
-        
-        public FileDownloader()
+        public sealed class WebContent : IDisposable
         {
-            rangeFrom = 0;
-            rangeTo = 0;
-        }
+            private HttpWebResponse webResponse = null;
+            public long Length { get; private set; } = -1L;
+            public Stream ContentData { get; private set; } = null;
 
-        public int Download(Stream stream)
-        {          
-            stopped = false;
-            lastErrorCode = DOWNLOAD_ERROR_UNKNOWN;
-            streamSize = stream.Length;
-            bytesTransfered = 0;
-            HttpWebResponse response;
-            try
+            public void Dispose()
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                if (rangeTo > 0)
+                if (webResponse != null)
                 {
-                    request.AddRange(rangeFrom, rangeTo);
+                    webResponse.Dispose();
+                    webResponse = null;
                 }
-                response = (HttpWebResponse)request.GetResponse();
-            } 
-            catch (WebException e)
-            {
-                if (e.Status == WebExceptionStatus.ProtocolError)
+                if (ContentData != null)
                 {
-                    HttpWebResponse httpWebResponse = (HttpWebResponse)e.Response;
-                    lastErrorCode = (int)httpWebResponse.StatusCode;
-                    return lastErrorCode;
+                    ContentData.Dispose();
+                    ContentData = null;
+                    Length = -1L;
+                }
+            }
+
+            public int GetResponseStream(string url)
+            {
+                int errorCode = GetResponseStream(url, 0L, 0L);
+                return errorCode;
+            }
+
+            public int GetResponseStream(string url, long rangeFrom, long rangeTo)
+            {
+                int errorCode = GetResponseStream(url, rangeFrom, rangeTo, out Stream stream);
+                if (errorCode == 200 || errorCode == 206)
+                {
+                    ContentData = stream;
+                    Length = webResponse.ContentLength;
                 }
                 else
                 {
-                    lastErrorCode = 400;
-                    return 400;
+                    ContentData = null;
+                    Length = -1L;
                 }
-            }
-            catch (Exception)
-            {
-                lastErrorCode = 400;
-                return 400;
+                return errorCode;
             }
 
-            Stream responseStream = response.GetResponseStream();
-            long size = response.ContentLength;
-            
-            WorkStart?.Invoke(this, size);
-            
+            public int GetResponseStream(string url, long rangeFrom, long rangeTo, out Stream stream)
+            {
+                stream = null;
+                try
+                {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                    if (rangeTo > 0L)
+                    {
+                        if (rangeFrom > rangeTo)
+                        {
+                            return DOWNLOAD_ERROR_RANGE;
+                        }
+                        request.AddRange(rangeFrom, rangeTo);
+                    }
+                    webResponse = (HttpWebResponse)request.GetResponse();
+                    stream = webResponse.GetResponseStream();
+                    return 200;
+                }
+                catch (WebException ex)
+                {
+                    if (webResponse != null)
+                    {
+                        webResponse.Dispose();
+                        webResponse = null;
+                    }
+                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        HttpWebResponse httpWebResponse = (HttpWebResponse)ex.Response;
+                        int statusCode = (int)httpWebResponse.StatusCode;
+                        return statusCode;
+                    }
+                    else
+                    {
+                        return ex.HResult;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    if (webResponse != null)
+                    {
+                        webResponse.Dispose();
+                        webResponse = null;
+                    }
+                    return ex.HResult;
+                }
+            }
+        }
+
+        public string Url { get; set; }
+        public long StreamSize { get; private set; } = 0L;
+        private long _bytesTransfered = 0L;
+        private long _rangeFrom = 0L;
+        private long _rangeTo = 0L;
+        public int ProgressUpdateInterval { get; set; } = 10;
+        public bool Stopped { get; private set; } = false;
+        public int LastErrorCode { get; private set; } = DOWNLOAD_ERROR_UNKNOWN;
+
+        public const int DOWNLOAD_ERROR_UNKNOWN = -1;
+        public const int DOWNLOAD_ERROR_ABORTED_BY_USER = -2;
+        public const int DOWNLOAD_ERROR_INCOMPLETE_DATA_READ = -3;
+        public const int DOWNLOAD_ERROR_RANGE = -4;
+        public const int DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT = -5;
+
+        public delegate void WorkStartedDelegate(object sender, long contentLength);
+        public delegate void WorkProgressDelegate(object sender, long bytesTransfered, long contentLength);
+        public delegate void WorkFinishedDelegate(object sender, long bytesTransfered, long contentLength, int errorCode);
+        public delegate void CancelTestDelegate(object sender, ref bool stop);
+        public WorkStartedDelegate WorkStarted;
+        public WorkProgressDelegate WorkProgress;
+        public WorkFinishedDelegate WorkFinished;
+        public CancelTestDelegate CancelTest;
+
+        public int Download(Stream stream)
+        {
+            Stopped = false;
+            LastErrorCode = DOWNLOAD_ERROR_UNKNOWN;
+            _bytesTransfered = 0L;
+            StreamSize = stream.Length;
+
+            WebContent content = new WebContent();
+
+            LastErrorCode = content.GetResponseStream(Url, _rangeFrom, _rangeTo);
+            if (LastErrorCode != 200 && LastErrorCode != 206)
+            {
+                content.Dispose();
+                return LastErrorCode;
+            }
+
+            if (content.Length == 0L)
+            {
+                content.Dispose();
+                return DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT;
+            }
+
+            WorkStarted?.Invoke(this, content.Length);
+
+            LastErrorCode = ContentToStream(content, stream);
+            long size = content.Length;
+            content.Dispose();
+
+            WorkFinished?.Invoke(this, _bytesTransfered, size, LastErrorCode);
+
+            return LastErrorCode;
+        }
+
+        public int DownloadString(out string resString)
+        {
+            resString = null;
+
+            Stopped = false;
+            LastErrorCode = DOWNLOAD_ERROR_UNKNOWN;
+            _bytesTransfered = 0L;
+            StreamSize = 0L;
+
+            WebContent content = new WebContent();
+
+            LastErrorCode = content.GetResponseStream(Url, _rangeFrom, _rangeTo);
+            if (LastErrorCode != 200 && LastErrorCode != 206)
+            {
+                content.Dispose();
+                return LastErrorCode;
+            }
+
+            if (content.Length == 0L)
+            {
+                content.Dispose();
+                return DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT;
+            }
+
+            WorkStarted?.Invoke(this, content.Length);
+
+            MemoryStream memoryStream = new MemoryStream();
+            LastErrorCode = ContentToStream(content, memoryStream);
+            if (LastErrorCode == 200)
+            {
+                resString = Encoding.UTF8.GetString(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+            }
+            long size = content.Length;
+            content.Dispose();
+            memoryStream.Dispose();
+
+            WorkFinished?.Invoke(this, _bytesTransfered, size, LastErrorCode);
+
+            return LastErrorCode;
+        }
+
+        private int ContentToStream(WebContent content, Stream stream)
+        {
             byte[] buf = new byte[4096];
             int bytesRead;
-            long bytesAvaliable;
-            lastErrorCode = 200;
+            int errorCode = 200;
             int iter = 0;
             try
             {
                 do
                 {
-                    bytesAvaliable = size - bytesTransfered;
-                    if (bytesAvaliable > 0)
+                    bytesRead = content.ContentData.Read(buf, 0, buf.Length);
+                    if (bytesRead <= 0)
                     {
-                        bytesRead = responseStream.Read(buf, 0, buf.Length);
-                        if (bytesRead > 0)
+                        break;
+                    }
+                    stream.Write(buf, 0, bytesRead);
+                    _bytesTransfered += bytesRead;
+                    StreamSize = stream.Length;
+                    if (WorkProgress != null && (ProgressUpdateInterval == 0 || iter++ >= ProgressUpdateInterval))
+                    {
+                        WorkProgress.Invoke(this, _bytesTransfered, content.Length);
+                        iter = 0;
+                    }
+                    if (CancelTest != null)
+                    {
+                        bool stop = false;
+                        CancelTest.Invoke(this, ref stop);
+                        Stopped = stop;
+                        if (Stopped)
                         {
-                            stream.Write(buf, 0, bytesRead);
-                            bytesTransfered += bytesRead;
-                            if (WorkProgress != null && (progressUpdateInterval == 0 || iter++ >= progressUpdateInterval))
-                            {
-                                WorkProgress.Invoke(this, bytesTransfered, ref stopped);
-                                iter = 0;
-                            }
+                            break;
                         }
                     }
                 }
-                while (bytesAvaliable > 0 && !stopped);
+                while (bytesRead > 0);
             }
             catch (Exception)
             {
-                lastErrorCode = DOWNLOAD_ERROR_UNKNOWN;
+                errorCode = DOWNLOAD_ERROR_UNKNOWN;
             }
-            response.Close();
-            response.Dispose();
-            if (stopped)
+            if (Stopped)
             {
-                lastErrorCode = DOWNLOAD_ERROR_ABORTED_BY_USER;
+                errorCode = DOWNLOAD_ERROR_ABORTED_BY_USER;
             }
-            else if (lastErrorCode != DOWNLOAD_ERROR_UNKNOWN)
+            else if (errorCode == 200)
             {
-                if (size != 0 && bytesTransfered != size)
+                if (content.Length >= 0L && _bytesTransfered != content.Length)
                 {
-                    lastErrorCode = DOWNLOAD_ERROR_INCOMPLETE_DATA_READ;
+                    LastErrorCode = DOWNLOAD_ERROR_INCOMPLETE_DATA_READ;
                 }
             }
-           
-            WorkEnd?.Invoke(this, bytesTransfered, lastErrorCode);
-            return lastErrorCode;
+            return errorCode;
         }
 
-        public static int GetContentLength(string url, out long contentLength)
+        public void SetRange(long from, long to)
         {
-            HttpWebResponse response = null;
-            try
-            {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                response = (HttpWebResponse)request.GetResponse();
-                contentLength = response.ContentLength;
-                response.Close();
-                response.Dispose();
-                return 200;
-            }
-            catch (WebException e)
-            {
-                contentLength = 0;
-                if (response != null)
-                {
-                    response.Close();
-                    response.Dispose();
-                }
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse httpWebResponse = (HttpWebResponse)e.Response;
-                    url = e.Message;
-                    return (int)httpWebResponse.StatusCode;
-                }
-                else
-                {
-                    return 400;
-                }
-            }
-            catch (Exception)
-            {
-                if (response != null)
-                {
-                    response.Close();
-                    response.Dispose();
-                }
-                contentLength = 0;
-                return 400;
-            }
-        }
-
-        public long GetBytesTransfered()
-        {
-            return bytesTransfered;
-        }
-
-        public long GetStreamSize()
-        {
-            return streamSize;
+            _rangeFrom = from;
+            _rangeTo = to;
         }
     }
 }

@@ -506,11 +506,6 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static bool GetMediaContentLength(YouTubeMediaFile mediaFile, out long contentLength)
-        {
-            return MultiThreadedDownloader.GetUrlFileSize(mediaFile.url, out contentLength) == 200;
-        }
-
         private static FavoriteItem FindData(FavoriteItem data, FavoriteItem root)
         {
             if (root.ID != null && root.ID.Equals(data.ID))

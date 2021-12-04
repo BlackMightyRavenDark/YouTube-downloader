@@ -292,7 +292,7 @@ namespace YouTube_downloader
                     do
                     {
                         Stream memChunk = new MemoryStream();
-                        d.url = mediaFile.dashManifestUrls[i];
+                        d.Url = mediaFile.dashManifestUrls[i];
                         errorCode = d.Download(memChunk);
                         if (errorCode == 200)
                         {
@@ -304,7 +304,7 @@ namespace YouTube_downloader
                             {
                                 fileStream.Close();
                                 fileStream.Dispose();
-                                return MultiThreadedDownloader.ERROR_MERGING_CHUNKS;
+                                return MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS;
                             }
                             break;
                         }
@@ -317,7 +317,7 @@ namespace YouTube_downloader
                     } while (errorCode != 200 && errors < 10 && !cancelRequired);
                     if (cancelRequired)
                     {
-                        errorCode = MultiThreadedDownloader.ERROR_DOWNLOAD_CANCELED;
+                        errorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CANCELED;
                     }
                     if (errorCode != 200)
                     {
@@ -370,7 +370,7 @@ namespace YouTube_downloader
 
                         videoTrack.url = videoTrack.cipherUrl + "&sig=" + cipherDecrypted;
 
-                        if (MultiThreadedDownloader.GetUrlFileSize(videoTrack.url, out _) != 200)
+                        if (MultiThreadedDownloader.GetUrlContentLength(videoTrack.url, out _) != 200)
                         {
                             return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                         }
@@ -381,7 +381,7 @@ namespace YouTube_downloader
                             string audioCipherDecrypted = DecryptCipherSignature(
                                 audioFormats[0].cipherSignatureEncrypted, config.cipherDecryptionAlgo);
                             audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
-                            if (MultiThreadedDownloader.GetUrlFileSize(audioFormats[0].url, out _) != 200)
+                            if (MultiThreadedDownloader.GetUrlContentLength(audioFormats[0].url, out _) != 200)
                             {
                                 return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                             }
@@ -389,9 +389,9 @@ namespace YouTube_downloader
                     }
                     #endregion
                     MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                    downloader.threadCount = config.threadsVideo;
+                    downloader.ThreadCount = config.threadsVideo;
                     downloader.Url = videoTrack.url;
-                    downloader.tempDirectory = config.tempPath;
+                    downloader.TempDirectory = config.tempPath;
 
                     string fnVideo;
                     if (videoTrack.isContainer)
@@ -406,7 +406,7 @@ namespace YouTube_downloader
                             (ffmpegExists ? config.tempPath : config.downloadingPath) +
                             $"{formattedFileName}_{videoTrack.formatId}.{videoTrack.fileExtension}");
                     }
-                    downloader.outputFileName = fnVideo;
+                    downloader.OutputFileName = fnVideo;
                     downloader.DownloadStarted += (s, size) =>
                     {
                         progressBarDownload.Value = 0;
@@ -430,7 +430,7 @@ namespace YouTube_downloader
                     {
                         cancel = cancelRequired;
                     };
-                    downloader.MergingStart += (s, chunkCount) =>
+                    downloader.MergingStarted += (s, chunkCount) =>
                     {
                         progressBarDownload.Value = 0;
                         progressBarDownload.Maximum = chunkCount;
@@ -441,11 +441,11 @@ namespace YouTube_downloader
                     };
                     downloader.MergingProgress += (s, chunkId) =>
                     {
-                        lblProgress.Text = $"{chunkId + 1} / {downloader.threadCount}";
+                        lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
                         progressBarDownload.Value = chunkId + 1;
                     };
                     int res = await downloader.Download();
-                    return new DownloadResult(res, downloader.outputFileName);
+                    return new DownloadResult(res, downloader.OutputFileName);
                     #endregion
                 }
             }
@@ -464,7 +464,7 @@ namespace YouTube_downloader
                     #region Расшифровка Cipher
                     if (audioTrack.isCiphered)
                     {
-                        if (MultiThreadedDownloader.GetUrlFileSize(audioTrack.url, out _) != 200)
+                        if (MultiThreadedDownloader.GetUrlContentLength(audioTrack.url, out _) != 200)
                         {
 
                             if (string.IsNullOrEmpty(config.cipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.cipherDecryptionAlgo))
@@ -481,7 +481,7 @@ namespace YouTube_downloader
 
                             audioTrack.url = $"{audioTrack.cipherUrl}&sig={cipherDecrypted}";
 
-                            if (MultiThreadedDownloader.GetUrlFileSize(audioTrack.url, out _) != 200)
+                            if (MultiThreadedDownloader.GetUrlContentLength(audioTrack.url, out _) != 200)
                             {
                                 return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                             }
@@ -490,15 +490,15 @@ namespace YouTube_downloader
                     #endregion
                     
                     MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                    downloader.threadCount = config.threadsAudio;
+                    downloader.ThreadCount = config.threadsAudio;
                     downloader.Url = audioTrack.url;
-                    downloader.tempDirectory = config.tempPath;
+                    downloader.TempDirectory = config.tempPath;
 
                     bool ffmpegExists = !string.IsNullOrEmpty(config.ffmpegExe) && !string.IsNullOrWhiteSpace(config.ffmpegExe) && File.Exists(config.ffmpegExe);
                     string fnAudio = MultiThreadedDownloader.GetNumberedFileName(
                         (config.mergeToContainer && !audioOnly && ffmpegExists ? config.tempPath : config.downloadingPath) +
                          $"{formattedFileName}_{audioTrack.formatId}.{audioTrack.fileExtension}");
-                    downloader.outputFileName = fnAudio;
+                    downloader.OutputFileName = fnAudio;
                     downloader.DownloadStarted += (s, size) =>
                     {
                         progressBarDownload.Value = 0;
@@ -521,7 +521,7 @@ namespace YouTube_downloader
                     {
                         cancel = cancelRequired;
                     };
-                    downloader.MergingStart += (s, chunkCount) =>
+                    downloader.MergingStarted += (s, chunkCount) =>
                     {
                         progressBarDownload.Value = 0;
                         progressBarDownload.Maximum = chunkCount;
@@ -532,11 +532,11 @@ namespace YouTube_downloader
                     };
                     downloader.MergingProgress += (s, chunkId) =>
                     {
-                        lblProgress.Text = $"{chunkId + 1} / {downloader.threadCount}";
+                        lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
                         progressBarDownload.Value = chunkId + 1;
                     };
                     int res = await downloader.Download();
-                    return new DownloadResult(res, downloader.outputFileName);
+                    return new DownloadResult(res, downloader.OutputFileName);
                     #endregion
                 }
             }
@@ -692,20 +692,20 @@ namespace YouTube_downloader
                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
-                                case MultiThreadedDownloader.ERROR_MERGING_CHUNKS:
+                                case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
                                     lblStatus.Text = "Состояние: Ошибка объединения чанков видео";
                                     MessageBox.Show($"{VideoInfo.title}\nОшибка объединения чанков видео!\n" +
                                         "Повторите попытку скачивания.", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
-                                case MultiThreadedDownloader.ERROR_ZERO_LENGTH_CONTENT:
+                                case FileDownloader.DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
                                     lblStatus.Text = "Состояние: Ошибка! Файл на сервере пуст!";
                                     MessageBox.Show($"{VideoInfo.title}\nФайл на сервере пуст!", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
-                                case MultiThreadedDownloader.ERROR_DOWNLOAD_CANCELED:
+                                case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
                                     lblStatus.Text = "Состояние: Скачивание отменено";
                                     MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -767,20 +767,20 @@ namespace YouTube_downloader
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case MultiThreadedDownloader.ERROR_MERGING_CHUNKS:
+                        case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
                             lblStatus.Text = "Состояние: Ошибка объединения чанков видео";
                             MessageBox.Show($"{VideoInfo.title}\nОшибка объединения чанков видео!\n" +
                                 "Повторите попытку скачивания.", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case MultiThreadedDownloader.ERROR_ZERO_LENGTH_CONTENT:
+                        case FileDownloader.DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
                             lblStatus.Text = "Состояние: Ошибка! Файл на сервере пуст!"; 
                             MessageBox.Show($"{VideoInfo.title}\nФайл на сервере пуст!", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case MultiThreadedDownloader.ERROR_DOWNLOAD_CANCELED:
+                        case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
                             lblStatus.Text = "Состояние: Скачивание отменено";
                             MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -827,14 +827,14 @@ namespace YouTube_downloader
                                 "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case MultiThreadedDownloader.ERROR_MERGING_CHUNKS:
+                        case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
                             lblStatus.Text = "Состояние: Ошибка объединения чанков аудио";
                             MessageBox.Show($"{VideoInfo.title}\nОшибка объединения чанков аудио!\n" +
                                 "Повторите попытку скачивания.", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case MultiThreadedDownloader.ERROR_DOWNLOAD_CANCELED:
+                        case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
                             lblStatus.Text = "Состояние: Скачивание отменено";
                             MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
