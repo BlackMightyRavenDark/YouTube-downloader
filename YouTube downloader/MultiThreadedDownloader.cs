@@ -29,11 +29,10 @@ namespace YouTube_downloader
 
         public const int DOWNLOAD_ERROR_MERGING_CHUNKS = -200;
         public const int DOWNLOAD_ERROR_CREATE_FILE = -201;
-        public const int DOWNLOAD_ERROR_CANCELED = -202;
-        public const int DOWNLOAD_ERROR_NO_URL_SPECIFIED = -203;
-        public const int DOWNLOAD_ERROR_NO_FILE_NAME_SPECIFIED = -204;
-        public const int DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS = -205;
-        public const int DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS = -206;
+        public const int DOWNLOAD_ERROR_NO_URL_SPECIFIED = -202;
+        public const int DOWNLOAD_ERROR_NO_FILE_NAME_SPECIFIED = -203;
+        public const int DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS = -204;
+        public const int DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS = -205;
 
         public delegate void DownloadStartedDelegate(object sender, long contentLenth);
         public delegate void DownloadProgressDelegate(object sender, long bytesTransfered);
@@ -250,12 +249,12 @@ namespace YouTube_downloader
             catch (OperationCanceledException ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                return DOWNLOAD_ERROR_CANCELED;
+                return DOWNLOAD_ERROR_ABORTED_BY_USER;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                return ex.HResult;
+                return DOWNLOAD_ERROR_UNKNOWN;
             }
 
             Chunks.Clear();
@@ -368,7 +367,7 @@ namespace YouTube_downloader
 
                 if (aborted)
                 {
-                    return DOWNLOAD_ERROR_CANCELED;
+                    return DOWNLOAD_ERROR_ABORTED_BY_USER;
                 }
 
                 OutputFileName = GetNumberedFileName(OutputFileName);

@@ -317,7 +317,7 @@ namespace YouTube_downloader
                     } while (errorCode != 200 && errors < 10 && !cancelRequired);
                     if (cancelRequired)
                     {
-                        errorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CANCELED;
+                        errorCode = FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER;
                     }
                     if (errorCode != 200)
                     {
