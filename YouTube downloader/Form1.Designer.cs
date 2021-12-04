@@ -35,6 +35,10 @@ namespace YouTube_downloader
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPageFilesAndFolders = new System.Windows.Forms.TabPage();
+            this.btnQ = new System.Windows.Forms.Button();
+            this.editMergingPath = new System.Windows.Forms.TextBox();
+            this.btnSelectMergingPath = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.btnBrowseFfmpeg = new System.Windows.Forms.Button();
             this.editFfmpeg = new System.Windows.Forms.TextBox();
@@ -186,6 +190,10 @@ namespace YouTube_downloader
             // tabPageFilesAndFolders
             // 
             this.tabPageFilesAndFolders.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageFilesAndFolders.Controls.Add(this.btnQ);
+            this.tabPageFilesAndFolders.Controls.Add(this.editMergingPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnSelectMergingPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.label14);
             this.tabPageFilesAndFolders.Controls.Add(this.label11);
             this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseFfmpeg);
             this.tabPageFilesAndFolders.Controls.Add(this.editFfmpeg);
@@ -208,10 +216,50 @@ namespace YouTube_downloader
             this.tabPageFilesAndFolders.TabIndex = 0;
             this.tabPageFilesAndFolders.Text = "Файлы и папки";
             // 
+            // btnQ
+            // 
+            this.btnQ.Location = new System.Drawing.Point(182, 84);
+            this.btnQ.Name = "btnQ";
+            this.btnQ.Size = new System.Drawing.Size(21, 19);
+            this.btnQ.TabIndex = 22;
+            this.btnQ.Text = "?";
+            this.btnQ.UseVisualStyleBackColor = true;
+            this.btnQ.Click += new System.EventHandler(this.btnQ_Click);
+            // 
+            // editMergingPath
+            // 
+            this.editMergingPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editMergingPath.Location = new System.Drawing.Point(13, 103);
+            this.editMergingPath.Name = "editMergingPath";
+            this.editMergingPath.Size = new System.Drawing.Size(470, 20);
+            this.editMergingPath.TabIndex = 21;
+            this.editMergingPath.Leave += new System.EventHandler(this.editMergingPath_Leave);
+            // 
+            // btnSelectMergingPath
+            // 
+            this.btnSelectMergingPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectMergingPath.Location = new System.Drawing.Point(489, 103);
+            this.btnSelectMergingPath.Name = "btnSelectMergingPath";
+            this.btnSelectMergingPath.Size = new System.Drawing.Size(32, 23);
+            this.btnSelectMergingPath.TabIndex = 20;
+            this.btnSelectMergingPath.Text = "...";
+            this.btnSelectMergingPath.UseVisualStyleBackColor = true;
+            this.btnSelectMergingPath.Click += new System.EventHandler(this.btnSelectMergingPath_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(10, 87);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(171, 13);
+            this.label14.TabIndex = 19;
+            this.label14.Text = "Папка для объединения чанков:";
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(10, 165);
+            this.label11.Location = new System.Drawing.Point(10, 204);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(113, 13);
             this.label11.TabIndex = 18;
@@ -220,7 +268,7 @@ namespace YouTube_downloader
             // btnBrowseFfmpeg
             // 
             this.btnBrowseFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseFfmpeg.Location = new System.Drawing.Point(489, 181);
+            this.btnBrowseFfmpeg.Location = new System.Drawing.Point(489, 220);
             this.btnBrowseFfmpeg.Name = "btnBrowseFfmpeg";
             this.btnBrowseFfmpeg.Size = new System.Drawing.Size(32, 20);
             this.btnBrowseFfmpeg.TabIndex = 17;
@@ -232,7 +280,7 @@ namespace YouTube_downloader
             // 
             this.editFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editFfmpeg.Location = new System.Drawing.Point(13, 181);
+            this.editFfmpeg.Location = new System.Drawing.Point(13, 220);
             this.editFfmpeg.Name = "editFfmpeg";
             this.editFfmpeg.Size = new System.Drawing.Size(470, 20);
             this.editFfmpeg.TabIndex = 16;
@@ -241,7 +289,7 @@ namespace YouTube_downloader
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(10, 87);
+            this.label8.Location = new System.Drawing.Point(10, 126);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(122, 13);
             this.label8.TabIndex = 15;
@@ -251,7 +299,7 @@ namespace YouTube_downloader
             // 
             this.editOutputFileNameFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editOutputFileNameFormat.Location = new System.Drawing.Point(13, 103);
+            this.editOutputFileNameFormat.Location = new System.Drawing.Point(13, 142);
             this.editOutputFileNameFormat.Name = "editOutputFileNameFormat";
             this.editOutputFileNameFormat.Size = new System.Drawing.Size(392, 20);
             this.editOutputFileNameFormat.TabIndex = 14;
@@ -260,7 +308,7 @@ namespace YouTube_downloader
             // btnResetFileNameFormat
             // 
             this.btnResetFileNameFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnResetFileNameFormat.Location = new System.Drawing.Point(411, 103);
+            this.btnResetFileNameFormat.Location = new System.Drawing.Point(411, 142);
             this.btnResetFileNameFormat.Name = "btnResetFileNameFormat";
             this.btnResetFileNameFormat.Size = new System.Drawing.Size(110, 20);
             this.btnResetFileNameFormat.TabIndex = 13;
@@ -271,7 +319,7 @@ namespace YouTube_downloader
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(10, 126);
+            this.label7.Location = new System.Drawing.Point(10, 165);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(73, 13);
             this.label7.TabIndex = 12;
@@ -291,7 +339,7 @@ namespace YouTube_downloader
             // btnSelectBrowser
             // 
             this.btnSelectBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectBrowser.Location = new System.Drawing.Point(489, 142);
+            this.btnSelectBrowser.Location = new System.Drawing.Point(489, 181);
             this.btnSelectBrowser.Name = "btnSelectBrowser";
             this.btnSelectBrowser.Size = new System.Drawing.Size(32, 20);
             this.btnSelectBrowser.TabIndex = 11;
@@ -313,7 +361,7 @@ namespace YouTube_downloader
             // 
             this.editBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editBrowser.Location = new System.Drawing.Point(13, 142);
+            this.editBrowser.Location = new System.Drawing.Point(13, 181);
             this.editBrowser.Name = "editBrowser";
             this.editBrowser.Size = new System.Drawing.Size(470, 20);
             this.editBrowser.TabIndex = 10;
@@ -1237,6 +1285,10 @@ namespace YouTube_downloader
         private System.Windows.Forms.ToolStripMenuItem copyDisplayNameWithIdToolStripMenuItem;
         private System.Windows.Forms.VScrollBar scrollBarSearchResults;
         private System.Windows.Forms.Button btnWhy;
+        private System.Windows.Forms.TextBox editMergingPath;
+        private System.Windows.Forms.Button btnSelectMergingPath;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button btnQ;
     }
 }
 

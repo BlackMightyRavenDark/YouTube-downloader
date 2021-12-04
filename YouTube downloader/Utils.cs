@@ -21,6 +21,7 @@ namespace YouTube_downloader
             public string selfPath;
             public string downloadingPath;
             public string tempPath;
+            public string chunksMergingPath;
             public string favoritesFileName;
             public string outputFileNameFormat;
             public int maxSearch;
@@ -52,6 +53,7 @@ namespace YouTube_downloader
                 JObject json = new JObject();
                 json["downloadingPath"] = downloadingPath;
                 json["tempPath"] = tempPath;
+                json["chunksMergingPath"] = chunksMergingPath;
                 json["cipherDecryptionAlgo"] = cipherDecryptionAlgo;
                 json["youTubeApiKey"] = youTubeApiKey;
                 json["browserExe"] = browserExe;
@@ -70,6 +72,7 @@ namespace YouTube_downloader
             {
                 downloadingPath = null;
                 tempPath = null;
+                chunksMergingPath = null;
                 favoritesFileName = "fav.json";
                 mergeToContainer = true;
                 deleteSourceFiles = true;
@@ -99,6 +102,9 @@ namespace YouTube_downloader
                         jt = json.Value<JToken>("tempPath");
                         if (jt != null)
                             tempPath = jt.Value<string>();
+                        jt = json.Value<JToken>("chunksMergingPath");
+                        if (jt != null)
+                            chunksMergingPath = jt.Value<string>();
                         jt = json.Value<JToken>("cipherDecryptionAlgo");
                         if (jt != null)
                             cipherDecryptionAlgo = jt.Value<string>();

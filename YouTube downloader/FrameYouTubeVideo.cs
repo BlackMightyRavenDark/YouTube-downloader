@@ -392,6 +392,8 @@ namespace YouTube_downloader
                     downloader.ThreadCount = config.threadsVideo;
                     downloader.Url = videoTrack.url;
                     downloader.TempDirectory = config.tempPath;
+                    downloader.MergingDirectory = config.chunksMergingPath;
+                    downloader.KeepDownloadedFileInMergingDirectory = true;
 
                     string fnVideo;
                     if (videoTrack.isContainer)
@@ -493,6 +495,8 @@ namespace YouTube_downloader
                     downloader.ThreadCount = config.threadsAudio;
                     downloader.Url = audioTrack.url;
                     downloader.TempDirectory = config.tempPath;
+                    downloader.MergingDirectory = config.chunksMergingPath;
+                    downloader.KeepDownloadedFileInMergingDirectory = true;
 
                     bool ffmpegExists = !string.IsNullOrEmpty(config.ffmpegExe) && !string.IsNullOrWhiteSpace(config.ffmpegExe) && File.Exists(config.ffmpegExe);
                     string fnAudio = MultiThreadedDownloader.GetNumberedFileName(
@@ -571,6 +575,15 @@ namespace YouTube_downloader
             if (!Directory.Exists(config.tempPath))
             {
                 MessageBox.Show("Папка для временных файлов не найдена!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnDownload.Enabled = true;
+                return;
+            }
+            if (!string.IsNullOrEmpty(config.chunksMergingPath) &&
+                !string.IsNullOrWhiteSpace(config.chunksMergingPath) &&
+                !Directory.Exists(config.chunksMergingPath))
+            {
+                MessageBox.Show("Папка для объединения чанков не найдена!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnDownload.Enabled = true;
                 return;

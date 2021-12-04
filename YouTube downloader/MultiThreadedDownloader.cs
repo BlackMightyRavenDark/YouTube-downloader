@@ -59,6 +59,7 @@ namespace YouTube_downloader
         public string OutputFileName { get; set; } = null;
         public string TempDirectory { get; set; } = null;
         public string MergingDirectory { get; set; } = null;
+        public bool KeepDownloadedFileInMergingDirectory { get; set; } = false;
         public long ContentLength { get; private set; } = -1L;
         public long DownloadedBytes { get; private set; } = 0L;
         public int UpdateInterval { get; set; } = 10;
@@ -273,10 +274,20 @@ namespace YouTube_downloader
                 string chunkFileName = Chunks[0];
                 if (File.Exists(chunkFileName))
                 {
+                    if (KeepDownloadedFileInMergingDirectory &&
+                        !string.IsNullOrEmpty(MergingDirectory) && !string.IsNullOrWhiteSpace(MergingDirectory))
+                    {
+                        string fn = Path.GetFileName(OutputFileName);
+                        OutputFileName = MergingDirectory.EndsWith("\\") ? MergingDirectory + fn : $"{MergingDirectory}\\{fn}";
+                    }
                     OutputFileName = GetNumberedFileName(OutputFileName);
                     File.Move(chunkFileName, OutputFileName);
+                    errorCode = 200;
                 }
-                errorCode = 200;
+                else
+                {
+                    errorCode = 400;
+                }
             }
             Chunks.Clear();
 
@@ -370,6 +381,12 @@ namespace YouTube_downloader
                     return DOWNLOAD_ERROR_ABORTED_BY_USER;
                 }
 
+                if (KeepDownloadedFileInMergingDirectory &&
+                    !string.IsNullOrEmpty(MergingDirectory) && !string.IsNullOrWhiteSpace(MergingDirectory))
+                {
+                    string fn = Path.GetFileName(OutputFileName);
+                    OutputFileName = MergingDirectory.EndsWith("\\") ? MergingDirectory + fn : $"{MergingDirectory}\\{fn}";
+                }
                 OutputFileName = GetNumberedFileName(OutputFileName);
                 File.Move(tmpFileName, OutputFileName);
 

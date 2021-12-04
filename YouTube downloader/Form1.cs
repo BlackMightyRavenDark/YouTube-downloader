@@ -40,6 +40,7 @@ namespace YouTube_downloader
             config.Load();
             editDownloadingPath.Text = config.downloadingPath;
             editTempPath.Text = config.tempPath;
+            editMergingPath.Text = config.chunksMergingPath;
             editCipherDecryptionAlgo.Text = config.cipherDecryptionAlgo;
             editYouTubeApiKey.Text = config.youTubeApiKey;
             editBrowser.Text = config.browserExe;
@@ -555,6 +556,15 @@ namespace YouTube_downloader
             EnableControls();
         }
 
+        private void btnQ_Click(object sender, EventArgs e)
+        {
+            string msg = "Для достижения максимальной производительности и уменьшения нагрузки на накопители, " +
+                "\"Папка для временных файлов\" и \"Папка для объединения чанков\" должны находиться " +
+                "на разных физических дисках. А файл назначения не должен находиться на одном физическом диске с \"Папкой для объединения чанков\".\n" +
+                "Если оставить это поле пустым, то \"Папка для объединения чанков\" будет равна \"Папке для временных файлов\".";
+            MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void tvFavorites_ItemsRemoving(object sender, BrightIdeasSoftware.ItemsRemovingEventArgs e)
         {
             List<FavoriteItem> items = e.ObjectsToRemove.Cast<FavoriteItem>().ToList();
@@ -707,6 +717,23 @@ namespace YouTube_downloader
                     ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
                 editTempPath.Text = config.tempPath;
             }
+        }
+
+        private void btnSelectMergingPath_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            folderBrowserDialog.Description = "Выберите папку для объединения чанков";
+            folderBrowserDialog.SelectedPath =
+                (!string.IsNullOrEmpty(config.chunksMergingPath) && Directory.Exists(config.chunksMergingPath)) ?
+                config.chunksMergingPath : config.selfPath;
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                config.chunksMergingPath =
+                    folderBrowserDialog.SelectedPath.EndsWith("\\")
+                    ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
+                editMergingPath.Text = config.chunksMergingPath;
+            }
+            folderBrowserDialog.Dispose();
         }
 
         private int GetChannelVideosList(string channelId, int maxVideos, out string resJsonList)
@@ -1074,6 +1101,11 @@ namespace YouTube_downloader
         private void editFfmpeg_Leave(object sender, EventArgs e)
         {
             config.ffmpegExe = editFfmpeg.Text;
+        }
+
+        private void editMergingPath_Leave(object sender, EventArgs e)
+        {
+            config.chunksMergingPath = editMergingPath.Text;
         }
 
         private void chkDeleteSourceFiles_CheckedChanged(object sender, EventArgs e)
