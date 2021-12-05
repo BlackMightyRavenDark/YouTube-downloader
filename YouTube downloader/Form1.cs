@@ -186,6 +186,161 @@ namespace YouTube_downloader
             }
         }
 
+        private int GetChannelVideosList(string channelId, int maxVideos, out string resJsonList)
+        {
+            if (maxVideos <= 0)
+            {
+                maxVideos = 50;
+            }
+            else if (maxVideos > 500)
+            {
+                maxVideos = 500;
+            }
+
+            int sum = 0;
+            JArray jaVideos = new JArray();
+            string pageToken = null;
+            int errorCode;
+            do
+            {
+                string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.youTubeApiKey}" +
+                    $"&channelId={channelId}&maxResults=50&type=video&order=date";
+                if (chkPublishedAfter.Checked)
+                {
+                    string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+                    req += $"&publishedAfter={dateAfter}";
+                }
+
+                if (chkPublishedBefore.Checked)
+                {
+                    string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+                    req += $"&publishedBefore={dateBefore}";
+                }
+
+                if (!string.IsNullOrEmpty(pageToken))
+                {
+                    req += $"&pageToken={pageToken}";
+                }
+
+                errorCode = DownloadString(req, out string buf);
+                if (errorCode == 200)
+                {
+                    JObject json = JObject.Parse(buf);
+                    JToken jt = json.Value<JToken>("nextPageToken");
+                    pageToken = jt == null ? null : jt.Value<string>();
+                    JArray jsonArr = json.Value<JArray>("items");
+                    for (int i = 0; i < jsonArr.Count; i++)
+                    {
+                        JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
+                        string videoId = jObject.Value<JObject>("id").Value<string>("videoId");
+                        if (GetYouTubeVideoInfoEx(videoId, out string info) == 200)
+                        {
+                            JObject j = JObject.Parse(info);
+                            jaVideos.Add(j);
+                        }
+                        if (sum++ + 1 >= maxVideos)
+                        {
+                            break;
+                        }
+                        Application.DoEvents();
+                    }
+                }
+
+                if (sum >= maxVideos)
+                {
+                    break;
+                }
+                Application.DoEvents();
+            } while (errorCode == 200 && sum < maxVideos && !string.IsNullOrEmpty(pageToken));
+
+            JObject jsonRes = new JObject();
+            jsonRes.Add(new JProperty("videos", jaVideos));
+            resJsonList = jsonRes.ToString();
+            return jaVideos.Count;
+        }
+
+        public int SearchYouTube(string searchString, int maxResults, out string resList)
+        {
+            if (chkPublishedAfter.Checked && chkPublishedBefore.Checked &&
+                dateTimePickerAfter.Value > dateTimePickerBefore.Value)
+            {
+                MessageBox.Show("Ошибка диапазона дат!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                resList = null;
+                return 0;
+            }
+
+            if (maxResults <= 0 || maxResults > 50)
+            {
+                maxResults = 50;
+            }
+
+            JArray jaChannels = new JArray();
+            JArray jaVideos = new JArray();
+
+            string resultType = "type=video,channel";
+            if (!chkSearchChannels.Checked)
+            {
+                resultType = resultType.Replace(",channel", string.Empty);
+            }
+            if (!chkSearchVideos.Checked)
+            {
+                resultType = resultType.Replace("video,", string.Empty);
+            }
+
+            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.youTubeApiKey}" +
+                $"&q={searchString}&maxResults={maxResults}&{resultType}&order=date";
+
+            if (chkPublishedAfter.Checked)
+            {
+                string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+                req += $"&publishedAfter={dateAfter}";
+            }
+
+            if (chkPublishedBefore.Checked)
+            {
+                string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+                req += $"&publishedBefore={dateBefore}";
+            }
+
+            int errorCode = DownloadString(req, out string buf);
+            if (errorCode == 200)
+            {
+                JObject json = JObject.Parse(buf);
+
+                JArray jsonArr = json.Value<JArray>("items");
+
+                for (int i = 0; i < jsonArr.Count(); i++)
+                {
+                    JObject j = JObject.Parse(jsonArr[i].ToString());
+                    string kind = j.Value<JObject>("id").Value<string>("kind");
+
+                    if (kind.Equals("youtube#channel"))
+                    {
+                        jaChannels.Add(j);
+                    }
+                    else
+                    {
+                        if (kind.Equals("youtube#video"))
+                        {
+                            string id = j.Value<JObject>("id").Value<string>("videoId");
+                            if (GetYouTubeVideoInfoEx(id, out buf) == 200)
+                            {
+                                JObject j2 = JObject.Parse(buf);
+                                jaVideos.Add(j2);
+                            }
+                        }
+                    }
+                }
+            }
+
+            JObject j3 = new JObject();
+            j3.Add(new JProperty("channels", jaChannels));
+            j3.Add(new JProperty("videos", jaVideos));
+            resList = j3.ToString();
+            int count = jaChannels.Count() + jaVideos.Count();
+            return count;
+        }
+
         private int ParseList(string jsonString)
         {
             JObject json = JObject.Parse(jsonString);
@@ -421,12 +576,6 @@ namespace YouTube_downloader
             tabPageSearchResults.Text = $"Результаты поиска: {count}";
 
             EnableControls();
-        }
-
-        private void scrollBarSearchResults_Scroll(object sender, ScrollEventArgs e)
-        {
-            scrollBarSearchResults.Focus();
-            StackFrames();
         }
 
         private void btnSearchByUrl_Click(object sender, EventArgs e)
@@ -701,6 +850,7 @@ namespace YouTube_downloader
                     ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
                 editDownloadingPath.Text = config.downloadingPath;
             }
+            folderBrowserDialog.Dispose();
         }
 
         private void btnBrowseTempPath_Click(object sender, EventArgs e)
@@ -717,6 +867,7 @@ namespace YouTube_downloader
                     ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
                 editTempPath.Text = config.tempPath;
             }
+            folderBrowserDialog.Dispose();
         }
 
         private void btnSelectMergingPath_Click(object sender, EventArgs e)
@@ -736,159 +887,30 @@ namespace YouTube_downloader
             folderBrowserDialog.Dispose();
         }
 
-        private int GetChannelVideosList(string channelId, int maxVideos, out string resJsonList)
+        private void btnSelectBrowser_Click(object sender, EventArgs e)
         {
-            if (maxVideos <= 0)
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Выберите EXE-файл браузера";
+            ofd.Filter = "EXE-файлы|*.exe";
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                maxVideos = 50;
+                config.browserExe = ofd.FileName;
+                editBrowser.Text = config.browserExe;
             }
-            else if (maxVideos > 500)
-            {
-                maxVideos = 500;
-            }
-
-            int sum = 0;
-            JArray jaVideos = new JArray();
-            string pageToken = null;
-            int errorCode;
-            do
-            {
-                string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.youTubeApiKey}" +
-                    $"&channelId={channelId}&maxResults=50&type=video&order=date";
-                if (chkPublishedAfter.Checked)
-                {
-                    string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                    req += $"&publishedAfter={dateAfter}";
-                }
-
-                if (chkPublishedBefore.Checked)
-                {
-                    string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                    req += $"&publishedBefore={dateBefore}";
-                }
-
-                if (!string.IsNullOrEmpty(pageToken))
-                {
-                    req += $"&pageToken={pageToken}";
-                }
-
-                errorCode = DownloadString(req, out string buf);
-                if (errorCode == 200)
-                {
-                    JObject json = JObject.Parse(buf);
-                    JToken jt = json.Value<JToken>("nextPageToken");
-                    pageToken = jt == null ? null : jt.Value<string>();
-                    JArray jsonArr = json.Value<JArray>("items");
-                    for (int i = 0; i < jsonArr.Count; i++)
-                    {
-                        JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
-                        string videoId = jObject.Value<JObject>("id").Value<string>("videoId");
-                        if (GetYouTubeVideoInfoEx(videoId, out string info) == 200)
-                        {
-                            JObject j = JObject.Parse(info);
-                            jaVideos.Add(j);
-                        }
-                        if (sum++ + 1 >= maxVideos)
-                        {
-                            break;
-                        }
-                        Application.DoEvents();
-                    }
-                }
-
-                if (sum >= maxVideos)
-                {
-                    break;
-                }
-                Application.DoEvents();
-            } while (errorCode == 200 && sum < maxVideos && !string.IsNullOrEmpty(pageToken));
-
-            JObject jsonRes = new JObject();
-            jsonRes.Add(new JProperty("videos", jaVideos));
-            resJsonList = jsonRes.ToString();
-            return jaVideos.Count;
+            ofd.Dispose();
         }
 
-        public int SearchYouTube(string searchString, int maxResults, out string resList)
+        private void btnBrowseFfmpeg_Click(object sender, EventArgs e)
         {
-            if (chkPublishedAfter.Checked && chkPublishedBefore.Checked &&
-                dateTimePickerAfter.Value > dateTimePickerBefore.Value)
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Выберите EXE-файл FFMPEG";
+            ofd.Filter = "EXE-файлы|*.exe";
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                MessageBox.Show("Ошибка диапазона дат!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                resList = null;
-                return 0;
+                config.ffmpegExe = ofd.FileName;
+                editFfmpeg.Text = config.ffmpegExe;
             }
-
-            if (maxResults <= 0 || maxResults > 50)
-            {
-                maxResults = 50;
-            }
-
-            JArray jaChannels = new JArray();
-            JArray jaVideos = new JArray();
-
-            string resultType = "type=video,channel";
-            if (!chkSearchChannels.Checked)
-            {
-                resultType = resultType.Replace(",channel", string.Empty);
-            }
-            if (!chkSearchVideos.Checked)
-            {
-                resultType = resultType.Replace("video,", string.Empty);
-            }
-
-            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.youTubeApiKey}" +
-                $"&q={searchString}&maxResults={maxResults}&{resultType}&order=date";
-
-            if (chkPublishedAfter.Checked)
-            {
-                string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                req += $"&publishedAfter={dateAfter}";
-            }
-
-            if (chkPublishedBefore.Checked)
-            {
-                string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                req += $"&publishedBefore={dateBefore}";
-            }
-
-            int errorCode = DownloadString(req, out string buf);
-            if (errorCode == 200)
-            {
-                JObject json = JObject.Parse(buf);
-
-                JArray jsonArr = json.Value<JArray>("items");
-
-                for (int i = 0; i < jsonArr.Count(); i++)
-                {
-                    JObject j = JObject.Parse(jsonArr[i].ToString());
-                    string kind = j.Value<JObject>("id").Value<string>("kind");
-
-                    if (kind.Equals("youtube#channel"))
-                    {
-                        jaChannels.Add(j);
-                    }
-                    else
-                    {
-                        if (kind.Equals("youtube#video"))
-                        {
-                            string id = j.Value<JObject>("id").Value<string>("videoId");
-                            if (GetYouTubeVideoInfoEx(id, out buf) == 200)
-                            {
-                                JObject j2 = JObject.Parse(buf);
-                                jaVideos.Add(j2);
-                            }
-                        }
-                    }
-                }
-            }
-
-            JObject j3 = new JObject();
-            j3.Add(new JProperty("channels", jaChannels));
-            j3.Add(new JProperty("videos", jaVideos));
-            resList = j3.ToString();
-            int count = jaChannels.Count() + jaVideos.Count();
-            return count;
+            ofd.Dispose();
         }
 
         private void event_FrameActivated(object sender)
@@ -970,18 +992,6 @@ namespace YouTube_downloader
         {
             rbSearchResultsMax.Checked = false;
             rbSearchResultsUserDefined.Checked = true;
-        }
-
-        private void btnSelectBrowser_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "exe|*.exe";
-            if (ofd.ShowDialog() != DialogResult.Cancel)
-            {
-                config.browserExe = ofd.FileName;
-                editBrowser.Text = config.browserExe;
-            }
-            ofd.Dispose();
         }
 
         private void openVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1084,18 +1094,6 @@ namespace YouTube_downloader
         private void chkUseApiForGettingInfo_Click(object sender, EventArgs e)
         {
             config.useApiForGettingInfo = chkUseApiForGettingInfo.Checked;
-        }
-
-        private void btnBrowseFfmpeg_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "exe|*.exe";
-            if (ofd.ShowDialog() != DialogResult.Cancel)
-            {
-                config.ffmpegExe = ofd.FileName;
-                editFfmpeg.Text = config.ffmpegExe;
-            }
-            ofd.Dispose();
         }
 
         private void editFfmpeg_Leave(object sender, EventArgs e)
@@ -1224,6 +1222,12 @@ namespace YouTube_downloader
                     SetClipboardText($"{item.DisplayName} [{item.ID}]");
                 }
             }
+        }
+
+        private void scrollBarSearchResults_Scroll(object sender, ScrollEventArgs e)
+        {
+            scrollBarSearchResults.Focus();
+            StackFrames();
         }
 
         private void DisableControls()
