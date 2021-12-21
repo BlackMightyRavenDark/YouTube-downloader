@@ -724,6 +724,18 @@ namespace YouTube_downloader
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     break;
 
+                                case FileDownloader.DOWNLOAD_ERROR_RANGE:
+                                    lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
+                                    MessageBox.Show($"{VideoInfo.title}\nЗадан неправильный диапазон!", "Ошибка!",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    break;
+
+                                case FileDownloader.DOWNLOAD_ERROR_UNKNOWN:
+                                    lblStatus.Text = "Состояние: Неизвестная ошибка";
+                                    MessageBox.Show($"{VideoInfo.title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    break;
+
                                 default:
                                     lblStatus.Text = $"Состояние: Ошибка {resAudio.ErrorCode}";
                                     MessageBox.Show($"{VideoInfo.title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
@@ -797,6 +809,18 @@ namespace YouTube_downloader
                             lblStatus.Text = "Состояние: Скачивание отменено";
                             MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            break;
+
+                        case FileDownloader.DOWNLOAD_ERROR_RANGE:
+                            lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
+                            MessageBox.Show($"{VideoInfo.title}\nЗадан неправильный диапазон!", "Ошибка!",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            break;
+
+                        case FileDownloader.DOWNLOAD_ERROR_UNKNOWN:
+                            lblStatus.Text = "Состояние: Неизвестная ошибка";
+                            MessageBox.Show($"{VideoInfo.title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         default:
