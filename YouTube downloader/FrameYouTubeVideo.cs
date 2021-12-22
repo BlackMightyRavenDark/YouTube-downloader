@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static YouTube_downloader.Utils;
 using YouTube_downloader.Properties;
+using Newtonsoft.Json.Linq;
 
 namespace YouTube_downloader
 {
@@ -58,7 +59,7 @@ namespace YouTube_downloader
         private bool canDrag = false;
         private bool cancelRequired = false;
         private bool downloading = false;
-        public const int EXTRA_WIDTH = 120;
+        public const int EXTRA_WIDTH = 140;
 
 
         public FrameYouTubeVideo()
@@ -82,6 +83,8 @@ namespace YouTube_downloader
             progressBarDownload.Width = btnDownload.Left - progressBarDownload.Left - 4;
             btnGetVideoInfo.Left = Parent.Width + offset;
             btnGetWebPage.Left = btnGetVideoInfo.Left;
+            btnGetDashManifest.Left = btnGetVideoInfo.Left;
+            btnGetHlsManifest.Left = btnGetVideoInfo.Left;
             imgScrollbar.Left = 0;
             imgScrollbar.Width = Parent.Width;
 
@@ -1031,6 +1034,66 @@ namespace YouTube_downloader
             }
 
             btnGetWebPage.Enabled = true;
+        }
+
+        private void btnGetDashManifest_Click(object sender, EventArgs e)
+        {
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.id, out string info, VideoInfo.ciphered);
+            if (errorCode == 200)
+            {
+                JObject json = JObject.Parse(info);
+                if (json != null)
+                {
+                    JToken jt = json.Value<JToken>("streamingData");
+                    if (jt != null)
+                    {
+                        JObject jData = jt.Value<JObject>();
+                        jt = jData.Value<JToken>("dashManifestUrl");
+                        if (jt != null)
+                        {
+                            FileDownloader d = new FileDownloader();
+                            d.Url = jt.Value<string>();
+                            if (d.DownloadString(out string manifest) == 200)
+                            {
+                                SetClipboardText(manifest);
+                                MessageBox.Show("Скопировано в буфер обмена.");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            MessageBox.Show("Ошибка!", "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void btnGetHlsManifest_Click(object sender, EventArgs e)
+        {
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.id, out string info, VideoInfo.ciphered);
+            if (errorCode == 200)
+            {
+                JObject json = JObject.Parse(info);
+                if (json != null)
+                {
+                    JToken jt = json.Value<JToken>("streamingData");
+                    if (jt != null)
+                    {
+                        JObject jData = jt.Value<JObject>();
+                        jt = jData.Value<JToken>("hlsManifestUrl");
+                        if (jt != null)
+                        {
+                            FileDownloader d = new FileDownloader();
+                            d.Url = jt.Value<string>();
+                            if (d.DownloadString(out string manifest) == 200)
+                            {
+                                SetClipboardText(manifest);
+                                MessageBox.Show("Скопировано в буфер обмена.");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            MessageBox.Show("Ошибка!", "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void copyVideoTitleToolStripMenuItem_Click(object sender, EventArgs e)

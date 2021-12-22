@@ -55,6 +55,8 @@
             this.openChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnGetWebPage = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.btnGetDashManifest = new System.Windows.Forms.Button();
+            this.btnGetHlsManifest = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -180,11 +182,11 @@
             // btnGetVideoInfo
             // 
             this.btnGetVideoInfo.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.btnGetVideoInfo.Location = new System.Drawing.Point(508, 12);
+            this.btnGetVideoInfo.Location = new System.Drawing.Point(508, 43);
             this.btnGetVideoInfo.Name = "btnGetVideoInfo";
-            this.btnGetVideoInfo.Size = new System.Drawing.Size(87, 24);
+            this.btnGetVideoInfo.Size = new System.Drawing.Size(112, 24);
             this.btnGetVideoInfo.TabIndex = 10;
-            this.btnGetVideoInfo.Text = "get video info";
+            this.btnGetVideoInfo.Text = "Get video info";
             this.btnGetVideoInfo.UseVisualStyleBackColor = false;
             this.btnGetVideoInfo.Click += new System.EventHandler(this.btnGetVideoInfo_Click);
             this.btnGetVideoInfo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnGetVideoInfo_MouseDown);
@@ -285,19 +287,41 @@
             // btnGetWebPage
             // 
             this.btnGetWebPage.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.btnGetWebPage.Location = new System.Drawing.Point(508, 60);
+            this.btnGetWebPage.Location = new System.Drawing.Point(508, 12);
             this.btnGetWebPage.Name = "btnGetWebPage";
-            this.btnGetWebPage.Size = new System.Drawing.Size(87, 31);
+            this.btnGetWebPage.Size = new System.Drawing.Size(112, 25);
             this.btnGetWebPage.TabIndex = 12;
             this.btnGetWebPage.Text = "Get web page";
             this.btnGetWebPage.UseVisualStyleBackColor = false;
             this.btnGetWebPage.Click += new System.EventHandler(this.btnGetWebPage_Click);
+            // 
+            // btnGetDashManifest
+            // 
+            this.btnGetDashManifest.Location = new System.Drawing.Point(508, 73);
+            this.btnGetDashManifest.Name = "btnGetDashManifest";
+            this.btnGetDashManifest.Size = new System.Drawing.Size(112, 23);
+            this.btnGetDashManifest.TabIndex = 13;
+            this.btnGetDashManifest.Text = "Get DASH manifest";
+            this.btnGetDashManifest.UseVisualStyleBackColor = true;
+            this.btnGetDashManifest.Click += new System.EventHandler(this.btnGetDashManifest_Click);
+            // 
+            // btnGetHlsManifest
+            // 
+            this.btnGetHlsManifest.Location = new System.Drawing.Point(508, 102);
+            this.btnGetHlsManifest.Name = "btnGetHlsManifest";
+            this.btnGetHlsManifest.Size = new System.Drawing.Size(112, 23);
+            this.btnGetHlsManifest.TabIndex = 14;
+            this.btnGetHlsManifest.Text = "Get HLS manifest";
+            this.btnGetHlsManifest.UseVisualStyleBackColor = true;
+            this.btnGetHlsManifest.Click += new System.EventHandler(this.btnGetHlsManifest_Click);
             // 
             // FrameYouTubeVideo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.Controls.Add(this.btnGetHlsManifest);
+            this.Controls.Add(this.btnGetDashManifest);
             this.Controls.Add(this.btnGetWebPage);
             this.Controls.Add(this.imageFavoriteChannel);
             this.Controls.Add(this.btnGetVideoInfo);
@@ -357,5 +381,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem copyChannelNameWithIdToolStripMenuItem;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button btnGetDashManifest;
+        private System.Windows.Forms.Button btnGetHlsManifest;
     }
 }
