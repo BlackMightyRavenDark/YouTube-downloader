@@ -110,6 +110,7 @@ namespace YouTube_downloader
                             videoFile.width = int.Parse(node.Attributes["width"].Value);
                             videoFile.height = int.Parse(node.Attributes["height"].Value);
                             videoFile.bitrate = int.Parse(node.Attributes["bandwidth"].Value);
+                            videoFile.averageBitrate = videoFile.bitrate;
                             videoFile.fps = int.Parse(node.Attributes["frameRate"].Value);
                             videoFile.mimeCodecs = node.Attributes["codecs"].Value;
                             videoFile.mimeType = mimeType + "; codecs=\"" + videoFile.mimeCodecs + "\"";
@@ -151,6 +152,7 @@ namespace YouTube_downloader
                             audioFile.dashManifestUrls = new List<string>();
                             audioFile.formatId = int.Parse(node.Attributes["id"].Value);
                             audioFile.bitrate = int.Parse(node.Attributes["bandwidth"].Value);
+                            audioFile.averageBitrate = audioFile.bitrate;
                             audioFile.mimeCodecs = node.Attributes["codecs"].Value;
                             audioFile.mimeType = mimeType + "; codecs=\"" + audioFile.mimeCodecs + "\"";
                             audioFile.mimeExt = mimeTypeSplitted[1];
@@ -208,6 +210,8 @@ namespace YouTube_downloader
                 videoFile.formatId = parser.Get(i).formatId;
                 videoFile.width = parser.Get(i).width;
                 videoFile.height = parser.Get(i).height;
+                videoFile.bitrate = parser.Get(i).bandwidth;
+                videoFile.averageBitrate = videoFile.bitrate;
                 videoFile.mimeCodecs = parser.Get(i).codecs;
                 videoFile.fps = parser.Get(i).fps;
                 videoFile.url = parser.Get(i).url;

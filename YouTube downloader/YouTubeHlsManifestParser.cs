@@ -7,6 +7,7 @@ namespace YouTube_downloader
         public int formatId;
         public int width;
         public int height;
+        public int bandwidth;
         public string codecs;
         public int fps;
         public string url;
@@ -39,6 +40,7 @@ namespace YouTube_downloader
                 string[] widthHeight = t.Split('x');
                 streamInfo.width = int.Parse(widthHeight[0]);
                 streamInfo.height = int.Parse(widthHeight[1]);
+                streamInfo.bandwidth = int.Parse(GetParameter(strings[startIndex], "BANDWIDTH"));
                 streamInfo.codecs = GetParameter(strings[startIndex], "CODECS");
                 streamInfo.fps = int.Parse(GetParameter(strings[startIndex], "FRAME-RATE"));
                 streamInfo.url = strings[startIndex + 1];
