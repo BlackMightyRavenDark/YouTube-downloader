@@ -788,10 +788,11 @@ namespace YouTube_downloader
                         if (MessageBox.Show($"Перейти на канал {item.DisplayName}?", "Переход на канал",
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
-                            if (string.IsNullOrEmpty(config.youTubeApiKey))
+                            if (string.IsNullOrEmpty(config.youTubeApiKey) || string.IsNullOrWhiteSpace(config.youTubeApiKey))
                             {
                                 MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                                     "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                EnableControls();
                                 return;
                             }
 
@@ -800,6 +801,7 @@ namespace YouTube_downloader
                             {
                                 MessageBox.Show("Указан неверный диапазон дат!", "Ошибка!",
                                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                EnableControls();
                                 return;
                             }
 

@@ -16,7 +16,7 @@ namespace YouTube_downloader
                 res += $", {fileExtension}";
             if (!string.IsNullOrEmpty(mimeCodecs))
                 res += $", {mimeCodecs}";
-            if (contentLength != 0)
+            if (contentLength > 0L)
                 res += $", {Utils.FormatSize(contentLength)}";
             if (isDashManifest)
                 res += $", {dashManifestUrls.Count} chunks";
