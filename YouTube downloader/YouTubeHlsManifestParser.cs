@@ -2,22 +2,23 @@
 
 namespace YouTube_downloader
 {
-    public sealed class YouTubeStreamInfo
-    {
-        public int formatId;
-        public int width;
-        public int height;
-        public int bandwidth;
-        public string codecs;
-        public int fps;
-        public string url;
-    }
-    
     public sealed class YouTubeHlsManifestParser
     {
-        private List<YouTubeStreamInfo> streamInfos = new List<YouTubeStreamInfo>();
+        private readonly List<YouTubeStreamInfo> streamInfos = new List<YouTubeStreamInfo>();
 
         public int Count => streamInfos.Count;
+
+        public YouTubeStreamInfo this[int number]
+        {
+            get
+            {
+                if (Count == 0 || number < 0 || number >= Count)
+                {
+                    return null;
+                }
+                return streamInfos[number];
+            }
+        }
 
         public YouTubeHlsManifestParser(string manifest)
         {
@@ -34,24 +35,30 @@ namespace YouTube_downloader
 
             for (; startIndex < strings.Length - 1; startIndex += 2)
             {
-                YouTubeStreamInfo streamInfo = new YouTubeStreamInfo();
-
                 string t = GetParameter(strings[startIndex], "RESOLUTION");
                 string[] widthHeight = t.Split('x');
-                streamInfo.width = int.Parse(widthHeight[0]);
-                streamInfo.height = int.Parse(widthHeight[1]);
-                streamInfo.bandwidth = int.Parse(GetParameter(strings[startIndex], "BANDWIDTH"));
-                streamInfo.codecs = GetParameter(strings[startIndex], "CODECS");
-                streamInfo.fps = int.Parse(GetParameter(strings[startIndex], "FRAME-RATE"));
-                streamInfo.url = strings[startIndex + 1];
-                streamInfo.formatId = ExtractFormatId(streamInfo.url);
-                streamInfos.Add(streamInfo);
-            }
-        }
+                if (!int.TryParse(widthHeight[0], out int width))
+                {
+                    width = 0;
+                }
+                if (!int.TryParse(widthHeight[1], out int height))
+                {
+                    height = 0;
+                }
+                if (!int.TryParse(GetParameter(strings[startIndex], "BANDWIDTH"), out int bandwidth))
+                {
+                    bandwidth = 0;
+                }
+                string codecs = GetParameter(strings[startIndex], "CODECS");
+                if (!int.TryParse(GetParameter(strings[startIndex], "FRAME-RATE"), out int frameRate))
+                {
+                    frameRate = 0;
+                }
+                string url = strings[startIndex + 1];
+                int formatId = ExtractFormatId(url);
 
-        public YouTubeStreamInfo Get(int index)
-        {
-            return streamInfos[index];
+                streamInfos.Add(new YouTubeStreamInfo(formatId, width, height, bandwidth, codecs, frameRate, url));
+            }
         }
 
         public string GetParameter(string info, string parameterName)
@@ -78,6 +85,29 @@ namespace YouTube_downloader
             n = t.IndexOf("/");
             t = t.Substring(0, n);
             return int.Parse(t);
+        }
+    }
+
+    public sealed class YouTubeStreamInfo
+    {
+        public int FormatId { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public int Bandwidth { get; private set; }
+        public string Codecs { get; private set; }
+        public int Fps { get; private set; }
+        public string Url { get; private set; }
+
+        public YouTubeStreamInfo(int formatId, int width, int height, int bandwidth,
+            string codecs, int frameRate, string url)
+        {
+            FormatId = formatId;
+            Width = width;
+            Height = height;
+            Bandwidth = bandwidth;
+            Codecs = codecs;
+            Fps = frameRate;
+            Url = url;
         }
     }
 }

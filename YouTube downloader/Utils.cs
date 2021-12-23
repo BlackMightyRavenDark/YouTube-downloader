@@ -249,7 +249,6 @@ namespace YouTube_downloader
         public const int ERROR_CIPHER_DECRYPTION = -100;
         public const int ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM = -101;
 
-
         public static WebClient GetYouTubeWebClient()
         {
             WebClient wc = new WebClient();
@@ -357,50 +356,28 @@ namespace YouTube_downloader
             return res;
         }
 
-
-        public static bool DownloadImage(string url, out Image image)
+        public static int DownloadImage(string url, out Image image)
         {
-            WebClient webClient = new WebClient();
-            try
+            MemoryStream memoryStream = new MemoryStream();
+            int errorCode = DownloadData(url, memoryStream);
+            if (errorCode == 200)
             {
-                Stream stream = webClient.OpenRead(url);
-                try
-                {
-                    image = Image.FromStream(stream);
-                    stream?.Dispose();
-                    webClient.Dispose();
-                    return true;
-                }
-                catch
-                {
-                    image = null;
-                }
-                stream?.Dispose();
+                memoryStream.Position = 0L;
+                image = Image.FromStream(memoryStream);
             }
-            catch
+            else
             {
                 image = null;
             }
-            webClient.Dispose();
-            return false;
+            memoryStream.Dispose();
+            return errorCode;
         }
 
-        public static bool DownloadData(string url, Stream stream)
+        public static int DownloadData(string url, Stream stream)
         {
-            WebClient webClient = new WebClient();
-            try
-            {
-                byte[] b = webClient.DownloadData(url);
-                stream.Write(b, 0, b.Length);
-                webClient.Dispose();
-                return true;
-            }
-            catch
-            {
-
-            }
-            webClient.Dispose();
-            return false;
+            FileDownloader d = new FileDownloader();
+            d.Url = url;
+            return d.Download(stream);
         }
 
         public static int GetYouTubeVideoWebPage(string videoId, out string resultPage)
@@ -460,9 +437,13 @@ namespace YouTube_downloader
             resInfo = "Client error";
             int res = 400;
             if (!ciphered && config.useApiForGettingInfo)
+            {
                 res = GetYouTubeVideoInfoViaApi(videoId, out resInfo);
+            }
             if (res == 200)
+            {
                 return res;
+            }
             
             res = GetYouTubeVideoWebPage(videoId, out string page);
             if (res == 200)
@@ -512,19 +493,19 @@ namespace YouTube_downloader
             return res;
         }
 
-        private static FavoriteItem FindData(FavoriteItem data, FavoriteItem root)
+        private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)
         {
-            if (root.ID != null && root.ID.Equals(data.ID))
+            if (root.ID != null && root.ID.Equals(item.ID))
             {
                 return root;
             }
 
             for (int i = 0; i < root.Children.Count; i++)
             {
-                FavoriteItem d = FindData(data, root.Children[i]);
-                if (d != null)
+                FavoriteItem favoriteItem = FindFavoriteItem(item, root.Children[i]);
+                if (favoriteItem != null)
                 {
-                    return d;
+                    return favoriteItem;
                 }
             }
             return null;
@@ -534,7 +515,7 @@ namespace YouTube_downloader
         {
             for (int i = 0; i < root.Children.Count; i++)
             {
-                FavoriteItem item = FindData(find, root.Children[i]);
+                FavoriteItem item = FindFavoriteItem(find, root.Children[i]);
                 if (item != null)
                 {
                     return item;
@@ -586,13 +567,13 @@ namespace YouTube_downloader
             return n < 10 ? ("0" + n.ToString()) : n.ToString();
         }
 
-        public static string FormatFileName(string fmt, YouTubeVideo aVideoInfo)
+        public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
         {
-            return fmt.Replace("<year>", LeadZero(aVideoInfo.datePublished.Year))
-                .Replace("<month>", LeadZero(aVideoInfo.datePublished.Month))
-                .Replace("<day>", LeadZero(aVideoInfo.datePublished.Day))
-                .Replace("<video_title>", aVideoInfo.title)
-                .Replace("<video_id>", aVideoInfo.id);
+            return fmt.Replace("<year>", LeadZero(videoInfo.datePublished.Year))
+                .Replace("<month>", LeadZero(videoInfo.datePublished.Month))
+                .Replace("<day>", LeadZero(videoInfo.datePublished.Day))
+                .Replace("<video_title>", videoInfo.title)
+                .Replace("<video_id>", videoInfo.id);
         }
 
         public static string FixFileName(string fn)
@@ -635,17 +616,25 @@ namespace YouTube_downloader
         public static string DecryptCipherSignature(string signatureEncrypted, string algo)
         {
             if (algo.StartsWith("["))
+            {
                 algo = algo.Remove(0, 1);
+            }
             if (algo.EndsWith("]"))
+            {
                 algo = algo.Remove(algo.Length - 1, 1);
+            }
             string[] ints = algo.Split(',');
             string res = string.Empty;
             for (int i = 0; i < ints.Length; i++)
             {
                 if (!int.TryParse(ints[i], out int index))
+                {
                     return null;
+                }
                 if (index >= signatureEncrypted.Length)
+                {
                     return null;
+                }
                 res += signatureEncrypted[index];
             }
             return res;
@@ -738,7 +727,7 @@ namespace YouTube_downloader
             return process.Start();
         }
 
-        public static void OpenBrowser(string url)
+        public static void OpenUrlInBrowser(string url)
         {
             if (!string.IsNullOrEmpty(config.browserExe) && !string.IsNullOrWhiteSpace(config.browserExe) &&
                 !string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
@@ -771,7 +760,6 @@ namespace YouTube_downloader
 
                 }
                 a += 36;
-
             }
 
             if (fill)

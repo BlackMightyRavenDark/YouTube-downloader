@@ -3,18 +3,25 @@ namespace YouTube_downloader
 {
     public sealed class YouTubeVideoFile : YouTubeMediaFile
     {
-        public int width;
-        public int height;
-        public int fps;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public int Fps { get; private set; }
+
+        public YouTubeVideoFile(int width, int height, int frameRate)
+        {
+            Width = width;
+            Height = height;
+            Fps = frameRate;
+        }
 
         public override string ToString()
         {
             string res = isHlsManifest ? "HLS: " : isDashManifest ? "DASH Video: " : "Video: ";
             if (formatId != 0)
                 res += $"ID {formatId}, ";
-            res += $"{width}x{height}";
-            if (fps != 0)
-                res += $", {fps} fps";
+            res += $"{Width}x{Height}";
+            if (Fps != 0)
+                res += $", {Fps} fps";
             if (averageBitrate != 0)
                 res += $", ~{averageBitrate / 1024} kbps";
             if (!string.IsNullOrEmpty(fileExtension))
@@ -31,9 +38,9 @@ namespace YouTube_downloader
 
         public override string GetShortInfo()
         {
-            string res = $"{width}x{height}";
-            if (fps != 0)
-                res += $", {fps} fps";
+            string res = $"{Width}x{Height}";
+            if (Fps != 0)
+                res += $", {Fps} fps";
             if (averageBitrate != 0)
                 res += $", ~{averageBitrate / 1024} kbps";
 

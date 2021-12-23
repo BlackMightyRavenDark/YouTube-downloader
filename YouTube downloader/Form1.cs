@@ -423,15 +423,20 @@ namespace YouTube_downloader
                         video.imageUrls.Add(t);
                     }
                     video.imageStream = new MemoryStream();
-                    if (DownloadData(video.imageUrls[video.imageUrls.Count - 1], video.imageStream))
+                    if (DownloadData(video.imageUrls[video.imageUrls.Count - 1], video.imageStream) == 200)
                     {
                         video.imageStream.Position = 0;
+                    }
+                    else
+                    {
+                        video.imageStream.Dispose();
+                        video.imageStream = null;
                     }
                     videos.Add(video);
 
                     FrameYouTubeVideo frameVideo = new FrameYouTubeVideo();
                     frameVideo.Parent = panelSearchResults;
-                    frameVideo.SetVideoInfo(ref video);
+                    frameVideo.VideoInfo = video;
                     frameVideo.FavoriteChannelChanged += (s, id, newState) =>
                     {
                         for (int j = 0; j < framesVideo.Count; j++)
@@ -999,7 +1004,7 @@ namespace YouTube_downloader
             FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
             if (item != null)
             {
-                OpenBrowser(YOUTUBE_VIDEO_URL_BASE + item.ID);
+                OpenUrlInBrowser(YOUTUBE_VIDEO_URL_BASE + item.ID);
             }
         }
 
@@ -1008,7 +1013,7 @@ namespace YouTube_downloader
             FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
             if (item != null)
             {
-                OpenBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, item.ID));
+                OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, item.ID));
             }
         }
 

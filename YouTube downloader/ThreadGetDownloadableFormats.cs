@@ -16,17 +16,17 @@ namespace YouTube_downloader
 
         private SynchronizationContext synchronizationContext;
 
-        public int errorCode = 400;
+        public int ErrorCode { get; private set; } = 400;
         public List<YouTubeVideoFile> videoFiles = new List<YouTubeVideoFile>();
         public List<YouTubeAudioFile> audioFiles = new List<YouTubeAudioFile>();
 
-        public string webPage;
+        public string WebPage { get; private set; }
         public string _videoId;
         public bool _ciphered;
 
-        public ThreadGetDownloadableFormats()
+        public ThreadGetDownloadableFormats(string webPageContent = null)
         {
-          
+            WebPage = webPageContent;
         }
 
         public void Run(object synchronizationContext)
@@ -36,12 +36,14 @@ namespace YouTube_downloader
             string videoInfo = null;
             if (_ciphered)
             {
-                errorCode = string.IsNullOrEmpty(webPage) ? GetYouTubeVideoWebPage(_videoId, out webPage) : 200;
-                if (errorCode == 200)
+                string webPage = null;
+                ErrorCode = string.IsNullOrEmpty(WebPage) ? GetYouTubeVideoWebPage(_videoId, out webPage) : 200;
+                if (ErrorCode == 200)
                 {
-                    videoInfo = ExtractVideoInfoFromWebPage(webPage);
-                    errorCode = string.IsNullOrEmpty(videoInfo) ? 400 : 200;
-                    if (errorCode == 200)
+                    WebPage = webPage;
+                    videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+                    ErrorCode = string.IsNullOrEmpty(videoInfo) ? 400 : 200;
+                    if (ErrorCode == 200)
                     {
                         /*string playerUrl = ExtractPlayerUrlFromWebPage(webPage);
                         if (!string.IsNullOrEmpty(playerUrl))
@@ -56,17 +58,17 @@ namespace YouTube_downloader
             }
             else
             {
-                if (string.IsNullOrEmpty(webPage))
+                if (string.IsNullOrEmpty(WebPage))
                 {
-                    errorCode = GetYouTubeVideoInfoEx(_videoId, out videoInfo, false);
+                    ErrorCode = GetYouTubeVideoInfoEx(_videoId, out videoInfo, false);
                 }
                 else
                 {
-                    videoInfo = ExtractVideoInfoFromWebPage(webPage);
-                    errorCode = string.IsNullOrEmpty(videoInfo) ? 404 : 200;
+                    videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+                    ErrorCode = string.IsNullOrEmpty(videoInfo) ? 404 : 200;
                 }
             }
-            if (errorCode == 200 && !string.IsNullOrEmpty(videoInfo))
+            if (ErrorCode == 200 && !string.IsNullOrEmpty(videoInfo))
             {
                 ParseFormats(videoInfo);
             }
@@ -104,14 +106,23 @@ namespace YouTube_downloader
                     {
                         if (node.Name.Equals("Representation"))
                         {
-                            YouTubeVideoFile videoFile = new YouTubeVideoFile();
+                            if (!int.TryParse(node.Attributes["width"].Value, out int width))
+                            {
+                                width = 0;
+                            }
+                            if (!int.TryParse(node.Attributes["height"].Value, out int height))
+                            {
+                                height = 0;
+                            }
+                            if (!int.TryParse(node.Attributes["frameRate"].Value, out int frameRate))
+                            {
+                                frameRate = 0;
+                            }
+                            YouTubeVideoFile videoFile = new YouTubeVideoFile(width, height, frameRate);
                             videoFile.dashManifestUrls = new List<string>();
                             videoFile.formatId = int.Parse(node.Attributes["id"].Value);
-                            videoFile.width = int.Parse(node.Attributes["width"].Value);
-                            videoFile.height = int.Parse(node.Attributes["height"].Value);
                             videoFile.bitrate = int.Parse(node.Attributes["bandwidth"].Value);
                             videoFile.averageBitrate = videoFile.bitrate;
-                            videoFile.fps = int.Parse(node.Attributes["frameRate"].Value);
                             videoFile.mimeCodecs = node.Attributes["codecs"].Value;
                             videoFile.mimeType = mimeType + "; codecs=\"" + videoFile.mimeCodecs + "\"";
                             videoFile.mimeExt = mimeTypeSplitted[1];
@@ -205,17 +216,20 @@ namespace YouTube_downloader
             YouTubeHlsManifestParser parser = new YouTubeHlsManifestParser(hlsManifestString);
             for (int i = 0; i < parser.Count; i++)
             {
-                YouTubeVideoFile videoFile = new YouTubeVideoFile();
-                videoFile.isHlsManifest = true;
-                videoFile.formatId = parser.Get(i).formatId;
-                videoFile.width = parser.Get(i).width;
-                videoFile.height = parser.Get(i).height;
-                videoFile.bitrate = parser.Get(i).bandwidth;
-                videoFile.averageBitrate = videoFile.bitrate;
-                videoFile.mimeCodecs = parser.Get(i).codecs;
-                videoFile.fps = parser.Get(i).fps;
-                videoFile.url = parser.Get(i).url;
-                videoFiles.Add(videoFile);
+                YouTubeStreamInfo youTubeStreamInfo = parser[i];
+                if (youTubeStreamInfo != null)
+                {
+                    YouTubeVideoFile videoFile = new YouTubeVideoFile(
+                        youTubeStreamInfo.Width, youTubeStreamInfo.Height, youTubeStreamInfo.Fps);
+                    videoFile.isHlsManifest = true;
+                    videoFile.formatId = youTubeStreamInfo.FormatId;
+                    videoFile.bitrate = youTubeStreamInfo.Bandwidth;
+                    videoFile.averageBitrate = videoFile.bitrate;
+                    videoFile.mimeCodecs = youTubeStreamInfo.Codecs;
+                    videoFile.url = youTubeStreamInfo.Url;
+
+                    videoFiles.Add(videoFile);
+                }
             }
         }
 
@@ -225,7 +239,7 @@ namespace YouTube_downloader
             JObject jStreamingData = json.Value<JObject>("streamingData");
             if (jStreamingData == null)
             {
-                errorCode = 404;
+                ErrorCode = 404;
                 return;
             }
 
@@ -258,14 +272,14 @@ namespace YouTube_downloader
                         string mime = jaAdaptiveFormats[i].Value<string>("mimeType");
                         if (mime.Contains("video"))
                         {
-                            YouTubeVideoFile videoFile = new YouTubeVideoFile();
+                            int width = jaAdaptiveFormats[i].Value<int>("width");
+                            int height = jaAdaptiveFormats[i].Value<int>("height");
+                            int frameRate = jaAdaptiveFormats[i].Value<int>("fps");
+                            YouTubeVideoFile videoFile = new YouTubeVideoFile(width, height, frameRate);
                             videoFile.formatId = jaAdaptiveFormats[i].Value<int>("itag");
                             videoFile.mimeType = mime;
                             videoFile.bitrate = jaAdaptiveFormats[i].Value<int>("bitrate");
                             videoFile.averageBitrate = jaAdaptiveFormats[i].Value<int>("averageBitrate");
-                            videoFile.width = jaAdaptiveFormats[i].Value<int>("width");
-                            videoFile.height = jaAdaptiveFormats[i].Value<int>("height");
-                            videoFile.fps = jaAdaptiveFormats[i].Value<int>("fps");
                             videoFile.quality = jaAdaptiveFormats[i].Value<string>("quality");
                             videoFile.approxDurationMs = int.Parse(jaAdaptiveFormats[i].Value<string>("approxDurationMs"));
                             JToken jt = jaAdaptiveFormats[i].Value<JToken>("contentLength");
@@ -285,12 +299,12 @@ namespace YouTube_downloader
                                 videoFile.isCiphered = true;
                             }
                             else
+                            {
                                 videoFile.url = jaAdaptiveFormats[i].Value<string>("url");
-
+                            }
                             videoFiles.Add(videoFile);
                         }
-                        else
-                        if (mime.Contains("audio"))
+                        else if (mime.Contains("audio"))
                         {
                             YouTubeAudioFile audioFile = new YouTubeAudioFile();
                             audioFile.formatId = jaAdaptiveFormats[i].Value<int>("itag");
@@ -322,10 +336,10 @@ namespace YouTube_downloader
                                 audioFile.isCiphered = true;
                             }
                             else
+                            {
                                 audioFile.url = jaAdaptiveFormats[i].Value<string>("url");
-
+                            }
                             audioFiles.Add(audioFile);
-
                         }
                     }
                 }
@@ -335,14 +349,14 @@ namespace YouTube_downloader
                 {
                     for (int i = 0; i < jaFormats.Count; i++)
                     {
-                        YouTubeVideoFile videoFile = new YouTubeVideoFile();
+                        int width = jaFormats[i].Value<int>("width");
+                        int height = jaFormats[i].Value<int>("height");
+                        int frameRate = jaFormats[i].Value<int>("fps");
+                        YouTubeVideoFile videoFile = new YouTubeVideoFile(width, height, frameRate);
                         videoFile.formatId = jaFormats[i].Value<int>("itag");
                         videoFile.mimeType = jaFormats[i].Value<string>("mimeType");
                         videoFile.bitrate = jaFormats[i].Value<int>("bitrate");
-                        videoFile.width = jaFormats[i].Value<int>("width");
                         videoFile.averageBitrate = jaFormats[i].Value<int>("averageBitrate");
-                        videoFile.height = jaFormats[i].Value<int>("height");
-                        videoFile.fps = jaFormats[i].Value<int>("fps");
                         videoFile.audioQuality = jaFormats[i].Value<string>("audioQuality");
                         videoFile.quality = jaFormats[i].Value<string>("quality");
                         videoFile.approxDurationMs = int.Parse(jaFormats[i].Value<string>("approxDurationMs"));
@@ -374,8 +388,5 @@ namespace YouTube_downloader
                 }
             }
         }
-
     }
-
-   
 }

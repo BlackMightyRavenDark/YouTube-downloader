@@ -5,16 +5,17 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using static YouTube_downloader.Utils;
 using YouTube_downloader.Properties;
-using Newtonsoft.Json.Linq;
 
 namespace YouTube_downloader
 {
     public partial class FrameYouTubeVideo : UserControl
     {
         private SynchronizationContext synchronizationContext;
-        public YouTubeVideo VideoInfo { get; private set; }
+        private YouTubeVideo _youTubeVideo = null;
+        public YouTubeVideo VideoInfo { get { return _youTubeVideo; } set { SetVideoInfo(value); } }
         private bool favoriteVideo = false;
         private bool favoriteChannel = false;
         public string webPage = null;
@@ -57,7 +58,7 @@ namespace YouTube_downloader
 
         private int oldX;
         private bool canDrag = false;
-        private bool cancelRequired = false;
+        private bool downloadCancelRequired = false;
         private bool downloading = false;
         public const int EXTRA_WIDTH = 140;
 
@@ -91,18 +92,18 @@ namespace YouTube_downloader
             imgScrollbar.Invalidate();
         }
 
-        public void SetVideoInfo(ref YouTubeVideo aVideoInfo)
+        private void SetVideoInfo(YouTubeVideo videoInfo)
         {
-            VideoInfo = aVideoInfo;
-            lblVideoTitle.Text = aVideoInfo.title;
-            lblChannelTitle.Text = aVideoInfo.channelOwned.title;
-            lblDatePublished.Text = "Дата публикации: " + aVideoInfo.datePublished.ToString("yyyy.MM.dd");
-            if (aVideoInfo.imageStream != null)
+            _youTubeVideo = videoInfo;
+            lblVideoTitle.Text = videoInfo.title;
+            lblChannelTitle.Text = videoInfo.channelOwned.title;
+            lblDatePublished.Text = "Дата публикации: " + videoInfo.datePublished.ToString("yyyy.MM.dd");
+            if (videoInfo.imageStream != null)
             {
-                aVideoInfo.imageStream.Seek(0, SeekOrigin.Begin);
+                videoInfo.imageStream.Position = 0L;
                 try
                 {
-                    imagePreview.Image = Image.FromStream(aVideoInfo.imageStream);
+                    imagePreview.Image = Image.FromStream(videoInfo.imageStream);
                 }
                 catch
                 {
@@ -110,8 +111,8 @@ namespace YouTube_downloader
                 }
             }
             FavoriteItem favoriteItem = new FavoriteItem(
-                aVideoInfo.title, aVideoInfo.title, aVideoInfo.id, 
-                aVideoInfo.channelOwned.title, aVideoInfo.channelOwned.id, null);
+                videoInfo.title, videoInfo.title, videoInfo.id,
+                videoInfo.channelOwned.title, videoInfo.channelOwned.id, null);
             favoriteVideo = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 
             favoriteItem.DisplayName = VideoInfo.title;
@@ -179,7 +180,7 @@ namespace YouTube_downloader
         {
             if (downloading)
             {
-                cancelRequired = true;
+                downloadCancelRequired = true;
                 btnDownload.Enabled = false;
                 return;
             }
@@ -191,24 +192,23 @@ namespace YouTube_downloader
             {
                 progressBarDownload.Value = 0;
             }
-            ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats();
+            ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats(webPage);
             thr.ThreadCompleted += EventThreadGetFormatsTerminate;
             thr.Info += (s, info) =>
             {      
-                lblProgress.Text = string.Empty;
+                lblProgress.Text = null;
                 lblStatus.Text = info;
             };
 
             thr._videoId = VideoInfo.id;
             thr._ciphered = VideoInfo.ciphered;
-            thr.webPage = webPage;
             Thread thread = new Thread(thr.Run);
             thread.Start(synchronizationContext);
         }
 
         private void EventThreadGetFormatsTerminate(object sender)
         {
-            lblStatus.Text = string.Empty;
+            lblStatus.Text = null;
             audioFormats.Clear();
             videoFormats.Clear();
             menuDownloads.Items.Clear();
@@ -297,28 +297,21 @@ namespace YouTube_downloader
                         Stream memChunk = new MemoryStream();
                         d.Url = mediaFile.dashManifestUrls[i];
                         errorCode = d.Download(memChunk);
-                        if (errorCode == 200)
+                        if (errorCode != 200)
                         {
-                            memChunk.Position = 0;
-                            bool appended = MultiThreadedDownloader.AppendStream(memChunk, fileStream);
-                            memChunk.Close();
                             memChunk.Dispose();
-                            if (!appended)
-                            {
-                                fileStream.Close();
-                                fileStream.Dispose();
-                                return MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS;
-                            }
-                            break;
+                            continue;
                         }
-                        else
+                        memChunk.Position = 0;
+                        bool appended = MultiThreadedDownloader.AppendStream(memChunk, fileStream);
+                        memChunk.Dispose();
+                        if (!appended)
                         {
-                            memChunk.Close();
-                            memChunk.Dispose();
+                            fileStream.Dispose();
+                            return MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS;
                         }
-                        errors++;
-                    } while (errorCode != 200 && errors < 10 && !cancelRequired);
-                    if (cancelRequired)
+                    } while (errorCode != 200 && errors++ < 9 && !downloadCancelRequired);
+                    if (downloadCancelRequired)
                     {
                         errorCode = FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER;
                     }
@@ -328,7 +321,6 @@ namespace YouTube_downloader
                     }
                     dashReporter.Report(i);
                 }
-                fileStream.Close();
                 fileStream.Dispose();
                 if (errorCode == 200)
                 {
@@ -433,7 +425,7 @@ namespace YouTube_downloader
                     };
                     downloader.CancelTest += (object s, ref bool cancel) =>
                     {
-                        cancel = cancelRequired;
+                        cancel = downloadCancelRequired;
                     };
                     downloader.MergingStarted += (s, chunkCount) =>
                     {
@@ -526,7 +518,7 @@ namespace YouTube_downloader
                     };
                     downloader.CancelTest += (object s, ref bool cancel) =>
                     {
-                        cancel = cancelRequired;
+                        cancel = downloadCancelRequired;
                     };
                     downloader.MergingStarted += (s, chunkCount) =>
                     {
@@ -593,11 +585,11 @@ namespace YouTube_downloader
             }
 
             downloading = true;
-            cancelRequired = false;
+            downloadCancelRequired = false;
 
             progressBarDownload.Value = 0;
             lblStatus.Text = "Скачивание...";
-            lblProgress.Text = string.Empty;
+            lblProgress.Text = null;
 
             ToolStripMenuItem mi = sender as ToolStripMenuItem;
             string formattedFileName = FixFileName(FormatFileName(config.outputFileNameFormat, VideoInfo));
@@ -637,6 +629,7 @@ namespace YouTube_downloader
                 btnDownload.Text = "Отмена";
                 btnDownload.Enabled = true;
 
+                //TODO: Refactor this shit!
                 DownloadResult resVideo = await DownloadYouTubeMediaFile(mi.Tag as YouTubeVideoFile, formattedFileName);
                 if (resVideo.ErrorCode == 200)
                 {
@@ -1118,7 +1111,7 @@ namespace YouTube_downloader
 
         private void openChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.channelOwned.id));
+            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.channelOwned.id));
         }
 
         private void imagePreview_MouseDown(object sender, MouseEventArgs e)
@@ -1193,7 +1186,7 @@ namespace YouTube_downloader
 
         private void openVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenBrowser(YOUTUBE_VIDEO_URL_BASE + VideoInfo.id);
+            OpenUrlInBrowser(YOUTUBE_VIDEO_URL_BASE + VideoInfo.id);
         }
 
         private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)

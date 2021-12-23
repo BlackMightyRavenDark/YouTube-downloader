@@ -2,15 +2,15 @@
 
 namespace YouTube_downloader
 {
-    public class YouTubeMediaFile
+    public abstract class YouTubeMediaFile
     {
         public int formatId;
         public string mimeType;
         public string mimeExt;
         public string mimeCodecs;
         public int bitrate;
-        public string lastModified = string.Empty;
-        public long contentLength = 0;
+        public string lastModified;
+        public long contentLength = -1L;
         public string quality;
         public string qualityLabel;
         public string audioQuality;
@@ -22,7 +22,7 @@ namespace YouTube_downloader
         public string projectionType;
         public string url;
         public string cipherSignatureEncrypted;
-        public string cipherUrl = null;
+        public string cipherUrl;
 
         public bool isContainer = false;
         public bool isDashManifest = false;
@@ -36,7 +36,5 @@ namespace YouTube_downloader
         {
             return null;
         }
-
     }
-
 }
