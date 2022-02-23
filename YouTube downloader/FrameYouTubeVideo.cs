@@ -128,7 +128,7 @@ namespace YouTube_downloader
                 FavoriteItem favoriteItem = new FavoriteItem(
                     VideoInfo.title, VideoInfo.title, VideoInfo.id,
                     VideoInfo.channelOwned.title, VideoInfo.channelOwned.id, favoritesRootNode);
-                favoriteItem.DataType = DATATYPE.DT_VIDEO;
+                favoriteItem.ItemType = FavoriteItemType.Video;
                 if (FindInFavorites(favoriteItem, favoritesRootNode) == null)
                 {
                     favoritesRootNode.Children.Add(favoriteItem);
@@ -158,7 +158,7 @@ namespace YouTube_downloader
                     FavoriteItem favoriteItem = new FavoriteItem(
                         VideoInfo.channelOwned.title, VideoInfo.channelOwned.title, VideoInfo.channelOwned.id, 
                         null, null, favoritesRootNode);
-                    favoriteItem.DataType = DATATYPE.DT_CHANNEL;
+                    favoriteItem.ItemType = FavoriteItemType.Channel;
                     favoritesRootNode.Children.Add(favoriteItem);
                     treeFavorites.RefreshObject(favoriteItem.Parent);
                 }
@@ -265,7 +265,7 @@ namespace YouTube_downloader
             lblProgress.Text = $"0 / {mediaFile.dashManifestUrls.Count} (0.00%), {mediaFile.GetShortInfo()}";
 
             string fnDash = MultiThreadedDownloader.GetNumberedFileName(
-                (config.mergeToContainer ? config.tempPath : config.downloadingPath) +
+                (config.MergeToContainer ? config.TempDirPath : config.DownloadingDirPath) +
                 $"{formattedFileName}_{mediaFile.formatId}.{mediaFile.fileExtension}");
             string fnDashFinal = fnDash;
             string fnDashTmp = fnDash + ".tmp";
@@ -351,19 +351,19 @@ namespace YouTube_downloader
                     #region Расшифровка Cipher
                     if (videoTrack.isCiphered)
                     {
-                        if (string.IsNullOrEmpty(config.cipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.cipherDecryptionAlgo))
+                        if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
                         {
                             return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null);
                         }
 
-                        string cipherDecrypted = DecryptCipherSignature(videoTrack.cipherSignatureEncrypted, config.cipherDecryptionAlgo);
+                        string cipherDecrypted = DecryptCipherSignature(videoTrack.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
 
                         if (string.IsNullOrEmpty(cipherDecrypted))
                         {
                             return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                         }
 
-                        videoTrack.url = videoTrack.cipherUrl + "&sig=" + cipherDecrypted;
+                        videoTrack.url = $"{videoTrack.cipherUrl}&sig={cipherDecrypted}";
 
                         if (MultiThreadedDownloader.GetUrlContentLength(videoTrack.url, out _) != 200)
                         {
@@ -374,7 +374,7 @@ namespace YouTube_downloader
                         {
                             //расшифровка аудио
                             string audioCipherDecrypted = DecryptCipherSignature(
-                                audioFormats[0].cipherSignatureEncrypted, config.cipherDecryptionAlgo);
+                                audioFormats[0].cipherSignatureEncrypted, config.CipherDecryptionAlgo);
                             audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
                             if (MultiThreadedDownloader.GetUrlContentLength(audioFormats[0].url, out _) != 200)
                             {
@@ -384,23 +384,25 @@ namespace YouTube_downloader
                     }
                     #endregion
                     MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                    downloader.ThreadCount = config.threadsVideo;
+                    downloader.ThreadCount = config.ThreadCountVideo;
                     downloader.Url = videoTrack.url;
-                    downloader.TempDirectory = config.tempPath;
-                    downloader.MergingDirectory = config.chunksMergingPath;
+                    downloader.TempDirectory = config.TempDirPath;
+                    downloader.MergingDirectory = config.ChunksMergingDirPath;
                     downloader.KeepDownloadedFileInMergingDirectory = true;
 
                     string fnVideo;
                     if (videoTrack.isContainer)
                     {
                         fnVideo = MultiThreadedDownloader.GetNumberedFileName(
-                            $"{config.downloadingPath}{formattedFileName}.{videoTrack.mimeExt}");
+                            $"{config.DownloadingDirPath}{formattedFileName}.{videoTrack.mimeExt}");
                     }
                     else
                     {
-                        bool ffmpegExists = !string.IsNullOrEmpty(config.ffmpegExe) && !string.IsNullOrWhiteSpace(config.ffmpegExe) && File.Exists(config.ffmpegExe);
+                        bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) && 
+                            !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && 
+                            File.Exists(config.FfmpegExeFilePath);
                         fnVideo = MultiThreadedDownloader.GetNumberedFileName(
-                            (ffmpegExists ? config.tempPath : config.downloadingPath) +
+                            (ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
                             $"{formattedFileName}_{videoTrack.formatId}.{videoTrack.fileExtension}");
                     }
                     downloader.OutputFileName = fnVideo;
@@ -464,12 +466,12 @@ namespace YouTube_downloader
                         if (MultiThreadedDownloader.GetUrlContentLength(audioTrack.url, out _) != 200)
                         {
 
-                            if (string.IsNullOrEmpty(config.cipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.cipherDecryptionAlgo))
+                            if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
                             {
                                 return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null);
                             }
 
-                            string cipherDecrypted = DecryptCipherSignature(audioTrack.cipherSignatureEncrypted, config.cipherDecryptionAlgo);
+                            string cipherDecrypted = DecryptCipherSignature(audioTrack.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
 
                             if (string.IsNullOrEmpty(cipherDecrypted))
                             {
@@ -487,15 +489,16 @@ namespace YouTube_downloader
                     #endregion
                     
                     MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                    downloader.ThreadCount = config.threadsAudio;
+                    downloader.ThreadCount = config.ThreadCountAudio;
                     downloader.Url = audioTrack.url;
-                    downloader.TempDirectory = config.tempPath;
-                    downloader.MergingDirectory = config.chunksMergingPath;
+                    downloader.TempDirectory = config.TempDirPath;
+                    downloader.MergingDirectory = config.ChunksMergingDirPath;
                     downloader.KeepDownloadedFileInMergingDirectory = true;
 
-                    bool ffmpegExists = !string.IsNullOrEmpty(config.ffmpegExe) && !string.IsNullOrWhiteSpace(config.ffmpegExe) && File.Exists(config.ffmpegExe);
+                    bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) && 
+                        !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && File.Exists(config.FfmpegExeFilePath);
                     string fnAudio = MultiThreadedDownloader.GetNumberedFileName(
-                        (config.mergeToContainer && !audioOnly && ffmpegExists ? config.tempPath : config.downloadingPath) +
+                        (config.MergeToContainer && !audioOnly && ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
                          $"{formattedFileName}_{audioTrack.formatId}.{audioTrack.fileExtension}");
                     downloader.OutputFileName = fnAudio;
                     downloader.DownloadStarted += (s, size) =>
@@ -546,37 +549,37 @@ namespace YouTube_downloader
         {
             btnDownload.Enabled = false;
 
-            if (string.IsNullOrEmpty(config.downloadingPath) || string.IsNullOrWhiteSpace(config.downloadingPath))
+            if (string.IsNullOrEmpty(config.DownloadingDirPath) || string.IsNullOrWhiteSpace(config.DownloadingDirPath))
             {
                 MessageBox.Show("Не указана папка для скачивания!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnDownload.Enabled = true;
                 return;
             }
-            if (!Directory.Exists(config.downloadingPath))
+            if (!Directory.Exists(config.DownloadingDirPath))
             {
                 MessageBox.Show("Папка для скачивания не найдена!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnDownload.Enabled = true;
                 return;
             }
-            if (string.IsNullOrEmpty(config.tempPath) || string.IsNullOrWhiteSpace(config.tempPath))
+            if (string.IsNullOrEmpty(config.TempDirPath) || string.IsNullOrWhiteSpace(config.TempDirPath))
             {
                 MessageBox.Show("Не указана папка для временных файлов!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnDownload.Enabled = true;
                 return;
             }
-            if (!Directory.Exists(config.tempPath))
+            if (!Directory.Exists(config.TempDirPath))
             {
                 MessageBox.Show("Папка для временных файлов не найдена!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnDownload.Enabled = true;
                 return;
             }
-            if (!string.IsNullOrEmpty(config.chunksMergingPath) &&
-                !string.IsNullOrWhiteSpace(config.chunksMergingPath) &&
-                !Directory.Exists(config.chunksMergingPath))
+            if (!string.IsNullOrEmpty(config.ChunksMergingDirPath) &&
+                !string.IsNullOrWhiteSpace(config.ChunksMergingDirPath) &&
+                !Directory.Exists(config.ChunksMergingDirPath))
             {
                 MessageBox.Show("Папка для объединения чанков не найдена!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -592,15 +595,17 @@ namespace YouTube_downloader
             lblProgress.Text = null;
 
             ToolStripMenuItem mi = sender as ToolStripMenuItem;
-            string formattedFileName = FixFileName(FormatFileName(config.outputFileNameFormat, VideoInfo));
+            string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
             if (mi.Tag is YouTubeVideoFile)
             {
                 YouTubeVideoFile videoFile = mi.Tag as YouTubeVideoFile;
-                bool ffmpegExists = !string.IsNullOrEmpty(config.ffmpegExe) && !string.IsNullOrWhiteSpace(config.ffmpegExe) && File.Exists(config.ffmpegExe);
+                bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) && 
+                    !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && 
+                    File.Exists(config.FfmpegExeFilePath);
                 if (videoFile.isHlsManifest)
                 {
-                    lblStatus.Text = string.Empty;
-                    string fn = MultiThreadedDownloader.GetNumberedFileName(config.downloadingPath + formattedFileName + ".ts");
+                    lblStatus.Text = null;
+                    string fn = MultiThreadedDownloader.GetNumberedFileName($"{config.DownloadingDirPath}{formattedFileName}.ts");
                     GrabHls(videoFile.url, fn);
 
                     downloading = false;
@@ -609,7 +614,7 @@ namespace YouTube_downloader
                 }
 
                 bool stop = false;
-                if (config.mergeToContainer && !ffmpegExists)
+                if (config.MergeToContainer && !ffmpegExists)
                 {
                     string msg = "Формат данного видео является адаптивным. " +
                         "Это значит, что дорожки видео и аудио хранятся по отдельности. " +
@@ -645,7 +650,7 @@ namespace YouTube_downloader
                         Application.DoEvents();
                         if (resAudio.ErrorCode == 200)
                         {
-                            if (config.mergeToContainer)
+                            if (config.MergeToContainer)
                             {
                                 if (ffmpegExists)
                                 {
@@ -653,8 +658,8 @@ namespace YouTube_downloader
                                     string ext = (videoFile.fileExtension == "m4v" &&
                                         audioFormats[0].fileExtension == "m4a") ? "mp4" : "mkv";
                                     await MergeYouTubeMediaTracks(resVideo.FileName, resAudio.FileName,
-                                        MultiThreadedDownloader.GetNumberedFileName($"{config.downloadingPath}{formattedFileName}.{ext}"));
-                                    if (config.deleteSourceFiles)
+                                        MultiThreadedDownloader.GetNumberedFileName($"{config.DownloadingDirPath}{formattedFileName}.{ext}"));
+                                    if (config.DeleteSourceFiles)
                                     {
                                         if (File.Exists(resVideo.FileName))
                                         {
@@ -669,9 +674,9 @@ namespace YouTube_downloader
                             }
 
                             //сохранение картинки
-                            if (config.saveImagePreview && VideoInfo.imageStream != null)
+                            if (config.SaveImagePreview && VideoInfo.imageStream != null)
                             {
-                                string fn = config.downloadingPath + formattedFileName +
+                                string fn = config.DownloadingDirPath + formattedFileName +
                                     (imagePreview.Image != null ? 
                                     $"_image_{imagePreview.Image.Width}x{imagePreview.Image.Height}.jpg" : "_image.bin");
                                 VideoInfo.imageStream.SaveToFile(fn);
@@ -742,13 +747,13 @@ namespace YouTube_downloader
                     }
                     else
                     {
-                        lblStatus.Text = string.Empty;
-                        lblProgress.Text = string.Empty;
+                        lblStatus.Text = null;
+                        lblProgress.Text = null;
 
                         //сохранение картинки
-                        if (config.saveImagePreview && VideoInfo.imageStream != null)
+                        if (config.SaveImagePreview && VideoInfo.imageStream != null)
                         {
-                            string fn = config.downloadingPath + formattedFileName +
+                            string fn = config.DownloadingDirPath + formattedFileName +
                                 (imagePreview.Image != null ?
                                 $"_image_{imagePreview.Image.Width}x{imagePreview.Image.Height}.jpg" : "_image.bin");
                             VideoInfo.imageStream.SaveToFile(fn);
@@ -1203,8 +1208,8 @@ namespace YouTube_downloader
                 sfd.Filter = "jpg|*.jpg";
                 sfd.DefaultExt = ".jpg";
                 sfd.AddExtension = true;
-                sfd.InitialDirectory = string.IsNullOrEmpty(config.downloadingPath) ? config.selfPath : config.downloadingPath;
-                string fn = FixFileName(FormatFileName(config.outputFileNameFormat, VideoInfo)) +
+                sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
+                string fn = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo)) +
                     $"_image_{imagePreview.Image.Width}x{imagePreview.Image.Height}";
                 sfd.FileName = fn;
                 if (sfd.ShowDialog() == DialogResult.OK)

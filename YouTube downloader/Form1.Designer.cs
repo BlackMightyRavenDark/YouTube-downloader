@@ -36,7 +36,7 @@ namespace YouTube_downloader
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPageFilesAndFolders = new System.Windows.Forms.TabPage();
             this.btnQ = new System.Windows.Forms.Button();
-            this.editMergingPath = new System.Windows.Forms.TextBox();
+            this.editMergingDirPath = new System.Windows.Forms.TextBox();
             this.btnSelectMergingPath = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -48,10 +48,10 @@ namespace YouTube_downloader
             this.label7 = new System.Windows.Forms.Label();
             this.btnBrowseDowloadingPath = new System.Windows.Forms.Button();
             this.btnSelectBrowser = new System.Windows.Forms.Button();
-            this.editDownloadingPath = new System.Windows.Forms.TextBox();
+            this.editDownloadingDirPath = new System.Windows.Forms.TextBox();
             this.editBrowser = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.editTempPath = new System.Windows.Forms.TextBox();
+            this.editTempDirPath = new System.Windows.Forms.TextBox();
             this.btnBrowseTempPath = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -191,7 +191,7 @@ namespace YouTube_downloader
             // 
             this.tabPageFilesAndFolders.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.tabPageFilesAndFolders.Controls.Add(this.btnQ);
-            this.tabPageFilesAndFolders.Controls.Add(this.editMergingPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.editMergingDirPath);
             this.tabPageFilesAndFolders.Controls.Add(this.btnSelectMergingPath);
             this.tabPageFilesAndFolders.Controls.Add(this.label14);
             this.tabPageFilesAndFolders.Controls.Add(this.label11);
@@ -203,10 +203,10 @@ namespace YouTube_downloader
             this.tabPageFilesAndFolders.Controls.Add(this.label7);
             this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseDowloadingPath);
             this.tabPageFilesAndFolders.Controls.Add(this.btnSelectBrowser);
-            this.tabPageFilesAndFolders.Controls.Add(this.editDownloadingPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.editDownloadingDirPath);
             this.tabPageFilesAndFolders.Controls.Add(this.editBrowser);
             this.tabPageFilesAndFolders.Controls.Add(this.label3);
-            this.tabPageFilesAndFolders.Controls.Add(this.editTempPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.editTempDirPath);
             this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseTempPath);
             this.tabPageFilesAndFolders.Controls.Add(this.label4);
             this.tabPageFilesAndFolders.Location = new System.Drawing.Point(4, 22);
@@ -226,15 +226,15 @@ namespace YouTube_downloader
             this.btnQ.UseVisualStyleBackColor = true;
             this.btnQ.Click += new System.EventHandler(this.btnQ_Click);
             // 
-            // editMergingPath
+            // editMergingDirPath
             // 
-            this.editMergingPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.editMergingDirPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editMergingPath.Location = new System.Drawing.Point(13, 103);
-            this.editMergingPath.Name = "editMergingPath";
-            this.editMergingPath.Size = new System.Drawing.Size(470, 20);
-            this.editMergingPath.TabIndex = 21;
-            this.editMergingPath.Leave += new System.EventHandler(this.editMergingPath_Leave);
+            this.editMergingDirPath.Location = new System.Drawing.Point(13, 103);
+            this.editMergingDirPath.Name = "editMergingDirPath";
+            this.editMergingDirPath.Size = new System.Drawing.Size(470, 20);
+            this.editMergingDirPath.TabIndex = 21;
+            this.editMergingDirPath.Leave += new System.EventHandler(this.editMergingDirPath_Leave);
             // 
             // btnSelectMergingPath
             // 
@@ -245,7 +245,7 @@ namespace YouTube_downloader
             this.btnSelectMergingPath.TabIndex = 20;
             this.btnSelectMergingPath.Text = "...";
             this.btnSelectMergingPath.UseVisualStyleBackColor = true;
-            this.btnSelectMergingPath.Click += new System.EventHandler(this.btnSelectMergingPath_Click);
+            this.btnSelectMergingPath.Click += new System.EventHandler(this.btnSelectMergingDirPath_Click);
             // 
             // label14
             // 
@@ -334,7 +334,7 @@ namespace YouTube_downloader
             this.btnBrowseDowloadingPath.TabIndex = 2;
             this.btnBrowseDowloadingPath.Text = "...";
             this.btnBrowseDowloadingPath.UseVisualStyleBackColor = true;
-            this.btnBrowseDowloadingPath.Click += new System.EventHandler(this.btnBrowseDowloadingPath_Click);
+            this.btnBrowseDowloadingPath.Click += new System.EventHandler(this.btnBrowseDowloadingDirPath_Click);
             // 
             // btnSelectBrowser
             // 
@@ -347,15 +347,15 @@ namespace YouTube_downloader
             this.btnSelectBrowser.UseVisualStyleBackColor = true;
             this.btnSelectBrowser.Click += new System.EventHandler(this.btnSelectBrowser_Click);
             // 
-            // editDownloadingPath
+            // editDownloadingDirPath
             // 
-            this.editDownloadingPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.editDownloadingDirPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editDownloadingPath.Location = new System.Drawing.Point(13, 23);
-            this.editDownloadingPath.Name = "editDownloadingPath";
-            this.editDownloadingPath.Size = new System.Drawing.Size(470, 20);
-            this.editDownloadingPath.TabIndex = 0;
-            this.editDownloadingPath.Leave += new System.EventHandler(this.editDownloadingPath_Leave);
+            this.editDownloadingDirPath.Location = new System.Drawing.Point(13, 23);
+            this.editDownloadingDirPath.Name = "editDownloadingDirPath";
+            this.editDownloadingDirPath.Size = new System.Drawing.Size(470, 20);
+            this.editDownloadingDirPath.TabIndex = 0;
+            this.editDownloadingDirPath.Leave += new System.EventHandler(this.editDownloadingPath_Leave);
             // 
             // editBrowser
             // 
@@ -375,15 +375,15 @@ namespace YouTube_downloader
             this.label3.TabIndex = 5;
             this.label3.Text = "Папка для скачивания:";
             // 
-            // editTempPath
+            // editTempDirPath
             // 
-            this.editTempPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.editTempDirPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editTempPath.Location = new System.Drawing.Point(13, 64);
-            this.editTempPath.Name = "editTempPath";
-            this.editTempPath.Size = new System.Drawing.Size(470, 20);
-            this.editTempPath.TabIndex = 1;
-            this.editTempPath.Leave += new System.EventHandler(this.editTempPath_Leave);
+            this.editTempDirPath.Location = new System.Drawing.Point(13, 64);
+            this.editTempDirPath.Name = "editTempDirPath";
+            this.editTempDirPath.Size = new System.Drawing.Size(470, 20);
+            this.editTempDirPath.TabIndex = 1;
+            this.editTempDirPath.Leave += new System.EventHandler(this.editTempPath_Leave);
             // 
             // btnBrowseTempPath
             // 
@@ -394,7 +394,7 @@ namespace YouTube_downloader
             this.btnBrowseTempPath.TabIndex = 3;
             this.btnBrowseTempPath.Text = "...";
             this.btnBrowseTempPath.UseVisualStyleBackColor = true;
-            this.btnBrowseTempPath.Click += new System.EventHandler(this.btnBrowseTempPath_Click);
+            this.btnBrowseTempPath.Click += new System.EventHandler(this.btnBrowseTempDirPath_Click);
             // 
             // label4
             // 
@@ -1212,8 +1212,8 @@ namespace YouTube_downloader
         private BrightIdeasSoftware.OLVColumn olvColumn1;
         private System.Windows.Forms.Button btnBrowseTempPath;
         private System.Windows.Forms.Button btnBrowseDowloadingPath;
-        private System.Windows.Forms.TextBox editTempPath;
-        private System.Windows.Forms.TextBox editDownloadingPath;
+        private System.Windows.Forms.TextBox editTempDirPath;
+        private System.Windows.Forms.TextBox editDownloadingDirPath;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox editSearchUrl;
         private System.Windows.Forms.Button btnSearchByUrl;
@@ -1285,7 +1285,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.ToolStripMenuItem copyDisplayNameWithIdToolStripMenuItem;
         private System.Windows.Forms.VScrollBar scrollBarSearchResults;
         private System.Windows.Forms.Button btnWhy;
-        private System.Windows.Forms.TextBox editMergingPath;
+        private System.Windows.Forms.TextBox editMergingDirPath;
         private System.Windows.Forms.Button btnSelectMergingPath;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button btnQ;

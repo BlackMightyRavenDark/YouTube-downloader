@@ -31,31 +31,31 @@ namespace YouTube_downloader
             favoritesRootNode = tvFavorites.Roots.Cast<FavoriteItem>().ToArray()[0];
             treeFavorites = tvFavorites;
 
-            if (File.Exists(config.favoritesFileName))
+            if (File.Exists(config.FavoritesFilePath))
             {
-                LoadFavorites(config.favoritesFileName);
+                LoadFavorites(config.FavoritesFilePath);
                 tvFavorites.Expand(favoritesRootNode);
             }
 
             config.Load();
-            editDownloadingPath.Text = config.downloadingPath;
-            editTempPath.Text = config.tempPath;
-            editMergingPath.Text = config.chunksMergingPath;
-            editCipherDecryptionAlgo.Text = config.cipherDecryptionAlgo;
-            editYouTubeApiKey.Text = config.youTubeApiKey;
-            editBrowser.Text = config.browserExe;
-            editOutputFileNameFormat.Text = config.outputFileNameFormat;
-            numericUpDownSearchResult.Value = config.maxSearch;
-            editFfmpeg.Text = config.ffmpegExe;
-            chkMergeAdaptive.Checked = config.mergeToContainer;
-            chkDeleteSourceFiles.Checked = config.deleteSourceFiles;
-            chkSaveImage.Checked = config.saveImagePreview;
-            chkUseApiForGettingInfo.Checked = config.useApiForGettingInfo;
-            numericUpDownThreadsVideo.Value = config.threadsVideo;
-            numericUpDownThreadsAudio.Value = config.threadsAudio;
-            numericUpDownGlobalThreadsMaximum.Value = config.globalThreadsMaximum;
+            editDownloadingDirPath.Text = config.DownloadingDirPath;
+            editTempDirPath.Text = config.TempDirPath;
+            editMergingDirPath.Text = config.ChunksMergingDirPath;
+            editCipherDecryptionAlgo.Text = config.CipherDecryptionAlgo;
+            editYouTubeApiKey.Text = config.YouTubeApiKey;
+            editBrowser.Text = config.BrowserExeFilePath;
+            editOutputFileNameFormat.Text = config.OutputFileNameFormat;
+            numericUpDownSearchResult.Value = config.MaxSearch;
+            editFfmpeg.Text = config.FfmpegExeFilePath;
+            chkMergeAdaptive.Checked = config.MergeToContainer;
+            chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
+            chkSaveImage.Checked = config.SaveImagePreview;
+            chkUseApiForGettingInfo.Checked = config.UseApiForGettingInfo;
+            numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
+            numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
+            numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
 
-            ServicePointManager.DefaultConnectionLimit = config.globalThreadsMaximum;
+            ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
 
             dateTimePickerAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
         }
@@ -92,9 +92,9 @@ namespace YouTube_downloader
             else
             {
                 json["title"] = root.Title;
-                json["type"] = root.DataType == DATATYPE.DT_VIDEO ? "video" : "channel";
+                json["type"] = root.ItemType == FavoriteItemType.Video ? "video" : "channel";
                 json["id"] = root.ID;
-                if (root.DataType == DATATYPE.DT_VIDEO)
+                if (root.ItemType == FavoriteItemType.Video)
                 {
                     if (!string.IsNullOrEmpty(root.ChannelTitle))
                     {
@@ -130,7 +130,7 @@ namespace YouTube_downloader
             JArray ja = item.Value<JArray>("subItems");
             if (ja != null)
             {
-                favoriteItem.DataType = DATATYPE.DT_DIRECTORY;
+                favoriteItem.ItemType = FavoriteItemType.Directory;
                 for (int i = 0; i < ja.Count; i++)
                 {
                     JObject j = JObject.Parse(ja[i].Value<JObject>().ToString());
@@ -147,18 +147,18 @@ namespace YouTube_downloader
                 string t = jt.Value<string>().ToLower();
                 if (t.Equals("video"))
                 {
-                    favoriteItem.DataType = DATATYPE.DT_VIDEO;
+                    favoriteItem.ItemType = FavoriteItemType.Video;
                 }
                 else if (t.Equals("channel"))
                 {
-                    favoriteItem.DataType = DATATYPE.DT_CHANNEL;
+                    favoriteItem.ItemType = FavoriteItemType.Channel;
                 }
                 else
                 {
                     throw new ArgumentException("Недопустимое значение DataType: " + t);
                 }
                 favoriteItem.ID = item.Value<string>("id");
-                if (favoriteItem.DataType == DATATYPE.DT_VIDEO)
+                if (favoriteItem.ItemType == FavoriteItemType.Video)
                 {
                     jt = item.Value<JToken>("channelTitle");
                     if (jt != null)
@@ -203,26 +203,26 @@ namespace YouTube_downloader
             int errorCode;
             do
             {
-                string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.youTubeApiKey}" +
+                string url = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiKey}" +
                     $"&channelId={channelId}&maxResults=50&type=video&order=date";
                 if (chkPublishedAfter.Checked)
                 {
                     string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                    req += $"&publishedAfter={dateAfter}";
+                    url += $"&publishedAfter={dateAfter}";
                 }
 
                 if (chkPublishedBefore.Checked)
                 {
                     string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                    req += $"&publishedBefore={dateBefore}";
+                    url += $"&publishedBefore={dateBefore}";
                 }
 
                 if (!string.IsNullOrEmpty(pageToken))
                 {
-                    req += $"&pageToken={pageToken}";
+                    url += $"&pageToken={pageToken}";
                 }
 
-                errorCode = DownloadString(req, out string buf);
+                errorCode = DownloadString(url, out string buf);
                 if (errorCode == 200)
                 {
                     JObject json = JObject.Parse(buf);
@@ -287,7 +287,7 @@ namespace YouTube_downloader
                 resultType = resultType.Replace("video,", string.Empty);
             }
 
-            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.youTubeApiKey}" +
+            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiKey}" +
                 $"&q={searchString}&maxResults={maxResults}&{resultType}&order=date";
 
             if (chkPublishedAfter.Checked)
@@ -542,7 +542,7 @@ namespace YouTube_downloader
                 editQuery.Focus();
                 return;
             }
-            if (string.IsNullOrEmpty(config.youTubeApiKey))
+            if (string.IsNullOrEmpty(config.YouTubeApiKey))
             {
                 MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                     "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -743,11 +743,11 @@ namespace YouTube_downloader
             if (e.Button == MouseButtons.Left && tvFavorites.SelectedObject != null)
             {
                 FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
-                if (item.DataType != DATATYPE.DT_DIRECTORY)
+                if (item.ItemType != FavoriteItemType.Directory)
                 {
                     DisableControls();
 
-                    if (item.DataType == DATATYPE.DT_VIDEO)
+                    if (item.ItemType == FavoriteItemType.Video)
                     {
                         if (MessageBox.Show($"Перейти к видео {item.DisplayName}?", "Переход к видео",
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -783,12 +783,12 @@ namespace YouTube_downloader
                             }
                         }
                     }
-                    else if (item.DataType == DATATYPE.DT_CHANNEL)
+                    else if (item.ItemType == FavoriteItemType.Channel)
                     {
                         if (MessageBox.Show($"Перейти на канал {item.DisplayName}?", "Переход на канал",
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
-                            if (string.IsNullOrEmpty(config.youTubeApiKey) || string.IsNullOrWhiteSpace(config.youTubeApiKey))
+                            if (string.IsNullOrEmpty(config.YouTubeApiKey) || string.IsNullOrWhiteSpace(config.YouTubeApiKey))
                             {
                                 MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                                     "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -843,53 +843,53 @@ namespace YouTube_downloader
             }
         }
 
-        private void btnBrowseDowloadingPath_Click(object sender, EventArgs e)
+        private void btnBrowseDowloadingDirPath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             folderBrowserDialog.Description = "Выберите папку для скачивания";
             folderBrowserDialog.SelectedPath =
-                (!string.IsNullOrEmpty(config.downloadingPath) && Directory.Exists(config.downloadingPath)) ?
-                config.downloadingPath : config.selfPath;
+                (!string.IsNullOrEmpty(config.DownloadingDirPath) && Directory.Exists(config.DownloadingDirPath)) ?
+                config.DownloadingDirPath : config.SelfDirPath;
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
-                config.downloadingPath =
+                config.DownloadingDirPath =
                     folderBrowserDialog.SelectedPath.EndsWith("\\")
                     ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-                editDownloadingPath.Text = config.downloadingPath;
+                editDownloadingDirPath.Text = config.DownloadingDirPath;
             }
             folderBrowserDialog.Dispose();
         }
 
-        private void btnBrowseTempPath_Click(object sender, EventArgs e)
+        private void btnBrowseTempDirPath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             folderBrowserDialog.Description = "Выберите папку для временных файлов";
             folderBrowserDialog.SelectedPath =
-                (!string.IsNullOrEmpty(config.tempPath) && Directory.Exists(config.tempPath)) ?
-                config.tempPath : config.selfPath;
+                (!string.IsNullOrEmpty(config.TempDirPath) && Directory.Exists(config.TempDirPath)) ?
+                config.TempDirPath : config.SelfDirPath;
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
-                config.tempPath =
+                config.TempDirPath =
                     folderBrowserDialog.SelectedPath.EndsWith("\\")
                     ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-                editTempPath.Text = config.tempPath;
+                editTempDirPath.Text = config.TempDirPath;
             }
             folderBrowserDialog.Dispose();
         }
 
-        private void btnSelectMergingPath_Click(object sender, EventArgs e)
+        private void btnSelectMergingDirPath_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             folderBrowserDialog.Description = "Выберите папку для объединения чанков";
             folderBrowserDialog.SelectedPath =
-                (!string.IsNullOrEmpty(config.chunksMergingPath) && Directory.Exists(config.chunksMergingPath)) ?
-                config.chunksMergingPath : config.selfPath;
+                (!string.IsNullOrEmpty(config.ChunksMergingDirPath) && Directory.Exists(config.ChunksMergingDirPath)) ?
+                config.ChunksMergingDirPath : config.SelfDirPath;
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
-                config.chunksMergingPath =
+                config.ChunksMergingDirPath =
                     folderBrowserDialog.SelectedPath.EndsWith("\\")
                     ? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-                editMergingPath.Text = config.chunksMergingPath;
+                editMergingDirPath.Text = config.ChunksMergingDirPath;
             }
             folderBrowserDialog.Dispose();
         }
@@ -901,8 +901,8 @@ namespace YouTube_downloader
             ofd.Filter = "EXE-файлы|*.exe";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                config.browserExe = ofd.FileName;
-                editBrowser.Text = config.browserExe;
+                config.BrowserExeFilePath = ofd.FileName;
+                editBrowser.Text = config.BrowserExeFilePath;
             }
             ofd.Dispose();
         }
@@ -914,8 +914,8 @@ namespace YouTube_downloader
             ofd.Filter = "EXE-файлы|*.exe";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                config.ffmpegExe = ofd.FileName;
-                editFfmpeg.Text = config.ffmpegExe;
+                config.FfmpegExeFilePath = ofd.FileName;
+                editFfmpeg.Text = config.FfmpegExeFilePath;
             }
             ofd.Dispose();
         }
@@ -946,7 +946,7 @@ namespace YouTube_downloader
             if (MessageBox.Show($"Перейти на канал {channelName}?", "Переход на канал",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                if (string.IsNullOrEmpty(config.youTubeApiKey))
+                if (string.IsNullOrEmpty(config.YouTubeApiKey))
                 {
                     MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                         "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -965,28 +965,28 @@ namespace YouTube_downloader
 
         private void editCipherDecryptionAlgo_Leave(object sender, EventArgs e)
         {
-            config.cipherDecryptionAlgo = editCipherDecryptionAlgo.Text;
+            config.CipherDecryptionAlgo = editCipherDecryptionAlgo.Text;
         }
 
         private void chkMergeAdaptive_CheckedChanged(object sender, EventArgs e)
         {
-            config.mergeToContainer = chkMergeAdaptive.Checked;
-            chkDeleteSourceFiles.Enabled = config.mergeToContainer;
+            config.MergeToContainer = chkMergeAdaptive.Checked;
+            chkDeleteSourceFiles.Enabled = config.MergeToContainer;
         }
 
         private void editDownloadingPath_Leave(object sender, EventArgs e)
         {
-            config.downloadingPath = editDownloadingPath.Text;
+            config.DownloadingDirPath = editDownloadingDirPath.Text;
         }
 
         private void editTempPath_Leave(object sender, EventArgs e)
         {
-            config.tempPath = editTempPath.Text;
+            config.TempDirPath = editTempDirPath.Text;
         }
 
         private void editYouTubeApiKey_Leave(object sender, EventArgs e)
         {
-            config.youTubeApiKey = editYouTubeApiKey.Text;
+            config.YouTubeApiKey = editYouTubeApiKey.Text;
         }
 
         private void rbSearchRessultsMax_Click(object sender, EventArgs e)
@@ -1021,26 +1021,26 @@ namespace YouTube_downloader
 
         private void chkSaveImage_CheckedChanged(object sender, EventArgs e)
         {
-            config.saveImagePreview = chkSaveImage.Checked;
+            config.SaveImagePreview = chkSaveImage.Checked;
         }
 
         private void editOutputFileNameFormat_Leave(object sender, EventArgs e)
         {
-            config.outputFileNameFormat = editOutputFileNameFormat.Text;
+            config.OutputFileNameFormat = editOutputFileNameFormat.Text;
         }
 
         private void btnResetFileNameFormat_Click(object sender, EventArgs e)
         {
-            config.outputFileNameFormat = FILENAME_FORMAT_DEFAULT;
+            config.OutputFileNameFormat = FILENAME_FORMAT_DEFAULT;
             editOutputFileNameFormat.Text = FILENAME_FORMAT_DEFAULT;
         }
 
         private void numericUpDownThreadsAudio_ValueChanged(object sender, EventArgs e)
         {
-            config.threadsAudio = (int)numericUpDownThreadsAudio.Value;
-            if (config.threadsAudio > 20)
+            config.ThreadCountAudio = (int)numericUpDownThreadsAudio.Value;
+            if (config.ThreadCountAudio > 20)
             {
-                if (config.threadsAudio > 50)
+                if (config.ThreadCountAudio > 50)
                 {
                     toolTip1.SetToolTip(panelWarningAudioThreads, "Опасно! Перегрузка!");
                     panelWarningAudioThreads.BackgroundImage = Resources.fire;
@@ -1060,17 +1060,17 @@ namespace YouTube_downloader
 
         private void numericUpDownThreadsVideo_ValueChanged(object sender, EventArgs e)
         {
-            config.threadsVideo = (int)numericUpDownThreadsVideo.Value;
-            if (config.threadsVideo > 20)
+            config.ThreadCountVideo = (int)numericUpDownThreadsVideo.Value;
+            if (config.ThreadCountVideo > 20)
             {
-                if (config.threadsVideo > 50)
+                if (config.ThreadCountVideo > 50)
                 {
                     toolTip1.SetToolTip(panelWarningVideoThreads, "Опасно! Перегрузка!");
-                    if (config.threadsVideo <= 70)
+                    if (config.ThreadCountVideo <= 70)
                     {
                         panelWarningVideoThreads.BackgroundImage = Resources.fire;
                     }
-                    else if (config.threadsVideo <= 80)
+                    else if (config.ThreadCountVideo <= 80)
                     {
                         panelWarningVideoThreads.BackgroundImage = Resources.fear;
                     }
@@ -1094,28 +1094,28 @@ namespace YouTube_downloader
 
         private void numericUpDownGlobalThreadsMaximum_ValueChanged(object sender, EventArgs e)
         {
-            config.globalThreadsMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
-            ServicePointManager.DefaultConnectionLimit = config.globalThreadsMaximum;
+            config.GlobalThreadsMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
+            ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
         }
 
         private void chkUseApiForGettingInfo_Click(object sender, EventArgs e)
         {
-            config.useApiForGettingInfo = chkUseApiForGettingInfo.Checked;
+            config.UseApiForGettingInfo = chkUseApiForGettingInfo.Checked;
         }
 
         private void editFfmpeg_Leave(object sender, EventArgs e)
         {
-            config.ffmpegExe = editFfmpeg.Text;
+            config.FfmpegExeFilePath = editFfmpeg.Text;
         }
 
-        private void editMergingPath_Leave(object sender, EventArgs e)
+        private void editMergingDirPath_Leave(object sender, EventArgs e)
         {
-            config.chunksMergingPath = editMergingPath.Text;
+            config.ChunksMergingDirPath = editMergingDirPath.Text;
         }
 
         private void chkDeleteSourceFiles_CheckedChanged(object sender, EventArgs e)
         {
-            config.deleteSourceFiles = chkDeleteSourceFiles.Checked;
+            config.DeleteSourceFiles = chkDeleteSourceFiles.Checked;
         }
 
         private void chkSearchVideos_CheckedChanged(object sender, EventArgs e)
@@ -1136,7 +1136,7 @@ namespace YouTube_downloader
 
         private void numericUpDownSearchResult_ValueChanged(object sender, EventArgs e)
         {
-            config.maxSearch = (int)numericUpDownSearchResult.Value;
+            config.MaxSearch = (int)numericUpDownSearchResult.Value;
         }
 
         private void menuCopyPaste_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1187,21 +1187,21 @@ namespace YouTube_downloader
             FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
             if (item != null)
             {
-                switch (item.DataType)
+                switch (item.ItemType)
                 {
-                    case DATATYPE.DT_VIDEO:
+                    case FavoriteItemType.Video:
                         openVideoInBrowserToolStripMenuItem.Visible = true;
                         openChannelInBrowserToolStripMenuItem.Visible = false;
                         copyDisplayNameWithIdToolStripMenuItem.Visible = true;
                         break;
 
-                    case DATATYPE.DT_CHANNEL:
+                    case FavoriteItemType.Channel:
                         openVideoInBrowserToolStripMenuItem.Visible = false;
                         openChannelInBrowserToolStripMenuItem.Visible = true;
                         copyDisplayNameWithIdToolStripMenuItem.Visible = true;
                         break;
 
-                    case DATATYPE.DT_DIRECTORY:
+                    case FavoriteItemType.Directory:
                         openVideoInBrowserToolStripMenuItem.Visible = false;
                         openChannelInBrowserToolStripMenuItem.Visible = false;
                         copyDisplayNameWithIdToolStripMenuItem.Visible = false;
@@ -1224,7 +1224,7 @@ namespace YouTube_downloader
             FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
             if (item != null)
             {
-                if (item.DataType != DATATYPE.DT_DIRECTORY)
+                if (item.ItemType != FavoriteItemType.Directory)
                 {
                     SetClipboardText($"{item.DisplayName} [{item.ID}]");
                 }

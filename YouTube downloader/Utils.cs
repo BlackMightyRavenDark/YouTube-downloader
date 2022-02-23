@@ -15,217 +15,6 @@ namespace YouTube_downloader
 {
     public static class Utils
     {
-        public sealed class MyConfiguration
-        {
-            public string fileName;
-            public string selfPath;
-            public string downloadingPath;
-            public string tempPath;
-            public string chunksMergingPath;
-            public string favoritesFileName;
-            public string outputFileNameFormat;
-            public int maxSearch;
-            public bool mergeToContainer;
-            public bool deleteSourceFiles;
-            public string cipherDecryptionAlgo;
-            public string youTubeApiKey;
-            public string browserExe;
-            public string ffmpegExe;
-            public bool saveImagePreview;
-            public bool useApiForGettingInfo;
-            public int threadsVideo;
-            public int threadsAudio;
-            public int globalThreadsMaximum;
-
-            public MyConfiguration(string fileName)
-            {
-                this.fileName = fileName;
-                selfPath = Path.GetDirectoryName(Application.ExecutablePath);
-                LoadDefault();
-            }
-
-            public void Save()
-            {
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-                JObject json = new JObject();
-                json["downloadingPath"] = downloadingPath;
-                json["tempPath"] = tempPath;
-                json["chunksMergingPath"] = chunksMergingPath;
-                json["cipherDecryptionAlgo"] = cipherDecryptionAlgo;
-                json["youTubeApiKey"] = youTubeApiKey;
-                json["browserExe"] = browserExe;
-                json["ffmpegExe"] = ffmpegExe;
-                json["outputFileNameFormat"] = outputFileNameFormat;
-                json["maxSearch"] = maxSearch;
-                json["saveImagePreview"] = saveImagePreview;
-                json["useApiForGettingInfo"] = useApiForGettingInfo;
-                json["threadsVideo"] = threadsVideo;
-                json["threadsAudio"] = threadsAudio;
-                json["globalThreadsMaximum"] = globalThreadsMaximum;
-                File.WriteAllText(fileName, json.ToString());
-            }
-
-            public void LoadDefault()
-            {
-                downloadingPath = null;
-                tempPath = null;
-                chunksMergingPath = null;
-                favoritesFileName = "fav.json";
-                mergeToContainer = true;
-                deleteSourceFiles = true;
-                cipherDecryptionAlgo = null;
-                youTubeApiKey = null;
-                browserExe = null;
-                ffmpegExe = "FFMPEG.EXE";
-                outputFileNameFormat = FILENAME_FORMAT_DEFAULT;
-                maxSearch = 50;
-                saveImagePreview = true;
-                useApiForGettingInfo = true;
-                threadsVideo = 8;
-                threadsAudio = 4;
-                globalThreadsMaximum = 300;
-            }
-
-            public void Load()
-            {
-                if (File.Exists(fileName))
-                {
-                    JObject json = JObject.Parse(File.ReadAllText(fileName));
-                    if (json != null)
-                    {
-                        JToken jt = json.Value<JToken>("downloadingPath");
-                        if (jt != null)
-                            downloadingPath = jt.Value<string>();
-                        jt = json.Value<JToken>("tempPath");
-                        if (jt != null)
-                            tempPath = jt.Value<string>();
-                        jt = json.Value<JToken>("chunksMergingPath");
-                        if (jt != null)
-                            chunksMergingPath = jt.Value<string>();
-                        jt = json.Value<JToken>("cipherDecryptionAlgo");
-                        if (jt != null)
-                            cipherDecryptionAlgo = jt.Value<string>();
-                        jt = json.Value<JToken>("youTubeApiKey");
-                        if (jt != null)
-                            youTubeApiKey = jt.Value<string>();
-                        jt = json.Value<JToken>("browserExe");
-                        if (jt != null)
-                            browserExe = jt.Value<string>();
-                        jt = json.Value<JToken>("ffmpegExe");
-                        if (jt != null)
-                            ffmpegExe = jt.Value<string>();
-                        jt = json.Value<JToken>("outputFileNameFormat");
-                        if (jt != null)
-                            outputFileNameFormat = jt.Value<string>();
-                        jt = json.Value<JToken>("maxSearch");
-                        if (jt != null)
-                        {
-                            maxSearch = jt.Value<int>();
-                            if (maxSearch < 1)
-                            {
-                                maxSearch = 1;
-                            }
-                            else if (maxSearch > 500)
-                            {
-                                maxSearch = 500;
-                            }
-                        }
-                        jt = json.Value<JToken>("saveImagePreview");
-                        saveImagePreview = jt == null ? true : jt.Value<bool>();
-                        jt = json.Value<JToken>("useApiForGettingInfo");
-                        useApiForGettingInfo = jt == null ? true : jt.Value<bool>();
-                        jt = json.Value<JToken>("threadsVideo");
-                        if (jt != null)
-                        {
-                            threadsVideo = jt.Value<int>();
-                        }
-                        jt = json.Value<JToken>("threadsAudio");
-                        if (jt != null)
-                        {
-                            threadsAudio = jt.Value<int>();
-                        }
-                        jt = json.Value<JToken>("globalThreadsMaximum");
-                        if (jt != null)
-                        {
-                            globalThreadsMaximum = jt.Value<int>();
-                        }
-                    }
-                }
-            }
-        }
-
-        public enum DATATYPE { DT_VIDEO, DT_CHANNEL, DT_DIRECTORY };
-
-        public sealed class FavoriteItem
-        {
-            public List<FavoriteItem> Children { get; private set; } = new List<FavoriteItem>();
-            public FavoriteItem Parent { get; private set; } = null;
-            public string DisplayName { get; set; }
-            public string Title { get; set; }
-            public DATATYPE DataType { get; set; }
-            public string ID { get; set; } = null;
-            public string ChannelTitle { get; set; } = null;
-            public string ChannelId { get; set; } = null;
-
-            public FavoriteItem(string displayName)
-            {
-                DisplayName = displayName;
-                Title = displayName;
-            }
-
-            public FavoriteItem(string title, string displayName, string id,
-                string channelTitle, string channelId, FavoriteItem parent)
-            {
-                Title = title;
-                DisplayName = displayName;
-                ID = id;
-                ChannelTitle = channelTitle;
-                ChannelId = channelId;
-                Parent = parent;
-            }
-        }
-
-        public sealed class DownloadResult
-        {
-            public int ErrorCode { get; private set; }
-            public string FileName { get; private set; }
-
-            public DownloadResult(int errorCode, string fileName)
-            {
-                ErrorCode = errorCode;
-                FileName = fileName;
-            }
-        }
-
-        public sealed class YouTubeChannel
-        {
-            public string title;
-            public string id;
-            public string imageUrl;
-            public List<string> imageUrls = new List<string>();
-            public Stream imageStream = null;
-        }
-
-        public sealed class YouTubeVideo
-        {
-            public string title;
-            public string id;
-            public DateTime length;
-            public DateTime dateUploaded;
-            public DateTime datePublished;
-            public List<string> imageUrls = new List<string>();
-            public Stream imageStream = null;
-            public YouTubeChannel channelOwned = null;
-            public bool ciphered = false;
-            public bool dashed = false;
-            public bool hlsed = false;
-            public bool isFamilySafe = true;
-            public bool isUnlisted = false;
-        }
-
         public const string YOUTUBE_ACCEPT_STRING = "application/json";
         public const string YOUTUBE_VIDEOS_URL_BASE = "https://www.googleapis.com/youtube/v3/videos";
         public const string YOUTUBE_SEARCH_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
@@ -436,7 +225,7 @@ namespace YouTube_downloader
         {
             resInfo = "Client error";
             int res = 400;
-            if (!ciphered && config.useApiForGettingInfo)
+            if (!ciphered && config.UseApiForGettingInfo)
             {
                 res = GetYouTubeVideoInfoViaApi(videoId, out resInfo);
             }
@@ -689,10 +478,10 @@ namespace YouTube_downloader
                 Process process = new Process();
                 process.StartInfo.UseShellExecute = true;
                 process.StartInfo.FileName = "cmd.exe";
-                string t = Path.GetFileName(config.ffmpegExe);
+                string t = Path.GetFileName(config.FfmpegExeFilePath);
                 string ffmpegName = t.Contains(" ") ? $"\"{t}\"" : t;
-                string ffmpegPath = Path.GetDirectoryName(config.ffmpegExe);
-                if (!string.IsNullOrEmpty(config.ffmpegExe))
+                string ffmpegPath = Path.GetDirectoryName(config.FfmpegExeFilePath);
+                if (!string.IsNullOrEmpty(config.FfmpegExeFilePath))
                 {
                     process.StartInfo.WorkingDirectory = ffmpegPath;
                 }
@@ -714,14 +503,14 @@ namespace YouTube_downloader
             Process process = new Process();
             process.StartInfo.UseShellExecute = true;
             process.StartInfo.FileName = "cmd.exe";
-            string t = Path.GetFileName(config.ffmpegExe);
+            string t = Path.GetFileName(config.FfmpegExeFilePath);
             string ffmpegName = t;
-            string ffmpegPath = Path.GetDirectoryName(config.ffmpegExe);
-            if (!string.IsNullOrEmpty(config.ffmpegExe))
+            string ffmpegPath = Path.GetDirectoryName(config.FfmpegExeFilePath);
+            if (!string.IsNullOrEmpty(config.FfmpegExeFilePath))
             {
                 process.StartInfo.WorkingDirectory = ffmpegPath;
             }
-            string cmdArgs = $"/k " + ffmpegName + " -i \"" + hlsUrl + "\" -c copy \"" + destinationFileName + "\"";
+            string cmdArgs = $"/k {ffmpegName} -i \"{hlsUrl}\" -c copy \"{destinationFileName}\"";
 
             process.StartInfo.Arguments = cmdArgs;
             return process.Start();
@@ -729,11 +518,12 @@ namespace YouTube_downloader
 
         public static void OpenUrlInBrowser(string url)
         {
-            if (!string.IsNullOrEmpty(config.browserExe) && !string.IsNullOrWhiteSpace(config.browserExe) &&
+            if (!string.IsNullOrEmpty(config.BrowserExeFilePath) &&
+                !string.IsNullOrWhiteSpace(config.BrowserExeFilePath) &&
                 !string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
             {
                 Process process = new Process();
-                process.StartInfo.FileName = config.browserExe;
+                process.StartInfo.FileName = config.BrowserExeFilePath;
                 process.StartInfo.Arguments = url;
                 process.Start();
             }
@@ -770,5 +560,232 @@ namespace YouTube_downloader
             }
             graphics.DrawPolygon(Pens.Black, points);
         }
+    }
+
+    public sealed class MyConfiguration
+    {
+        public string FilePath { get; private set; }
+        public string SelfDirPath { get; set; }
+        public string DownloadingDirPath { get; set; }
+        public string TempDirPath { get; set; }
+        public string ChunksMergingDirPath { get; set; }
+        public string FavoritesFilePath { get; set; }
+        public string OutputFileNameFormat { get; set; }
+        public int MaxSearch { get; set; }
+        public bool MergeToContainer { get; set; }
+        public bool DeleteSourceFiles { get; set; }
+        public string CipherDecryptionAlgo { get; set; }
+        public string YouTubeApiKey { get; set; }
+        public string BrowserExeFilePath { get; set; }
+        public string FfmpegExeFilePath { get; set; }
+        public bool SaveImagePreview { get; set; }
+        public bool UseApiForGettingInfo { get; set; }
+        public int ThreadCountVideo { get; set; }
+        public int ThreadCountAudio { get; set; }
+        public int GlobalThreadsMaximum { get; set; }
+
+        public MyConfiguration(string fileName)
+        {
+            FilePath = fileName;
+            SelfDirPath = Path.GetDirectoryName(Application.ExecutablePath);
+            LoadDefault();
+        }
+
+        public void Save()
+        {
+            if (File.Exists(FilePath))
+            {
+                File.Delete(FilePath);
+            }
+            JObject json = new JObject();
+            json["downloadingDirPath"] = DownloadingDirPath;
+            json["tempDirPath"] = TempDirPath;
+            json["chunksMergingDirPath"] = ChunksMergingDirPath;
+            json["cipherDecryptionAlgo"] = CipherDecryptionAlgo;
+            json["youTubeApiKey"] = YouTubeApiKey;
+            json["browserExeFilePath"] = BrowserExeFilePath;
+            json["ffmpegExeFilePath"] = FfmpegExeFilePath;
+            json["outputFileNameFormat"] = OutputFileNameFormat;
+            json["maxSearch"] = MaxSearch;
+            json["saveImagePreview"] = SaveImagePreview;
+            json["useApiForGettingInfo"] = UseApiForGettingInfo;
+            json["threadsVideo"] = ThreadCountVideo;
+            json["threadsAudio"] = ThreadCountAudio;
+            json["globalThreadsMaximum"] = GlobalThreadsMaximum;
+            File.WriteAllText(FilePath, json.ToString());
+        }
+
+        public void LoadDefault()
+        {
+            DownloadingDirPath = null;
+            TempDirPath = null;
+            ChunksMergingDirPath = null;
+            FavoritesFilePath = SelfDirPath + "\\fav.json";
+            MergeToContainer = true;
+            DeleteSourceFiles = true;
+            CipherDecryptionAlgo = null;
+            YouTubeApiKey = null;
+            BrowserExeFilePath = null;
+            FfmpegExeFilePath = "FFMPEG.EXE";
+            OutputFileNameFormat = Utils.FILENAME_FORMAT_DEFAULT;
+            MaxSearch = 50;
+            SaveImagePreview = true;
+            UseApiForGettingInfo = true;
+            ThreadCountVideo = 8;
+            ThreadCountAudio = 4;
+            GlobalThreadsMaximum = 300;
+        }
+
+        public void Load()
+        {
+            if (File.Exists(FilePath))
+            {
+                JObject json = JObject.Parse(File.ReadAllText(FilePath));
+                if (json != null)
+                {
+                    JToken jt = json.Value<JToken>("downloadingDirPath");
+                    if (jt != null)
+                    {
+                        DownloadingDirPath = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("tempDirPath");
+                    if (jt != null)
+                    {
+                        TempDirPath = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("chunksMergingDirPath");
+                    if (jt != null)
+                    {
+                        ChunksMergingDirPath = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("cipherDecryptionAlgo");
+                    if (jt != null)
+                    {
+                        CipherDecryptionAlgo = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("youTubeApiKey");
+                    if (jt != null)
+                    {
+                        YouTubeApiKey = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("browserExeFilePath");
+                    if (jt != null)
+                    {
+                        BrowserExeFilePath = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("ffmpegExeFilePath");
+                    if (jt != null)
+                    {
+                        FfmpegExeFilePath = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("outputFileNameFormat");
+                    if (jt != null)
+                    {
+                        OutputFileNameFormat = jt.Value<string>();
+                    }
+                    jt = json.Value<JToken>("maxSearch");
+                    if (jt != null)
+                    {
+                        MaxSearch = jt.Value<int>();
+                        if (MaxSearch < 1)
+                        {
+                            MaxSearch = 1;
+                        }
+                        else if (MaxSearch > 500)
+                        {
+                            MaxSearch = 500;
+                        }
+                    }
+                    jt = json.Value<JToken>("saveImagePreview");
+                    SaveImagePreview = jt == null ? true : jt.Value<bool>();
+                    jt = json.Value<JToken>("useApiForGettingInfo");
+                    UseApiForGettingInfo = jt == null ? true : jt.Value<bool>();
+                    jt = json.Value<JToken>("threadsVideo");
+                    if (jt != null)
+                    {
+                        ThreadCountVideo = jt.Value<int>();
+                    }
+                    jt = json.Value<JToken>("threadsAudio");
+                    if (jt != null)
+                    {
+                        ThreadCountAudio = jt.Value<int>();
+                    }
+                    jt = json.Value<JToken>("globalThreadsMaximum");
+                    if (jt != null)
+                    {
+                        GlobalThreadsMaximum = jt.Value<int>();
+                    }
+                }
+            }
+        }
+    }
+
+    public enum FavoriteItemType { Video, Channel, Directory };
+
+    public sealed class FavoriteItem
+    {
+        public List<FavoriteItem> Children { get; private set; } = new List<FavoriteItem>();
+        public FavoriteItem Parent { get; private set; } = null;
+        public string DisplayName { get; set; }
+        public string Title { get; set; }
+        public FavoriteItemType ItemType { get; set; }
+        public string ID { get; set; } = null;
+        public string ChannelTitle { get; set; } = null;
+        public string ChannelId { get; set; } = null;
+
+        public FavoriteItem(string displayName)
+        {
+            DisplayName = displayName;
+            Title = displayName;
+        }
+
+        public FavoriteItem(string title, string displayName, string id,
+            string channelTitle, string channelId, FavoriteItem parent)
+        {
+            Title = title;
+            DisplayName = displayName;
+            ID = id;
+            ChannelTitle = channelTitle;
+            ChannelId = channelId;
+            Parent = parent;
+        }
+    }
+
+    public sealed class DownloadResult
+    {
+        public int ErrorCode { get; private set; }
+        public string FileName { get; private set; }
+
+        public DownloadResult(int errorCode, string fileName)
+        {
+            ErrorCode = errorCode;
+            FileName = fileName;
+        }
+    }
+
+    public sealed class YouTubeChannel
+    {
+        public string title;
+        public string id;
+        public string imageUrl;
+        public List<string> imageUrls = new List<string>();
+        public Stream imageStream = null;
+    }
+
+    public sealed class YouTubeVideo
+    {
+        public string title;
+        public string id;
+        public DateTime length;
+        public DateTime dateUploaded;
+        public DateTime datePublished;
+        public List<string> imageUrls = new List<string>();
+        public Stream imageStream = null;
+        public YouTubeChannel channelOwned = null;
+        public bool ciphered = false;
+        public bool dashed = false;
+        public bool hlsed = false;
+        public bool isFamilySafe = true;
+        public bool isUnlisted = false;
     }
 }
