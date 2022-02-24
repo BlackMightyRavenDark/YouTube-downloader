@@ -781,6 +781,7 @@ namespace YouTube_downloader
         public DateTime datePublished;
         public List<string> imageUrls = new List<string>();
         public Stream imageStream = null;
+        public Image image = null;
         public YouTubeChannel channelOwned = null;
         public bool ciphered = false;
         public bool dashed = false;

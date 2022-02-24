@@ -78,10 +78,10 @@
             // 
             // imagePreview
             // 
+            this.imagePreview.BackColor = System.Drawing.SystemColors.ControlLight;
             this.imagePreview.Location = new System.Drawing.Point(3, 12);
             this.imagePreview.Name = "imagePreview";
             this.imagePreview.Size = new System.Drawing.Size(170, 111);
-            this.imagePreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imagePreview.TabIndex = 1;
             this.imagePreview.TabStop = false;
             this.imagePreview.Paint += new System.Windows.Forms.PaintEventHandler(this.imagePreview_Paint);

@@ -98,18 +98,6 @@ namespace YouTube_downloader
             lblVideoTitle.Text = videoInfo.title;
             lblChannelTitle.Text = videoInfo.channelOwned.title;
             lblDatePublished.Text = "Дата публикации: " + videoInfo.datePublished.ToString("yyyy.MM.dd");
-            if (videoInfo.imageStream != null)
-            {
-                videoInfo.imageStream.Position = 0L;
-                try
-                {
-                    imagePreview.Image = Image.FromStream(videoInfo.imageStream);
-                }
-                catch
-                {
-                    imagePreview.Image = null;
-                }
-            }
             FavoriteItem favoriteItem = new FavoriteItem(
                 videoInfo.title, videoInfo.title, videoInfo.id,
                 videoInfo.channelOwned.title, videoInfo.channelOwned.id, null);
@@ -676,9 +664,9 @@ namespace YouTube_downloader
                             //сохранение картинки
                             if (config.SaveImagePreview && VideoInfo.imageStream != null)
                             {
-                                string fn = config.DownloadingDirPath + formattedFileName +
-                                    (imagePreview.Image != null ? 
-                                    $"_image_{imagePreview.Image.Width}x{imagePreview.Image.Height}.jpg" : "_image.bin");
+                                string imageFileName = VideoInfo.image != null ?
+                                    $"_image_{VideoInfo.image.Width}x{VideoInfo.image.Height}.jpg" : "_image.bin";
+                                string fn = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
                                 VideoInfo.imageStream.SaveToFile(fn);
                             }
                             lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
@@ -753,9 +741,9 @@ namespace YouTube_downloader
                         //сохранение картинки
                         if (config.SaveImagePreview && VideoInfo.imageStream != null)
                         {
-                            string fn = config.DownloadingDirPath + formattedFileName +
-                                (imagePreview.Image != null ?
-                                $"_image_{imagePreview.Image.Width}x{imagePreview.Image.Height}.jpg" : "_image.bin");
+                            string imageFileName = VideoInfo.image != null ?
+                                $"_image_{VideoInfo.image.Width}x{VideoInfo.image.Height}.jpg" : "_image.bin";
+                            string fn = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
                             VideoInfo.imageStream.SaveToFile(fn);
                         }
                         lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
@@ -937,6 +925,12 @@ namespace YouTube_downloader
 
         private void imagePreview_Paint(object sender, PaintEventArgs e)
         {
+            if (VideoInfo.image != null)
+            {
+                Rectangle imageRect = new Rectangle(0, 0, VideoInfo.image.Width, VideoInfo.image.Height);
+                Rectangle resizedRect = imageRect.ResizeTo(imagePreview.Size).CenterIn(imagePreview.ClientRectangle);
+                e.Graphics.DrawImage(VideoInfo.image, resizedRect);
+            }
             Font fnt = new Font("Lucida Console", 10.0f);
             if (fnt != null)
             {

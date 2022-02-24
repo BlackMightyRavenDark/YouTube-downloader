@@ -425,7 +425,9 @@ namespace YouTube_downloader
                     video.imageStream = new MemoryStream();
                     if (DownloadData(video.imageUrls[video.imageUrls.Count - 1], video.imageStream) == 200)
                     {
-                        video.imageStream.Position = 0;
+                        video.imageStream.Position = 0L;
+                        video.image = Image.FromStream(video.imageStream);
+                        video.imageStream.Position = 0L;
                     }
                     else
                     {
@@ -470,6 +472,7 @@ namespace YouTube_downloader
             {
                 video.channelOwned?.imageStream?.Dispose();
                 video.imageStream?.Dispose();
+                video.image?.Dispose();
             }
             videos.Clear();
         }
