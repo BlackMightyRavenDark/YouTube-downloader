@@ -358,11 +358,11 @@ namespace YouTube_downloader
 
         public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
         {
-            return fmt.Replace("<year>", LeadZero(videoInfo.datePublished.Year))
-                .Replace("<month>", LeadZero(videoInfo.datePublished.Month))
-                .Replace("<day>", LeadZero(videoInfo.datePublished.Day))
-                .Replace("<video_title>", videoInfo.title)
-                .Replace("<video_id>", videoInfo.id);
+            return fmt.Replace("<year>", LeadZero(videoInfo.DatePublished.Year))
+                .Replace("<month>", LeadZero(videoInfo.DatePublished.Month))
+                .Replace("<day>", LeadZero(videoInfo.DatePublished.Day))
+                .Replace("<video_title>", videoInfo.Title)
+                .Replace("<video_id>", videoInfo.Id);
         }
 
         public static string FixFileName(string fn)
@@ -765,28 +765,28 @@ namespace YouTube_downloader
 
     public sealed class YouTubeChannel
     {
-        public string title;
-        public string id;
-        public string imageUrl;
-        public List<string> imageUrls = new List<string>();
-        public Stream imageStream = null;
+        public string Title { get; set; }
+        public string Id { get; set; }
+        public string ImageUrl { get; set; }
+        public List<string> ImageUrls { get; set; } = new List<string>();
+        public Stream ImageData { get; set; } = null;
     }
 
     public sealed class YouTubeVideo
     {
-        public string title;
-        public string id;
-        public DateTime length;
-        public DateTime dateUploaded;
-        public DateTime datePublished;
-        public List<string> imageUrls = new List<string>();
-        public Stream imageStream = null;
-        public Image image = null;
-        public YouTubeChannel channelOwned = null;
-        public bool ciphered = false;
-        public bool dashed = false;
-        public bool hlsed = false;
-        public bool isFamilySafe = true;
-        public bool isUnlisted = false;
+        public string Title { get; set; }
+        public string Id { get; set; }
+        public TimeSpan Length { get; set; } = new TimeSpan(0L);
+        public DateTime DateUploaded { get; set; }
+        public DateTime DatePublished { get; set; }
+        public List<string> ImageUrls { get; set; } = new List<string>();
+        public Stream ImageData { get; set; } = null;
+        public Image Image { get; set; } = null;
+        public YouTubeChannel ChannelOwned { get; set; } = null;
+        public bool Ciphered { get; set; } = false;
+        public bool Dashed { get; set; } = false;
+        public bool Hlsed { get; set; } = false;
+        public bool IsFamilySafe { get; set; } = true;
+        public bool IsUnlisted { get; set; } = false;
     }
 }

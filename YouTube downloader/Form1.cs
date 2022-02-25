@@ -353,16 +353,16 @@ namespace YouTube_downloader
                 {
                     YouTubeChannel youTubeChannel = new YouTubeChannel();
                     JObject jSnippet = ja[i].Value<JObject>("snippet");
-                    youTubeChannel.title = jSnippet.Value<string>("title");
-                    youTubeChannel.id = jSnippet.Value<string>("channelId");
-                    youTubeChannel.imageUrl =
+                    youTubeChannel.Title = jSnippet.Value<string>("title");
+                    youTubeChannel.Id = jSnippet.Value<string>("channelId");
+                    youTubeChannel.ImageUrl =
                         jSnippet.Value<JObject>("thumbnails").Value<JObject>("high").Value<string>("url");
-                    youTubeChannel.imageStream = new MemoryStream();
-                    DownloadData(youTubeChannel.imageUrl, youTubeChannel.imageStream);
+                    youTubeChannel.ImageData = new MemoryStream();
+                    DownloadData(youTubeChannel.ImageUrl, youTubeChannel.ImageData);
 
                     FrameYouTubeChannel frame = new FrameYouTubeChannel();
                     frame.Parent = panelSearchResults;
-                    frame.SetChannelInfo(ref youTubeChannel);
+                    frame.SetChannelInfo(youTubeChannel);
                     framesChannel.Add(frame);
                 }
             }
@@ -377,14 +377,13 @@ namespace YouTube_downloader
                     JObject jVideo = jaVideos[i].Value<JObject>();
                     JObject jVideoDetails = jVideo.Value<JObject>("videoDetails");
                     YouTubeVideo video = new YouTubeVideo();
-                    video.title = jVideoDetails.Value<string>("title");
-                    video.id = jVideoDetails.Value<string>("videoId");
+                    video.Title = jVideoDetails.Value<string>("title");
+                    video.Id = jVideoDetails.Value<string>("videoId");
                     jt = jVideoDetails.Value<JToken>("lengthSeconds");
-                    video.length = jt == null ? DateTime.MinValue :
-                        (DateTime.MinValue + TimeSpan.FromSeconds(int.Parse(jt.Value<string>())));
-                    video.channelOwned = new YouTubeChannel();
-                    video.channelOwned.id = jVideoDetails.Value<string>("channelId");
-                    video.channelOwned.title = jVideoDetails.Value<string>("author");
+                    video.Length = jt != null ? TimeSpan.FromSeconds(int.Parse(jt.Value<string>())) : new TimeSpan(0L);
+                    video.ChannelOwned = new YouTubeChannel();
+                    video.ChannelOwned.Id = jVideoDetails.Value<string>("channelId");
+                    video.ChannelOwned.Title = jVideoDetails.Value<string>("author");
                     jt = jVideo.Value<JToken>("streamingData");
                     if (jt != null)
                     {
@@ -398,16 +397,18 @@ namespace YouTube_downloader
                         JArray jArray = jData.Value<JArray>();
                         if (jArray.Count > 0)
                         {
-                            video.ciphered = jArray[0].Value<JToken>("signatureCipher") != null;
+                            video.Ciphered = jArray[0].Value<JToken>("signatureCipher") != null;
                         }
-                        video.dashed = jStreamingData.Value<JToken>("dashManifestUrl") != null;
-                        video.hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
+                        video.Dashed = jStreamingData.Value<JToken>("dashManifestUrl") != null;
+                        video.Hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
                     }
                     JObject jMicroformatRenderer = jVideo.Value<JObject>("microformat").Value<JObject>("playerMicroformatRenderer");
-                    StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out video.dateUploaded);
-                    StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out video.datePublished);
-                    video.isFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
-                    video.isUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
+                    StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
+                    video.DateUploaded = dateUploaded;
+                    StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
+                    video.DatePublished = datePublished;
+                    video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
+                    video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
                     JArray jaThumbnails = jMicroformatRenderer.Value<JObject>("thumbnail").Value<JArray>("thumbnails");
                     for (int i2 = 0; i2 < jaThumbnails.Count; i2++)
                     {
@@ -420,19 +421,19 @@ namespace YouTube_downloader
                         {
                             t = t.Replace("vi_webp", "vi").Replace(".webp", ".jpg");
                         }
-                        video.imageUrls.Add(t);
+                        video.ImageUrls.Add(t);
                     }
-                    video.imageStream = new MemoryStream();
-                    if (DownloadData(video.imageUrls[video.imageUrls.Count - 1], video.imageStream) == 200)
+                    video.ImageData = new MemoryStream();
+                    if (DownloadData(video.ImageUrls[video.ImageUrls.Count - 1], video.ImageData) == 200)
                     {
-                        video.imageStream.Position = 0L;
-                        video.image = Image.FromStream(video.imageStream);
-                        video.imageStream.Position = 0L;
+                        video.ImageData.Position = 0L;
+                        video.Image = Image.FromStream(video.ImageData);
+                        video.ImageData.Position = 0L;
                     }
                     else
                     {
-                        video.imageStream.Dispose();
-                        video.imageStream = null;
+                        video.ImageData.Dispose();
+                        video.ImageData = null;
                     }
                     videos.Add(video);
 
@@ -443,7 +444,7 @@ namespace YouTube_downloader
                     {
                         for (int j = 0; j < framesVideo.Count; j++)
                         {
-                            if (framesVideo[j].VideoInfo.channelOwned.id.Equals(id))
+                            if (framesVideo[j].VideoInfo.ChannelOwned.Id == id)
                             {
                                 framesVideo[j].FavoriteChannel = newState;
                             }
@@ -461,7 +462,7 @@ namespace YouTube_downloader
         {
             foreach (YouTubeChannel channel in channels)
             {
-                channel.imageStream?.Dispose();
+                channel.ImageData?.Dispose();
             }
             channels.Clear();
         }
@@ -470,9 +471,9 @@ namespace YouTube_downloader
         {
             foreach (YouTubeVideo video in videos)
             {
-                video.channelOwned?.imageStream?.Dispose();
-                video.imageStream?.Dispose();
-                video.image?.Dispose();
+                video.ChannelOwned?.ImageData?.Dispose();
+                video.ImageData?.Dispose();
+                video.Image?.Dispose();
             }
             videos.Clear();
         }

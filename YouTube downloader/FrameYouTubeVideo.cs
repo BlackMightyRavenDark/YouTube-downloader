@@ -95,16 +95,16 @@ namespace YouTube_downloader
         private void SetVideoInfo(YouTubeVideo videoInfo)
         {
             _youTubeVideo = videoInfo;
-            lblVideoTitle.Text = videoInfo.title;
-            lblChannelTitle.Text = videoInfo.channelOwned.title;
-            lblDatePublished.Text = "Дата публикации: " + videoInfo.datePublished.ToString("yyyy.MM.dd");
+            lblVideoTitle.Text = videoInfo.Title;
+            lblChannelTitle.Text = videoInfo.ChannelOwned.Title;
+            lblDatePublished.Text = $"Дата публикации: {videoInfo.DatePublished:yyyy.MM.dd}";
             FavoriteItem favoriteItem = new FavoriteItem(
-                videoInfo.title, videoInfo.title, videoInfo.id,
-                videoInfo.channelOwned.title, videoInfo.channelOwned.id, null);
+                videoInfo.Title, videoInfo.Title, videoInfo.Id,
+                videoInfo.ChannelOwned.Title, videoInfo.ChannelOwned.Id, null);
             favoriteVideo = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 
-            favoriteItem.DisplayName = VideoInfo.title;
-            favoriteItem.ID = VideoInfo.channelOwned.id;
+            favoriteItem.DisplayName = VideoInfo.Title;
+            favoriteItem.ID = VideoInfo.ChannelOwned.Id;
             favoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
         }
 
@@ -114,8 +114,8 @@ namespace YouTube_downloader
             if (favoriteVideo)
             {   
                 FavoriteItem favoriteItem = new FavoriteItem(
-                    VideoInfo.title, VideoInfo.title, VideoInfo.id,
-                    VideoInfo.channelOwned.title, VideoInfo.channelOwned.id, favoritesRootNode);
+                    VideoInfo.Title, VideoInfo.Title, VideoInfo.Id,
+                    VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id, favoritesRootNode);
                 favoriteItem.ItemType = FavoriteItemType.Video;
                 if (FindInFavorites(favoriteItem, favoritesRootNode) == null)
                 {
@@ -125,7 +125,7 @@ namespace YouTube_downloader
             }
             else
             {
-                FavoriteItem favoriteItem = FindInFavorites(VideoInfo.id);
+                FavoriteItem favoriteItem = FindInFavorites(VideoInfo.Id);
                 if (favoriteItem != null)
                 {
                     treeFavorites.RemoveObject(favoriteItem);
@@ -141,10 +141,10 @@ namespace YouTube_downloader
             favoriteChannel = fav;
             if (favoriteChannel)
             {
-                if (FindInFavorites(VideoInfo.channelOwned.id) == null)
+                if (FindInFavorites(VideoInfo.ChannelOwned.Id) == null)
                 {
                     FavoriteItem favoriteItem = new FavoriteItem(
-                        VideoInfo.channelOwned.title, VideoInfo.channelOwned.title, VideoInfo.channelOwned.id, 
+                        VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id, 
                         null, null, favoritesRootNode);
                     favoriteItem.ItemType = FavoriteItemType.Channel;
                     favoritesRootNode.Children.Add(favoriteItem);
@@ -153,7 +153,7 @@ namespace YouTube_downloader
             }
             else
             {
-                FavoriteItem favoriteItem = FindInFavorites(VideoInfo.channelOwned.id);
+                FavoriteItem favoriteItem = FindInFavorites(VideoInfo.ChannelOwned.Id);
                 if (favoriteItem != null)
                 {
                     treeFavorites.RemoveObject(favoriteItem);
@@ -188,8 +188,8 @@ namespace YouTube_downloader
                 lblStatus.Text = info;
             };
 
-            thr._videoId = VideoInfo.id;
-            thr._ciphered = VideoInfo.ciphered;
+            thr._videoId = VideoInfo.Id;
+            thr._ciphered = VideoInfo.Ciphered;
             Thread thread = new Thread(thr.Run);
             thread.Start(synchronizationContext);
         }
@@ -205,7 +205,7 @@ namespace YouTube_downloader
             if (thr.videoFiles.Count == 0 && thr.audioFiles.Count == 0)
             {
                 string t = "Ссылки для скачивания не найдены!";
-                if (!VideoInfo.isFamilySafe)
+                if (!VideoInfo.IsFamilySafe)
                 {
                     t += "\nДля этого видео установлено ограничение по возрасту. " +
                         "Чтобы его скачать, воспользуйтесь поиском по коду веб-страницы.\n" +
@@ -662,15 +662,12 @@ namespace YouTube_downloader
                             }
 
                             //сохранение картинки
-                            if (config.SaveImagePreview && VideoInfo.imageStream != null)
+                            if (config.SaveImagePreview && VideoInfo.ImageData != null)
                             {
-                                string imageFileName = VideoInfo.image != null ?
-                                    $"_image_{VideoInfo.image.Width}x{VideoInfo.image.Height}.jpg" : "_image.bin";
-                                string fn = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
-                                VideoInfo.imageStream.SaveToFile(fn);
+                                SaveImageToFile(formattedFileName);
                             }
                             lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
-                            MessageBox.Show($"{VideoInfo.title}\nСкачано!", "Успех!",
+                            MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                             lblStatus.Text = "Состояние: Скачано";
                         }
@@ -680,7 +677,7 @@ namespace YouTube_downloader
                             {
                                 case ERROR_CIPHER_DECRYPTION:
                                     lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
-                                    MessageBox.Show($"{VideoInfo.title}\n" +
+                                    MessageBox.Show($"{VideoInfo.Title}\n" +
                                         "Ошибка расшифровки ссылки! Попробуйте ещё раз.", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
@@ -690,44 +687,44 @@ namespace YouTube_downloader
                                     string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
                                         "для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
                                         "известную одному лишь дьяволу.";
-                                    MessageBox.Show($"{VideoInfo.title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
+                                    MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
                                 case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
                                     lblStatus.Text = "Состояние: Ошибка объединения чанков видео";
-                                    MessageBox.Show($"{VideoInfo.title}\nОшибка объединения чанков видео!\n" +
+                                    MessageBox.Show($"{VideoInfo.Title}\nОшибка объединения чанков видео!\n" +
                                         "Повторите попытку скачивания.", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
                                 case FileDownloader.DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
                                     lblStatus.Text = "Состояние: Ошибка! Файл на сервере пуст!";
-                                    MessageBox.Show($"{VideoInfo.title}\nФайл на сервере пуст!", "Ошибка!",
+                                    MessageBox.Show($"{VideoInfo.Title}\nФайл на сервере пуст!", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
                                 case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
                                     lblStatus.Text = "Состояние: Скачивание отменено";
-                                    MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
+                                    MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     break;
 
                                 case FileDownloader.DOWNLOAD_ERROR_RANGE:
                                     lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
-                                    MessageBox.Show($"{VideoInfo.title}\nЗадан неправильный диапазон!", "Ошибка!",
+                                    MessageBox.Show($"{VideoInfo.Title}\nЗадан неправильный диапазон!", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
                                 case FileDownloader.DOWNLOAD_ERROR_UNKNOWN:
                                     lblStatus.Text = "Состояние: Неизвестная ошибка";
-                                    MessageBox.Show($"{VideoInfo.title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
+                                    MessageBox.Show($"{VideoInfo.Title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
                                 default:
                                     lblStatus.Text = $"Состояние: Ошибка {resAudio.ErrorCode}";
-                                    MessageBox.Show($"{VideoInfo.title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
+                                    MessageBox.Show($"{VideoInfo.Title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
                             }
@@ -739,15 +736,12 @@ namespace YouTube_downloader
                         lblProgress.Text = null;
 
                         //сохранение картинки
-                        if (config.SaveImagePreview && VideoInfo.imageStream != null)
+                        if (config.SaveImagePreview && VideoInfo.ImageData != null)
                         {
-                            string imageFileName = VideoInfo.image != null ?
-                                $"_image_{VideoInfo.image.Width}x{VideoInfo.image.Height}.jpg" : "_image.bin";
-                            string fn = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
-                            VideoInfo.imageStream.SaveToFile(fn);
+                            SaveImageToFile(formattedFileName);
                         }
                         lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
-                        MessageBox.Show($"{VideoInfo.title}\nСкачано!", "Успех!",
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         lblStatus.Text = "Состояние: Скачано";
                     }
@@ -760,7 +754,7 @@ namespace YouTube_downloader
                     {
                         case ERROR_CIPHER_DECRYPTION:
                             lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
-                            MessageBox.Show($"{VideoInfo.title}\n" +
+                            MessageBox.Show($"{VideoInfo.Title}\n" +
                                 "Ошибка расшифровки ссылки! Попробуйте ещё раз.", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
@@ -770,51 +764,51 @@ namespace YouTube_downloader
                             string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
                                 "для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
                                 "известную одному лишь дьяволу.";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case FileDownloader.DOWNLOAD_ERROR_INCOMPLETE_DATA_READ:
                             lblStatus.Text = "Состояние: Ошибка INCOMPLETE_DATA_READ";
-                            MessageBox.Show($"{VideoInfo.title}\nФайл скачан не полностью!\n" +
+                            MessageBox.Show($"{VideoInfo.Title}\nФайл скачан не полностью!\n" +
                                 "Повторите попытку скачивания.", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
                             lblStatus.Text = "Состояние: Ошибка объединения чанков видео";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка объединения чанков видео!\n" +
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка объединения чанков видео!\n" +
                                 "Повторите попытку скачивания.", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case FileDownloader.DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
                             lblStatus.Text = "Состояние: Ошибка! Файл на сервере пуст!"; 
-                            MessageBox.Show($"{VideoInfo.title}\nФайл на сервере пуст!", "Ошибка!",
+                            MessageBox.Show($"{VideoInfo.Title}\nФайл на сервере пуст!", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
                             lblStatus.Text = "Состояние: Скачивание отменено";
-                            MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
+                            MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                             break;
 
                         case FileDownloader.DOWNLOAD_ERROR_RANGE:
                             lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
-                            MessageBox.Show($"{VideoInfo.title}\nЗадан неправильный диапазон!", "Ошибка!",
+                            MessageBox.Show($"{VideoInfo.Title}\nЗадан неправильный диапазон!", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case FileDownloader.DOWNLOAD_ERROR_UNKNOWN:
                             lblStatus.Text = "Состояние: Неизвестная ошибка";
-                            MessageBox.Show($"{VideoInfo.title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
+                            MessageBox.Show($"{VideoInfo.Title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         default:
                             lblStatus.Text = $"Состояние: Ошибка {resVideo.ErrorCode}";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка {resVideo.ErrorCode}", "Ошибка!",
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка {resVideo.ErrorCode}", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
                     }
@@ -831,7 +825,7 @@ namespace YouTube_downloader
                 if (resAudio.ErrorCode == 200)
                 {
                     lblStatus.Text = "Состояние: Скачано";
-                    MessageBox.Show($"{VideoInfo.title}\nСкачано!", "Успех!",
+                    MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
@@ -840,7 +834,7 @@ namespace YouTube_downloader
                     {
                         case ERROR_CIPHER_DECRYPTION:
                             lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка ERROR_CIPHER_DECRYPTION\n" +
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_CIPHER_DECRYPTION\n" +
                                 "Не удалось расшифровать сигнатуру Cipher!", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
@@ -849,26 +843,26 @@ namespace YouTube_downloader
                             lblStatus.Text = "Состояние: Ошибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM";
                             string t = "Ссылка на это аудио, зачем-то, зашифрована алгоритмом \"Cipher\", " +
                                 "для расшифровки которого вам требуется ввести специальную последовательность чисел.";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}",
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}",
                                 "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
                             lblStatus.Text = "Состояние: Ошибка объединения чанков аудио";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка объединения чанков аудио!\n" +
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка объединения чанков аудио!\n" +
                                 "Повторите попытку скачивания.", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
                         case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
                             lblStatus.Text = "Состояние: Скачивание отменено";
-                            MessageBox.Show($"{VideoInfo.title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
+                            MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                             break;
 
                         default:
                             lblStatus.Text = $"Состояние: Ошибка {resAudio.ErrorCode}";
-                            MessageBox.Show($"{VideoInfo.title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
+                            MessageBox.Show($"{VideoInfo.Title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
                     }
@@ -879,6 +873,14 @@ namespace YouTube_downloader
             downloading = false;
             btnDownload.Text = "Скачать";
             btnDownload.Enabled = true;
+        }
+
+        private void SaveImageToFile(string formattedFileName)
+        {
+            string imageFileName = VideoInfo.Image != null ?
+                $"_image_{VideoInfo.Image.Width}x{VideoInfo.Image.Height}.jpg" : "_image.bin";
+            string fn = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
+            VideoInfo.ImageData.SaveToFile(fn);
         }
 
         private void FrameYouTubeVideo_MouseDown(object sender, MouseEventArgs e)
@@ -925,19 +927,19 @@ namespace YouTube_downloader
 
         private void imagePreview_Paint(object sender, PaintEventArgs e)
         {
-            if (VideoInfo.image != null)
+            if (VideoInfo.Image != null)
             {
-                Rectangle imageRect = new Rectangle(0, 0, VideoInfo.image.Width, VideoInfo.image.Height);
+                Rectangle imageRect = new Rectangle(0, 0, VideoInfo.Image.Width, VideoInfo.Image.Height);
                 Rectangle resizedRect = imageRect.ResizeTo(imagePreview.Size).CenterIn(imagePreview.ClientRectangle);
-                e.Graphics.DrawImage(VideoInfo.image, resizedRect);
+                e.Graphics.DrawImage(VideoInfo.Image, resizedRect);
             }
             Font fnt = new Font("Lucida Console", 10.0f);
             if (fnt != null)
             {
-                if (VideoInfo.length > DateTime.MinValue)
+                if (VideoInfo.Length.Ticks > 0L)
                 {
-                    DateTime hour = new DateTime(TimeSpan.FromHours(1.0).Ticks);
-                    string videoLength = VideoInfo.length.ToString(VideoInfo.length >= hour ? "H:mm:ss" : "m:ss");
+                    TimeSpan hour = new TimeSpan(1, 0, 0);
+                    string videoLength = VideoInfo.Length.ToString(VideoInfo.Length >= hour ? "h':'mm':'ss" : "m':'ss");
                     SizeF sz = e.Graphics.MeasureString(videoLength, fnt);
                     float x = imagePreview.Width - sz.Width;
                     float y = imagePreview.Height - sz.Height;
@@ -945,29 +947,29 @@ namespace YouTube_downloader
                     e.Graphics.DrawString(videoLength, fnt, Brushes.White, new PointF(x, y));
                 }
             
-                if (VideoInfo.ciphered || VideoInfo.dashed)
+                if (VideoInfo.Ciphered || VideoInfo.Dashed)
                 {
-                    string t = VideoInfo.dashed ? "dash" : "cipher";
+                    string t = VideoInfo.Dashed ? "dash" : "cipher";
                     SizeF sz = e.Graphics.MeasureString(t, fnt);
                     RectangleF rect = new RectangleF(0, imagePreview.Height - sz.Height, sz.Width, sz.Height);
                     e.Graphics.FillRectangle(Brushes.Black, rect);
                     e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
                 }
-                if (VideoInfo.hlsed)
+                if (VideoInfo.Hlsed)
                 {
                     string t = "hls";
                     SizeF sz = e.Graphics.MeasureString(t, fnt);
-                    float y = (VideoInfo.ciphered || VideoInfo.dashed) ? 
+                    float y = (VideoInfo.Ciphered || VideoInfo.Dashed) ? 
                         imagePreview.Height - sz.Height * 2 : imagePreview.Height - sz.Height;
                     RectangleF rect = new RectangleF(0, y, sz.Width, sz.Height);
                     e.Graphics.FillRectangle(Brushes.Black, rect);
                     e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
                 }
-                if (!VideoInfo.isFamilySafe)
+                if (!VideoInfo.IsFamilySafe)
                 {
                     e.Graphics.DrawImage(Resources.age18plus, imagePreview.Width - 40, 0, 40, 40);
                 }
-                if (VideoInfo.isUnlisted)
+                if (VideoInfo.IsUnlisted)
                 {
                     e.Graphics.DrawImage(Resources.unlisted, 0, 0, 40, 40);
                 }
@@ -996,7 +998,7 @@ namespace YouTube_downloader
                 MessageBox.Show("Скопировано в буфер обмена");
                 return;
             }
-            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.id, out string info);
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info);
             if (errorCode == 200)
             {
                 SetClipboardText(info);
@@ -1013,7 +1015,7 @@ namespace YouTube_downloader
         {
             btnGetWebPage.Enabled = false;
 
-            int errorCode = GetYouTubeVideoWebPage(VideoInfo.id, out string page);
+            int errorCode = GetYouTubeVideoWebPage(VideoInfo.Id, out string page);
             if (errorCode == 200)
             {
                 SetClipboardText(page);
@@ -1030,7 +1032,7 @@ namespace YouTube_downloader
 
         private void btnGetDashManifest_Click(object sender, EventArgs e)
         {
-            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.id, out string info, VideoInfo.ciphered);
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, VideoInfo.Ciphered);
             if (errorCode == 200)
             {
                 JObject json = JObject.Parse(info);
@@ -1060,7 +1062,7 @@ namespace YouTube_downloader
 
         private void btnGetHlsManifest_Click(object sender, EventArgs e)
         {
-            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.id, out string info, VideoInfo.ciphered);
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, VideoInfo.Ciphered);
             if (errorCode == 200)
             {
                 JObject json = JObject.Parse(info);
@@ -1090,27 +1092,27 @@ namespace YouTube_downloader
 
         private void copyVideoTitleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetClipboardText(VideoInfo.title);
+            SetClipboardText(VideoInfo.Title);
         }
 
         private void copyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetClipboardText(VideoInfo.channelOwned.title);
+            SetClipboardText(VideoInfo.ChannelOwned.Title);
         }
 
         private void copyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetClipboardText(YOUTUBE_VIDEO_URL_BASE + VideoInfo.id);
+            SetClipboardText(YOUTUBE_VIDEO_URL_BASE + VideoInfo.Id);
         }
 
         private void copyChannelTitleToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            SetClipboardText(VideoInfo.channelOwned.title);
+            SetClipboardText(VideoInfo.ChannelOwned.Title);
         }
 
         private void openChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.channelOwned.id));
+            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id));
         }
 
         private void imagePreview_MouseDown(object sender, MouseEventArgs e)
@@ -1150,7 +1152,7 @@ namespace YouTube_downloader
             Activated?.Invoke(this);
             if (FavoriteChannelChanged != null)
             {
-                FavoriteChannelChanged.Invoke(this, VideoInfo.channelOwned.id, !FavoriteChannel);
+                FavoriteChannelChanged.Invoke(this, VideoInfo.ChannelOwned.Id, !FavoriteChannel);
             }
             else
             {
@@ -1185,17 +1187,17 @@ namespace YouTube_downloader
 
         private void openVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenUrlInBrowser(YOUTUBE_VIDEO_URL_BASE + VideoInfo.id);
+            OpenUrlInBrowser(YOUTUBE_VIDEO_URL_BASE + VideoInfo.Id);
         }
 
         private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            OpenChannel?.Invoke(this, VideoInfo.channelOwned.title, VideoInfo.channelOwned.id);
+            OpenChannel?.Invoke(this, VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id);
         }
 
         private void saveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (VideoInfo.imageStream != null)
+            if (VideoInfo.ImageData != null)
             {
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.Title = "Сохранить изображение";
@@ -1208,8 +1210,8 @@ namespace YouTube_downloader
                 sfd.FileName = fn;
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    VideoInfo.imageStream.Position = 0;
-                    VideoInfo.imageStream.SaveToFile(sfd.FileName);
+                    VideoInfo.ImageData.Position = 0L;
+                    VideoInfo.ImageData.SaveToFile(sfd.FileName);
                 }
                 sfd.Dispose();
             }
@@ -1217,7 +1219,7 @@ namespace YouTube_downloader
 
         private void copyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetClipboardText($"{VideoInfo.channelOwned.title} [{VideoInfo.channelOwned.id}]");
+            SetClipboardText($"{VideoInfo.ChannelOwned.Title} [{VideoInfo.ChannelOwned.Id}]");
         }
     }
 }

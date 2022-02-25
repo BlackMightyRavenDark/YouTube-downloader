@@ -19,17 +19,19 @@ namespace YouTube_downloader
             InitializeComponent();
         }
 
-        public void SetChannelInfo(ref YouTubeChannel channelInfo)
+        public void SetChannelInfo(YouTubeChannel channelInfo)
         {
             ChannelInfo = channelInfo;
-            lblChannelTitle.Text = channelInfo.title;
-            if (channelInfo.imageStream != null)
-                imagePreview.Image = Image.FromStream(channelInfo.imageStream);
+            lblChannelTitle.Text = channelInfo.Title;
+            if (channelInfo.ImageData != null)
+            {
+                imagePreview.Image = Image.FromStream(channelInfo.ImageData);
+            }
         }
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            OpenChannel?.Invoke(this, ChannelInfo.title, ChannelInfo.id);
+            OpenChannel?.Invoke(this, ChannelInfo.Title, ChannelInfo.Id);
         }
 
         private void btnGo_MouseDown(object sender, MouseEventArgs e)
