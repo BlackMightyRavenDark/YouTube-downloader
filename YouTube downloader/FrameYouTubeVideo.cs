@@ -376,13 +376,13 @@ namespace YouTube_downloader
                     downloader.Url = videoTrack.url;
                     downloader.TempDirectory = config.TempDirPath;
                     downloader.MergingDirectory = config.ChunksMergingDirPath;
-                    downloader.KeepDownloadedFileInMergingDirectory = true;
 
                     string fnVideo;
                     if (videoTrack.isContainer)
                     {
                         fnVideo = MultiThreadedDownloader.GetNumberedFileName(
                             $"{config.DownloadingDirPath}{formattedFileName}.{videoTrack.mimeExt}");
+                        downloader.KeepDownloadedFileInMergingDirectory = false;
                     }
                     else
                     {
@@ -392,6 +392,7 @@ namespace YouTube_downloader
                         fnVideo = MultiThreadedDownloader.GetNumberedFileName(
                             (ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
                             $"{formattedFileName}_{videoTrack.formatId}.{videoTrack.fileExtension}");
+                        downloader.KeepDownloadedFileInMergingDirectory = true;
                     }
                     downloader.OutputFileName = fnVideo;
                     downloader.DownloadStarted += (s, size) =>
