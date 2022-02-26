@@ -880,8 +880,8 @@ namespace YouTube_downloader
         {
             string imageFileName = VideoInfo.Image != null ?
                 $"_image_{VideoInfo.Image.Width}x{VideoInfo.Image.Height}.jpg" : "_image.bin";
-            string fn = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
-            VideoInfo.ImageData.SaveToFile(fn);
+            string filePath = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
+            VideoInfo.ImageData.SaveToFile(filePath);
         }
 
         private void FrameYouTubeVideo_MouseDown(object sender, MouseEventArgs e)

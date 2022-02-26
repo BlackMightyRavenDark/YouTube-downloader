@@ -5,14 +5,25 @@ namespace YouTube_downloader
 {
     public static class Helper
     {
-
-        public static void SaveToFile(this Stream stream, string fileName)
+        public static bool SaveToFile(this Stream stream, string filePath)
         {
-            Stream fileStream = File.OpenWrite(fileName);
-            stream.Seek(0, SeekOrigin.Begin);
-            MultiThreadedDownloader.AppendStream(stream, fileStream);
-            fileStream.Close();
-            fileStream.Dispose();
+            if (!string.IsNullOrEmpty(filePath) && !string.IsNullOrWhiteSpace(filePath))
+            {
+                try
+                {
+                    using (Stream fileStream = File.OpenWrite(filePath))
+                    {
+                        stream.Position = 0L;
+                        MultiThreadedDownloader.AppendStream(stream, fileStream);
+                        return true;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+            }
+            return false;
         }
 
         public static Rectangle ResizeTo(this Rectangle source, Size newSize)

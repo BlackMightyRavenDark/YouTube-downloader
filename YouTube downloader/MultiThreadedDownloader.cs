@@ -9,22 +9,6 @@ namespace YouTube_downloader
 {
     public sealed class MultiThreadedDownloader
     {
-        private sealed class ProgressItem
-        {
-            public string FileName { get; set; }
-            public int Id { get; }
-            public long Processed { get; }
-            public long Total { get; }
-
-            public ProgressItem(string fileName, int id, long processed, long total)
-            {
-                FileName = fileName;
-                Id = id;
-                Processed = processed;
-                Total = total;
-            }
-        }
-
         public const int MEGABYTE = 1048576; //1024 * 1024;
 
         public const int DOWNLOAD_ERROR_MERGING_CHUNKS = -200;
@@ -52,6 +36,7 @@ namespace YouTube_downloader
 
 
         public string Url { get; set; } = null;
+
         /// <summary>
         /// Warning! The file name will be automatically changed after downloading if a file with that name already exists!
         /// Therefore, you need to double-check this value after the download is complete.
@@ -394,6 +379,22 @@ namespace YouTube_downloader
             });
 
             return res;
+        }
+    }
+
+    public sealed class ProgressItem
+    {
+        public string FileName { get; private set; }
+        public int Id { get; }
+        public long Processed { get; }
+        public long Total { get; }
+
+        public ProgressItem(string fileName, int id, long processed, long total)
+        {
+            FileName = fileName;
+            Id = id;
+            Processed = processed;
+            Total = total;
         }
     }
 }
