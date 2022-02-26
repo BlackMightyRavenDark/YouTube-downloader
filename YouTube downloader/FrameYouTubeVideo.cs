@@ -1206,12 +1206,11 @@ namespace YouTube_downloader
                 sfd.DefaultExt = ".jpg";
                 sfd.AddExtension = true;
                 sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
-                string fn = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo)) +
-                    $"_image_{imagePreview.Image.Width}x{imagePreview.Image.Height}";
-                sfd.FileName = fn;
+                string imageFileName = VideoInfo.Image != null ? $"_image_{VideoInfo.Image.Width}x{VideoInfo.Image.Height}" : "_image";
+                string filePath = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo)) + imageFileName;
+                sfd.FileName = filePath;
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    VideoInfo.ImageData.Position = 0L;
                     VideoInfo.ImageData.SaveToFile(sfd.FileName);
                 }
                 sfd.Dispose();
