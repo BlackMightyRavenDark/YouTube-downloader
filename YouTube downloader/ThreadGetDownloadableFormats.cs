@@ -40,8 +40,11 @@ namespace YouTube_downloader
                 ErrorCode = string.IsNullOrEmpty(WebPage) ? GetYouTubeVideoWebPage(_videoId, out webPage) : 200;
                 if (ErrorCode == 200)
                 {
-                    WebPage = webPage;
-                    videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+                    if (string.IsNullOrEmpty(WebPage))
+                    {
+                        WebPage = webPage;
+                    }
+                    videoInfo = !string.IsNullOrEmpty(WebPage) ? ExtractVideoInfoFromWebPage(WebPage) : null;
                     ErrorCode = string.IsNullOrEmpty(videoInfo) ? 400 : 200;
                     if (ErrorCode == 200)
                     {
