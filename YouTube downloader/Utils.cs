@@ -340,6 +340,11 @@ namespace YouTube_downloader
 
             if (string.IsNullOrEmpty(uri.Query))
             {
+                if (!string.IsNullOrEmpty(uri.AbsolutePath) && !string.IsNullOrWhiteSpace(uri.AbsolutePath) &&
+                    uri.AbsolutePath.StartsWith("/shorts/"))
+                {
+                    return uri.AbsolutePath.Substring(8);
+                }
                 return null;
             }
             Dictionary<string, string> dict = SplitUrlQueryToDictionary(uri.Query);
