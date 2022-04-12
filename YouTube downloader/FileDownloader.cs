@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -8,24 +9,35 @@ namespace YouTube_downloader
     public sealed class FileDownloader
     {
         public string Url { get; set; }
+        public NameValueCollection Headers = new NameValueCollection();
         public long StreamSize { get; private set; } = 0L;
         private long _bytesTransfered = 0L;
         private long _rangeFrom = 0L;
         private long _rangeTo = 0L;
         public int ProgressUpdateInterval { get; set; } = 10;
         public bool Stopped { get; private set; } = false;
-        public int LastErrorCode { get; private set; } = DOWNLOAD_ERROR_UNKNOWN;
+        public int LastErrorCode { get; private set; } = 200;
+        public string LastErrorMessage { get; private set; }
+        public bool HasErrors => LastErrorCode != 200 && LastErrorCode != 206;
 
-        public const int DOWNLOAD_ERROR_UNKNOWN = -1;
-        public const int DOWNLOAD_ERROR_ABORTED_BY_USER = -2;
-        public const int DOWNLOAD_ERROR_INCOMPLETE_DATA_READ = -3;
-        public const int DOWNLOAD_ERROR_RANGE = -4;
-        public const int DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT = -5;
+        public const int DOWNLOAD_ERROR_URL_NOT_DEFINED = -1;
+        public const int DOWNLOAD_ERROR_INVALID_URL = -2;
+        public const int DOWNLOAD_ERROR_CANCELED_BY_USER = -3;
+        public const int DOWNLOAD_ERROR_INCOMPLETE_DATA_READ = -4;
+        public const int DOWNLOAD_ERROR_RANGE = -5;
+        public const int DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT = -6;
+        public const int DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE = -7;
+        public const int DOWNLOAD_ERROR_DRIVE_NOT_READY = -8;
+        public const int DOWNLOAD_ERROR_NULL_CONTENT = -9;
 
+        public delegate void ConnectingDelegate(object sender, string url);
+        public delegate void ConnectedDelegate(object sender, string url, long contentLength, ref int errorCode);
         public delegate void WorkStartedDelegate(object sender, long contentLength);
         public delegate void WorkProgressDelegate(object sender, long bytesTransfered, long contentLength);
         public delegate void WorkFinishedDelegate(object sender, long bytesTransfered, long contentLength, int errorCode);
         public delegate void CancelTestDelegate(object sender, ref bool stop);
+        public ConnectingDelegate Connecting;
+        public ConnectedDelegate Connected;
         public WorkStartedDelegate WorkStarted;
         public WorkProgressDelegate WorkProgress;
         public WorkFinishedDelegate WorkFinished;
@@ -33,16 +45,30 @@ namespace YouTube_downloader
 
         public int Download(Stream stream)
         {
+            if (string.IsNullOrEmpty(Url) || string.IsNullOrWhiteSpace(Url))
+            {
+                return DOWNLOAD_ERROR_URL_NOT_DEFINED;
+            }
+
             Stopped = false;
-            LastErrorCode = DOWNLOAD_ERROR_UNKNOWN;
             _bytesTransfered = 0L;
             StreamSize = stream.Length;
 
+            Connecting?.Invoke(this, Url);
+
             WebContent content = new WebContent();
+            content.Headers = Headers;
 
             LastErrorCode = content.GetResponseStream(Url, _rangeFrom, _rangeTo);
-            if (LastErrorCode != 200 && LastErrorCode != 206)
+            int errorCode = LastErrorCode;
+            Connected?.Invoke(this, Url, content.Length, ref errorCode);
+            if (LastErrorCode != errorCode)
             {
+                LastErrorCode = errorCode;
+            }
+            if (HasErrors)
+            {
+                LastErrorMessage = content.LastErrorMessage;
                 content.Dispose();
                 return LastErrorCode;
             }
@@ -64,20 +90,26 @@ namespace YouTube_downloader
             return LastErrorCode;
         }
 
-        public int DownloadString(out string resString)
+        public int DownloadString(out string responseString)
         {
-            resString = null;
+            responseString = null;
+
+            if (string.IsNullOrEmpty(Url) || string.IsNullOrWhiteSpace(Url))
+            {
+                return DOWNLOAD_ERROR_URL_NOT_DEFINED;
+            }
 
             Stopped = false;
-            LastErrorCode = DOWNLOAD_ERROR_UNKNOWN;
             _bytesTransfered = 0L;
             StreamSize = 0L;
 
             WebContent content = new WebContent();
+            content.Headers = Headers;
 
             LastErrorCode = content.GetResponseStream(Url, _rangeFrom, _rangeTo);
-            if (LastErrorCode != 200 && LastErrorCode != 206)
+            if (HasErrors)
             {
+                LastErrorMessage = content.LastErrorMessage;
                 content.Dispose();
                 return LastErrorCode;
             }
@@ -94,7 +126,7 @@ namespace YouTube_downloader
             LastErrorCode = ContentToStream(content, memoryStream);
             if (LastErrorCode == 200)
             {
-                resString = Encoding.UTF8.GetString(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+                responseString = Encoding.UTF8.GetString(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
             }
             long size = content.Length;
             content.Dispose();
@@ -105,17 +137,31 @@ namespace YouTube_downloader
             return LastErrorCode;
         }
 
+        public static int GetUrlContentLength(string url, NameValueCollection headers,
+            out long contentLength, out string errorText)
+        {
+            WebContent webContent = new WebContent() { Headers = headers };
+            int errorCode = webContent.GetResponseStream(url);
+            contentLength = errorCode == 200 ? webContent.Length : -1L;
+            errorText = webContent.LastErrorMessage;
+            webContent.Dispose();
+            return errorCode;
+        }
+
         private int ContentToStream(WebContent content, Stream stream)
         {
-            byte[] buf = new byte[4096];
-            int bytesRead;
-            int errorCode = 200;
-            int iter = 0;
+            if (content == null || content.ContentData == null)
+            {
+                return DOWNLOAD_ERROR_NULL_CONTENT;
+            }
+
             try
             {
+                byte[] buf = new byte[4096];
+                int iter = 0;
                 do
                 {
-                    bytesRead = content.ContentData.Read(buf, 0, buf.Length);
+                    int bytesRead = content.ContentData.Read(buf, 0, buf.Length);
                     if (bytesRead <= 0)
                     {
                         break;
@@ -139,24 +185,25 @@ namespace YouTube_downloader
                         }
                     }
                 }
-                while (bytesRead > 0);
+                while (true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                errorCode = DOWNLOAD_ERROR_UNKNOWN;
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                LastErrorMessage = ex.Message;
+                return ex.HResult;
             }
+
             if (Stopped)
             {
-                errorCode = DOWNLOAD_ERROR_ABORTED_BY_USER;
+                return DOWNLOAD_ERROR_CANCELED_BY_USER;
             }
-            else if (errorCode == 200)
+            else if (content.Length >= 0L && _bytesTransfered != content.Length)
             {
-                if (content.Length >= 0L && _bytesTransfered != content.Length)
-                {
-                    LastErrorCode = DOWNLOAD_ERROR_INCOMPLETE_DATA_READ;
-                }
+                return DOWNLOAD_ERROR_INCOMPLETE_DATA_READ;
             }
-            return errorCode;
+
+            return 200;
         }
 
         public void SetRange(long from, long to)
@@ -164,13 +211,61 @@ namespace YouTube_downloader
             _rangeFrom = from;
             _rangeTo = to;
         }
+
+        public static string ErrorCodeToString(int errorCode)
+        {
+            switch (errorCode)
+            {
+                case 400:
+                    return "Ошибка клиента!";
+
+                case 403:
+                    return "Файл по ссылке не доступен!";
+
+                case 404:
+                    return "Файл по ссылке не найден!";
+
+                case DOWNLOAD_ERROR_INVALID_URL:
+                    return "Указана неправильная ссылка!";
+
+                case DOWNLOAD_ERROR_URL_NOT_DEFINED:
+                    return "Не указана ссылка!";
+
+                case DOWNLOAD_ERROR_CANCELED_BY_USER:
+                    return "Скачивание успешно отменено!";
+
+                case DOWNLOAD_ERROR_INCOMPLETE_DATA_READ:
+                    return "Ошибка чтения данных!";
+
+                case DOWNLOAD_ERROR_RANGE:
+                    return "Указан неверный диапазон!";
+
+                case DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
+                    return "Файл на сервере пуст!";
+
+                case DOWNLOAD_ERROR_DRIVE_NOT_READY:
+                    return "Диск не готов!";
+
+                case DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE:
+                    return "Недостаточно места на диске!";
+
+                case DOWNLOAD_ERROR_NULL_CONTENT:
+                    return "Ошибка получения контента!";
+
+                default:
+                    return $"Код ошибки: {errorCode}";
+            }
+        }
     }
 
     public sealed class WebContent : IDisposable
     {
+        public NameValueCollection Headers = null;
+
         private HttpWebResponse webResponse = null;
         public long Length { get; private set; } = -1L;
         public Stream ContentData { get; private set; } = null;
+        public string LastErrorMessage { get; private set; }
 
         public void Dispose()
         {
@@ -219,10 +314,17 @@ namespace YouTube_downloader
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+                if (Headers != null)
+                {
+                    SetRequestHeaders(request, Headers);
+                }
+
                 if (rangeTo > 0L)
                 {
                     request.AddRange(rangeFrom, rangeTo);
                 }
+
                 webResponse = (HttpWebResponse)request.GetResponse();
                 int statusCode = (int)webResponse.StatusCode;
                 if (statusCode == 200 || statusCode == 206)
@@ -234,7 +336,12 @@ namespace YouTube_downloader
             catch (WebException ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                webResponse = null;
+                LastErrorMessage = ex.Message;
+                if (webResponse != null)
+                {
+                    webResponse.Dispose();
+                    webResponse = null;
+                }
                 if (ex.Status == WebExceptionStatus.ProtocolError)
                 {
                     HttpWebResponse httpWebResponse = (HttpWebResponse)ex.Response;
@@ -246,11 +353,110 @@ namespace YouTube_downloader
                     return ex.HResult;
                 }
             }
+            catch (NotSupportedException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                LastErrorMessage = ex.Message;
+                if (webResponse != null)
+                {
+                    webResponse.Dispose();
+                    webResponse = null;
+                }
+                return FileDownloader.DOWNLOAD_ERROR_INVALID_URL;
+            }
+            catch (UriFormatException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                LastErrorMessage = ex.Message;
+                if (webResponse != null)
+                {
+                    webResponse.Dispose();
+                    webResponse = null;
+                }
+                return FileDownloader.DOWNLOAD_ERROR_INVALID_URL;
+            }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                webResponse = null;
+                LastErrorMessage = ex.Message;
+                if (webResponse != null)
+                {
+                    webResponse.Dispose();
+                    webResponse = null;
+                }
                 return ex.HResult;
+            }
+        }
+
+        public static void SetRequestHeaders(HttpWebRequest request, NameValueCollection headers)
+        {
+            request.Headers.Clear();
+            for (int i = 0; i < headers.Count; i++)
+            {
+                string headerName = headers.GetKey(i);
+                string headerValue = headers.Get(i);
+                string headerNameLowercased = headerName.ToLower();
+
+                //TODO: Complete headers support.
+                if (headerNameLowercased.Equals("accept"))
+                {
+                    request.Accept = headerValue;
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("user-agent"))
+                {
+                    request.UserAgent = headerValue;
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("referer"))
+                {
+                    request.Referer = headerValue;
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("host"))
+                {
+                    request.Host = headerValue;
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("content-type"))
+                {
+                    request.ContentType = headerValue;
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("content-length"))
+                {
+                    if (long.TryParse(headerValue, out long length))
+                    {
+                        request.ContentLength = length;
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Can't parse value of \"Content-Length\" header!");
+                    }
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("connection"))
+                {
+                    System.Diagnostics.Debug.WriteLine("The \"Connection\" header is not supported yet.");
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("range"))
+                {
+                    System.Diagnostics.Debug.WriteLine("The \"Range\" header is not supported yet.");
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("if-modified-since"))
+                {
+                    System.Diagnostics.Debug.WriteLine("The \"If-Modified-Since\" header is not supported yet.");
+                    continue;
+                }
+                else if (headerNameLowercased.Equals("transfer-encoding"))
+                {
+                    System.Diagnostics.Debug.WriteLine("The \"Transfer-Encoding\" header is not supported yet.");
+                    continue;
+                }
+
+                request.Headers.Add(headerName, headerValue);
             }
         }
     }

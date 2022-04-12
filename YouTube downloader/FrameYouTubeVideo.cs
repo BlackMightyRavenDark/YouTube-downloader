@@ -301,7 +301,7 @@ namespace YouTube_downloader
                     } while (errorCode != 200 && errors++ < 9 && !downloadCancelRequired);
                     if (downloadCancelRequired)
                     {
-                        errorCode = FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER;
+                        errorCode = FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER;
                     }
                     if (errorCode != 200)
                     {
@@ -353,7 +353,7 @@ namespace YouTube_downloader
 
                         videoTrack.url = $"{videoTrack.cipherUrl}&sig={cipherDecrypted}";
 
-                        if (MultiThreadedDownloader.GetUrlContentLength(videoTrack.url, out _) != 200)
+                        if (FileDownloader.GetUrlContentLength(videoTrack.url, null, out _, out _) != 200)
                         {
                             return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                         }
@@ -364,7 +364,7 @@ namespace YouTube_downloader
                             string audioCipherDecrypted = DecryptCipherSignature(
                                 audioFormats[0].cipherSignatureEncrypted, config.CipherDecryptionAlgo);
                             audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
-                            if (MultiThreadedDownloader.GetUrlContentLength(audioFormats[0].url, out _) != 200)
+                            if (FileDownloader.GetUrlContentLength(audioFormats[0].url, null, out _, out _) != 200)
                             {
                                 return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                             }
@@ -452,7 +452,7 @@ namespace YouTube_downloader
                     #region Расшифровка Cipher
                     if (audioTrack.isCiphered)
                     {
-                        if (MultiThreadedDownloader.GetUrlContentLength(audioTrack.url, out _) != 200)
+                        if (FileDownloader.GetUrlContentLength(audioTrack.url, null, out _, out _) != 200)
                         {
 
                             if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
@@ -469,7 +469,7 @@ namespace YouTube_downloader
 
                             audioTrack.url = $"{audioTrack.cipherUrl}&sig={cipherDecrypted}";
 
-                            if (MultiThreadedDownloader.GetUrlContentLength(audioTrack.url, out _) != 200)
+                            if (FileDownloader.GetUrlContentLength(audioTrack.url, null, out _, out _) != 200)
                             {
                                 return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
                             }
@@ -705,7 +705,7 @@ namespace YouTube_downloader
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
-                                case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
+                                case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
                                     lblStatus.Text = "Состояние: Скачивание отменено";
                                     MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -714,12 +714,6 @@ namespace YouTube_downloader
                                 case FileDownloader.DOWNLOAD_ERROR_RANGE:
                                     lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
                                     MessageBox.Show($"{VideoInfo.Title}\nЗадан неправильный диапазон!", "Ошибка!",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-
-                                case FileDownloader.DOWNLOAD_ERROR_UNKNOWN:
-                                    lblStatus.Text = "Состояние: Неизвестная ошибка";
-                                    MessageBox.Show($"{VideoInfo.Title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     break;
 
@@ -789,7 +783,7 @@ namespace YouTube_downloader
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
+                        case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
                             lblStatus.Text = "Состояние: Скачивание отменено";
                             MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -798,12 +792,6 @@ namespace YouTube_downloader
                         case FileDownloader.DOWNLOAD_ERROR_RANGE:
                             lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
                             MessageBox.Show($"{VideoInfo.Title}\nЗадан неправильный диапазон!", "Ошибка!",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        case FileDownloader.DOWNLOAD_ERROR_UNKNOWN:
-                            lblStatus.Text = "Состояние: Неизвестная ошибка";
-                            MessageBox.Show($"{VideoInfo.Title}\nНеизвестная ошибка! Скачивание прервано!", "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
@@ -855,7 +843,7 @@ namespace YouTube_downloader
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
 
-                        case FileDownloader.DOWNLOAD_ERROR_ABORTED_BY_USER:
+                        case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
                             lblStatus.Text = "Состояние: Скачивание отменено";
                             MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);

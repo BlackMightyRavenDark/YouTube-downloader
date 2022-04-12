@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,27 @@ namespace YouTube_downloader
 {
     public sealed class MultiThreadedDownloader
     {
+        public string Url { get; set; } = null;
+
+        /// <summary>
+        /// Warning! The file name will be automatically changed after downloading if a file with that name already exists!
+        /// Therefore, you need to double-check this value after the download is complete.
+        /// </summary>
+        public string OutputFileName { get; set; } = null;
+
+        public string TempDirectory { get; set; } = null;
+        public string MergingDirectory { get; set; } = null;
+        public bool KeepDownloadedFileInMergingDirectory { get; set; } = false;
+        public long ContentLength { get; private set; } = -1L;
+        public long DownloadedBytes { get; private set; } = 0L;
+        public int UpdateInterval { get; set; } = 10;
+        public int LastErrorCode { get; private set; }
+        public string LastErrorMessage { get; private set; }
+        public int ThreadCount { get; set; } = 2;
+        public List<string> Chunks { get; private set; } = new List<string>();
+        public NameValueCollection Headers = new NameValueCollection();
+        private bool aborted = false;
+
         public const int MEGABYTE = 1048576; //1024 * 1024;
 
         public const int DOWNLOAD_ERROR_MERGING_CHUNKS = -200;
@@ -18,6 +40,8 @@ namespace YouTube_downloader
         public const int DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS = -204;
         public const int DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS = -205;
 
+        public delegate void ConnectingDelegate(object sender, string url);
+        public delegate void ConnectedDelegate(object sender, string url, long contentLength, ref int errorCode);
         public delegate void DownloadStartedDelegate(object sender, long contentLenth);
         public delegate void DownloadProgressDelegate(object sender, long bytesTransfered);
         public delegate void DownloadFinishedDelegate(object sender, long bytesTransfered, int errorCode, string fileName);
@@ -26,6 +50,8 @@ namespace YouTube_downloader
         public delegate void MergingProgressDelegate(object sender, int chunkId);
         public delegate void MergingFinishedDelegate(object sender, int errorCode);
 
+        public ConnectingDelegate Connecting;
+        public ConnectedDelegate Connected;
         public DownloadStartedDelegate DownloadStarted;
         public DownloadProgressDelegate DownloadProgress;
         public DownloadFinishedDelegate DownloadFinished;
@@ -34,43 +60,24 @@ namespace YouTube_downloader
         public MergingProgressDelegate MergingProgress;
         public MergingFinishedDelegate MergingFinished;
 
-
-        public string Url { get; set; } = null;
-
-        /// <summary>
-        /// Warning! The file name will be automatically changed after downloading if a file with that name already exists!
-        /// Therefore, you need to double-check this value after the download is complete.
-        /// </summary>
-        public string OutputFileName { get; set; } = null;
-        public string TempDirectory { get; set; } = null;
-        public string MergingDirectory { get; set; } = null;
-        public bool KeepDownloadedFileInMergingDirectory { get; set; } = false;
-        public long ContentLength { get; private set; } = -1L;
-        public long DownloadedBytes { get; private set; } = 0L;
-        public int UpdateInterval { get; set; } = 10;
-        public int ThreadCount { get; set; } = 2;
-        private bool aborted = false;
-        public List<string> Chunks { get; private set; } = new List<string>();
-
-        public static string GetNumberedFileName(string fn)
+        public static string GetNumberedFileName(string filePath)
         {
-            if (File.Exists(fn))
+            if (File.Exists(filePath))
             {
-                int n = fn.LastIndexOf(".");
-                string part1 = fn.Substring(0, n);
-                string ext = fn.Substring(n, fn.Length - n);
+                string dirPath = Path.GetDirectoryName(filePath);
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                string ext = Path.GetExtension(filePath);
+                string part1 = !string.IsNullOrEmpty(dirPath) ? $"{dirPath}\\{fileName}" : fileName;
                 string newFileName;
+                bool isExtensionPresent = !string.IsNullOrEmpty(ext) && !string.IsNullOrWhiteSpace(ext);
                 int i = 2;
                 do
                 {
-                    newFileName = $"{part1}_{i++}{ext}";
+                    newFileName = isExtensionPresent ? $"{part1}_{i++}{ext}" : $"{part1}_{i++}";
                 } while (File.Exists(newFileName));
                 return newFileName;
             }
-            else
-            {
-                return fn;
-            }
+            return filePath;
         }
 
         public static bool AppendStream(Stream streamFrom, Stream streamTo)
@@ -88,15 +95,6 @@ namespace YouTube_downloader
             } while (true);
 
             return streamTo.Length == size + streamFrom.Length;
-        }
-
-        public static int GetUrlContentLength(string url, out long contentLength)
-        {
-            WebContent webContent = new WebContent();
-            int errorCode = webContent.GetResponseStream(url);
-            contentLength = errorCode == 200 ? webContent.Length : -1L;
-            webContent.Dispose();
-            return errorCode;
         }
 
         private IEnumerable<Tuple<long, long>> Split(long contentLength, int chunkCount)
@@ -122,27 +120,47 @@ namespace YouTube_downloader
             DownloadedBytes = 0;
             if (string.IsNullOrEmpty(Url) || string.IsNullOrWhiteSpace(Url))
             {
+                LastErrorCode = DOWNLOAD_ERROR_NO_URL_SPECIFIED;
                 return DOWNLOAD_ERROR_NO_URL_SPECIFIED;
             }
             if (string.IsNullOrEmpty(OutputFileName) || string.IsNullOrWhiteSpace(OutputFileName))
             {
+                LastErrorCode = DOWNLOAD_ERROR_NO_FILE_NAME_SPECIFIED;
                 return DOWNLOAD_ERROR_NO_FILE_NAME_SPECIFIED;
             }
             if (!string.IsNullOrEmpty(TempDirectory) && !string.IsNullOrWhiteSpace(TempDirectory) && !Directory.Exists(TempDirectory))
             {
+                LastErrorCode = DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS;
                 return DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS;
             }
             if (!string.IsNullOrEmpty(MergingDirectory) && !string.IsNullOrWhiteSpace(MergingDirectory) && !Directory.Exists(MergingDirectory))
             {
+                LastErrorCode = DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS;
                 return DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS;
             }
-            int errorCode = GetUrlContentLength(Url, out long contentLength);
-            if (errorCode != 200)
+
+            List<char> driveLetters = GetUsedDriveLetters();
+            if (driveLetters.Count > 0 && !driveLetters.Contains('\\') && !IsDrivesReady(driveLetters))
             {
-                return errorCode;
+                return DOWNLOAD_ERROR_DRIVE_NOT_READY;
+            }
+
+            Connecting?.Invoke(this, Url);
+            LastErrorCode = GetUrlContentLength(Url, Headers, out long contentLength, out string errorText);
+            int errorCode = LastErrorCode;
+            Connected?.Invoke(this, Url, contentLength, ref errorCode);
+            if (LastErrorCode != errorCode)
+            {
+                LastErrorCode = errorCode;
+            }
+            if (LastErrorCode != 200)
+            {
+                LastErrorMessage = errorText;
+                return LastErrorCode;
             }
             if (contentLength == 0)
             {
+                LastErrorCode = DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT;
                 return DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT;
             }
 
@@ -153,9 +171,9 @@ namespace YouTube_downloader
             Progress<ProgressItem> progress = new Progress<ProgressItem>();
             progress.ProgressChanged += (s, progressItem) =>
             {
-                threadProgressDict[progressItem.Id] = progressItem;
+                threadProgressDict[progressItem.TaskId] = progressItem;
 
-                DownloadedBytes = threadProgressDict.Values.Select(it => it.Processed).Sum();
+                DownloadedBytes = threadProgressDict.Values.Select(it => it.ProcessedBytes).Sum();
 
                 DownloadProgress?.Invoke(this, DownloadedBytes);
                 CancelTest?.Invoke(this, ref aborted);
@@ -171,7 +189,7 @@ namespace YouTube_downloader
                 ThreadCount = 2;
             }
             int chunkCount = contentLength > MEGABYTE ? ThreadCount : 1;
-            var tasks = Split(contentLength, chunkCount).Select((range, id) => Task.Run(() =>
+            var tasks = Split(contentLength, chunkCount).Select((range, taskId) => Task.Run(() =>
             {
                 long chunkFirstByte = range.Item1;
                 long chunkLastByte = range.Item2;
@@ -182,7 +200,7 @@ namespace YouTube_downloader
                 if (chunkCount > 1)
                 {
                     string path = Path.GetFileName(OutputFileName);
-                    chunkFileName = $"{path}.chunk_{id}.tmp";
+                    chunkFileName = $"{path}.chunk_{taskId}.tmp";
                     if (!string.IsNullOrEmpty(TempDirectory) && !string.IsNullOrWhiteSpace(TempDirectory))
                     {
                         chunkFileName = TempDirectory.EndsWith("\\") ?
@@ -199,14 +217,16 @@ namespace YouTube_downloader
                 FileDownloader downloader = new FileDownloader();
                 downloader.ProgressUpdateInterval = UpdateInterval;
                 downloader.Url = Url;
+                downloader.Headers = Headers;
                 downloader.SetRange(chunkFirstByte, chunkLastByte);
+
                 downloader.WorkProgress += (object sender, long transfered, long contentLen) =>
                 {
-                    reporter.Report(new ProgressItem(chunkFileName, id, transfered, chunkLastByte));
+                    reporter.Report(new ProgressItem(chunkFileName, taskId, transfered, chunkLastByte));
                 };
                 downloader.WorkFinished += (object sender, long transfered, long contentLen, int errCode) =>
                 {
-                    reporter.Report(new ProgressItem(chunkFileName, id, transfered, chunkLastByte));
+                    reporter.Report(new ProgressItem(chunkFileName, taskId, transfered, chunkLastByte));
                 };
                 downloader.CancelTest += (object s, ref bool stop) =>
                 {
@@ -214,16 +234,17 @@ namespace YouTube_downloader
                 };
 
                 Stream stream = File.OpenWrite(chunkFileName);
-                errorCode = downloader.Download(stream);
+                LastErrorCode = downloader.Download(stream);
                 stream.Dispose();
 
-                if (errorCode != 200 && errorCode != 206)
+                if (LastErrorCode != 200 && LastErrorCode != 206)
                 {
                     if (aborted)
                     {
                         throw new OperationCanceledException();
                     }
-                    throw new Exception($"Error code = {errorCode}");
+                    LastErrorMessage = downloader.LastErrorMessage;
+                    throw new Exception($"Error code = {LastErrorCode}");
                 }
             }
             ));
@@ -235,12 +256,14 @@ namespace YouTube_downloader
             catch (OperationCanceledException ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                return DOWNLOAD_ERROR_ABORTED_BY_USER;
+                LastErrorMessage = ex.Message;
+                return DOWNLOAD_ERROR_CANCELED_BY_USER;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                return DOWNLOAD_ERROR_UNKNOWN;
+                LastErrorMessage = ex.Message;
+                return ex.HResult;
             }
 
             Chunks.Clear();
@@ -251,34 +274,24 @@ namespace YouTube_downloader
             if (Chunks.Count > 1)
             {
                 MergingStarted?.Invoke(this, Chunks.Count);
-                errorCode = await MergeChunks();
-                MergingFinished?.Invoke(this, errorCode);
+                LastErrorCode = await MergeChunks();
+                MergingFinished?.Invoke(this, LastErrorCode);
             }
             else
             {
                 string chunkFileName = Chunks[0];
                 if (File.Exists(chunkFileName))
                 {
-                    if (KeepDownloadedFileInMergingDirectory &&
-                        !string.IsNullOrEmpty(MergingDirectory) && !string.IsNullOrWhiteSpace(MergingDirectory))
-                    {
-                        string fn = Path.GetFileName(OutputFileName);
-                        OutputFileName = MergingDirectory.EndsWith("\\") ? MergingDirectory + fn : $"{MergingDirectory}\\{fn}";
-                    }
                     OutputFileName = GetNumberedFileName(OutputFileName);
                     File.Move(chunkFileName, OutputFileName);
-                    errorCode = 200;
                 }
-                else
-                {
-                    errorCode = 400;
-                }
+                LastErrorCode = 200;
             }
             Chunks.Clear();
 
-            DownloadFinished?.Invoke(this, DownloadedBytes, errorCode, OutputFileName);
+            DownloadFinished?.Invoke(this, DownloadedBytes, LastErrorCode, OutputFileName);
 
-            return errorCode;
+            return LastErrorCode;
         }
 
         private async Task<int> MergeChunks()
@@ -363,7 +376,7 @@ namespace YouTube_downloader
 
                 if (aborted)
                 {
-                    return DOWNLOAD_ERROR_ABORTED_BY_USER;
+                    return DOWNLOAD_ERROR_CANCELED_BY_USER;
                 }
 
                 if (KeepDownloadedFileInMergingDirectory &&
@@ -380,21 +393,85 @@ namespace YouTube_downloader
 
             return res;
         }
+
+        public List<char> GetUsedDriveLetters()
+        {
+            List<char> driveLetters = new List<char>();
+            if (!string.IsNullOrEmpty(OutputFileName) && !string.IsNullOrWhiteSpace(OutputFileName))
+            {
+                char c = OutputFileName.Length > 2 && OutputFileName[1] == ':' && OutputFileName[2] == '\\' ? OutputFileName[0] :
+                    Environment.GetCommandLineArgs()[0][0];
+                driveLetters.Add(char.ToUpper(c));
+            }
+            if (!string.IsNullOrEmpty(TempDirectory) && !driveLetters.Contains(char.ToUpper(TempDirectory[0])))
+            {
+                driveLetters.Add(char.ToUpper(TempDirectory[0]));
+            }
+            if (!string.IsNullOrEmpty(MergingDirectory) && !driveLetters.Contains(char.ToUpper(MergingDirectory[0])))
+            {
+                driveLetters.Add(char.ToUpper(MergingDirectory[0]));
+            }
+            return driveLetters;
+        }
+
+        public bool IsDrivesReady(IEnumerable<char> driveLetters)
+        {
+            foreach (char driveLetter in driveLetters)
+            {
+                if (driveLetter == '\\')
+                {
+                    return false;
+                }
+                DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
+                if (!driveInfo.IsReady)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static string ErrorCodeToString(int errorCode)
+        {
+            switch (errorCode)
+            {
+                case DOWNLOAD_ERROR_NO_URL_SPECIFIED:
+                    return "Не указана ссылка!";
+
+                case DOWNLOAD_ERROR_NO_FILE_NAME_SPECIFIED:
+                    return "Не указано имя файла!";
+
+                case DOWNLOAD_ERROR_MERGING_CHUNKS:
+                    return "Ошибка объединения чанков!";
+
+                case DOWNLOAD_ERROR_CREATE_FILE:
+                    return "Ошибка создания файла!";
+
+                case DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS:
+                    return "Не найдена папка для временных файлов!";
+
+                case DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS:
+                    return "Не найдена папка для объединения чанков!";
+
+                default:
+                    return FileDownloader.ErrorCodeToString(errorCode);
+            }
+        }
     }
 
     public sealed class ProgressItem
     {
-        public string FileName { get; private set; }
-        public int Id { get; }
-        public long Processed { get; }
-        public long Total { get; }
+        public string FileName { get; set; }
+        public int TaskId { get; }
+        public long ProcessedBytes { get; }
+        public long TotalBytes { get; }
 
-        public ProgressItem(string fileName, int id, long processed, long total)
+        public ProgressItem(string fileName, int taskId, long processedBytes, long totalBtyes)
         {
             FileName = fileName;
-            Id = id;
-            Processed = processed;
-            Total = total;
+            TaskId = taskId;
+            ProcessedBytes = processedBytes;
+            TotalBytes = totalBtyes;
         }
     }
 }
