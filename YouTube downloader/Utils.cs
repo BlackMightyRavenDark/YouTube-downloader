@@ -759,11 +759,13 @@ namespace YouTube_downloader
     public sealed class DownloadResult
     {
         public int ErrorCode { get; private set; }
+        public string ErrorMessage { get; private set; }
         public string FileName { get; private set; }
 
-        public DownloadResult(int errorCode, string fileName)
+        public DownloadResult(int errorCode, string errorMessage, string fileName)
         {
             ErrorCode = errorCode;
+            ErrorMessage = errorMessage;
             FileName = fileName;
         }
     }

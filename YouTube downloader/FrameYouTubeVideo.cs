@@ -267,7 +267,7 @@ namespace YouTube_downloader
                     $" ({string.Format("{0:F2}", percent)}%), {mediaFile.GetShortInfo()}";
             };
 
-            int res = await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 if (File.Exists(fnDashTmp))
                 {
@@ -296,7 +296,7 @@ namespace YouTube_downloader
                         if (!appended)
                         {
                             fileStream.Dispose();
-                            return MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS;
+                            return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, null);
                         }
                     } while (errorCode != 200 && errors++ < 9 && !downloadCancelRequired);
                     if (downloadCancelRequired)
@@ -315,10 +315,217 @@ namespace YouTube_downloader
                     fnDashFinal = MultiThreadedDownloader.GetNumberedFileName(fnDash);
                     File.Move(fnDashTmp, fnDashFinal);
                 }
-                return errorCode;
+                return new DownloadResult(errorCode, d.LastErrorMessage, fnDashFinal);
             }
             );
-            return new DownloadResult(res, fnDashFinal);
+        }
+
+        private async Task<DownloadResult> DownloadYouTubeVideoFile(YouTubeVideoFile videoFile, string formattedFileName)
+        {
+            if (videoFile.isDashManifest)
+            {
+                #region Скачивание видео Даши
+                return await DownloadDash(videoFile, formattedFileName);
+                #endregion
+            }
+            else //без Даши
+            {
+                #region Скачивание видео-дорожки
+                #region Расшифровка Cipher
+                if (videoFile.isCiphered)
+                {
+                    if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
+                    {
+                        return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null, null);
+                    }
+
+                    string cipherDecrypted = DecryptCipherSignature(videoFile.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
+
+                    if (string.IsNullOrEmpty(cipherDecrypted))
+                    {
+                        return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+                    }
+
+                    videoFile.url = $"{videoFile.cipherUrl}&sig={cipherDecrypted}";
+
+                    if (FileDownloader.GetUrlContentLength(videoFile.url, null, out _, out _) != 200)
+                    {
+                        return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+                    }
+
+                    if (!videoFile.isContainer)
+                    {
+                        //расшифровка аудио
+                        string audioCipherDecrypted = DecryptCipherSignature(
+                            audioFormats[0].cipherSignatureEncrypted, config.CipherDecryptionAlgo);
+                        audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
+                        if (FileDownloader.GetUrlContentLength(audioFormats[0].url, null, out _, out _) != 200)
+                        {
+                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+                        }
+                    }
+                }
+                #endregion
+                MultiThreadedDownloader downloader = new MultiThreadedDownloader();
+                downloader.ThreadCount = config.ThreadCountVideo;
+                downloader.Url = videoFile.url;
+                downloader.TempDirectory = config.TempDirPath;
+                downloader.MergingDirectory = config.ChunksMergingDirPath;
+
+                string fnVideo;
+                if (videoFile.isContainer)
+                {
+                    fnVideo = MultiThreadedDownloader.GetNumberedFileName(
+                        $"{config.DownloadingDirPath}{formattedFileName}.{videoFile.mimeExt}");
+                    downloader.KeepDownloadedFileInMergingDirectory = false;
+                }
+                else
+                {
+                    bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
+                        !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
+                        File.Exists(config.FfmpegExeFilePath);
+                    fnVideo = MultiThreadedDownloader.GetNumberedFileName(
+                        (ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
+                        $"{formattedFileName}_{videoFile.formatId}.{videoFile.fileExtension}");
+                    downloader.KeepDownloadedFileInMergingDirectory = true;
+                }
+                downloader.OutputFileName = fnVideo;
+                downloader.DownloadStarted += (s, size) =>
+                {
+                    progressBarDownload.Value = 0;
+                    progressBarDownload.Maximum = 100;
+
+                    lblStatus.Text = "Скачивание видео:";
+                    lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {videoFile.GetShortInfo()}";
+                    lblProgress.Left = lblStatus.Left + lblStatus.Width;
+                };
+                downloader.DownloadProgress += (object s, long bytesTransfered) =>
+                {
+                    long fileSize = downloader.ContentLength != 0 ? downloader.ContentLength : videoFile.contentLength;
+                    double percent = 100.0 / fileSize * bytesTransfered;
+                    progressBarDownload.Value = (int)Math.Round(percent);
+
+                    lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
+                        $" ({string.Format("{0:F2}", percent)}%), {videoFile.GetShortInfo()}";
+
+                };
+                downloader.CancelTest += (object s, ref bool cancel) =>
+                {
+                    cancel = downloadCancelRequired;
+                };
+                downloader.MergingStarted += (s, chunkCount) =>
+                {
+                    progressBarDownload.Value = 0;
+                    progressBarDownload.Maximum = chunkCount;
+
+                    lblStatus.Text = "Объединение чанков видео:";
+                    lblProgress.Text = $"0 / {chunkCount}";
+                    lblProgress.Left = lblStatus.Left + lblStatus.Width;
+                };
+                downloader.MergingProgress += (s, chunkId) =>
+                {
+                    lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
+                    progressBarDownload.Value = chunkId + 1;
+                };
+                int res = await downloader.Download();
+                return new DownloadResult(res, downloader.LastErrorMessage, downloader.OutputFileName);
+                #endregion
+            }
+        }
+
+        private async Task<DownloadResult> DownloadYouTubeAudioFile(
+            YouTubeAudioFile audioFile, string formattedFileName, bool audioOnly)
+        {
+            if (audioFile.isDashManifest)
+            {
+                #region Скачивание аудио Даши
+                return await DownloadDash(audioFile, formattedFileName);
+                #endregion
+            }
+            else // без Даши
+            {
+                #region Скачивание аудио-дорожки
+                #region Расшифровка Cipher
+                if (audioFile.isCiphered)
+                {
+                    if (FileDownloader.GetUrlContentLength(audioFile.url, null, out _, out _) != 200)
+                    {
+
+                        if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
+                        {
+                            return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null, null);
+                        }
+
+                        string cipherDecrypted = DecryptCipherSignature(audioFile.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
+
+                        if (string.IsNullOrEmpty(cipherDecrypted))
+                        {
+                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+                        }
+
+                        audioFile.url = $"{audioFile.cipherUrl}&sig={cipherDecrypted}";
+
+                        if (FileDownloader.GetUrlContentLength(audioFile.url, null, out _, out _) != 200)
+                        {
+                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+                        }
+                    }
+                }
+                #endregion
+
+                MultiThreadedDownloader downloader = new MultiThreadedDownloader();
+                downloader.ThreadCount = config.ThreadCountAudio;
+                downloader.Url = audioFile.url;
+                downloader.TempDirectory = config.TempDirPath;
+                downloader.MergingDirectory = config.ChunksMergingDirPath;
+                downloader.KeepDownloadedFileInMergingDirectory = true;
+
+                bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
+                    !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && File.Exists(config.FfmpegExeFilePath);
+                string fnAudio = MultiThreadedDownloader.GetNumberedFileName(
+                    (config.MergeToContainer && !audioOnly && ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
+                     $"{formattedFileName}_{audioFile.formatId}.{audioFile.fileExtension}");
+                downloader.OutputFileName = fnAudio;
+                downloader.DownloadStarted += (s, size) =>
+                {
+                    progressBarDownload.Value = 0;
+                    progressBarDownload.Maximum = 100;
+
+                    lblStatus.Text = "Скачивание аудио:";
+                    lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {audioFile.GetShortInfo()}";
+                    lblProgress.Left = lblStatus.Left + lblStatus.Width;
+                };
+                downloader.DownloadProgress += (object s, long bytesTransfered) =>
+                {
+                    long fileSize = downloader.ContentLength != 0 ? downloader.ContentLength : audioFile.contentLength;
+                    double percent = 100 / (double)fileSize * bytesTransfered;
+                    progressBarDownload.Value = (int)Math.Round(percent);
+
+                    lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
+                        $" ({string.Format("{0:F2}", percent)}%), {audioFile.GetShortInfo()}";
+                };
+                downloader.CancelTest += (object s, ref bool cancel) =>
+                {
+                    cancel = downloadCancelRequired;
+                };
+                downloader.MergingStarted += (s, chunkCount) =>
+                {
+                    progressBarDownload.Value = 0;
+                    progressBarDownload.Maximum = chunkCount;
+
+                    lblStatus.Text = "Объединение чанков аудио:";
+                    lblProgress.Text = $"0 / {chunkCount}";
+                    lblProgress.Left = lblStatus.Left + lblStatus.Width;
+                };
+                downloader.MergingProgress += (s, chunkId) =>
+                {
+                    lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
+                    progressBarDownload.Value = chunkId + 1;
+                };
+                int res = await downloader.Download();
+                return new DownloadResult(res, downloader.LastErrorMessage, downloader.OutputFileName);
+                #endregion
+            }
         }
 
         private async Task<DownloadResult> DownloadYouTubeMediaFile(
@@ -326,212 +533,14 @@ namespace YouTube_downloader
         {
             if (mediaFile is YouTubeVideoFile)
             {
-                YouTubeVideoFile videoTrack = (YouTubeVideoFile)mediaFile;
-                if (videoTrack.isDashManifest)
-                {
-                    #region Скачивание видео Даши
-                    return await DownloadDash(videoTrack, formattedFileName);
-                    #endregion
-                }
-                else //без Даши
-                {
-                    #region Скачивание видео-дорожки
-                    #region Расшифровка Cipher
-                    if (videoTrack.isCiphered)
-                    {
-                        if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
-                        {
-                            return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null);
-                        }
-
-                        string cipherDecrypted = DecryptCipherSignature(videoTrack.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
-
-                        if (string.IsNullOrEmpty(cipherDecrypted))
-                        {
-                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
-                        }
-
-                        videoTrack.url = $"{videoTrack.cipherUrl}&sig={cipherDecrypted}";
-
-                        if (FileDownloader.GetUrlContentLength(videoTrack.url, null, out _, out _) != 200)
-                        {
-                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
-                        }
-
-                        if (!videoTrack.isContainer)
-                        {
-                            //расшифровка аудио
-                            string audioCipherDecrypted = DecryptCipherSignature(
-                                audioFormats[0].cipherSignatureEncrypted, config.CipherDecryptionAlgo);
-                            audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
-                            if (FileDownloader.GetUrlContentLength(audioFormats[0].url, null, out _, out _) != 200)
-                            {
-                                return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
-                            }
-                        }
-                    }
-                    #endregion
-                    MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                    downloader.ThreadCount = config.ThreadCountVideo;
-                    downloader.Url = videoTrack.url;
-                    downloader.TempDirectory = config.TempDirPath;
-                    downloader.MergingDirectory = config.ChunksMergingDirPath;
-
-                    string fnVideo;
-                    if (videoTrack.isContainer)
-                    {
-                        fnVideo = MultiThreadedDownloader.GetNumberedFileName(
-                            $"{config.DownloadingDirPath}{formattedFileName}.{videoTrack.mimeExt}");
-                        downloader.KeepDownloadedFileInMergingDirectory = false;
-                    }
-                    else
-                    {
-                        bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) && 
-                            !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && 
-                            File.Exists(config.FfmpegExeFilePath);
-                        fnVideo = MultiThreadedDownloader.GetNumberedFileName(
-                            (ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
-                            $"{formattedFileName}_{videoTrack.formatId}.{videoTrack.fileExtension}");
-                        downloader.KeepDownloadedFileInMergingDirectory = true;
-                    }
-                    downloader.OutputFileName = fnVideo;
-                    downloader.DownloadStarted += (s, size) =>
-                    {
-                        progressBarDownload.Value = 0;
-                        progressBarDownload.Maximum = 100;
-
-                        lblStatus.Text = "Скачивание видео:";
-                        lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {videoTrack.GetShortInfo()}";
-                        lblProgress.Left = lblStatus.Left + lblStatus.Width;
-                    };
-                    downloader.DownloadProgress += (object s, long bytesTransfered) =>
-                    {
-                        long fileSize = downloader.ContentLength != 0 ? downloader.ContentLength : videoTrack.contentLength;
-                        double percent = 100.0 / fileSize * bytesTransfered;
-                        progressBarDownload.Value = (int)Math.Round(percent);
-
-                        lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
-                            $" ({string.Format("{0:F2}", percent)}%), {videoTrack.GetShortInfo()}";
-
-                    };
-                    downloader.CancelTest += (object s, ref bool cancel) =>
-                    {
-                        cancel = downloadCancelRequired;
-                    };
-                    downloader.MergingStarted += (s, chunkCount) =>
-                    {
-                        progressBarDownload.Value = 0;
-                        progressBarDownload.Maximum = chunkCount;
-                 
-                        lblStatus.Text = "Объединение чанков видео:";
-                        lblProgress.Text = $"0 / {chunkCount}";
-                        lblProgress.Left = lblStatus.Left + lblStatus.Width;
-                    };
-                    downloader.MergingProgress += (s, chunkId) =>
-                    {
-                        lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
-                        progressBarDownload.Value = chunkId + 1;
-                    };
-                    int res = await downloader.Download();
-                    return new DownloadResult(res, downloader.OutputFileName);
-                    #endregion
-                }
+                return await DownloadYouTubeVideoFile(mediaFile as YouTubeVideoFile, formattedFileName);
             }
             else if (mediaFile is YouTubeAudioFile)
             {
-                YouTubeAudioFile audioTrack = (YouTubeAudioFile)mediaFile;
-                if (audioTrack.isDashManifest)
-                {
-                    #region Скачивание аудио Даши
-                    return await DownloadDash(audioTrack, formattedFileName);
-                    #endregion
-                }
-                else // без Даши
-                {
-                    #region Скачивание аудио-дорожки
-                    #region Расшифровка Cipher
-                    if (audioTrack.isCiphered)
-                    {
-                        if (FileDownloader.GetUrlContentLength(audioTrack.url, null, out _, out _) != 200)
-                        {
-
-                            if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
-                            {
-                                return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null);
-                            }
-
-                            string cipherDecrypted = DecryptCipherSignature(audioTrack.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
-
-                            if (string.IsNullOrEmpty(cipherDecrypted))
-                            {
-                                return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
-                            }
-
-                            audioTrack.url = $"{audioTrack.cipherUrl}&sig={cipherDecrypted}";
-
-                            if (FileDownloader.GetUrlContentLength(audioTrack.url, null, out _, out _) != 200)
-                            {
-                                return new DownloadResult(ERROR_CIPHER_DECRYPTION, null);
-                            }
-                        }
-                    }
-                    #endregion
-                    
-                    MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                    downloader.ThreadCount = config.ThreadCountAudio;
-                    downloader.Url = audioTrack.url;
-                    downloader.TempDirectory = config.TempDirPath;
-                    downloader.MergingDirectory = config.ChunksMergingDirPath;
-                    downloader.KeepDownloadedFileInMergingDirectory = true;
-
-                    bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) && 
-                        !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && File.Exists(config.FfmpegExeFilePath);
-                    string fnAudio = MultiThreadedDownloader.GetNumberedFileName(
-                        (config.MergeToContainer && !audioOnly && ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
-                         $"{formattedFileName}_{audioTrack.formatId}.{audioTrack.fileExtension}");
-                    downloader.OutputFileName = fnAudio;
-                    downloader.DownloadStarted += (s, size) =>
-                    {
-                        progressBarDownload.Value = 0;
-                        progressBarDownload.Maximum = 100;
-
-                        lblStatus.Text = "Скачивание аудио:";
-                        lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {audioTrack.GetShortInfo()}";
-                        lblProgress.Left = lblStatus.Left + lblStatus.Width;
-                    };
-                    downloader.DownloadProgress += (object s, long bytesTransfered) =>
-                    {
-                        long fileSize = downloader.ContentLength != 0 ? downloader.ContentLength : audioTrack.contentLength;
-                        double percent = 100 / (double)fileSize * bytesTransfered;
-                        progressBarDownload.Value = (int)Math.Round(percent);
-
-                        lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
-                            $" ({string.Format("{0:F2}", percent)}%), {audioTrack.GetShortInfo()}";
-                    };
-                    downloader.CancelTest += (object s, ref bool cancel) =>
-                    {
-                        cancel = downloadCancelRequired;
-                    };
-                    downloader.MergingStarted += (s, chunkCount) =>
-                    {
-                        progressBarDownload.Value = 0;
-                        progressBarDownload.Maximum = chunkCount;
-
-                        lblStatus.Text = "Объединение чанков аудио:";
-                        lblProgress.Text = $"0 / {chunkCount}";
-                        lblProgress.Left = lblStatus.Left + lblStatus.Width;
-                    };
-                    downloader.MergingProgress += (s, chunkId) =>
-                    {
-                        lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
-                        progressBarDownload.Value = chunkId + 1;
-                    };
-                    int res = await downloader.Download();
-                    return new DownloadResult(res, downloader.OutputFileName);
-                    #endregion
-                }
+                return await DownloadYouTubeAudioFile(mediaFile as YouTubeAudioFile, formattedFileName, audioOnly);
             }
-            return new DownloadResult(400, string.Empty);
+
+            return null;
         }
 
         private async void MenuItemDownloadClick(object sender, EventArgs e)
@@ -583,14 +592,18 @@ namespace YouTube_downloader
             lblStatus.Text = "Скачивание...";
             lblProgress.Text = null;
 
-            ToolStripMenuItem mi = sender as ToolStripMenuItem;
+            bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
+                !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
+                File.Exists(config.FfmpegExeFilePath);
+
             string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
+
+            ToolStripMenuItem mi = sender as ToolStripMenuItem;
+            List<YouTubeMediaFile> tracksToDownload = new List<YouTubeMediaFile>();
+            tracksToDownload.Add(mi.Tag as YouTubeMediaFile);
             if (mi.Tag is YouTubeVideoFile)
             {
                 YouTubeVideoFile videoFile = mi.Tag as YouTubeVideoFile;
-                bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) && 
-                    !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && 
-                    File.Exists(config.FfmpegExeFilePath);
                 if (videoFile.isHlsManifest)
                 {
                     lblStatus.Text = null;
@@ -602,159 +615,123 @@ namespace YouTube_downloader
                     return;
                 }
 
-                bool stop = false;
-                if (config.MergeToContainer && !ffmpegExists)
+                if (!videoFile.isContainer)
                 {
-                    string msg = "Формат данного видео является адаптивным. " +
-                        "Это значит, что дорожки видео и аудио хранятся по отдельности. " +
-                        "Чтобы склеить их воедино, нужен FFMPEG.EXE. Но он не указан в настройках или не найден.\n" +
-                        "Продолжить скачивание без склеивания?";
-                    if (MessageBox.Show(msg, "Внимание!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    bool stop = false;
+                    if (config.MergeToContainer && !ffmpegExists)
                     {
-                        stop = true;
+                        string msg = "Формат данного видео является адаптивным. " +
+                            "Это значит, что дорожки видео и аудио хранятся по отдельности. " +
+                            "Чтобы склеить их воедино, нужен FFMPEG.EXE. Но он не указан в настройках или не найден.\n" +
+                            "Продолжить скачивание без склеивания?";
+                        if (MessageBox.Show(msg, "Внимание!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            stop = true;
+                        }
+                    }
+                    if (stop)
+                    {
+                        downloading = false;
+                        btnDownload.Enabled = true;
+                        return;
+                    }
+
+                    if (audioFormats.Count > 0)
+                    {
+                        tracksToDownload.Add(audioFormats[0]);
                     }
                 }
-                if (stop)
+            }
+
+            btnDownload.Text = "Отмена";
+            btnDownload.Enabled = true;
+
+            List<DownloadResult> downloadResults = new List<DownloadResult>();
+            bool audioOnly = tracksToDownload.Count == 1 && tracksToDownload[0] is YouTubeAudioFile;
+            int errorCode;
+            int counter = 0;
+            do
+            {
+                DownloadResult downloadResult = await DownloadYouTubeMediaFile(tracksToDownload[counter], formattedFileName, audioOnly);
+                if (downloadResult == null)
                 {
-                    downloading = false;
-                    btnDownload.Enabled = true;
-                    return;
-                }
-                btnDownload.Text = "Отмена";
-                btnDownload.Enabled = true;
-
-                //TODO: Refactor this shit!
-                DownloadResult resVideo = await DownloadYouTubeMediaFile(mi.Tag as YouTubeVideoFile, formattedFileName);
-                if (resVideo.ErrorCode == 200)
-                {
-                    if (!videoFile.isContainer)
-                    {
-                        lblProgress.Text = null;
-                        lblStatus.Text = "Состояние: Скачивание аудио...";
-                        DownloadResult resAudio = await DownloadYouTubeMediaFile(audioFormats[0], formattedFileName);
-
-                        btnDownload.Enabled = false;
-                        lblProgress.Text = null;
-                        lblStatus.Text = "Состояние: Подготовка...";
-                        Application.DoEvents();
-                        if (resAudio.ErrorCode == 200)
-                        {
-                            if (config.MergeToContainer)
-                            {
-                                if (ffmpegExists)
-                                {
-                                    lblStatus.Text = "Состояние: Объединение видео и аудио...";
-                                    string ext = (videoFile.fileExtension == "m4v" &&
-                                        audioFormats[0].fileExtension == "m4a") ? "mp4" : "mkv";
-                                    await MergeYouTubeMediaTracks(resVideo.FileName, resAudio.FileName,
-                                        MultiThreadedDownloader.GetNumberedFileName($"{config.DownloadingDirPath}{formattedFileName}.{ext}"));
-                                    if (config.DeleteSourceFiles)
-                                    {
-                                        if (File.Exists(resVideo.FileName))
-                                        {
-                                            File.Delete(resVideo.FileName);
-                                        }
-                                        if (File.Exists(resAudio.FileName))
-                                        {
-                                            File.Delete(resAudio.FileName);
-                                        }
-                                    }
-                                }
-                            }
-
-                            //сохранение картинки
-                            if (config.SaveImagePreview && VideoInfo.ImageData != null)
-                            {
-                                SaveImageToFile(formattedFileName);
-                            }
-                            lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
-                            MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            lblStatus.Text = "Состояние: Скачано";
-                        }
-                        else
-                        {
-                            switch (resAudio.ErrorCode)
-                            {
-                                case ERROR_CIPHER_DECRYPTION:
-                                    lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
-                                    MessageBox.Show($"{VideoInfo.Title}\n" +
-                                        "Ошибка расшифровки ссылки! Попробуйте ещё раз.", "Ошибка!",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-
-                                case ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM:
-                                    lblStatus.Text = "Состояние: Ошибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM";
-                                    string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
-                                        "для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
-                                        "известную одному лишь дьяволу.";
-                                    MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
-                                       MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-
-                                case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
-                                    lblStatus.Text = "Состояние: Ошибка объединения чанков видео";
-                                    MessageBox.Show($"{VideoInfo.Title}\nОшибка объединения чанков видео!\n" +
-                                        "Повторите попытку скачивания.", "Ошибка!",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-
-                                case FileDownloader.DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
-                                    lblStatus.Text = "Состояние: Ошибка! Файл на сервере пуст!";
-                                    MessageBox.Show($"{VideoInfo.Title}\nФайл на сервере пуст!", "Ошибка!",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-
-                                case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
-                                    lblStatus.Text = "Состояние: Скачивание отменено";
-                                    MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    break;
-
-                                case FileDownloader.DOWNLOAD_ERROR_RANGE:
-                                    lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
-                                    MessageBox.Show($"{VideoInfo.Title}\nЗадан неправильный диапазон!", "Ошибка!",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-
-                                default:
-                                    lblStatus.Text = $"Состояние: Ошибка {resAudio.ErrorCode}";
-                                    MessageBox.Show($"{VideoInfo.Title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
-                                       MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        lblStatus.Text = null;
-                        lblProgress.Text = null;
-
-                        //сохранение картинки
-                        if (config.SaveImagePreview && VideoInfo.ImageData != null)
-                        {
-                            SaveImageToFile(formattedFileName);
-                        }
-                        lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
-                        MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        lblStatus.Text = "Состояние: Скачано";
-                    }
+                    errorCode = 400;
+                    break;
                 }
                 else
                 {
-                    lblProgress.Text = null;
+                    errorCode = downloadResult.ErrorCode;
+                    downloadResults.Add(downloadResult);
+                }
+                counter++;
+            }
+            while (errorCode == 200 && counter < tracksToDownload.Count);
 
-                    switch (resVideo.ErrorCode)
+            lblProgress.Text = null;
+
+            if (errorCode == 200)
+            {
+                if (config.MergeToContainer)
+                {
+                    if (ffmpegExists && tracksToDownload.Count == 2)
                     {
-                        case ERROR_CIPHER_DECRYPTION:
-                            lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
-                            MessageBox.Show($"{VideoInfo.Title}\n" +
-                                "Ошибка расшифровки ссылки! Попробуйте ещё раз.", "Ошибка!",
-                               MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
+                        lblStatus.Text = "Состояние: Объединение видео и аудио...";
+                        lblStatus.Refresh();
 
-                        case ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM:
+                        string ext = "mp4";
+                        foreach (YouTubeMediaFile mediaFile in tracksToDownload)
+                        {
+                            if (mediaFile.mimeExt == "webm" || mediaFile.mimeExt == "weba")
+                            {
+                                ext = "mkv";
+                                break;
+                            }
+                        }
+                        await MergeYouTubeMediaTracks(downloadResults[0].FileName, downloadResults[1].FileName,
+                            MultiThreadedDownloader.GetNumberedFileName($"{config.DownloadingDirPath}{formattedFileName}.{ext}"));
+
+                        if (config.DeleteSourceFiles)
+                        {
+                            foreach (DownloadResult downloadResult in downloadResults)
+                            {
+                                if (File.Exists(downloadResult.FileName))
+                                {
+                                    File.Delete(downloadResult.FileName);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //сохранение картинки
+                if (config.SaveImagePreview && VideoInfo.ImageData != null)
+                {
+                    SaveImageToFile(formattedFileName);
+                }
+                lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
+                MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                lblStatus.Text = "Состояние: Скачано";
+            }
+            else
+            {
+                switch (errorCode)
+                {
+                    case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
+                        lblStatus.Text = "Состояние: Скачивание отменено";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Ошибка!",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case ERROR_CIPHER_DECRYPTION:
+                        lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
+                        MessageBox.Show($"{VideoInfo.Title}\n" +
+                            "Ошибка расшифровки ссылки! Попробуйте ещё раз.", "Ошибка!",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM:
+                        {
                             lblStatus.Text = "Состояние: Ошибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM";
                             string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
                                 "для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
@@ -762,103 +739,28 @@ namespace YouTube_downloader
                             MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
+                        }
 
-                        case FileDownloader.DOWNLOAD_ERROR_INCOMPLETE_DATA_READ:
-                            lblStatus.Text = "Состояние: Ошибка INCOMPLETE_DATA_READ";
-                            MessageBox.Show($"{VideoInfo.Title}\nФайл скачан не полностью!\n" +
-                                "Повторите попытку скачивания.", "Ошибка!",
+                    default:
+                        {
+                            string errorMessage = $"{VideoInfo.Title}\nСкачивание прервано!";
+                            DownloadResult dr = downloadResults[downloadResults.Count - 1];
+                            if (!string.IsNullOrEmpty(dr.ErrorMessage))
+                            {
+                                errorMessage += $"\n{dr.ErrorMessage}";
+                                lblStatus.Text = $"Состояние: Ошибка {dr.ErrorMessage}";
+                            }
+                            else
+                            {
+                                lblStatus.Text = $"Состояние: Ошибка {dr.ErrorCode}";
+                            }
+                            MessageBox.Show(errorMessage, "Ошибка!",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
-
-                        case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
-                            lblStatus.Text = "Состояние: Ошибка объединения чанков видео";
-                            MessageBox.Show($"{VideoInfo.Title}\nОшибка объединения чанков видео!\n" +
-                                "Повторите попытку скачивания.", "Ошибка!",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        case FileDownloader.DOWNLOAD_ERROR_ZERO_LENGTH_CONTENT:
-                            lblStatus.Text = "Состояние: Ошибка! Файл на сервере пуст!"; 
-                            MessageBox.Show($"{VideoInfo.Title}\nФайл на сервере пуст!", "Ошибка!",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
-                            lblStatus.Text = "Состояние: Скачивание отменено";
-                            MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            break;
-
-                        case FileDownloader.DOWNLOAD_ERROR_RANGE:
-                            lblStatus.Text = "Состояние: Ошибка DOWNLOAD_ERROR_RANGE";
-                            MessageBox.Show($"{VideoInfo.Title}\nЗадан неправильный диапазон!", "Ошибка!",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        default:
-                            lblStatus.Text = $"Состояние: Ошибка {resVideo.ErrorCode}";
-                            MessageBox.Show($"{VideoInfo.Title}\nОшибка {resVideo.ErrorCode}", "Ошибка!",
-                               MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-                    }
+                        }
                 }
             }
-            else if (mi.Tag is YouTubeAudioFile)
-            {
-                btnDownload.Text = "Отмена";
-                btnDownload.Enabled = true;
 
-                #region Скачивание только аудио
-                DownloadResult resAudio = await DownloadYouTubeMediaFile(mi.Tag as YouTubeAudioFile, formattedFileName, true);
-                lblProgress.Text = null;
-                if (resAudio.ErrorCode == 200)
-                {
-                    lblStatus.Text = "Состояние: Скачано";
-                    MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    switch (resAudio.ErrorCode)
-                    {
-                        case ERROR_CIPHER_DECRYPTION:
-                            lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
-                            MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_CIPHER_DECRYPTION\n" +
-                                "Не удалось расшифровать сигнатуру Cipher!", "Ошибка!",
-                               MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        case ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM:
-                            lblStatus.Text = "Состояние: Ошибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM";
-                            string t = "Ссылка на это аудио, зачем-то, зашифрована алгоритмом \"Cipher\", " +
-                                "для расшифровки которого вам требуется ввести специальную последовательность чисел.";
-                            MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}",
-                                "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
-                            lblStatus.Text = "Состояние: Ошибка объединения чанков аудио";
-                            MessageBox.Show($"{VideoInfo.Title}\nОшибка объединения чанков аудио!\n" +
-                                "Повторите попытку скачивания.", "Ошибка!",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-
-                        case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
-                            lblStatus.Text = "Состояние: Скачивание отменено";
-                            MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Отменятор отменения отмены",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            break;
-
-                        default:
-                            lblStatus.Text = $"Состояние: Ошибка {resAudio.ErrorCode}";
-                            MessageBox.Show($"{VideoInfo.Title}\nОшибка {resAudio.ErrorCode}", "Ошибка!",
-                               MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-                    }
-                }
-
-                #endregion
-            }
             downloading = false;
             btnDownload.Text = "Скачать";
             btnDownload.Enabled = true;
