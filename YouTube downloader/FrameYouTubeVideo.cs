@@ -252,8 +252,12 @@ namespace YouTube_downloader
             lblProgress.Left = lblStatus.Left + lblStatus.Width;
             lblProgress.Text = $"0 / {mediaFile.dashManifestUrls.Count} (0.00%), {mediaFile.GetShortInfo()}";
 
+            bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
+                !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
+                File.Exists(config.FfmpegExeFilePath);
+            bool canMerge = config.MergeToContainer && ffmpegExists;
             string fnDash = MultiThreadedDownloader.GetNumberedFileName(
-                (config.MergeToContainer ? config.TempDirPath : config.DownloadingDirPath) +
+                (canMerge ? config.TempDirPath : config.DownloadingDirPath) +
                 $"{formattedFileName}_{mediaFile.formatId}.{mediaFile.fileExtension}");
             string fnDashFinal = fnDash;
             string fnDashTmp = fnDash + ".tmp";
@@ -370,7 +374,6 @@ namespace YouTube_downloader
                 downloader.ThreadCount = config.ThreadCountVideo;
                 downloader.Url = videoFile.url;
                 downloader.TempDirectory = config.TempDirPath;
-                downloader.MergingDirectory = config.ChunksMergingDirPath;
 
                 string fnVideo;
                 if (videoFile.isContainer)
@@ -384,10 +387,17 @@ namespace YouTube_downloader
                     bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
                         !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
                         File.Exists(config.FfmpegExeFilePath);
-                    fnVideo = MultiThreadedDownloader.GetNumberedFileName(
-                        (ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
+                    if (config.MergeToContainer && ffmpegExists)
+                    {
+                        downloader.MergingDirectory = config.ChunksMergingDirPath;
+                        downloader.KeepDownloadedFileInMergingDirectory = true;
+                    }
+                    else
+                    {
+                        downloader.MergingDirectory = config.DownloadingDirPath;
+                    }
+                    fnVideo = MultiThreadedDownloader.GetNumberedFileName(config.DownloadingDirPath +
                         $"{formattedFileName}_{videoFile.formatId}.{videoFile.fileExtension}");
-                    downloader.KeepDownloadedFileInMergingDirectory = true;
                 }
                 downloader.OutputFileName = fnVideo;
                 downloader.DownloadStarted += (s, size) =>
@@ -477,15 +487,23 @@ namespace YouTube_downloader
                 downloader.ThreadCount = config.ThreadCountAudio;
                 downloader.Url = audioFile.url;
                 downloader.TempDirectory = config.TempDirPath;
-                downloader.MergingDirectory = config.ChunksMergingDirPath;
-                downloader.KeepDownloadedFileInMergingDirectory = true;
 
                 bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
                     !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && File.Exists(config.FfmpegExeFilePath);
-                string fnAudio = MultiThreadedDownloader.GetNumberedFileName(
-                    (config.MergeToContainer && !audioOnly && ffmpegExists ? config.TempDirPath : config.DownloadingDirPath) +
+                if (!audioOnly && config.MergeToContainer && ffmpegExists)
+                {
+                    downloader.MergingDirectory = config.ChunksMergingDirPath;
+                    downloader.KeepDownloadedFileInMergingDirectory = true;
+                }
+                else
+                {
+                    downloader.MergingDirectory = config.DownloadingDirPath;
+                }
+
+                string fnAudio = MultiThreadedDownloader.GetNumberedFileName(config.DownloadingDirPath +
                      $"{formattedFileName}_{audioFile.formatId}.{audioFile.fileExtension}");
                 downloader.OutputFileName = fnAudio;
+
                 downloader.DownloadStarted += (s, size) =>
                 {
                     progressBarDownload.Value = 0;
