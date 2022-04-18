@@ -252,10 +252,7 @@ namespace YouTube_downloader
             lblProgress.Left = lblStatus.Left + lblStatus.Width;
             lblProgress.Text = $"0 / {mediaFile.dashManifestUrls.Count} (0.00%), {mediaFile.GetShortInfo()}";
 
-            bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
-                !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
-                File.Exists(config.FfmpegExeFilePath);
-            bool canMerge = config.MergeToContainer && ffmpegExists;
+            bool canMerge = config.MergeToContainer && IsFfmpegAvailable();
             string fnDash = MultiThreadedDownloader.GetNumberedFileName(
                 (canMerge ? config.TempDirPath : config.DownloadingDirPath) +
                 $"{formattedFileName}_{mediaFile.formatId}.{mediaFile.fileExtension}");
@@ -384,10 +381,7 @@ namespace YouTube_downloader
                 }
                 else
                 {
-                    bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
-                        !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
-                        File.Exists(config.FfmpegExeFilePath);
-                    if (config.MergeToContainer && ffmpegExists)
+                    if (config.MergeToContainer && IsFfmpegAvailable())
                     {
                         downloader.MergingDirectory = config.ChunksMergingDirPath;
                         downloader.KeepDownloadedFileInMergingDirectory = true;
@@ -488,9 +482,7 @@ namespace YouTube_downloader
                 downloader.Url = audioFile.url;
                 downloader.TempDirectory = config.TempDirPath;
 
-                bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
-                    !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) && File.Exists(config.FfmpegExeFilePath);
-                if (!audioOnly && config.MergeToContainer && ffmpegExists)
+                if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
                 {
                     downloader.MergingDirectory = config.ChunksMergingDirPath;
                     downloader.KeepDownloadedFileInMergingDirectory = true;
@@ -610,10 +602,6 @@ namespace YouTube_downloader
             lblStatus.Text = "Скачивание...";
             lblProgress.Text = null;
 
-            bool ffmpegExists = !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
-                !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
-                File.Exists(config.FfmpegExeFilePath);
-
             string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
 
             ToolStripMenuItem mi = sender as ToolStripMenuItem;
@@ -636,7 +624,7 @@ namespace YouTube_downloader
                 if (!videoFile.isContainer)
                 {
                     bool stop = false;
-                    if (config.MergeToContainer && !ffmpegExists)
+                    if (config.MergeToContainer && !IsFfmpegAvailable())
                     {
                         string msg = "Формат данного видео является адаптивным. " +
                             "Это значит, что дорожки видео и аудио хранятся по отдельности. " +
@@ -691,7 +679,7 @@ namespace YouTube_downloader
             {
                 if (config.MergeToContainer)
                 {
-                    if (ffmpegExists && tracksToDownload.Count == 2)
+                    if (IsFfmpegAvailable() && tracksToDownload.Count == 2)
                     {
                         lblStatus.Text = "Состояние: Объединение видео и аудио...";
                         lblStatus.Refresh();
@@ -699,7 +687,7 @@ namespace YouTube_downloader
                         string ext = "mp4";
                         foreach (YouTubeMediaFile mediaFile in tracksToDownload)
                         {
-                            if (mediaFile.mimeExt == "webm" || mediaFile.mimeExt == "weba")
+                            if (mediaFile.mimeExt != "mp4")
                             {
                                 ext = "mkv";
                                 break;

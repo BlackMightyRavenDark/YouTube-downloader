@@ -534,6 +534,13 @@ namespace YouTube_downloader
             }
         }
 
+        public static bool IsFfmpegAvailable()
+        {
+            return !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
+                        !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
+                        File.Exists(config.FfmpegExeFilePath);
+        }
+
         public static void DrawStar(Graphics graphics, float x, float y, double radius, 
             double rotAngle, float depth, Color color, bool fill)
         {
