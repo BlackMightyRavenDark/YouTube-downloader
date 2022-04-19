@@ -30,6 +30,10 @@ namespace YouTube_downloader
         public List<string> Chunks { get; private set; } = new List<string>();
         public NameValueCollection Headers = new NameValueCollection();
         private bool aborted = false;
+        public bool IsTempDirectoryAvailable => !string.IsNullOrEmpty(TempDirectory) &&
+                        !string.IsNullOrWhiteSpace(TempDirectory) && Directory.Exists(TempDirectory);
+        public bool IsMergingDirectoryAvailable => !string.IsNullOrEmpty(MergingDirectory) &&
+                    !string.IsNullOrWhiteSpace(MergingDirectory) && Directory.Exists(MergingDirectory);
 
         public const int MEGABYTE = 1048576; //1024 * 1024;
 
@@ -139,6 +143,21 @@ namespace YouTube_downloader
                 return DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS;
             }
 
+            string dirName = Path.GetDirectoryName(OutputFileName);
+            if (string.IsNullOrEmpty(dirName) || string.IsNullOrWhiteSpace(dirName))
+            {
+                string selfDirPath = Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+                OutputFileName = $"{selfDirPath}\\{OutputFileName}";
+            }
+            if (string.IsNullOrEmpty(TempDirectory) || string.IsNullOrWhiteSpace(TempDirectory))
+            {
+                TempDirectory = Path.GetDirectoryName(OutputFileName);
+            }
+            if (string.IsNullOrEmpty(MergingDirectory) || string.IsNullOrWhiteSpace(MergingDirectory))
+            {
+                MergingDirectory = TempDirectory;
+            }
+
             List<char> driveLetters = GetUsedDriveLetters();
             if (driveLetters.Count > 0 && !driveLetters.Contains('\\') && !IsDrivesReady(driveLetters))
             {
@@ -179,11 +198,6 @@ namespace YouTube_downloader
                 CancelTest?.Invoke(this, ref aborted);
             };
 
-            if (string.IsNullOrEmpty(TempDirectory) || string.IsNullOrWhiteSpace(TempDirectory))
-            {
-                TempDirectory = Path.GetDirectoryName(OutputFileName);
-            }
-
             if (ThreadCount <= 0)
             {
                 ThreadCount = 2;
@@ -201,7 +215,7 @@ namespace YouTube_downloader
                 {
                     string path = Path.GetFileName(OutputFileName);
                     chunkFileName = $"{path}.chunk_{taskId}.tmp";
-                    if (!string.IsNullOrEmpty(TempDirectory) && !string.IsNullOrWhiteSpace(TempDirectory))
+                    if (IsTempDirectoryAvailable)
                     {
                         chunkFileName = TempDirectory.EndsWith("\\") ?
                             TempDirectory + chunkFileName : $"{TempDirectory}\\{chunkFileName}";
@@ -305,17 +319,23 @@ namespace YouTube_downloader
             int res = await Task.Run(() =>
             {
                 string tmpFileName;
-                if (!string.IsNullOrEmpty(MergingDirectory) &&
-                    !string.IsNullOrWhiteSpace(MergingDirectory) &&
-                    Directory.Exists(MergingDirectory))
+                string fn = Path.GetFileName(OutputFileName);
+                if (IsMergingDirectoryAvailable)
                 {
-                    string fn = Path.GetFileName(OutputFileName);
                     tmpFileName = MergingDirectory.EndsWith("\\") ?
                         $"{MergingDirectory}{fn}.tmp" : $"{MergingDirectory}\\{fn}.tmp";
                 }
                 else
                 {
-                    tmpFileName = $"{OutputFileName}.tmp";
+                    if (IsTempDirectoryAvailable)
+                    {
+                        tmpFileName = TempDirectory.EndsWith("\\") ?
+                            $"{TempDirectory}{fn}.tmp" : $"{TempDirectory}\\{fn}.tmp";
+                    }
+                    else
+                    {
+                        tmpFileName = $"{OutputFileName}.tmp";
+                    }
                 }
                 tmpFileName = GetNumberedFileName(tmpFileName);
 
@@ -382,7 +402,7 @@ namespace YouTube_downloader
                 if (KeepDownloadedFileInMergingDirectory &&
                     !string.IsNullOrEmpty(MergingDirectory) && !string.IsNullOrWhiteSpace(MergingDirectory))
                 {
-                    string fn = Path.GetFileName(OutputFileName);
+                    fn = Path.GetFileName(OutputFileName);
                     OutputFileName = MergingDirectory.EndsWith("\\") ? MergingDirectory + fn : $"{MergingDirectory}\\{fn}";
                 }
                 OutputFileName = GetNumberedFileName(OutputFileName);
