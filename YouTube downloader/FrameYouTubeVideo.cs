@@ -86,9 +86,10 @@ namespace YouTube_downloader
             btnGetWebPage.Left = btnGetVideoInfo.Left;
             btnGetDashManifest.Left = btnGetVideoInfo.Left;
             btnGetHlsManifest.Left = btnGetVideoInfo.Left;
+            btnGetPlayerCode.Left = btnGetVideoInfo.Left;
+
             imgScrollbar.Left = 0;
             imgScrollbar.Width = Parent.Width;
-
             imgScrollbar.Invalidate();
         }
 
@@ -985,6 +986,54 @@ namespace YouTube_downloader
                 }
             }
             MessageBox.Show("Ошибка!", "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void btnGetPlayerCode_Click(object sender, EventArgs e)
+        {
+            string page = webPage;
+            if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+            {
+                if (GetYouTubeVideoWebPage(VideoInfo.Id, out page) != 200)
+                {
+                    MessageBox.Show("Ошибка скачивания плеера!", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            string url = ExtractPlayerUrlFromWebPage(page);
+            if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+            {
+                MessageBox.Show("Ошибка скачивания плеера!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            FileDownloader d = new FileDownloader() { Url = url };
+            int errorCode = d.DownloadString(out string code);
+            if (errorCode != 200)
+            {
+                MessageBox.Show("Ошибка скачивания плеера!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = config.DownloadingDirPath;
+            sfd.Title = "Сохранить плеер как...";
+            sfd.Filter = "JS-files|*.js";
+            sfd.DefaultExt = ".js";
+            sfd.AddExtension = true;
+            sfd.FileName = $"Player for {VideoInfo.Id}";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                if (File.Exists(sfd.FileName))
+                {
+                    File.Delete(sfd.FileName);
+                }
+                File.WriteAllText(sfd.FileName, code);
+            }
+            sfd.Dispose();
         }
 
         private void copyVideoTitleToolStripMenuItem_Click(object sender, EventArgs e)

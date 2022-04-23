@@ -185,14 +185,17 @@ namespace YouTube_downloader
 
         public static string ExtractPlayerUrlFromWebPage(string webPage)
         {
-            string res = null;
             int n = webPage.IndexOf("\"jsUrl\":\"");
             if (n > 0)
             {
-                res = webPage.Substring(n + 9);
-                res = res.Substring(0, res.IndexOf("\""));
+                string t = webPage.Substring(n + 9);
+                string res = t.Substring(0, t.IndexOf("\""));
+                if (!string.IsNullOrEmpty(res) && !string.IsNullOrWhiteSpace(res))
+                {
+                    return "https://www.youtube.com" + res;
+                }
             }
-            return res;
+            return null;
         }
 
         public static string ExtractVideoInfoFromWebPage(string webPage)

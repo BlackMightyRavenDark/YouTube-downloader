@@ -57,6 +57,7 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnGetDashManifest = new System.Windows.Forms.Button();
             this.btnGetHlsManifest = new System.Windows.Forms.Button();
+            this.btnGetPlayerCode = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -315,11 +316,22 @@
             this.btnGetHlsManifest.UseVisualStyleBackColor = true;
             this.btnGetHlsManifest.Click += new System.EventHandler(this.btnGetHlsManifest_Click);
             // 
+            // btnGetPlayerCode
+            // 
+            this.btnGetPlayerCode.Location = new System.Drawing.Point(508, 131);
+            this.btnGetPlayerCode.Name = "btnGetPlayerCode";
+            this.btnGetPlayerCode.Size = new System.Drawing.Size(112, 23);
+            this.btnGetPlayerCode.TabIndex = 15;
+            this.btnGetPlayerCode.Text = "Get player code";
+            this.btnGetPlayerCode.UseVisualStyleBackColor = true;
+            this.btnGetPlayerCode.Click += new System.EventHandler(this.btnGetPlayerCode_Click);
+            // 
             // FrameYouTubeVideo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.Controls.Add(this.btnGetPlayerCode);
             this.Controls.Add(this.btnGetHlsManifest);
             this.Controls.Add(this.btnGetDashManifest);
             this.Controls.Add(this.btnGetWebPage);
@@ -383,5 +395,6 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button btnGetDashManifest;
         private System.Windows.Forms.Button btnGetHlsManifest;
+        private System.Windows.Forms.Button btnGetPlayerCode;
     }
 }
