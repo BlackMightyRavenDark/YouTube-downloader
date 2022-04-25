@@ -742,7 +742,8 @@ namespace YouTube_downloader
                             lblStatus.Text = "Состояние: Ошибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM";
                             string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
                                 "для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
-                                "известную одному лишь дьяволу.";
+                                "известную одному лишь дьяволу.\n" +
+                                "Или включите галочку \"fuck here\".";
                             MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;

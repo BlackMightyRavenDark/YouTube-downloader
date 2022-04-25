@@ -22,8 +22,6 @@ namespace YouTube_downloader
         public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
         public const string YOUTUBE_GET_VIDEO_INFO_URL = "https://www.youtube.com/get_video_info?video_id=";
         public const string YOUTUBEI_API_URL_TEMPLATE = "https://www.youtube.com/youtubei/v1/player?key={0}";
-        public const string YOUTUBEI_API_POST_BODY_TEMPLATE =
-            "{\"context\": {\"client\": {\"clientName\": \"WEB\", \"clientVersion\": \"2.20201021.03.00\"}}, \"videoId\": \"<video_id>\"}";
 
         public const string FILENAME_FORMAT_DEFAULT = "[<year>-<month>-<day>] <video_title> (id_<video_id>)";
         public static List<YouTubeChannel> channels = new List<YouTubeChannel>();
@@ -169,6 +167,32 @@ namespace YouTube_downloader
             return d.Download(stream);
         }
 
+        public static JObject GenerateVideoInfoRequestBody(string videoId)
+        {
+            const string CLIENT_VERSION = "16.46.37";
+
+            JObject jThirdParty = new JObject() { ["embedUrl"] = "https://www.youtube.com" };
+
+            JObject jClient = new JObject();
+            jClient["hl"] = "en";
+            jClient["gl"] = "US";
+            jClient["clientName"] = "ANDROID";
+            jClient["clientVersion"] = CLIENT_VERSION;
+            jClient["clientScreen"] = null;
+            jClient["utcOffsetMinutes"] = 0;
+
+            JObject jContext = new JObject();
+            jContext.Add(new JProperty("client", jClient));
+
+            JObject json = new JObject();
+            json.Add(new JProperty("context", jContext));
+            json["contentCheckOk"] = true;
+            json["racyCheckOk"] = true;
+            json["videoId"] = videoId;
+
+            return json;
+        }
+
         public static int GetYouTubeVideoWebPage(string videoId, out string resultPage)
         {
             string videoUrl = YOUTUBE_VIDEO_URL_BASE + videoId;
@@ -178,9 +202,9 @@ namespace YouTube_downloader
 
         public static int GetYouTubeVideoInfoViaApi(string videoId, out string resInfo)
         {
+            JObject body = GenerateVideoInfoRequestBody(videoId);
             string url = string.Format(YOUTUBEI_API_URL_TEMPLATE, "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8");
-            string body = YOUTUBEI_API_POST_BODY_TEMPLATE.Replace("<video_id>", videoId);
-            return HttpsPost(url, body, out resInfo);
+            return HttpsPost(url, body.ToString(), out resInfo);
         }
 
         public static string ExtractPlayerUrlFromWebPage(string webPage)
@@ -224,11 +248,11 @@ namespace YouTube_downloader
             return null;
         }
 
-        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool ciphered = false)
+        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool doNotApi = false)
         {
             resInfo = "Client error";
             int res = 400;
-            if (!ciphered && config.UseApiForGettingInfo)
+            if (!doNotApi && config.UseHiddenApiForGettingInfo)
             {
                 res = GetYouTubeVideoInfoViaApi(videoId, out resInfo);
             }
@@ -594,7 +618,7 @@ namespace YouTube_downloader
         public string BrowserExeFilePath { get; set; }
         public string FfmpegExeFilePath { get; set; }
         public bool SaveImagePreview { get; set; }
-        public bool UseApiForGettingInfo { get; set; }
+        public bool UseHiddenApiForGettingInfo { get; set; }
         public int ThreadCountVideo { get; set; }
         public int ThreadCountAudio { get; set; }
         public int GlobalThreadsMaximum { get; set; }
@@ -623,7 +647,7 @@ namespace YouTube_downloader
             json["outputFileNameFormat"] = OutputFileNameFormat;
             json["maxSearch"] = MaxSearch;
             json["saveImagePreview"] = SaveImagePreview;
-            json["useApiForGettingInfo"] = UseApiForGettingInfo;
+            json["useHiddenApiForGettingInfo"] = UseHiddenApiForGettingInfo;
             json["threadsVideo"] = ThreadCountVideo;
             json["threadsAudio"] = ThreadCountAudio;
             json["globalThreadsMaximum"] = GlobalThreadsMaximum;
@@ -645,7 +669,7 @@ namespace YouTube_downloader
             OutputFileNameFormat = Utils.FILENAME_FORMAT_DEFAULT;
             MaxSearch = 50;
             SaveImagePreview = true;
-            UseApiForGettingInfo = true;
+            UseHiddenApiForGettingInfo = true;
             ThreadCountVideo = 8;
             ThreadCountAudio = 4;
             GlobalThreadsMaximum = 300;
@@ -714,7 +738,7 @@ namespace YouTube_downloader
                     jt = json.Value<JToken>("saveImagePreview");
                     SaveImagePreview = jt == null ? true : jt.Value<bool>();
                     jt = json.Value<JToken>("useApiForGettingInfo");
-                    UseApiForGettingInfo = jt == null ? true : jt.Value<bool>();
+                    UseHiddenApiForGettingInfo = jt == null ? true : jt.Value<bool>();
                     jt = json.Value<JToken>("threadsVideo");
                     if (jt != null)
                     {

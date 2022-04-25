@@ -60,7 +60,15 @@ namespace YouTube_downloader
             this.chkMergeAdaptive = new System.Windows.Forms.CheckBox();
             this.chkSaveImage = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.chkUseApiForGettingInfo = new System.Windows.Forms.CheckBox();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.btnApiWtf = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.editCipherDecryptionAlgo = new System.Windows.Forms.TextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.editYouTubeApiKey = new System.Windows.Forms.TextBox();
+            this.chkUseHiddenApiForGettingInfo = new System.Windows.Forms.CheckBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.label13 = new System.Windows.Forms.Label();
             this.numericUpDownGlobalThreadsMaximum = new System.Windows.Forms.NumericUpDown();
@@ -70,12 +78,6 @@ namespace YouTube_downloader
             this.label9 = new System.Windows.Forms.Label();
             this.numericUpDownThreadsAudio = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownThreadsVideo = new System.Windows.Forms.NumericUpDown();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.editCipherDecryptionAlgo = new System.Windows.Forms.TextBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.editYouTubeApiKey = new System.Windows.Forms.TextBox();
             this.tabPageSearch = new System.Windows.Forms.TabPage();
             this.panelSearch = new System.Windows.Forms.Panel();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
@@ -127,12 +129,13 @@ namespace YouTube_downloader
             this.tabPage1.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox11.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadsMaximum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsAudio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsVideo)).BeginInit();
-            this.groupBox4.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.tabPageSearch.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupBox9.SuspendLayout();
@@ -464,10 +467,8 @@ namespace YouTube_downloader
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.tabPage2.Controls.Add(this.chkUseApiForGettingInfo);
+            this.tabPage2.Controls.Add(this.groupBox11);
             this.tabPage2.Controls.Add(this.groupBox7);
-            this.tabPage2.Controls.Add(this.groupBox4);
-            this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -475,18 +476,104 @@ namespace YouTube_downloader
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Система";
             // 
-            // chkUseApiForGettingInfo
+            // groupBox11
             // 
-            this.chkUseApiForGettingInfo.AutoSize = true;
-            this.chkUseApiForGettingInfo.Location = new System.Drawing.Point(6, 12);
-            this.chkUseApiForGettingInfo.Name = "chkUseApiForGettingInfo";
-            this.chkUseApiForGettingInfo.Size = new System.Drawing.Size(304, 17);
-            this.chkUseApiForGettingInfo.TabIndex = 11;
-            this.chkUseApiForGettingInfo.Text = "Использовать API для получения информации о видео";
-            this.toolTip1.SetToolTip(this.chkUseApiForGettingInfo, "Позволяет немного оттянуть неизбжный момент возникновения ошибки \"HTTP 429: Too m" +
-        "any requests\".");
-            this.chkUseApiForGettingInfo.UseVisualStyleBackColor = true;
-            this.chkUseApiForGettingInfo.Click += new System.EventHandler(this.chkUseApiForGettingInfo_Click);
+            this.groupBox11.Controls.Add(this.btnApiWtf);
+            this.groupBox11.Controls.Add(this.groupBox4);
+            this.groupBox11.Controls.Add(this.groupBox5);
+            this.groupBox11.Controls.Add(this.chkUseHiddenApiForGettingInfo);
+            this.groupBox11.Location = new System.Drawing.Point(12, 6);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(509, 174);
+            this.groupBox11.TabIndex = 12;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "API";
+            // 
+            // btnApiWtf
+            // 
+            this.btnApiWtf.Location = new System.Drawing.Point(367, 15);
+            this.btnApiWtf.Name = "btnApiWtf";
+            this.btnApiWtf.Size = new System.Drawing.Size(32, 23);
+            this.btnApiWtf.TabIndex = 12;
+            this.btnApiWtf.Text = "?";
+            this.toolTip1.SetToolTip(this.btnApiWtf, "Помогите!");
+            this.btnApiWtf.UseVisualStyleBackColor = true;
+            this.btnApiWtf.Click += new System.EventHandler(this.btnApiWtf_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.label5);
+            this.groupBox4.Controls.Add(this.editCipherDecryptionAlgo);
+            this.groupBox4.Location = new System.Drawing.Point(11, 44);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(492, 58);
+            this.groupBox4.TabIndex = 4;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Алгоритм для расшифровки Cipher";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(5, 16);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(406, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Для скачивания некоторых видео потребуется ввести специальный алгоритм";
+            // 
+            // editCipherDecryptionAlgo
+            // 
+            this.editCipherDecryptionAlgo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editCipherDecryptionAlgo.Location = new System.Drawing.Point(8, 32);
+            this.editCipherDecryptionAlgo.Name = "editCipherDecryptionAlgo";
+            this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(476, 20);
+            this.editCipherDecryptionAlgo.TabIndex = 0;
+            this.editCipherDecryptionAlgo.Leave += new System.EventHandler(this.editCipherDecryptionAlgo_Leave);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.editYouTubeApiKey);
+            this.groupBox5.Location = new System.Drawing.Point(11, 107);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(492, 61);
+            this.groupBox5.TabIndex = 8;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Ключ от YouTube API V3";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 19);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(352, 13);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "Некоторые функции программы не будут работать без этого ключа";
+            // 
+            // editYouTubeApiKey
+            // 
+            this.editYouTubeApiKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editYouTubeApiKey.Location = new System.Drawing.Point(6, 35);
+            this.editYouTubeApiKey.Name = "editYouTubeApiKey";
+            this.editYouTubeApiKey.Size = new System.Drawing.Size(480, 20);
+            this.editYouTubeApiKey.TabIndex = 0;
+            this.editYouTubeApiKey.Leave += new System.EventHandler(this.editYouTubeApiKey_Leave);
+            // 
+            // chkUseHiddenApiForGettingInfo
+            // 
+            this.chkUseHiddenApiForGettingInfo.AutoSize = true;
+            this.chkUseHiddenApiForGettingInfo.Location = new System.Drawing.Point(11, 19);
+            this.chkUseHiddenApiForGettingInfo.Name = "chkUseHiddenApiForGettingInfo";
+            this.chkUseHiddenApiForGettingInfo.Size = new System.Drawing.Size(350, 17);
+            this.chkUseHiddenApiForGettingInfo.TabIndex = 11;
+            this.chkUseHiddenApiForGettingInfo.Text = "Использовать скрытое API для получения информации о видео";
+            this.chkUseHiddenApiForGettingInfo.UseVisualStyleBackColor = true;
+            this.chkUseHiddenApiForGettingInfo.CheckedChanged += new System.EventHandler(this.chkUseHiddenApiForGettingInfo_CheckedChanged);
             // 
             // groupBox7
             // 
@@ -498,7 +585,7 @@ namespace YouTube_downloader
             this.groupBox7.Controls.Add(this.label9);
             this.groupBox7.Controls.Add(this.numericUpDownThreadsAudio);
             this.groupBox7.Controls.Add(this.numericUpDownThreadsVideo);
-            this.groupBox7.Location = new System.Drawing.Point(6, 166);
+            this.groupBox7.Location = new System.Drawing.Point(12, 186);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(318, 98);
             this.groupBox7.TabIndex = 10;
@@ -619,70 +706,6 @@ namespace YouTube_downloader
             0,
             0});
             this.numericUpDownThreadsVideo.ValueChanged += new System.EventHandler(this.numericUpDownThreadsVideo_ValueChanged);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.label5);
-            this.groupBox4.Controls.Add(this.editCipherDecryptionAlgo);
-            this.groupBox4.Location = new System.Drawing.Point(6, 102);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(515, 58);
-            this.groupBox4.TabIndex = 4;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Алгоитм для расшифровки Cipher";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(5, 16);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(406, 13);
-            this.label5.TabIndex = 1;
-            this.label5.Text = "Для скачивания некоторых видео потребуется ввести специальный алгоритм";
-            // 
-            // editCipherDecryptionAlgo
-            // 
-            this.editCipherDecryptionAlgo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editCipherDecryptionAlgo.Location = new System.Drawing.Point(8, 32);
-            this.editCipherDecryptionAlgo.Name = "editCipherDecryptionAlgo";
-            this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(499, 20);
-            this.editCipherDecryptionAlgo.TabIndex = 0;
-            this.editCipherDecryptionAlgo.Leave += new System.EventHandler(this.editCipherDecryptionAlgo_Leave);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox5.Controls.Add(this.label6);
-            this.groupBox5.Controls.Add(this.editYouTubeApiKey);
-            this.groupBox5.Location = new System.Drawing.Point(6, 35);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(515, 61);
-            this.groupBox5.TabIndex = 8;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Ключ от YouTube API V3";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 19);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(352, 13);
-            this.label6.TabIndex = 1;
-            this.label6.Text = "Некоторые функции программы не будут работать без этого ключа";
-            // 
-            // editYouTubeApiKey
-            // 
-            this.editYouTubeApiKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.editYouTubeApiKey.Location = new System.Drawing.Point(6, 35);
-            this.editYouTubeApiKey.Name = "editYouTubeApiKey";
-            this.editYouTubeApiKey.Size = new System.Drawing.Size(503, 20);
-            this.editYouTubeApiKey.TabIndex = 0;
-            this.editYouTubeApiKey.Leave += new System.EventHandler(this.editYouTubeApiKey_Leave);
             // 
             // tabPageSearch
             // 
@@ -1165,16 +1188,17 @@ namespace YouTube_downloader
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadsMaximum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsAudio)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsVideo)).EndInit();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
             this.tabPageSearch.ResumeLayout(false);
             this.panelSearch.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
@@ -1253,7 +1277,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.NumericUpDown numericUpDownThreadsVideo;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.CheckBox chkUseApiForGettingInfo;
+        private System.Windows.Forms.CheckBox chkUseHiddenApiForGettingInfo;
         private System.Windows.Forms.Button btnBrowseFfmpeg;
         private System.Windows.Forms.TextBox editFfmpeg;
         private System.Windows.Forms.Label label11;
@@ -1289,6 +1313,8 @@ namespace YouTube_downloader
         private System.Windows.Forms.Button btnSelectMergingPath;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button btnQ;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.Button btnApiWtf;
     }
 }
 

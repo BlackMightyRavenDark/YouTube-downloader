@@ -50,7 +50,7 @@ namespace YouTube_downloader
             chkMergeAdaptive.Checked = config.MergeToContainer;
             chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
             chkSaveImage.Checked = config.SaveImagePreview;
-            chkUseApiForGettingInfo.Checked = config.UseApiForGettingInfo;
+            chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
             numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
             numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
             numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
@@ -402,38 +402,54 @@ namespace YouTube_downloader
                         video.Dashed = jStreamingData.Value<JToken>("dashManifestUrl") != null;
                         video.Hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
                     }
-                    JObject jMicroformatRenderer = jVideo.Value<JObject>("microformat").Value<JObject>("playerMicroformatRenderer");
-                    StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
-                    video.DateUploaded = dateUploaded;
-                    StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
-                    video.DatePublished = datePublished;
-                    video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
-                    video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
-                    JArray jaThumbnails = jMicroformatRenderer.Value<JObject>("thumbnail").Value<JArray>("thumbnails");
-                    for (int i2 = 0; i2 < jaThumbnails.Count; i2++)
+
+                    JObject jMicroformatRenderer = jVideo.Value<JObject>("microformat");
+                    if (jMicroformatRenderer == null)
                     {
-                        string t = jaThumbnails[i2].Value<JObject>().Value<string>("url");
-                        if (t.Contains("?"))
+                        if (GetYouTubeVideoInfoEx(video.Id, out string info, true) == 200)
                         {
-                            t = t.Substring(0, t.IndexOf("?"));
+                            JObject jObject = JObject.Parse(info);
+                            jt = jObject.Value<JToken>("microformat");
+                            if (jt != null)
+                            {
+                                jMicroformatRenderer = jt.Value<JObject>().Value<JObject>("playerMicroformatRenderer");
+                            }
                         }
-                        if (t.Contains("vi_webp"))
+                    }
+                    if (jMicroformatRenderer != null)
+                    {
+                        StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
+                        video.DateUploaded = dateUploaded;
+                        StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
+                        video.DatePublished = datePublished;
+                        video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
+                        video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
+                        JArray jaThumbnails = jMicroformatRenderer.Value<JObject>("thumbnail").Value<JArray>("thumbnails");
+                        for (int i2 = 0; i2 < jaThumbnails.Count; i2++)
                         {
-                            t = t.Replace("vi_webp", "vi").Replace(".webp", ".jpg");
+                            string t = jaThumbnails[i2].Value<JObject>().Value<string>("url");
+                            if (t.Contains("?"))
+                            {
+                                t = t.Substring(0, t.IndexOf("?"));
+                            }
+                            if (t.Contains("vi_webp"))
+                            {
+                                t = t.Replace("vi_webp", "vi").Replace(".webp", ".jpg");
+                            }
+                            video.ImageUrls.Add(t);
                         }
-                        video.ImageUrls.Add(t);
-                    }
-                    video.ImageData = new MemoryStream();
-                    if (DownloadData(video.ImageUrls[video.ImageUrls.Count - 1], video.ImageData) == 200)
-                    {
-                        video.ImageData.Position = 0L;
-                        video.Image = Image.FromStream(video.ImageData);
-                        video.ImageData.Position = 0L;
-                    }
-                    else
-                    {
-                        video.ImageData.Dispose();
-                        video.ImageData = null;
+                        video.ImageData = new MemoryStream();
+                        if (DownloadData(video.ImageUrls[video.ImageUrls.Count - 1], video.ImageData) == 200)
+                        {
+                            video.ImageData.Position = 0L;
+                            video.Image = Image.FromStream(video.ImageData);
+                            video.ImageData.Position = 0L;
+                        }
+                        else
+                        {
+                            video.ImageData.Dispose();
+                            video.ImageData = null;
+                        }
                     }
                     videos.Add(video);
 
@@ -1102,9 +1118,10 @@ namespace YouTube_downloader
             ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
         }
 
-        private void chkUseApiForGettingInfo_Click(object sender, EventArgs e)
+        private void chkUseHiddenApiForGettingInfo_CheckedChanged(object sender, EventArgs e)
         {
-            config.UseApiForGettingInfo = chkUseApiForGettingInfo.Checked;
+            config.UseHiddenApiForGettingInfo = chkUseHiddenApiForGettingInfo.Checked;
+            editCipherDecryptionAlgo.Enabled = !chkUseHiddenApiForGettingInfo.Checked;
         }
 
         private void editFfmpeg_Leave(object sender, EventArgs e)
@@ -1249,6 +1266,7 @@ namespace YouTube_downloader
             editQuery.Enabled = false;
             editSearchUrl.Enabled = false;
             btnWhy.Enabled = false;
+            btnApiWtf.Enabled = true;
         }
 
         private void EnableControls()
@@ -1259,6 +1277,19 @@ namespace YouTube_downloader
             editQuery.Enabled = true;
             editSearchUrl.Enabled = true;
             btnWhy.Enabled = true;
+            btnApiWtf.Enabled = true;
+        }
+
+        private void btnApiWtf_Click(object sender, EventArgs e)
+        {
+            btnApiWtf.Enabled = false;
+            string msg = "Снимает ограничение ютуба на скорость скачивания и позволяет немного оттянуть " +
+                "неизбежный момент возникновения ошибки \"HTTP 429: Too many requests\".\n" +
+                "Внимание! Это не повлияет на скорость скачивания видео с доступом только по ссылке!\n" +
+                "Если эта галочка включена, то не нужно вводить алгоритм для расшифровки \"Cipher\".";
+            MessageBox.Show(msg, "Подсказатор подсказок",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnApiWtf.Enabled = true;
         }
     }
 }
