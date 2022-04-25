@@ -227,13 +227,13 @@ namespace YouTube_downloader
             int n = webPage.IndexOf("var ytInitialPlayerResponse");
             if (n > 0)
             {
-                int n2 = webPage.IndexOf("}};var meta =");
+                int n2 = webPage.IndexOf("}};var ");
                 if (n2 > 0)
                 {
                     return webPage.Substring(n + 30, n2 - n - 28);
                 }
 
-                n2 = webPage.IndexOf("};\nvar meta =");
+                n2 = webPage.IndexOf("};\nvar ");
                 if (n2 > 0)
                 {
                     return webPage.Substring(n + 29, n2 - n - 28);
