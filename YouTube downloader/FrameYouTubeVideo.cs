@@ -181,7 +181,11 @@ namespace YouTube_downloader
             {
                 progressBarDownload.Value = 0;
             }
-            ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats(webPage);
+
+            YouTubeApiRequestType requestType = config.UseHiddenApiForGettingInfo && !VideoInfo.Dashed ?
+                YouTubeApiRequestType.DecryptedUrls : YouTubeApiRequestType.EncryptedUrls;
+
+            ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats(requestType, webPage);
             thr.ThreadCompleted += EventThreadGetFormatsTerminate;
             thr.Info += (s, info) =>
             {      

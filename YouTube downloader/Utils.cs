@@ -167,11 +167,45 @@ namespace YouTube_downloader
             return d.Download(stream);
         }
 
-        public static JObject GenerateVideoInfoRequestBody(string videoId)
+        /// <summary>
+        /// Генерирует тело POST-запроса для получения информации о видео.
+        /// Полученный JSON будет содержать всё необходимое, кроме ссылок для скачивания.
+        /// Ссылки будут зашифрованы (Cipher, ограничение скорости и т.д.).
+        /// </summary>
+        /// <param name="videoId">ID видео</param>
+        /// <returns>Тело запроса</returns>
+        public static JObject GenerateVideoInfoEncryptedRequestBody(string videoId)
+        {
+            const string CLIENT_VERSION = "2.20201021.03.00";
+
+            JObject jClient = new JObject();
+            jClient["hl"] = "en";
+            jClient["gl"] = "US";
+            jClient["clientName"] = "WEB";
+            jClient["clientVersion"] = CLIENT_VERSION;
+
+            JObject jContext = new JObject();
+            jContext.Add(new JProperty("client", jClient));
+
+            JObject json = new JObject();
+            json.Add(new JProperty("context", jContext));
+            json["videoId"] = videoId;
+
+            return json;
+        }
+
+        /// <summary>
+        /// Генерирует тело POST-запроса для получения информации о видео.
+        /// Ответ будет содержать уже расшифрованные ссылки для скачивания
+        /// без ограничения скорости, но остальная информация будет не полной.
+        /// Используйте этот запрос только для получения ссылок.
+        /// Внимание! Этот запрос не работает для видео с доступом только по ссылке (unlisted)!
+        /// </summary>
+        /// <param name="videoId">ID видео</param>
+        /// <returns>Тело запроса</returns>
+        public static JObject GenerateVideoInfoDecryptedRequestBody(string videoId)
         {
             const string CLIENT_VERSION = "16.46.37";
-
-            JObject jThirdParty = new JObject() { ["embedUrl"] = "https://www.youtube.com" };
 
             JObject jClient = new JObject();
             jClient["hl"] = "en";
@@ -200,9 +234,11 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static int GetYouTubeVideoInfoViaApi(string videoId, out string resInfo)
+        public static int GetYouTubeVideoInfoViaApi(string videoId,
+            YouTubeApiRequestType requestType, out string resInfo)
         {
-            JObject body = GenerateVideoInfoRequestBody(videoId);
+            JObject body = requestType == YouTubeApiRequestType.EncryptedUrls ?
+                GenerateVideoInfoEncryptedRequestBody(videoId) : GenerateVideoInfoDecryptedRequestBody(videoId);
             string url = string.Format(YOUTUBEI_API_URL_TEMPLATE, "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8");
             return HttpsPost(url, body.ToString(), out resInfo);
         }
@@ -266,7 +302,7 @@ namespace YouTube_downloader
             int res = 400;
             if (!doNotApi && config.UseHiddenApiForGettingInfo)
             {
-                res = GetYouTubeVideoInfoViaApi(videoId, out resInfo);
+                res = GetYouTubeVideoInfoViaApi(videoId, YouTubeApiRequestType.EncryptedUrls, out resInfo);
             }
             if (res == 200)
             {
@@ -771,6 +807,7 @@ namespace YouTube_downloader
         }
     }
 
+    public enum YouTubeApiRequestType { EncryptedUrls, DecryptedUrls }
     public enum FavoriteItemType { Video, Channel, Directory };
 
     public sealed class FavoriteItem

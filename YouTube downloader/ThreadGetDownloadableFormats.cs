@@ -20,12 +20,15 @@ namespace YouTube_downloader
         public List<YouTubeVideoFile> videoFiles = new List<YouTubeVideoFile>();
         public List<YouTubeAudioFile> audioFiles = new List<YouTubeAudioFile>();
 
+        private YouTubeApiRequestType YouTubeApiRequestType;
+
         public string WebPage { get; private set; }
         public string _videoId;
         public bool _ciphered;
 
-        public ThreadGetDownloadableFormats(string webPageContent = null)
+        public ThreadGetDownloadableFormats(YouTubeApiRequestType requestType, string webPageContent = null)
         {
+            YouTubeApiRequestType = requestType;
             WebPage = webPageContent;
         }
 
@@ -33,48 +36,57 @@ namespace YouTube_downloader
         {
             this.synchronizationContext = (SynchronizationContext)synchronizationContext;
             this.synchronizationContext?.Send(InfoSend, "Состояние: Определение доступных форматов...");
-            string videoInfo = null;
-            if (_ciphered)
-            {
-                string webPage = null;
-                ErrorCode = string.IsNullOrEmpty(WebPage) ? GetYouTubeVideoWebPage(_videoId, out webPage) : 200;
-                if (ErrorCode == 200)
-                {
-                    if (string.IsNullOrEmpty(WebPage))
-                    {
-                        WebPage = webPage;
-                    }
-                    videoInfo = !string.IsNullOrEmpty(WebPage) ? ExtractVideoInfoFromWebPage(WebPage) : null;
-                    ErrorCode = string.IsNullOrEmpty(videoInfo) ? 400 : 200;
-                    if (ErrorCode == 200)
-                    {
-                        /*string playerUrl = ExtractPlayerUrlFromWebPage(webPage);
-                        if (!string.IsNullOrEmpty(playerUrl))
-                        {
-                            if (DownloadString("https://www.youtube.com" + playerUrl, out string playerCode) == 200)
-                            {
 
-                            }
-                        }*/
-                    }
-                }
-            }
-            else
+            string videoInfo = null;
+            if (string.IsNullOrEmpty(WebPage) || string.IsNullOrWhiteSpace(WebPage))
             {
-                if (string.IsNullOrEmpty(WebPage))
+                if (_ciphered && YouTubeApiRequestType != YouTubeApiRequestType.DecryptedUrls)
                 {
-                    ErrorCode = GetYouTubeVideoInfoEx(_videoId, out videoInfo, false);
+                    ErrorCode = GetYouTubeVideoWebPage(_videoId, out string page);
+                    if (ErrorCode != 200)
+                    {
+                        this.synchronizationContext?.Send(Finished, this);
+                        return;
+                    }
+                    if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+                    {
+                        ErrorCode = 400;
+                        this.synchronizationContext?.Send(Finished, this);
+                        return;
+                    }
+
+                    WebPage = page;
+                    videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+                    if (string.IsNullOrEmpty(videoInfo) || string.IsNullOrWhiteSpace(videoInfo))
+                    {
+                        ErrorCode = 400;
+                        this.synchronizationContext?.Send(Finished, this);
+                        return;
+                    }
                 }
                 else
                 {
-                    videoInfo = ExtractVideoInfoFromWebPage(WebPage);
-                    ErrorCode = string.IsNullOrEmpty(videoInfo) ? 404 : 200;
+                    ErrorCode = GetYouTubeVideoInfoViaApi(_videoId, YouTubeApiRequestType, out videoInfo);
                 }
+
+                if (ErrorCode == 200)
+                {
+                    ParseFormats(videoInfo);
+                }
+
+                this.synchronizationContext?.Send(Finished, this);
+                return;
             }
-            if (ErrorCode == 200 && !string.IsNullOrEmpty(videoInfo))
+
+            videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+            if (string.IsNullOrEmpty(videoInfo) || string.IsNullOrWhiteSpace(videoInfo))
             {
-                ParseFormats(videoInfo);
+                ErrorCode = 404;
+                this.synchronizationContext?.Send(Finished, this);
+                return;
             }
+
+            ParseFormats(videoInfo);
             this.synchronizationContext?.Send(Finished, this);
         }
 
@@ -88,7 +100,7 @@ namespace YouTube_downloader
             ThreadCompleted?.Invoke(obj);
         }
 
-        
+
 
         private void ParseDashManifest(string dashManifestString)
         {

@@ -403,8 +403,8 @@ namespace YouTube_downloader
                         video.Hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
                     }
 
-                    JObject jMicroformatRenderer = jVideo.Value<JObject>("microformat");
-                    if (jMicroformatRenderer == null)
+                    JObject jMicroformat = jVideo.Value<JObject>("microformat");
+                    if (jMicroformat == null)
                     {
                         if (GetYouTubeVideoInfoEx(video.Id, out string info, true) == 200)
                         {
@@ -412,10 +412,11 @@ namespace YouTube_downloader
                             jt = jObject.Value<JToken>("microformat");
                             if (jt != null)
                             {
-                                jMicroformatRenderer = jt.Value<JObject>().Value<JObject>("playerMicroformatRenderer");
+                                jMicroformat = jt.Value<JObject>();
                             }
                         }
                     }
+                    JObject jMicroformatRenderer = jMicroformat.Value<JObject>("playerMicroformatRenderer");
                     if (jMicroformatRenderer != null)
                     {
                         StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
