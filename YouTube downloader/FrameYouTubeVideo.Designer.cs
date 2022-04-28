@@ -213,7 +213,7 @@
             this.toolStripMenuItem1,
             this.openVideoInBrowserToolStripMenuItem});
             this.menuImage.Name = "menuImage";
-            this.menuImage.Size = new System.Drawing.Size(241, 120);
+            this.menuImage.Size = new System.Drawing.Size(241, 142);
             // 
             // copyVideoTitleToolStripMenuItem
             // 

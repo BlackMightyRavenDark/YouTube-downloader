@@ -376,71 +376,90 @@ namespace YouTube_downloader
                     JObject jVideo = jaVideos[i].Value<JObject>();
                     JObject jVideoDetails = jVideo.Value<JObject>("videoDetails");
                     YouTubeVideo video = new YouTubeVideo();
-                    video.Title = jVideoDetails.Value<string>("title");
-                    video.Id = jVideoDetails.Value<string>("videoId");
-                    jt = jVideoDetails.Value<JToken>("lengthSeconds");
-                    video.Length = jt != null ? TimeSpan.FromSeconds(int.Parse(jt.Value<string>())) : new TimeSpan(0L);
-                    video.ChannelOwned = new YouTubeChannel();
-                    video.ChannelOwned.Id = jVideoDetails.Value<string>("channelId");
-                    video.ChannelOwned.Title = jVideoDetails.Value<string>("author");
-                    jt = jVideo.Value<JToken>("streamingData");
-                    if (jt != null)
+                    if (jVideoDetails == null)
                     {
-                        JObject jStreamingData = jt.Value<JObject>();
-                        JToken jData = jStreamingData.Value<JToken>("adaptiveFormats");
-                        if (jData == null)
+                        JObject jPlayabilityStatus = jVideo.Value<JObject>("playabilityStatus");
+                        string reason = jPlayabilityStatus.Value<string>("reason");
+                        video.Title = reason;
+
+                        JArray jaThumbs = jPlayabilityStatus.Value<JObject>("errorScreen").Value<JObject>("playerErrorMessageRenderer")
+                            .Value<JObject>("thumbnail").Value<JArray>("thumbnails");
+                        if (jaThumbs != null && jaThumbs.Count > 0)
                         {
-                            jData = jStreamingData.Value<JToken>("formats");
+                            string imgUrl = $"https:{(jaThumbs[0] as JObject).Value<string>("url")}";
+                            video.ImageUrls.Add(imgUrl);
                         }
 
-                        JArray jArray = jData.Value<JArray>();
-                        if (jArray.Count > 0)
-                        {
-                            video.Ciphered = jArray[0].Value<JToken>("signatureCipher") != null;
-                        }
-                        video.Dashed = jStreamingData.Value<JToken>("dashManifestUrl") != null;
-                        video.Hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
+                        video.IsAvailable = false;
                     }
+                    else
+                    {
+                        video.Title = jVideoDetails.Value<string>("title");
+                        video.Id = jVideoDetails.Value<string>("videoId");
+                        jt = jVideoDetails.Value<JToken>("lengthSeconds");
+                        video.Length = jt != null ? TimeSpan.FromSeconds(int.Parse(jt.Value<string>())) : new TimeSpan(0L);
+                        video.ChannelOwned = new YouTubeChannel();
+                        video.ChannelOwned.Id = jVideoDetails.Value<string>("channelId");
+                        video.ChannelOwned.Title = jVideoDetails.Value<string>("author");
+                        jt = jVideo.Value<JToken>("streamingData");
+                        if (jt != null)
+                        {
+                            JObject jStreamingData = jt.Value<JObject>();
+                            JToken jData = jStreamingData.Value<JToken>("adaptiveFormats");
+                            if (jData == null)
+                            {
+                                jData = jStreamingData.Value<JToken>("formats");
+                            }
 
-                    JObject jMicroformat = jVideo.Value<JObject>("microformat");
-                    if (jMicroformat == null)
-                    {
-                        if (GetYouTubeVideoInfoEx(video.Id, out string info, true) == 200)
-                        {
-                            JObject jObject = JObject.Parse(info);
-                            jt = jObject.Value<JToken>("microformat");
-                            if (jt != null)
+                            JArray jArray = jData.Value<JArray>();
+                            if (jArray.Count > 0)
                             {
-                                jMicroformat = jt.Value<JObject>();
+                                video.Ciphered = jArray[0].Value<JToken>("signatureCipher") != null;
+                            }
+                            video.Dashed = jStreamingData.Value<JToken>("dashManifestUrl") != null;
+                            video.Hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
+                        }
+
+                        JObject jMicroformat = jVideo.Value<JObject>("microformat");
+                        if (jMicroformat == null)
+                        {
+                            if (GetYouTubeVideoInfoEx(video.Id, out string info, true) == 200)
+                            {
+                                JObject jObject = JObject.Parse(info);
+                                jt = jObject.Value<JToken>("microformat");
+                                if (jt != null)
+                                {
+                                    jMicroformat = jt.Value<JObject>();
+                                }
                             }
                         }
-                    }
-                    JObject jMicroformatRenderer = jMicroformat.Value<JObject>("playerMicroformatRenderer");
-                    if (jMicroformatRenderer != null)
-                    {
-                        StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
-                        video.DateUploaded = dateUploaded;
-                        StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
-                        video.DatePublished = datePublished;
-                        video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
-                        video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
-                        video.ImageUrls = GetThumbnailUrls(jMicroformatRenderer, video.Id);
-                        if (video.ImageUrls.Count > 0)
+                        JObject jMicroformatRenderer = jMicroformat.Value<JObject>("playerMicroformatRenderer");
+                        if (jMicroformatRenderer != null)
                         {
-                            video.ImageData = new MemoryStream();
-                            if (DownloadData(video.ImageUrls[0], video.ImageData) == 200)
-                            {
-                                video.ImageData.Position = 0L;
-                                video.Image = Image.FromStream(video.ImageData);
-                                video.ImageData.Position = 0L;
-                            }
-                            else
-                            {
-                                video.ImageData.Dispose();
-                                video.ImageData = null;
-                            }
+                            StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
+                            video.DateUploaded = dateUploaded;
+                            StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
+                            video.DatePublished = datePublished;
+                            video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
+                            video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
+                            video.ImageUrls = GetThumbnailUrls(jMicroformatRenderer, video.Id);
                         }
                     }
+                            if (video.ImageUrls.Count > 0)
+                            {
+                                video.ImageData = new MemoryStream();
+                                if (DownloadData(video.ImageUrls[0], video.ImageData) == 200)
+                                {
+                                    video.ImageData.Position = 0L;
+                                    video.Image = Image.FromStream(video.ImageData);
+                                    video.ImageData.Position = 0L;
+                                }
+                                else
+                                {
+                                    video.ImageData.Dispose();
+                                    video.ImageData = null;
+                                }
+                            }
                     videos.Add(video);
 
                     FrameYouTubeVideo frameVideo = new FrameYouTubeVideo();

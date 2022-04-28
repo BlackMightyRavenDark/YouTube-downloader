@@ -97,6 +97,13 @@ namespace YouTube_downloader
         {
             _youTubeVideo = videoInfo;
             lblVideoTitle.Text = videoInfo.Title;
+            if (videoInfo.ChannelOwned == null)
+            {
+                lblChannelTitle.Text = "Имя канала: Не доступно";
+                lblDatePublished.Text = "Дата публикации: Не доступно";
+                return;
+            }
+
             lblChannelTitle.Text = videoInfo.ChannelOwned.Title;
             lblDatePublished.Text = $"Дата публикации: {videoInfo.DatePublished:yyyy.MM.dd}";
             FavoriteItem favoriteItem = new FavoriteItem(
@@ -167,6 +174,13 @@ namespace YouTube_downloader
 
         private void btnDownload_Click(object sender, EventArgs e)
         {
+            if (!VideoInfo.IsAvailable)
+            {
+                MessageBox.Show("Видео недоступно!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (downloading)
             {
                 downloadCancelRequired = true;
@@ -894,6 +908,13 @@ namespace YouTube_downloader
 
         private void btnGetVideoInfo_Click(object sender, EventArgs e)
         {
+            if (!VideoInfo.IsAvailable)
+            {
+                MessageBox.Show("Видео недоступно!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(webPage))
             {
                 string t = ExtractVideoInfoFromWebPage(webPage);
@@ -917,6 +938,13 @@ namespace YouTube_downloader
         private void btnGetWebPage_Click(object sender, EventArgs e)
         {
             btnGetWebPage.Enabled = false;
+            if (!VideoInfo.IsAvailable)
+            {
+                MessageBox.Show("Видео недоступно!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnGetWebPage.Enabled = true;
+                return;
+            }
 
             int errorCode = GetYouTubeVideoWebPage(VideoInfo.Id, out string page);
             if (errorCode == 200)
@@ -935,6 +963,13 @@ namespace YouTube_downloader
 
         private void btnGetDashManifest_Click(object sender, EventArgs e)
         {
+            if (!VideoInfo.IsAvailable)
+            {
+                MessageBox.Show("Видео недоступно!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, VideoInfo.Ciphered);
             if (errorCode == 200)
             {
@@ -965,6 +1000,13 @@ namespace YouTube_downloader
 
         private void btnGetHlsManifest_Click(object sender, EventArgs e)
         {
+            if (!VideoInfo.IsAvailable)
+            {
+                MessageBox.Show("Видео недоступно!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, VideoInfo.Ciphered);
             if (errorCode == 200)
             {
@@ -995,6 +1037,13 @@ namespace YouTube_downloader
 
         private void btnGetPlayerCode_Click(object sender, EventArgs e)
         {
+            if (!VideoInfo.IsAvailable)
+            {
+                MessageBox.Show("Видео недоступно!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             string page = webPage;
             if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
             {
@@ -1069,7 +1118,7 @@ namespace YouTube_downloader
         private void imagePreview_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (e.Button == MouseButtons.Right)
+            if (VideoInfo.IsAvailable && e.Button == MouseButtons.Right)
             {
                 menuImage.Show(Cursor.Position);
             }
@@ -1092,7 +1141,7 @@ namespace YouTube_downloader
         private void imageFavorite_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (e.Button == MouseButtons.Left)
+            if (VideoInfo.IsAvailable && e.Button == MouseButtons.Left)
             {
                 SetFavoriteVideo(!favoriteVideo);
             }
@@ -1101,13 +1150,16 @@ namespace YouTube_downloader
         private void imageFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (FavoriteChannelChanged != null)
+            if (VideoInfo.IsAvailable)
             {
-                FavoriteChannelChanged.Invoke(this, VideoInfo.ChannelOwned.Id, !FavoriteChannel);
-            }
-            else
-            {
-                FavoriteChannel = !favoriteChannel;
+                if (FavoriteChannelChanged != null)
+                {
+                    FavoriteChannelChanged.Invoke(this, VideoInfo.ChannelOwned.Id, !FavoriteChannel);
+                }
+                else
+                {
+                    FavoriteChannel = !favoriteChannel;
+                }
             }
         }
 

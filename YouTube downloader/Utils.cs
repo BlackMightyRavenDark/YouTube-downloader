@@ -878,5 +878,6 @@ namespace YouTube_downloader
         public bool Hlsed { get; set; } = false;
         public bool IsFamilySafe { get; set; } = true;
         public bool IsUnlisted { get; set; } = false;
+        public bool IsAvailable { get; set; } = true;
     }
 }
