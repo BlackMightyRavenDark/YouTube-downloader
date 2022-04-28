@@ -415,10 +415,16 @@ namespace YouTube_downloader
 
             if (string.IsNullOrEmpty(uri.Query))
             {
-                if (!string.IsNullOrEmpty(uri.AbsolutePath) && !string.IsNullOrWhiteSpace(uri.AbsolutePath) &&
-                    uri.AbsolutePath.StartsWith("/shorts/"))
+                if (!string.IsNullOrEmpty(uri.AbsolutePath) && !string.IsNullOrWhiteSpace(uri.AbsolutePath))
                 {
-                    return uri.AbsolutePath.Substring(8);
+                    if (uri.AbsolutePath.StartsWith("/shorts/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return uri.AbsolutePath.Substring(8);
+                    }
+                    else if (uri.AbsolutePath.StartsWith("/embed/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return uri.AbsolutePath.Substring(7);
+                    }
                 }
                 return null;
             }
