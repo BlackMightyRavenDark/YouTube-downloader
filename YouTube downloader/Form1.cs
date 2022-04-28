@@ -424,31 +424,21 @@ namespace YouTube_downloader
                         video.DatePublished = datePublished;
                         video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
                         video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
-                        JArray jaThumbnails = jMicroformatRenderer.Value<JObject>("thumbnail").Value<JArray>("thumbnails");
-                        for (int i2 = 0; i2 < jaThumbnails.Count; i2++)
+                        video.ImageUrls = GetThumbnailUrls(jMicroformatRenderer, video.Id);
+                        if (video.ImageUrls.Count > 0)
                         {
-                            string t = jaThumbnails[i2].Value<JObject>().Value<string>("url");
-                            if (t.Contains("?"))
+                            video.ImageData = new MemoryStream();
+                            if (DownloadData(video.ImageUrls[0], video.ImageData) == 200)
                             {
-                                t = t.Substring(0, t.IndexOf("?"));
+                                video.ImageData.Position = 0L;
+                                video.Image = Image.FromStream(video.ImageData);
+                                video.ImageData.Position = 0L;
                             }
-                            if (t.Contains("vi_webp"))
+                            else
                             {
-                                t = t.Replace("vi_webp", "vi").Replace(".webp", ".jpg");
+                                video.ImageData.Dispose();
+                                video.ImageData = null;
                             }
-                            video.ImageUrls.Add(t);
-                        }
-                        video.ImageData = new MemoryStream();
-                        if (DownloadData(video.ImageUrls[video.ImageUrls.Count - 1], video.ImageData) == 200)
-                        {
-                            video.ImageData.Position = 0L;
-                            video.Image = Image.FromStream(video.ImageData);
-                            video.ImageData.Position = 0L;
-                        }
-                        else
-                        {
-                            video.ImageData.Dispose();
-                            video.ImageData = null;
                         }
                     }
                     videos.Add(video);
@@ -472,6 +462,54 @@ namespace YouTube_downloader
                 }
             }
             return framesChannel.Count + framesVideo.Count;
+        }
+
+        private List<string> GetThumbnailUrls(JObject jMicroformatRenderer, string videoId)
+        {
+            List<string> possibleUrls = new List<string>()
+            {
+                $"https://i.ytimg.com/vi/{videoId}/maxresdefault.jpg",
+                $"https://i.ytimg.com/vi/{videoId}/hqdefault.jpg",
+                $"https://i.ytimg.com/vi/{videoId}/mqdefault.jpg",
+                $"https://i.ytimg.com/vi/{videoId}/sddefault.jpg",
+                $"https://i.ytimg.com/vi/{videoId}/default.jpg"
+            };
+            List<string> resList = new List<string>();
+            foreach (string url in possibleUrls)
+            {
+                if (FileDownloader.GetUrlContentLength(url, null, out _, out _) == 200)
+                {
+                    resList.Add(url);
+                }
+            }
+
+            if (jMicroformatRenderer != null)
+            {
+                JToken jt = jMicroformatRenderer.Value<JToken>("thumbnail");
+                if (jt != null)
+                {
+                    JArray jaThumbnails = jt.Value<JObject>().Value<JArray>("thumbnails");
+                    for (int i = jaThumbnails.Count - 1; i >= 0; i--)
+                    {
+                        string t = jaThumbnails[i].Value<JObject>().Value<string>("url");
+                        if (t.Contains("?"))
+                        {
+                            t = t.Substring(0, t.IndexOf("?"));
+                        }
+                        if (t.Contains("vi_webp"))
+                        {
+                            t = t.Replace("vi_webp", "vi").Replace(".webp", ".jpg");
+                        }
+
+                        if (!resList.Contains(t))
+                        {
+                            resList.Add(t);
+                        }
+                    }
+                }
+            }
+
+            return resList;
         }
 
         private void ClearChannels()
