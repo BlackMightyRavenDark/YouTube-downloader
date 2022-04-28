@@ -31,7 +31,7 @@ namespace YouTube_downloader
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPageFilesAndFolders = new System.Windows.Forms.TabPage();
@@ -54,12 +54,12 @@ namespace YouTube_downloader
             this.editTempDirPath = new System.Windows.Forms.TextBox();
             this.btnBrowseTempPath = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.chkDeleteSourceFiles = new System.Windows.Forms.CheckBox();
             this.chkMergeAdaptive = new System.Windows.Forms.CheckBox();
             this.chkSaveImage = new System.Windows.Forms.CheckBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.btnApiWtf = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -122,13 +122,13 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.tabControl1.SuspendLayout();
+            this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPageFilesAndFolders.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabPageDownloadingSettings.SuspendLayout();
             this.groupBox10.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tabPageSystemSettings.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -151,19 +151,19 @@ namespace YouTube_downloader
             this.menuFavorites.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tabControlMain
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabControlMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPageSettings);
-            this.tabControl1.Controls.Add(this.tabPageSearch);
-            this.tabControl1.Controls.Add(this.tabPageSearchResults);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(555, 420);
-            this.tabControl1.TabIndex = 0;
+            this.tabControlMain.Controls.Add(this.tabPageSettings);
+            this.tabControlMain.Controls.Add(this.tabPageSearch);
+            this.tabControlMain.Controls.Add(this.tabPageSearchResults);
+            this.tabControlMain.Location = new System.Drawing.Point(12, 12);
+            this.tabControlMain.Name = "tabControlMain";
+            this.tabControlMain.SelectedIndex = 0;
+            this.tabControlMain.Size = new System.Drawing.Size(555, 420);
+            this.tabControlMain.TabIndex = 0;
             // 
             // tabPageSettings
             // 
@@ -182,8 +182,8 @@ namespace YouTube_downloader
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl2.Controls.Add(this.tabPageFilesAndFolders);
-            this.tabControl2.Controls.Add(this.tabPage1);
-            this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Controls.Add(this.tabPageDownloadingSettings);
+            this.tabControl2.Controls.Add(this.tabPageSystemSettings);
             this.tabControl2.Location = new System.Drawing.Point(6, 8);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
@@ -408,17 +408,17 @@ namespace YouTube_downloader
             this.label4.TabIndex = 6;
             this.label4.Text = "Папка для временных файлов:";
             // 
-            // tabPage1
+            // tabPageDownloadingSettings
             // 
-            this.tabPage1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.tabPage1.Controls.Add(this.groupBox10);
-            this.tabPage1.Controls.Add(this.chkSaveImage);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(527, 357);
-            this.tabPage1.TabIndex = 2;
-            this.tabPage1.Text = "Скачивание";
+            this.tabPageDownloadingSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageDownloadingSettings.Controls.Add(this.groupBox10);
+            this.tabPageDownloadingSettings.Controls.Add(this.chkSaveImage);
+            this.tabPageDownloadingSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDownloadingSettings.Name = "tabPageDownloadingSettings";
+            this.tabPageDownloadingSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDownloadingSettings.Size = new System.Drawing.Size(527, 357);
+            this.tabPageDownloadingSettings.TabIndex = 2;
+            this.tabPageDownloadingSettings.Text = "Скачивание";
             // 
             // groupBox10
             // 
@@ -464,17 +464,17 @@ namespace YouTube_downloader
             this.chkSaveImage.UseVisualStyleBackColor = true;
             this.chkSaveImage.CheckedChanged += new System.EventHandler(this.chkSaveImage_CheckedChanged);
             // 
-            // tabPage2
+            // tabPageSystemSettings
             // 
-            this.tabPage2.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.tabPage2.Controls.Add(this.groupBox11);
-            this.tabPage2.Controls.Add(this.groupBox7);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(527, 357);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Система";
+            this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageSystemSettings.Controls.Add(this.groupBox11);
+            this.tabPageSystemSettings.Controls.Add(this.groupBox7);
+            this.tabPageSystemSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabPageSystemSettings.Name = "tabPageSystemSettings";
+            this.tabPageSystemSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSystemSettings.Size = new System.Drawing.Size(527, 357);
+            this.tabPageSystemSettings.TabIndex = 1;
+            this.tabPageSystemSettings.Text = "Система";
             // 
             // groupBox11
             // 
@@ -1096,6 +1096,7 @@ namespace YouTube_downloader
             this.panelSearchResults.Name = "panelSearchResults";
             this.panelSearchResults.Size = new System.Drawing.Size(527, 392);
             this.panelSearchResults.TabIndex = 0;
+            this.panelSearchResults.Resize += new System.EventHandler(this.panelSearchResults_Resize);
             // 
             // tvFavorites
             // 
@@ -1170,24 +1171,23 @@ namespace YouTube_downloader
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(825, 439);
             this.Controls.Add(this.tvFavorites);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControlMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(820, 440);
+            this.MinimumSize = new System.Drawing.Size(830, 440);
             this.Name = "Form1";
             this.Text = "Скачивалка с ютуба";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.Resize += new System.EventHandler(this.Form1_Resize);
-            this.tabControl1.ResumeLayout(false);
+            this.tabControlMain.ResumeLayout(false);
             this.tabPageSettings.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPageFilesAndFolders.ResumeLayout(false);
             this.tabPageFilesAndFolders.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.tabPageDownloadingSettings.ResumeLayout(false);
+            this.tabPageDownloadingSettings.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
+            this.tabPageSystemSettings.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1224,7 +1224,7 @@ namespace YouTube_downloader
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControlMain;
         private System.Windows.Forms.TabPage tabPageSettings;
         private System.Windows.Forms.TabPage tabPageSearch;
         private System.Windows.Forms.TabPage tabPageSearchResults;
@@ -1270,7 +1270,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.TextBox editOutputFileNameFormat;
         private System.Windows.Forms.Button btnResetFileNameFormat;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPageSystemSettings;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.NumericUpDown numericUpDownThreadsAudio;
@@ -1284,7 +1284,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.CheckBox chkSearchVideos;
         private System.Windows.Forms.CheckBox chkSearchChannels;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPageDownloadingSettings;
         private System.Windows.Forms.CheckBox chkDeleteSourceFiles;
         private System.Windows.Forms.CheckBox chkMergeAdaptive;
         private System.Windows.Forms.CheckBox chkSaveImage;

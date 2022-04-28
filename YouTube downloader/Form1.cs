@@ -17,12 +17,11 @@ namespace YouTube_downloader
         public Form1()
         {
             InitializeComponent();
-            Load += Form1_Resize;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            tabControl1.SelectedTab = tabPageSearch;
+            tabControlMain.SelectedTab = tabPageSearch;
 
             tvFavorites.ChildrenGetter = obj => { return ((FavoriteItem)obj).Children; };
             tvFavorites.ParentGetter = obj => { return ((FavoriteItem)obj).Parent; };
@@ -70,7 +69,7 @@ namespace YouTube_downloader
             SaveFavorites("fav.json");
         }
 
-        private void Form1_Resize(object sender, EventArgs e)
+        private void panelSearchResults_Resize(object sender, EventArgs e)
         {
             StackFrames();
         }
@@ -597,7 +596,7 @@ namespace YouTube_downloader
                 {
                     StackFrames();
                 }
-                tabControl1.SelectedTab = tabPageSearchResults;
+                tabControlMain.SelectedTab = tabPageSearchResults;
             }
             tabPageSearchResults.Text = $"Результаты поиска: {count}";
 
@@ -652,7 +651,7 @@ namespace YouTube_downloader
                     StackFrames();
                 }
                 tabPageSearchResults.Text = $"Результаты поиска: {count}";
-                tabControl1.SelectedTab = tabPageSearchResults;
+                tabControlMain.SelectedTab = tabPageSearchResults;
                 editSearchUrl.Text = null;
             }
             else
@@ -703,7 +702,7 @@ namespace YouTube_downloader
                         StackFrames();
                     }
                     tabPageSearchResults.Text = $"Результаты поиска: {count}";
-                    tabControl1.SelectedTab = tabPageSearchResults;
+                    tabControlMain.SelectedTab = tabPageSearchResults;
                 }
                 else
                 {
@@ -789,7 +788,7 @@ namespace YouTube_downloader
                                 if (count > 0)
                                 {
                                     StackFrames();
-                                    tabControl1.SelectedTab = tabPageSearchResults;
+                                    tabControlMain.SelectedTab = tabPageSearchResults;
                                 }
                                 else
                                 {
@@ -855,7 +854,7 @@ namespace YouTube_downloader
                 {
                     StackFrames();
                 }
-                tabControl1.SelectedTab = tabPageSearchResults;
+                tabControlMain.SelectedTab = tabPageSearchResults;
             }
             else
             {
