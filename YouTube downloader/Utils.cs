@@ -31,7 +31,7 @@ namespace YouTube_downloader
 
         public static TreeListView treeFavorites = null;
         public static FavoriteItem favoritesRootNode = null;
-        public static MyConfiguration config = new MyConfiguration($"{Application.StartupPath}\\config_ytdl.json");
+        public static MyConfiguration config = new MyConfiguration("config_ytdl.json");
 
         public const int ERROR_CIPHER_DECRYPTION = -100;
         public const int ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM = -101;
@@ -659,6 +659,7 @@ namespace YouTube_downloader
     {
         public string FilePath { get; private set; }
         public string SelfDirPath { get; set; }
+        public string HomeDirPath { get; set; }
         public string DownloadingDirPath { get; set; }
         public string TempDirPath { get; set; }
         public string ChunksMergingDirPath { get; set; }
@@ -679,8 +680,22 @@ namespace YouTube_downloader
 
         public MyConfiguration(string fileName)
         {
-            FilePath = fileName;
             SelfDirPath = Path.GetDirectoryName(Application.ExecutablePath);
+            bool useAppData = false;
+            string[] args = Environment.GetCommandLineArgs();
+            foreach (string arg in args)
+            {
+                if (!string.IsNullOrEmpty(arg) && arg.Equals("/standalone", StringComparison.OrdinalIgnoreCase))
+                {
+                    useAppData = true;
+                    break;
+                }
+            }
+            HomeDirPath = useAppData ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                "\\YouTube downloader\\" : SelfDirPath + "\\";
+            FavoritesFilePath = HomeDirPath + "fav.json";
+            FilePath = HomeDirPath + fileName;
+
             LoadDefault();
         }
 
@@ -713,7 +728,6 @@ namespace YouTube_downloader
             DownloadingDirPath = null;
             TempDirPath = null;
             ChunksMergingDirPath = null;
-            FavoritesFilePath = SelfDirPath + "\\fav.json";
             MergeToContainer = true;
             DeleteSourceFiles = true;
             CipherDecryptionAlgo = null;

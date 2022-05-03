@@ -61,12 +61,20 @@ namespace YouTube_downloader
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            config.Save();
             ClearChannels();
             ClearFramesChannel();
             ClearVideos();
             ClearFramesVideo();
-            SaveFavorites("fav.json");
+
+            if (!Directory.Exists(config.HomeDirPath))
+            {
+                Directory.CreateDirectory(config.HomeDirPath);
+            }
+            if (Directory.Exists(config.HomeDirPath))
+            {
+                config.Save();
+                SaveFavorites(config.FavoritesFilePath);
+            }
         }
 
         private void panelSearchResults_Resize(object sender, EventArgs e)
