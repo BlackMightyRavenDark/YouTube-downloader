@@ -211,19 +211,7 @@ namespace YouTube_downloader
                 }
             }
 
-            for (int i = 0; i < audioFiles.Count; i++)
-            {
-                if (audioFiles[i].formatId == 140)
-                {
-                    if (i > 0)
-                    {
-                        YouTubeAudioFile tmp = audioFiles[i];
-                        audioFiles[i] = audioFiles[0];
-                        audioFiles[0] = tmp;
-                    }
-                    break;
-                }
-            }
+            SortAudioTracks();
         }
 
         private void ParseHlsManifest(string hlsManifestString)
@@ -400,6 +388,25 @@ namespace YouTube_downloader
                         }
                         videoFiles.Add(videoFile);
                     }
+                }
+            }
+
+            SortAudioTracks();
+        }
+
+        private void SortAudioTracks()
+        {
+            for (int i = 0; i < audioFiles.Count; i++)
+            {
+                if (audioFiles[i].formatId == 140)
+                {
+                    if (i > 0)
+                    {
+                        YouTubeAudioFile tmp = audioFiles[i];
+                        audioFiles[i] = audioFiles[0];
+                        audioFiles[0] = tmp;
+                    }
+                    break;
                 }
             }
         }
