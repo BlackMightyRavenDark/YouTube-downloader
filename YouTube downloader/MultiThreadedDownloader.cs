@@ -210,20 +210,12 @@ namespace YouTube_downloader
 
                 IProgress<ProgressItem> reporter = progress;
 
-                string chunkFileName;
-                if (chunkCount > 1)
+                string path = Path.GetFileName(OutputFileName);
+                string chunkFileName = chunkCount > 1 ? $"{path}.chunk_{taskId}.tmp" : $"{path}.tmp";
+                if (IsTempDirectoryAvailable)
                 {
-                    string path = Path.GetFileName(OutputFileName);
-                    chunkFileName = $"{path}.chunk_{taskId}.tmp";
-                    if (IsTempDirectoryAvailable)
-                    {
-                        chunkFileName = TempDirectory.EndsWith("\\") ?
-                            TempDirectory + chunkFileName : $"{TempDirectory}\\{chunkFileName}";
-                    }
-                }
-                else
-                {
-                    chunkFileName = OutputFileName + ".tmp";
+                    chunkFileName = TempDirectory.EndsWith("\\") ?
+                        TempDirectory + chunkFileName : $"{TempDirectory}\\{chunkFileName}";
                 }
 
                 chunkFileName = GetNumberedFileName(chunkFileName);
@@ -293,11 +285,21 @@ namespace YouTube_downloader
             }
             else
             {
-                string chunkFileName = Chunks[0];
-                if (File.Exists(chunkFileName))
+                string chunkFilePath = Chunks[0];
+                if (File.Exists(chunkFilePath))
                 {
-                    OutputFileName = GetNumberedFileName(OutputFileName);
-                    File.Move(chunkFileName, OutputFileName);
+                    string chunkDirPath = Path.GetDirectoryName(chunkFilePath);
+                    if (KeepDownloadedFileInMergingDirectory)
+                    {
+                        string chunkFileName = Path.GetFileName(OutputFileName);
+                        string dir = MergingDirectory.EndsWith("\\") ? MergingDirectory : $"{MergingDirectory}\\";
+                        OutputFileName = GetNumberedFileName(dir + chunkFileName);
+                    }
+                    else
+                    {
+                        OutputFileName = GetNumberedFileName(OutputFileName);
+                    }
+                    File.Move(chunkFilePath, OutputFileName);
                 }
                 LastErrorCode = 200;
             }
