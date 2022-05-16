@@ -296,13 +296,13 @@ namespace YouTube_downloader
             return null;
         }
 
-        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool doNotUseApi = false)
+        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool useHiddenApi)
         {
             resInfo = "Client error";
             int res = 400;
-            if (!doNotUseApi && config.UseHiddenApiForGettingInfo)
+            if (useHiddenApi)
             {
-                res = GetYouTubeVideoInfoViaApi(videoId, YouTubeApiRequestType.EncryptedUrls, out resInfo);
+                res = GetYouTubeVideoInfoViaApi(videoId, YouTubeApiRequestType.DecryptedUrls, out resInfo);
             }
             if (res == 200)
             {
@@ -324,7 +324,7 @@ namespace YouTube_downloader
 
         public static int SearchSingleVideo(string videoId, out string resList)
         {
-            int errorCode = GetYouTubeVideoInfoEx(videoId, out string response);
+            int errorCode = GetYouTubeVideoInfoEx(videoId, out string response, config.UseHiddenApiForGettingInfo);
             if (errorCode == 200)
             {
                 JObject j = JObject.Parse(response);

@@ -922,7 +922,7 @@ namespace YouTube_downloader
                 MessageBox.Show("Скопировано в буфер обмена");
                 return;
             }
-            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info);
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, config.UseHiddenApiForGettingInfo);
             if (errorCode == 200)
             {
                 SetClipboardText(info);
@@ -970,7 +970,7 @@ namespace YouTube_downloader
                 return;
             }
 
-            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, VideoInfo.Ciphered);
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, config.UseHiddenApiForGettingInfo);
             if (errorCode == 200)
             {
                 JObject json = JObject.Parse(info);
@@ -1007,7 +1007,7 @@ namespace YouTube_downloader
                 return;
             }
 
-            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, VideoInfo.Ciphered);
+            int errorCode = GetYouTubeVideoInfoEx(VideoInfo.Id, out string info, config.UseHiddenApiForGettingInfo);
             if (errorCode == 200)
             {
                 JObject json = JObject.Parse(info);

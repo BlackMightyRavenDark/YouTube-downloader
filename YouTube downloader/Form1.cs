@@ -240,7 +240,7 @@ namespace YouTube_downloader
                     {
                         JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
                         string videoId = jObject.Value<JObject>("id").Value<string>("videoId");
-                        if (GetYouTubeVideoInfoEx(videoId, out string info) == 200)
+                        if (GetYouTubeVideoInfoEx(videoId, out string info, config.UseHiddenApiForGettingInfo) == 200)
                         {
                             JObject j = JObject.Parse(info);
                             jaVideos.Add(j);
@@ -330,7 +330,7 @@ namespace YouTube_downloader
                         if (kind.Equals("youtube#video"))
                         {
                             string id = j.Value<JObject>("id").Value<string>("videoId");
-                            if (GetYouTubeVideoInfoEx(id, out buf) == 200)
+                            if (GetYouTubeVideoInfoEx(id, out buf, config.UseHiddenApiForGettingInfo) == 200)
                             {
                                 JObject j2 = JObject.Parse(buf);
                                 jaVideos.Add(j2);
@@ -431,7 +431,7 @@ namespace YouTube_downloader
                         JObject jMicroformat = jVideo.Value<JObject>("microformat");
                         if (jMicroformat == null)
                         {
-                            if (GetYouTubeVideoInfoEx(video.Id, out string info, true) == 200)
+                            if (GetYouTubeVideoInfoEx(video.Id, out string info, false) == 200)
                             {
                                 JObject jObject = JObject.Parse(info);
                                 jt = jObject.Value<JToken>("microformat");
