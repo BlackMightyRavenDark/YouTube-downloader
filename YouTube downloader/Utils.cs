@@ -296,11 +296,11 @@ namespace YouTube_downloader
             return null;
         }
 
-        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool doNotApi = false)
+        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool doNotUseApi = false)
         {
             resInfo = "Client error";
             int res = 400;
-            if (!doNotApi && config.UseHiddenApiForGettingInfo)
+            if (!doNotUseApi && config.UseHiddenApiForGettingInfo)
             {
                 res = GetYouTubeVideoInfoViaApi(videoId, YouTubeApiRequestType.EncryptedUrls, out resInfo);
             }
