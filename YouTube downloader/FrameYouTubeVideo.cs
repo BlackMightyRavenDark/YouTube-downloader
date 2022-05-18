@@ -77,20 +77,23 @@ namespace YouTube_downloader
 
         private void FrameYouTubeVideo_Resize(object sender, EventArgs e)
         {
-            int offset = 10;
-            imageFavorite.Left = Parent.Width - imageFavorite.Width - offset;
-            btnDownload.Left = Parent.Width - btnDownload.Width - offset;
-            lblVideoTitle.Width = imageFavorite.Left - lblVideoTitle.Left - 4;
-            progressBarDownload.Width = btnDownload.Left - progressBarDownload.Left - 4;
-            btnGetVideoInfo.Left = Parent.Width + offset;
-            btnGetWebPage.Left = btnGetVideoInfo.Left;
-            btnGetDashManifest.Left = btnGetVideoInfo.Left;
-            btnGetHlsManifest.Left = btnGetVideoInfo.Left;
-            btnGetPlayerCode.Left = btnGetVideoInfo.Left;
+            if (Parent != null)
+            {
+                int offset = 10;
+                imageFavorite.Left = Parent.Width - imageFavorite.Width - offset;
+                btnDownload.Left = Parent.Width - btnDownload.Width - offset;
+                lblVideoTitle.Width = imageFavorite.Left - lblVideoTitle.Left - 4;
+                progressBarDownload.Width = btnDownload.Left - progressBarDownload.Left - 4;
+                btnGetVideoInfo.Left = Parent.Width + offset;
+                btnGetWebPage.Left = btnGetVideoInfo.Left;
+                btnGetDashManifest.Left = btnGetVideoInfo.Left;
+                btnGetHlsManifest.Left = btnGetVideoInfo.Left;
+                btnGetPlayerCode.Left = btnGetVideoInfo.Left;
 
-            imgScrollbar.Left = 0;
-            imgScrollbar.Width = Parent.Width;
-            imgScrollbar.Invalidate();
+                imgScrollbar.Left = 0;
+                imgScrollbar.Width = Parent.Width;
+                imgScrollbar.Invalidate();
+            }
         }
 
         private void SetVideoInfo(YouTubeVideo videoInfo)
