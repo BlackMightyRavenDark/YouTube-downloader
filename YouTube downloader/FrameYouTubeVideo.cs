@@ -703,6 +703,7 @@ namespace YouTube_downloader
                 {
                     if (IsFfmpegAvailable() && tracksToDownload.Count == 2)
                     {
+                        btnDownload.Enabled = false;
                         lblStatus.Text = "Состояние: Объединение видео и аудио...";
                         lblStatus.Refresh();
 
