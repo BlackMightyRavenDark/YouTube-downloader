@@ -66,6 +66,8 @@ namespace YouTube_downloader
         public FrameYouTubeVideo()
         {
             InitializeComponent();
+
+            imgScrollbar.SetDoubleBuffered(true);
             synchronizationContext = SynchronizationContext.Current;
         }
 
@@ -1190,6 +1192,36 @@ namespace YouTube_downloader
         private void imgScrollbar_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
+            if (e.Button == MouseButtons.Left)
+            {
+                oldX = e.X;
+                canDrag = true;
+            }
+        }
+
+        private void imgScrollbar_MouseUp(object sender, MouseEventArgs e)
+        {
+            canDrag = false;
+        }
+
+        private void imgScrollbar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (canDrag)
+            {
+                int newX = Left + oldX - e.X;
+                if (newX > 0)
+                {
+                    newX = 0;
+                }
+                else if (newX < -EXTRA_WIDTH)
+                {
+                    newX = -EXTRA_WIDTH;
+                }
+                Left = newX;
+                oldX = e.X;
+                imgScrollbar.Left = -Left;
+                imgScrollbar.Invalidate();
+            }
         }
 
         private void openVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)

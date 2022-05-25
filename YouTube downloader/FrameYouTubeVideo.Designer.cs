@@ -177,8 +177,11 @@
             this.imgScrollbar.Size = new System.Drawing.Size(484, 12);
             this.imgScrollbar.TabIndex = 9;
             this.imgScrollbar.TabStop = false;
+            this.toolTip1.SetToolTip(this.imgScrollbar, "Скроллбар");
             this.imgScrollbar.Paint += new System.Windows.Forms.PaintEventHandler(this.imgScrollbar_Paint);
             this.imgScrollbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseDown);
+            this.imgScrollbar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseMove);
+            this.imgScrollbar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseUp);
             // 
             // btnGetVideoInfo
             // 
@@ -213,7 +216,7 @@
             this.toolStripMenuItem1,
             this.openVideoInBrowserToolStripMenuItem});
             this.menuImage.Name = "menuImage";
-            this.menuImage.Size = new System.Drawing.Size(241, 142);
+            this.menuImage.Size = new System.Drawing.Size(241, 120);
             // 
             // copyVideoTitleToolStripMenuItem
             // 

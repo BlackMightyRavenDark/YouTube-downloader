@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
 using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace YouTube_downloader
 {
@@ -48,6 +50,13 @@ namespace YouTube_downloader
             int x = dest.Width / 2 - source.Width / 2;
             int y = dest.Height / 2 - source.Height / 2;
             return new Rectangle(x, y, source.Width, source.Height);
+        }
+
+        public static void SetDoubleBuffered(this Control control, bool enabled)
+        {
+            typeof(Control).InvokeMember("DoubleBuffered",
+                BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                null, control, new object[] { enabled });
         }
     }
 }
