@@ -383,8 +383,7 @@ namespace YouTube_downloader
                     YouTubeVideo video = ParseVideoInfo(jaVideos[i].Value<JObject>());
                     videos.Add(video);
 
-                    FrameYouTubeVideo frameVideo = new FrameYouTubeVideo();
-                    frameVideo.Parent = panelSearchResults;
+                    FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(panelSearchResults);
                     frameVideo.VideoInfo = video;
                     frameVideo.FavoriteChannelChanged += (s, id, newState) =>
                     {

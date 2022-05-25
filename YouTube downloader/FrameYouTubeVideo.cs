@@ -62,10 +62,13 @@ namespace YouTube_downloader
         private bool downloading = false;
         public const int EXTRA_WIDTH = 140;
 
-
-        public FrameYouTubeVideo()
+        public FrameYouTubeVideo(Control parent)
         {
             InitializeComponent();
+            if (parent != null)
+            {
+                Parent = parent;
+            }
 
             imgScrollbar.SetDoubleBuffered(true);
             synchronizationContext = SynchronizationContext.Current;
@@ -79,21 +82,22 @@ namespace YouTube_downloader
 
         private void FrameYouTubeVideo_Resize(object sender, EventArgs e)
         {
-            if (Parent != null)
+            Control parentControl = Parent;
+            if (parentControl != null)
             {
-                int offset = 10;
-                imageFavorite.Left = Parent.Width - imageFavorite.Width - offset;
-                btnDownload.Left = Parent.Width - btnDownload.Width - offset;
+                const int offset = 10;
+                imageFavorite.Left = parentControl.Width - imageFavorite.Width - offset;
+                btnDownload.Left = parentControl.Width - btnDownload.Width - offset;
                 lblVideoTitle.Width = imageFavorite.Left - lblVideoTitle.Left - 4;
                 progressBarDownload.Width = btnDownload.Left - progressBarDownload.Left - 4;
-                btnGetVideoInfo.Left = Parent.Width + offset;
+                btnGetVideoInfo.Left = parentControl.Width + offset;
                 btnGetWebPage.Left = btnGetVideoInfo.Left;
                 btnGetDashManifest.Left = btnGetVideoInfo.Left;
                 btnGetHlsManifest.Left = btnGetVideoInfo.Left;
                 btnGetPlayerCode.Left = btnGetVideoInfo.Left;
 
                 imgScrollbar.Left = 0;
-                imgScrollbar.Width = Parent.Width;
+                imgScrollbar.Width = parentControl.Width;
                 imgScrollbar.Invalidate();
             }
         }
