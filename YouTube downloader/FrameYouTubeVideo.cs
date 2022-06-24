@@ -1100,16 +1100,6 @@ namespace YouTube_downloader
             sfd.Dispose();
         }
 
-        private void copyVideoTitleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetClipboardText(VideoInfo.Title);
-        }
-
-        private void copyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetClipboardText(VideoInfo.ChannelOwned.Title);
-        }
-
         private void copyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetClipboardText(YOUTUBE_VIDEO_URL_BASE + VideoInfo.Id);
@@ -1146,6 +1136,10 @@ namespace YouTube_downloader
         private void lblVideoTitle_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
+            if (VideoInfo.IsAvailable && e.Button == MouseButtons.Right)
+            {
+                contextMenuVideoTitle.Show(Cursor.Position);
+            }
         }
 
         private void imageFavorite_MouseDown(object sender, MouseEventArgs e)
@@ -1262,6 +1256,26 @@ namespace YouTube_downloader
         private void copyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetClipboardText($"{VideoInfo.ChannelOwned.Title} [{VideoInfo.ChannelOwned.Id}]");
+        }
+
+        private void miCopyTitleAsIsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetClipboardText(VideoInfo.Title);
+        }
+
+        private void miCopyFixedTitleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string t = FixFileName(VideoInfo.Title);
+            SetClipboardText(t);
+        }
+
+        private void miOpenImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (VideoInfo.ImageUrls.Count > 0)
+            {
+                string url = VideoInfo.ImageUrls[0];
+                OpenUrlInBrowser(url);
+            }
         }
     }
 }

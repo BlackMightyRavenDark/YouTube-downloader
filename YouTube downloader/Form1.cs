@@ -826,7 +826,11 @@ namespace YouTube_downloader
 
         private void tvFavorites_CellRightClick(object sender, BrightIdeasSoftware.CellRightClickEventArgs e)
         {
-            menuFavorites.Show(Cursor.Position);
+            FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
+            if (item != null && item.Parent != null)
+            {
+                menuFavorites.Show(Cursor.Position);
+            }
         }
 
         private void tvFavorites_MouseDoubleClick(object sender, MouseEventArgs e)
