@@ -227,7 +227,7 @@ namespace YouTube_downloader
             lblStatus.Text = null;
             audioFormats.Clear();
             videoFormats.Clear();
-            menuDownloads.Items.Clear();
+            contextMenuDownloads.Items.Clear();
 
             ThreadGetDownloadableFormats thr = (ThreadGetDownloadableFormats)sender;
             if (thr.videoFiles.Count == 0 && thr.audioFiles.Count == 0)
@@ -250,25 +250,25 @@ namespace YouTube_downloader
                 ToolStripMenuItem mi = new ToolStripMenuItem(thr.videoFiles[i].ToString());
                 mi.Tag = thr.videoFiles[i];
                 mi.Click += MenuItemDownloadClick;
-                menuDownloads.Items.Add(mi);
+                contextMenuDownloads.Items.Add(mi);
             }
             if (thr.audioFiles.Count > 0)
             {
-                menuDownloads.Items.Add("-");
+                contextMenuDownloads.Items.Add("-");
                 for (int i = 0; i < thr.audioFiles.Count; i++)
                 {
                     audioFormats.Add(thr.audioFiles[i]);
                     ToolStripMenuItem mi = new ToolStripMenuItem(thr.audioFiles[i].ToString());
                     mi.Tag = thr.audioFiles[i];
                     mi.Click += MenuItemDownloadClick;
-                    menuDownloads.Items.Add(mi);
+                    contextMenuDownloads.Items.Add(mi);
                 }
             }
 
             btnDownload.Enabled = true;
 
             Point pt = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));                           
-            menuDownloads.Show(pt.X, pt.Y);
+            contextMenuDownloads.Show(pt.X, pt.Y);
         }
 
         private async Task<DownloadResult> DownloadDash(YouTubeMediaFile mediaFile, string formattedFileName)
@@ -1100,27 +1100,12 @@ namespace YouTube_downloader
             sfd.Dispose();
         }
 
-        private void copyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetClipboardText(YOUTUBE_VIDEO_URL_BASE + VideoInfo.Id);
-        }
-
-        private void copyChannelTitleToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            SetClipboardText(VideoInfo.ChannelOwned.Title);
-        }
-
-        private void openChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id));
-        }
-
         private void imagePreview_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
             if (VideoInfo.IsAvailable && e.Button == MouseButtons.Right)
             {
-                menuImage.Show(Cursor.Position);
+                contextMenuImage.Show(Cursor.Position);
             }
         }
 
@@ -1129,7 +1114,7 @@ namespace YouTube_downloader
             Activated?.Invoke(this);
             if (e.Button == MouseButtons.Right)
             {
-                menuChannelTitle.Show(Cursor.Position);
+                contextMenuChannelTitle.Show(Cursor.Position);
             }
         }
 
@@ -1222,7 +1207,22 @@ namespace YouTube_downloader
             }
         }
 
-        private void openVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetClipboardText(YOUTUBE_VIDEO_URL_BASE + VideoInfo.Id);
+        }
+
+        private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetClipboardText(VideoInfo.ChannelOwned.Title);
+        }
+
+        private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id));
+        }
+
+        private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenUrlInBrowser(YOUTUBE_VIDEO_URL_BASE + VideoInfo.Id);
         }
@@ -1232,7 +1232,7 @@ namespace YouTube_downloader
             OpenChannel?.Invoke(this, VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id);
         }
 
-        private void saveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
+        private void miSaveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (VideoInfo.ImageData != null)
             {
@@ -1253,7 +1253,7 @@ namespace YouTube_downloader
             }
         }
 
-        private void copyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
+        private void miCopyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetClipboardText($"{VideoInfo.ChannelOwned.Title} [{VideoInfo.ChannelOwned.Id}]");
         }
