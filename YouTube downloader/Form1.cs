@@ -1287,19 +1287,25 @@ namespace YouTube_downloader
                 {
                     case FavoriteItemType.Video:
                         openVideoInBrowserToolStripMenuItem.Visible = true;
+                        miCopyVideoUrlToolStripMenuItem.Visible = true;
                         openChannelInBrowserToolStripMenuItem.Visible = false;
+                        miCopyChannelUrlToolStripMenuItem.Visible = true;
                         copyDisplayNameWithIdToolStripMenuItem.Visible = true;
                         break;
 
                     case FavoriteItemType.Channel:
                         openVideoInBrowserToolStripMenuItem.Visible = false;
+                        miCopyChannelUrlToolStripMenuItem.Visible = true;
                         openChannelInBrowserToolStripMenuItem.Visible = true;
+                        miCopyVideoUrlToolStripMenuItem.Visible = false;
                         copyDisplayNameWithIdToolStripMenuItem.Visible = true;
                         break;
 
                     case FavoriteItemType.Directory:
                         openVideoInBrowserToolStripMenuItem.Visible = false;
+                        miCopyVideoUrlToolStripMenuItem.Visible = false;
                         openChannelInBrowserToolStripMenuItem.Visible = false;
+                        miCopyChannelUrlToolStripMenuItem.Visible = true;
                         copyDisplayNameWithIdToolStripMenuItem.Visible = false;
                         break;
                 }
@@ -1324,6 +1330,27 @@ namespace YouTube_downloader
                 {
                     SetClipboardText($"{item.DisplayName} [{item.ID}]");
                 }
+            }
+        }
+
+        private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
+            if (item != null)
+            {
+                string url = YOUTUBE_VIDEO_URL_BASE + item.ID;
+                SetClipboardText(url);
+            }
+        }
+
+        private void miCopyChannelUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
+            if (item != null && item.ItemType != FavoriteItemType.Directory)
+            {
+                string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, 
+                    item.ItemType == FavoriteItemType.Channel ? item.ID : item.ChannelId);
+                SetClipboardText(url);
             }
         }
 

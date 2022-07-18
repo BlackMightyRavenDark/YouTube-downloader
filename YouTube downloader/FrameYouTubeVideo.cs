@@ -1277,5 +1277,22 @@ namespace YouTube_downloader
                 OpenUrlInBrowser(url);
             }
         }
+
+        private void miCopyChannelUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id);
+            SetClipboardText(url);
+        }
+
+        private void miCopyImageUrlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (VideoInfo.ImageUrls == null || VideoInfo.ImageUrls.Count == 0 || string.IsNullOrEmpty(VideoInfo.ImageUrls[0]))
+            {
+                MessageBox.Show("Ссылка на изображение отсутствует!", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            SetClipboardText(VideoInfo.ImageUrls[0]);
+        }
     }
 }
