@@ -674,6 +674,9 @@ namespace YouTube_downloader
         public string FfmpegExeFilePath { get; set; }
         public bool SaveImagePreview { get; set; }
         public bool UseHiddenApiForGettingInfo { get; set; }
+        public int VideoTitleFontSize { get; set; }
+        public int MenusFontSize { get; set; }
+        public int FavoritesListFontSize { get; set; }
         public int ThreadCountVideo { get; set; }
         public int ThreadCountAudio { get; set; }
         public int GlobalThreadsMaximum { get; set; }
@@ -717,6 +720,9 @@ namespace YouTube_downloader
             json["maxSearch"] = MaxSearch;
             json["saveImagePreview"] = SaveImagePreview;
             json["useHiddenApiForGettingInfo"] = UseHiddenApiForGettingInfo;
+            json["videoTitleFontSize"] = VideoTitleFontSize;
+            json["menusFontSize"] = MenusFontSize;
+            json["favoritesListFontSize"] = FavoritesListFontSize;
             json["threadsVideo"] = ThreadCountVideo;
             json["threadsAudio"] = ThreadCountAudio;
             json["globalThreadsMaximum"] = GlobalThreadsMaximum;
@@ -738,6 +744,9 @@ namespace YouTube_downloader
             MaxSearch = 50;
             SaveImagePreview = true;
             UseHiddenApiForGettingInfo = true;
+            VideoTitleFontSize = 8;
+            MenusFontSize = 9;
+            FavoritesListFontSize = 8;
             ThreadCountVideo = 8;
             ThreadCountAudio = 4;
             GlobalThreadsMaximum = 300;
@@ -807,6 +816,45 @@ namespace YouTube_downloader
                     SaveImagePreview = jt == null ? true : jt.Value<bool>();
                     jt = json.Value<JToken>("useApiForGettingInfo");
                     UseHiddenApiForGettingInfo = jt == null ? true : jt.Value<bool>();
+                    jt = json.Value<JToken>("menusFontSize");
+                    if (jt != null)
+                    {
+                        MenusFontSize = jt.Value<int>();
+                        if (MenusFontSize < 9)
+                        {
+                            MenusFontSize = 9;
+                        }
+                        else if (MenusFontSize > 16)
+                        {
+                            MenusFontSize = 16;
+                        }
+                    }
+                    jt = json.Value<JToken>("favoritesListFontSize");
+                    if (jt != null)
+                    {
+                        FavoritesListFontSize = jt.Value<int>();
+                        if (FavoritesListFontSize < 8)
+                        {
+                            FavoritesListFontSize = 8;
+                        }
+                        else if (FavoritesListFontSize > 16)
+                        {
+                            FavoritesListFontSize = 16;
+                        }
+                    }
+                    jt = json.Value<JToken>("videoTitleFontSize");
+                    if (jt != null)
+                    {
+                        VideoTitleFontSize = jt.Value<int>();
+                        if (VideoTitleFontSize < 8)
+                        {
+                            VideoTitleFontSize = 8;
+                        }
+                        else if (VideoTitleFontSize > 16)
+                        {
+                            VideoTitleFontSize = 16;
+                        }
+                    }
                     jt = json.Value<JToken>("threadsVideo");
                     if (jt != null)
                     {

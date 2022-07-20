@@ -58,5 +58,10 @@ namespace YouTube_downloader
                 BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
                 null, control, new object[] { enabled });
         }
+
+        public static void SetFontSize(this ContextMenuStrip contextMenu, int newSize)
+        {
+            contextMenu.Font = new Font(contextMenu.Font.FontFamily, newSize);
+        }
     }
 }

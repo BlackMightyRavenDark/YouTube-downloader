@@ -54,6 +54,14 @@ namespace YouTube_downloader
             this.editTempDirPath = new System.Windows.Forms.TextBox();
             this.btnBrowseTempPath = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
+            this.tabPageGUI = new System.Windows.Forms.TabPage();
+            this.groupBoxFonts = new System.Windows.Forms.GroupBox();
+            this.numericUpDownVideoTitleFontSize = new System.Windows.Forms.NumericUpDown();
+            this.label17 = new System.Windows.Forms.Label();
+            this.numericUpDownFavoritesListFontSize = new System.Windows.Forms.NumericUpDown();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.numericUpDownMenusFontSize = new System.Windows.Forms.NumericUpDown();
             this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.chkDeleteSourceFiles = new System.Windows.Forms.CheckBox();
@@ -118,16 +126,21 @@ namespace YouTube_downloader
             this.olvColumn1 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.menuFavorites = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openVideoInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyVideoUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miCopyVideoUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPageFilesAndFolders.SuspendLayout();
+            this.tabPageGUI.SuspendLayout();
+            this.groupBoxFonts.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoTitleFontSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).BeginInit();
             this.tabPageDownloadingSettings.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.tabPageSystemSettings.SuspendLayout();
@@ -184,6 +197,7 @@ namespace YouTube_downloader
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl2.Controls.Add(this.tabPageFilesAndFolders);
+            this.tabControl2.Controls.Add(this.tabPageGUI);
             this.tabControl2.Controls.Add(this.tabPageDownloadingSettings);
             this.tabControl2.Controls.Add(this.tabPageSystemSettings);
             this.tabControl2.Location = new System.Drawing.Point(6, 8);
@@ -409,6 +423,129 @@ namespace YouTube_downloader
             this.label4.Size = new System.Drawing.Size(164, 13);
             this.label4.TabIndex = 6;
             this.label4.Text = "Папка для временных файлов:";
+            // 
+            // tabPageGUI
+            // 
+            this.tabPageGUI.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPageGUI.Controls.Add(this.groupBoxFonts);
+            this.tabPageGUI.Location = new System.Drawing.Point(4, 22);
+            this.tabPageGUI.Name = "tabPageGUI";
+            this.tabPageGUI.Size = new System.Drawing.Size(527, 357);
+            this.tabPageGUI.TabIndex = 3;
+            this.tabPageGUI.Text = "Интерфейс";
+            // 
+            // groupBoxFonts
+            // 
+            this.groupBoxFonts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxFonts.Controls.Add(this.numericUpDownVideoTitleFontSize);
+            this.groupBoxFonts.Controls.Add(this.label17);
+            this.groupBoxFonts.Controls.Add(this.numericUpDownFavoritesListFontSize);
+            this.groupBoxFonts.Controls.Add(this.label16);
+            this.groupBoxFonts.Controls.Add(this.label15);
+            this.groupBoxFonts.Controls.Add(this.numericUpDownMenusFontSize);
+            this.groupBoxFonts.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxFonts.Name = "groupBoxFonts";
+            this.groupBoxFonts.Size = new System.Drawing.Size(521, 111);
+            this.groupBoxFonts.TabIndex = 0;
+            this.groupBoxFonts.TabStop = false;
+            this.groupBoxFonts.Text = "Размер шрифтов";
+            // 
+            // numericUpDownVideoTitleFontSize
+            // 
+            this.numericUpDownVideoTitleFontSize.Location = new System.Drawing.Point(129, 26);
+            this.numericUpDownVideoTitleFontSize.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.numericUpDownVideoTitleFontSize.Minimum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.numericUpDownVideoTitleFontSize.Name = "numericUpDownVideoTitleFontSize";
+            this.numericUpDownVideoTitleFontSize.Size = new System.Drawing.Size(45, 20);
+            this.numericUpDownVideoTitleFontSize.TabIndex = 5;
+            this.numericUpDownVideoTitleFontSize.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.numericUpDownVideoTitleFontSize.ValueChanged += new System.EventHandler(this.numericUpDownVideoTitleFontSize_ValueChanged);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(15, 28);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(93, 13);
+            this.label17.TabIndex = 4;
+            this.label17.Text = "Название видео:";
+            // 
+            // numericUpDownFavoritesListFontSize
+            // 
+            this.numericUpDownFavoritesListFontSize.Location = new System.Drawing.Point(129, 78);
+            this.numericUpDownFavoritesListFontSize.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.numericUpDownFavoritesListFontSize.Minimum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.numericUpDownFavoritesListFontSize.Name = "numericUpDownFavoritesListFontSize";
+            this.numericUpDownFavoritesListFontSize.Size = new System.Drawing.Size(45, 20);
+            this.numericUpDownFavoritesListFontSize.TabIndex = 3;
+            this.numericUpDownFavoritesListFontSize.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            this.numericUpDownFavoritesListFontSize.ValueChanged += new System.EventHandler(this.numericUpDownFavoritesListFontSize_ValueChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(15, 80);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 13);
+            this.label16.TabIndex = 2;
+            this.label16.Text = "Избранное:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(15, 53);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(108, 13);
+            this.label15.TabIndex = 1;
+            this.label15.Text = "Контекстные меню:";
+            // 
+            // numericUpDownMenusFontSize
+            // 
+            this.numericUpDownMenusFontSize.Location = new System.Drawing.Point(129, 51);
+            this.numericUpDownMenusFontSize.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.numericUpDownMenusFontSize.Minimum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.numericUpDownMenusFontSize.Name = "numericUpDownMenusFontSize";
+            this.numericUpDownMenusFontSize.Size = new System.Drawing.Size(45, 20);
+            this.numericUpDownMenusFontSize.TabIndex = 0;
+            this.numericUpDownMenusFontSize.Value = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.numericUpDownMenusFontSize.ValueChanged += new System.EventHandler(this.numericUpDownMenusFontSize_ValueChanged);
             // 
             // tabPageDownloadingSettings
             // 
@@ -1138,7 +1275,7 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem,
             this.copyDisplayNameWithIdToolStripMenuItem});
             this.menuFavorites.Name = "menuFavarites";
-            this.menuFavorites.Size = new System.Drawing.Size(281, 158);
+            this.menuFavorites.Size = new System.Drawing.Size(281, 136);
             this.menuFavorites.Opening += new System.ComponentModel.CancelEventHandler(this.menuFavorites_Opening);
             // 
             // openVideoInBrowserToolStripMenuItem
@@ -1148,12 +1285,26 @@ namespace YouTube_downloader
             this.openVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
             this.openVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openVideoInBrowserToolStripMenuItem_Click);
             // 
+            // miCopyVideoUrlToolStripMenuItem
+            // 
+            this.miCopyVideoUrlToolStripMenuItem.Name = "miCopyVideoUrlToolStripMenuItem";
+            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
+            this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
+            // 
             // openChannelInBrowserToolStripMenuItem
             // 
             this.openChannelInBrowserToolStripMenuItem.Name = "openChannelInBrowserToolStripMenuItem";
             this.openChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.openChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
             this.openChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openChannelInBrowserToolStripMenuItem_Click);
+            // 
+            // miCopyChannelUrlToolStripMenuItem
+            // 
+            this.miCopyChannelUrlToolStripMenuItem.Name = "miCopyChannelUrlToolStripMenuItem";
+            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
+            this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
             // 
             // copyDisplayNameToolStripMenuItem
             // 
@@ -1168,20 +1319,6 @@ namespace YouTube_downloader
             this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
-            // 
-            // miCopyVideoUrlToolStripMenuItem
-            // 
-            this.miCopyVideoUrlToolStripMenuItem.Name = "miCopyVideoUrlToolStripMenuItem";
-            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
-            this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
-            this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
-            // 
-            // miCopyChannelUrlToolStripMenuItem
-            // 
-            this.miCopyChannelUrlToolStripMenuItem.Name = "miCopyChannelUrlToolStripMenuItem";
-            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
-            this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
-            this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -1201,6 +1338,12 @@ namespace YouTube_downloader
             this.tabControl2.ResumeLayout(false);
             this.tabPageFilesAndFolders.ResumeLayout(false);
             this.tabPageFilesAndFolders.PerformLayout();
+            this.tabPageGUI.ResumeLayout(false);
+            this.groupBoxFonts.ResumeLayout(false);
+            this.groupBoxFonts.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoTitleFontSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).EndInit();
             this.tabPageDownloadingSettings.ResumeLayout(false);
             this.tabPageDownloadingSettings.PerformLayout();
             this.groupBox10.ResumeLayout(false);
@@ -1335,6 +1478,14 @@ namespace YouTube_downloader
         private System.Windows.Forms.Button btnApiWtf;
         private System.Windows.Forms.ToolStripMenuItem miCopyVideoUrlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miCopyChannelUrlToolStripMenuItem;
+        private System.Windows.Forms.TabPage tabPageGUI;
+        private System.Windows.Forms.GroupBox groupBoxFonts;
+        private System.Windows.Forms.NumericUpDown numericUpDownMenusFontSize;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.NumericUpDown numericUpDownFavoritesListFontSize;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.NumericUpDown numericUpDownVideoTitleFontSize;
+        private System.Windows.Forms.Label label17;
     }
 }
 

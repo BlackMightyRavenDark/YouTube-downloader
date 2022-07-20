@@ -50,6 +50,9 @@ namespace YouTube_downloader
             chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
             chkSaveImage.Checked = config.SaveImagePreview;
             chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
+            numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
+            numericUpDownMenusFontSize.Value = config.MenusFontSize;
+            numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
             numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
             numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
             numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
@@ -385,6 +388,7 @@ namespace YouTube_downloader
 
                     FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(panelSearchResults);
                     frameVideo.VideoInfo = video;
+                    frameVideo.SetMenusFontSize(config.MenusFontSize);
                     frameVideo.FavoriteChannelChanged += (s, id, newState) =>
                     {
                         for (int j = 0; j < framesVideo.Count; j++)
@@ -1191,6 +1195,37 @@ namespace YouTube_downloader
         {
             config.GlobalThreadsMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
             ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
+        }
+
+        private void numericUpDownVideoTitleFontSize_ValueChanged(object sender, EventArgs e)
+        {
+            config.VideoTitleFontSize = (int)numericUpDownVideoTitleFontSize.Value;
+            foreach (FrameYouTubeVideo frameYouTubeVideo in framesVideo)
+            {
+                frameYouTubeVideo.SetVideoTitleFontSize(config.VideoTitleFontSize);
+            }
+        }
+
+        private void numericUpDownMenusFontSize_ValueChanged(object sender, EventArgs e)
+        {
+            config.MenusFontSize = (int)numericUpDownMenusFontSize.Value;
+            SetMenusFontSize(config.MenusFontSize);
+            foreach (FrameYouTubeVideo frameYouTubeVideo in framesVideo)
+            {
+                frameYouTubeVideo.SetMenusFontSize(config.MenusFontSize);
+            }
+        }
+
+        private void numericUpDownFavoritesListFontSize_ValueChanged(object sender, EventArgs e)
+        {
+            config.FavoritesListFontSize = (int)numericUpDownFavoritesListFontSize.Value;
+            tvFavorites.Font = new Font(tvFavorites.Font.FontFamily, config.FavoritesListFontSize);
+        }
+
+        public void SetMenusFontSize(int fontSize)
+        {
+            menuFavorites.SetFontSize(fontSize);
+            menuCopyPaste.SetFontSize(fontSize);
         }
 
         private void chkUseHiddenApiForGettingInfo_CheckedChanged(object sender, EventArgs e)

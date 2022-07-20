@@ -70,6 +70,7 @@ namespace YouTube_downloader
                 Parent = parent;
             }
 
+            SetVideoTitleFontSize(config.VideoTitleFontSize);
             imgScrollbar.SetDoubleBuffered(true);
             synchronizationContext = SynchronizationContext.Current;
         }
@@ -1205,6 +1206,19 @@ namespace YouTube_downloader
                 imgScrollbar.Left = -Left;
                 imgScrollbar.Invalidate();
             }
+        }
+
+        public void SetVideoTitleFontSize(int fontSize)
+        {
+            lblVideoTitle.Font = new Font(lblVideoTitle.Font.FontFamily, fontSize);
+        }
+
+        public void SetMenusFontSize(int fontSize)
+        {
+            contextMenuImage.SetFontSize(fontSize);
+            contextMenuVideoTitle.SetFontSize(fontSize);
+            contextMenuChannelTitle.SetFontSize(fontSize);
+            contextMenuDownloads.SetFontSize(fontSize);
         }
 
         private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
