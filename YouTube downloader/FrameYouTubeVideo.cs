@@ -244,9 +244,15 @@ namespace YouTube_downloader
                 btnDownload.Enabled = true;
                 return;
             }
-         
+
+            int adaptiveCount = 0;
             for (int i = 0; i < thr.videoFiles.Count; i++)
             {
+                if (!thr.videoFiles[i].isContainer)
+                {
+                    ++adaptiveCount;
+                }
+
                 videoFormats.Add(thr.videoFiles[i]);
                 ToolStripMenuItem mi = new ToolStripMenuItem(thr.videoFiles[i].ToString());
                 mi.Tag = thr.videoFiles[i];
@@ -258,12 +264,25 @@ namespace YouTube_downloader
                 contextMenuDownloads.Items.Add("-");
                 for (int i = 0; i < thr.audioFiles.Count; i++)
                 {
+                    if (!thr.audioFiles[i].isContainer)
+                    {
+                        ++adaptiveCount;
+                    }
+
                     audioFormats.Add(thr.audioFiles[i]);
                     ToolStripMenuItem mi = new ToolStripMenuItem(thr.audioFiles[i].ToString());
                     mi.Tag = thr.audioFiles[i];
                     mi.Click += MenuItemDownloadClick;
                     contextMenuDownloads.Items.Add(mi);
                 }
+            }
+            if (adaptiveCount > 0)
+            {
+                contextMenuDownloads.Items.Add("-");
+                ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...");
+                mi.Tag = null;
+                mi.Click += MenuItemDownloadClick;
+                contextMenuDownloads.Items.Add(mi);
             }
 
             btnDownload.Enabled = true;
@@ -628,13 +647,31 @@ namespace YouTube_downloader
             downloadCancelRequired = false;
 
             progressBarDownload.Value = 0;
-            lblStatus.Text = "Скачивание...";
             lblProgress.Text = null;
+
+            ToolStripMenuItem mi = sender as ToolStripMenuItem;
+
+            if (mi.Tag == null)
+            {
+                //TODO: Make it work
+                lblStatus.Text = "Состояние: Выбор форматов...";
+                List<YouTubeMediaFile> formats = new List<YouTubeMediaFile>();
+                formats.AddRange(videoFormats);
+                formats.AddRange(audioFormats);
+                FormTracksSelector tracksSelector = new FormTracksSelector(formats);
+                DialogResult dialogResult = tracksSelector.ShowDialog();
+                lblStatus.Text = null;
+                downloading = false;
+                btnDownload.Enabled = true;
+                return;
+            }
+
+            lblStatus.Text = "Скачивание...";
+
+            List<YouTubeMediaFile> tracksToDownload = new List<YouTubeMediaFile>();
 
             string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
 
-            ToolStripMenuItem mi = sender as ToolStripMenuItem;
-            List<YouTubeMediaFile> tracksToDownload = new List<YouTubeMediaFile>();
             tracksToDownload.Add(mi.Tag as YouTubeMediaFile);
             if (mi.Tag is YouTubeVideoFile)
             {

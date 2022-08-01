@@ -62,6 +62,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormTracksSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTracksSelector.Designer.cs">
+      <DependentUpon>FormTracksSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameYouTubeChannel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -86,6 +92,9 @@
     <Compile Include="YouTubeVideoFile.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTracksSelector.resx">
+      <DependentUpon>FormTracksSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrameYouTubeChannel.resx">
       <DependentUpon>FrameYouTubeChannel.cs</DependentUpon>
@@ -137,6 +146,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\youtube.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\list.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
