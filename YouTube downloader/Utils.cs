@@ -556,8 +556,8 @@ namespace YouTube_downloader
             return string.Format("{0} {1:D3} {2:D3} {3:D3} bytes", gb, mb, kb, b);
         }
 
-        public static async Task<bool> MergeYouTubeMediaTracks(string fileNameVideo,
-            string fileNameAudio, string destinationFileName, bool wait = true)
+        public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
+            string destinationFileName, bool wait = true)
         {
             return await Task.Run(() =>
             {
@@ -571,9 +571,21 @@ namespace YouTube_downloader
                 {
                     process.StartInfo.WorkingDirectory = ffmpegPath;
                 }
-                string cmdArgs = $"/k {ffmpegName} -i \"{fileNameVideo}\" -i \"" +
-                    $"{fileNameAudio}\" -c copy \"{destinationFileName}\"";
 
+                string cmdArgs = $"/k {ffmpegName} ";
+                foreach (DownloadResult file in files)
+                {
+                    cmdArgs += $"-i \"{file.FileName}\" ";
+                }
+                int iter = 0;
+                foreach (DownloadResult file in files)
+                {
+                    cmdArgs += $"-map {iter}:0 ";
+                    ++iter;
+                }
+
+                cmdArgs += $"-c copy \"{destinationFileName}\"";
+                System.Diagnostics.Debug.WriteLine(cmdArgs);
                 process.StartInfo.Arguments = cmdArgs;
                 bool res = process.Start();
                 if (res && wait)

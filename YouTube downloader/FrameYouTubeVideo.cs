@@ -647,13 +647,17 @@ namespace YouTube_downloader
             downloadCancelRequired = false;
 
             progressBarDownload.Value = 0;
+            lblStatus.Text = null;
             lblProgress.Text = null;
+
+            string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
+
+            List<YouTubeMediaFile> tracksToDownload = new List<YouTubeMediaFile>();
 
             ToolStripMenuItem mi = sender as ToolStripMenuItem;
 
             if (mi.Tag == null)
             {
-                //TODO: Make it work
                 lblStatus.Text = "Состояние: Выбор форматов...";
                 List<YouTubeMediaFile> formats = new List<YouTubeMediaFile>();
                 formats.AddRange(videoFormats);
@@ -663,83 +667,96 @@ namespace YouTube_downloader
                 lblStatus.Text = null;
                 if (dialogResult == DialogResult.OK)
                 {
-                    string t = string.Empty;
                     foreach (YouTubeMediaFile mediaFile in tracksSelector.SelectedTracks)
                     {
-                        t += $"{mediaFile}\n";
+                        tracksToDownload.Add(mediaFile);
                     }
-                    MessageBox.Show($"Выбранные форматы:\n{t}", "Отображатор выбранных форматов",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
                     MessageBox.Show("Скачивание отменено!", "Отменный отменятор отменения отмены",
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    downloading = false;
+                    btnDownload.Enabled = true;
+                    return;
                 }
-                downloading = false;
-                btnDownload.Enabled = true;
-                return;
             }
-
-            lblStatus.Text = "Скачивание...";
-
-            List<YouTubeMediaFile> tracksToDownload = new List<YouTubeMediaFile>();
-
-            string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
-
-            tracksToDownload.Add(mi.Tag as YouTubeMediaFile);
-            if (mi.Tag is YouTubeVideoFile)
+            else if (mi.Tag is YouTubeVideoFile)
             {
                 YouTubeVideoFile videoFile = mi.Tag as YouTubeVideoFile;
                 if (videoFile.isHlsManifest)
                 {
-                    lblStatus.Text = null;
-                    string fn = MultiThreadedDownloader.GetNumberedFileName($"{config.DownloadingDirPath}{formattedFileName}.ts");
-                    GrabHls(videoFile.url, fn);
+                    if (IsFfmpegAvailable())
+                    {
+                        lblStatus.Text = "Состояние: Запуск FFMPEG...";
+                        lblStatus.Refresh();
+
+                        string filePath = MultiThreadedDownloader.GetNumberedFileName(
+                            $"{config.DownloadingDirPath}{formattedFileName}.ts");
+                        GrabHls(videoFile.url, filePath);
+                        lblStatus.Text = null;
+                    }
+                    else
+                    {
+                        lblStatus.Text = "Состояние: Не удалось запустить FFMPEG!";
+                        string ffmpegMsg = "Не удалось запустить FFMPEG!";
+                        MessageBox.Show(ffmpegMsg, "Ошибка!",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
 
                     downloading = false;
                     btnDownload.Enabled = true;
                     return;
                 }
 
-                if (!videoFile.isContainer)
+                tracksToDownload.Add(videoFile);
+                if (audioFormats.Count > 0)
                 {
-                    bool stop = false;
-                    if (config.MergeToContainer && !IsFfmpegAvailable())
-                    {
-                        string msg = "Формат данного видео является адаптивным. " +
-                            "Это значит, что дорожки видео и аудио хранятся по отдельности. " +
-                            "Чтобы склеить их воедино, нужен FFMPEG.EXE. Но он не указан в настройках или не найден.\n" +
-                            "Продолжить скачивание без склеивания?";
-                        if (MessageBox.Show(msg, "Внимание!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        {
-                            stop = true;
-                        }
-                    }
-                    if (stop)
-                    {
-                        downloading = false;
-                        btnDownload.Enabled = true;
-                        return;
-                    }
+                    tracksToDownload.Add(audioFormats[0]);
+                }
+            }
+            else if (mi.Tag is YouTubeAudioFile)
+            {
+                tracksToDownload.Add(mi.Tag as YouTubeAudioFile);
+            }
 
-                    if (audioFormats.Count > 0)
+            bool needToMerge = tracksToDownload.Count > 0 && !tracksToDownload[0].isContainer;
+            if (needToMerge)
+            {
+                bool stop = false;
+                if (config.MergeToContainer && !IsFfmpegAvailable())
+                {
+                    string msg = "Формат данного видео является адаптивным. " +
+                        "Это значит, что дорожки видео и аудио хранятся по отдельности. " +
+                        "Чтобы склеить их воедино, нужен FFMPEG.EXE. Но он не указан в настройках или не найден.\n" +
+                        "Продолжить скачивание без склеивания?";
+                    if (MessageBox.Show(msg, "Внимание!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     {
-                        tracksToDownload.Add(audioFormats[0]);
+                        stop = true;
                     }
+                }
+                if (stop)
+                {
+                    downloading = false;
+                    btnDownload.Enabled = true;
+                    return;
                 }
             }
 
             btnDownload.Text = "Отмена";
             btnDownload.Enabled = true;
 
+            lblStatus.Text = "Скачивание...";
+            lblStatus.Refresh();
+
             List<DownloadResult> downloadResults = new List<DownloadResult>();
-            bool audioOnly = tracksToDownload.Count == 1 && tracksToDownload[0] is YouTubeAudioFile;
+            bool audioOnly = IsAudioOnly(tracksToDownload);
             int errorCode;
             int counter = 0;
             do
             {
-                DownloadResult downloadResult = await DownloadYouTubeMediaFile(tracksToDownload[counter], formattedFileName, audioOnly);
+                DownloadResult downloadResult = await DownloadYouTubeMediaFile(
+                    tracksToDownload[counter], formattedFileName, audioOnly);
                 if (downloadResult == null)
                 {
                     errorCode = 400;
@@ -755,37 +772,38 @@ namespace YouTube_downloader
             while (errorCode == 200 && counter < tracksToDownload.Count);
 
             lblProgress.Text = null;
+            lblProgress.Refresh();
 
             if (errorCode == 200)
             {
-                if (config.MergeToContainer)
+                if (config.MergeToContainer && needToMerge && !audioOnly && IsFfmpegAvailable())
                 {
-                    if (IsFfmpegAvailable() && tracksToDownload.Count == 2)
+                    btnDownload.Enabled = false;
+
+                    string ext = "mp4";
+                    foreach (YouTubeMediaFile mediaFile in tracksToDownload)
                     {
-                        btnDownload.Enabled = false;
-                        lblStatus.Text = "Состояние: Объединение видео и аудио...";
-                        lblStatus.Refresh();
-
-                        string ext = "mp4";
-                        foreach (YouTubeMediaFile mediaFile in tracksToDownload)
+                        if (mediaFile.mimeExt != "mp4")
                         {
-                            if (mediaFile.mimeExt != "mp4")
-                            {
-                                ext = "mkv";
-                                break;
-                            }
+                            ext = "mkv";
+                            break;
                         }
-                        await MergeYouTubeMediaTracks(downloadResults[0].FileName, downloadResults[1].FileName,
-                            MultiThreadedDownloader.GetNumberedFileName($"{config.DownloadingDirPath}{formattedFileName}.{ext}"));
+                    }
+                    
+                    lblStatus.Text = $"Состояние: Создание контейнера {ext.ToUpper()}...";
+                    lblStatus.Refresh();
 
-                        if (config.DeleteSourceFiles)
+                    string containerFilePath = MultiThreadedDownloader.GetNumberedFileName(
+                        $"{config.DownloadingDirPath}{formattedFileName}.{ext}");
+                    await MergeYouTubeMediaTracks(downloadResults, containerFilePath);
+
+                    if (config.DeleteSourceFiles)
+                    {
+                        foreach (DownloadResult downloadResult in downloadResults)
                         {
-                            foreach (DownloadResult downloadResult in downloadResults)
+                            if (File.Exists(downloadResult.FileName))
                             {
-                                if (File.Exists(downloadResult.FileName))
-                                {
-                                    File.Delete(downloadResult.FileName);
-                                }
+                                File.Delete(downloadResult.FileName);
                             }
                         }
                     }
@@ -853,6 +871,18 @@ namespace YouTube_downloader
             downloading = false;
             btnDownload.Text = "Скачать";
             btnDownload.Enabled = true;
+        }
+
+        private bool IsAudioOnly(IEnumerable<YouTubeMediaFile> mediaFiles)
+        {
+            foreach (YouTubeMediaFile mediaFile in mediaFiles)
+            {
+                if (!(mediaFile is YouTubeAudioFile))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void SaveImageToFile(string formattedFileName)
