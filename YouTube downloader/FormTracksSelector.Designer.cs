@@ -33,7 +33,8 @@
             this.olvColumnTrackType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumnResolution = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumnFrameRate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.olvColumnBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnFormalBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnAverageBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumnFileExt = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumnFileSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumnChunkCount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -48,7 +49,8 @@
             this.listViewTracksSelector.AllColumns.Add(this.olvColumnTrackType);
             this.listViewTracksSelector.AllColumns.Add(this.olvColumnResolution);
             this.listViewTracksSelector.AllColumns.Add(this.olvColumnFrameRate);
-            this.listViewTracksSelector.AllColumns.Add(this.olvColumnBitrate);
+            this.listViewTracksSelector.AllColumns.Add(this.olvColumnFormalBitrate);
+            this.listViewTracksSelector.AllColumns.Add(this.olvColumnAverageBitrate);
             this.listViewTracksSelector.AllColumns.Add(this.olvColumnFileExt);
             this.listViewTracksSelector.AllColumns.Add(this.olvColumnFileSize);
             this.listViewTracksSelector.AllColumns.Add(this.olvColumnChunkCount);
@@ -61,7 +63,8 @@
             this.olvColumnTrackType,
             this.olvColumnResolution,
             this.olvColumnFrameRate,
-            this.olvColumnBitrate,
+            this.olvColumnFormalBitrate,
+            this.olvColumnAverageBitrate,
             this.olvColumnFileExt,
             this.olvColumnFileSize,
             this.olvColumnChunkCount});
@@ -74,7 +77,7 @@
             this.listViewTracksSelector.MultiSelect = false;
             this.listViewTracksSelector.Name = "listViewTracksSelector";
             this.listViewTracksSelector.ShowGroups = false;
-            this.listViewTracksSelector.Size = new System.Drawing.Size(648, 341);
+            this.listViewTracksSelector.Size = new System.Drawing.Size(794, 341);
             this.listViewTracksSelector.TabIndex = 0;
             this.listViewTracksSelector.UseCompatibleStateImageBehavior = false;
             this.listViewTracksSelector.View = System.Windows.Forms.View.Details;
@@ -99,12 +102,19 @@
             this.olvColumnFrameRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.olvColumnFrameRate.Width = 96;
             // 
-            // olvColumnBitrate
+            // olvColumnFormalBitrate
             // 
-            this.olvColumnBitrate.AspectName = "Bitrate";
-            this.olvColumnBitrate.Text = "Битрейт";
-            this.olvColumnBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.olvColumnBitrate.Width = 74;
+            this.olvColumnFormalBitrate.AspectName = "FormalBitrate";
+            this.olvColumnFormalBitrate.Text = "Битрейт (формальный)";
+            this.olvColumnFormalBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnFormalBitrate.Width = 128;
+            // 
+            // olvColumnAverageBitrate
+            // 
+            this.olvColumnAverageBitrate.AspectName = "AverageBitrate";
+            this.olvColumnAverageBitrate.Text = "Битрейт (средний)";
+            this.olvColumnAverageBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnAverageBitrate.Width = 109;
             // 
             // olvColumnFileExt
             // 
@@ -118,7 +128,7 @@
             this.olvColumnFileSize.AspectName = "FileSize";
             this.olvColumnFileSize.Text = "Размер файла";
             this.olvColumnFileSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.olvColumnFileSize.Width = 105;
+            this.olvColumnFileSize.Width = 90;
             // 
             // olvColumnChunkCount
             // 
@@ -145,7 +155,7 @@
             // btnDownload
             // 
             this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDownload.Location = new System.Drawing.Point(585, 359);
+            this.btnDownload.Location = new System.Drawing.Point(731, 359);
             this.btnDownload.Name = "btnDownload";
             this.btnDownload.Size = new System.Drawing.Size(75, 23);
             this.btnDownload.TabIndex = 2;
@@ -157,7 +167,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(672, 385);
+            this.ClientSize = new System.Drawing.Size(818, 385);
             this.Controls.Add(this.btnDownload);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.listViewTracksSelector);
@@ -178,7 +188,7 @@
         private BrightIdeasSoftware.ObjectListView listViewTracksSelector;
         private BrightIdeasSoftware.OLVColumn olvColumnResolution;
         private BrightIdeasSoftware.OLVColumn olvColumnFrameRate;
-        private BrightIdeasSoftware.OLVColumn olvColumnBitrate;
+        private BrightIdeasSoftware.OLVColumn olvColumnFormalBitrate;
         private BrightIdeasSoftware.OLVColumn olvColumnFileExt;
         private BrightIdeasSoftware.OLVColumn olvColumnFileSize;
         private BrightIdeasSoftware.OLVColumn olvColumnTrackType;
@@ -186,5 +196,6 @@
         private BrightIdeasSoftware.OLVColumn olvColumnChunkCount;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnDownload;
+        private BrightIdeasSoftware.OLVColumn olvColumnAverageBitrate;
     }
 }

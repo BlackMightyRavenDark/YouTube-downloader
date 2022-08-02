@@ -24,7 +24,8 @@ namespace YouTube_downloader
                     string resolution = $"{videoFile.Width}x{videoFile.Height}";
                     int chunkCount = videoFile.dashManifestUrls != null ? videoFile.dashManifestUrls.Count : -1;
                     TrackItem trackItem = new TrackItem("Видео", resolution, videoFile.Fps,
-                        videoFile.bitrate, videoFile.fileExtension, videoFile.contentLength, chunkCount, mediaFile);
+                        videoFile.bitrate, videoFile.averageBitrate, videoFile.fileExtension,
+                        videoFile.contentLength, chunkCount, mediaFile);
                     root.Add(trackItem);
                 }
             }
@@ -35,7 +36,8 @@ namespace YouTube_downloader
                     YouTubeAudioFile audioFile = mediaFile as YouTubeAudioFile;
                     int chunkCount = audioFile.dashManifestUrls != null ? audioFile.dashManifestUrls.Count : -1;
                     TrackItem trackItem = new TrackItem("Аудио", null, -1,
-                        audioFile.bitrate, audioFile.fileExtension, audioFile.contentLength, chunkCount, mediaFile);
+                        audioFile.bitrate, audioFile.averageBitrate, audioFile.fileExtension,
+                        audioFile.contentLength, chunkCount, mediaFile);
                     root.Add(trackItem);
                 }
             }
@@ -50,7 +52,12 @@ namespace YouTube_downloader
                 int n = (int)obj;
                 return n > 0 ? $"{n} fps" : null;
             };
-            olvColumnBitrate.AspectToStringConverter = (obj) =>
+            olvColumnFormalBitrate.AspectToStringConverter = (obj) =>
+            {
+                int n = (int)obj;
+                return n > 0 ? $"~{n / 1024} kbps" : "Не известно";
+            };
+            olvColumnAverageBitrate.AspectToStringConverter = (obj) =>
             {
                 int n = (int)obj;
                 return n > 0 ? $"~{n / 1024} kbps" : "Не известно";
@@ -106,19 +113,22 @@ namespace YouTube_downloader
         public string TrackType { get; private set; }
         public string Resolution { get; private set; }
         public int FrameRate { get; private set; }
-        public int Bitrate { get; private set; }
+        public int FormalBitrate { get; private set; }
+        public int AverageBitrate { get; private set; }
         public string FileExtension { get; private set; }
         public long FileSize { get; private set; }
         public int ChunkCount { get; private set; }
         public object Tag { get; private set; }
 
-        public TrackItem(string trackType, string resolution, int frameRate, int bitrate,
+        public TrackItem(string trackType, string resolution, int frameRate,
+            int formalBitrate, int averageBitrate,
             string fileExtension, long fileSize, int chunkCount, object tag)
         {
             TrackType = trackType;
             Resolution = resolution;
             FrameRate = frameRate;
-            Bitrate = bitrate;
+            FormalBitrate = formalBitrate;
+            AverageBitrate = averageBitrate;
             FileExtension = fileExtension;
             FileSize = fileSize;
             ChunkCount = chunkCount;
