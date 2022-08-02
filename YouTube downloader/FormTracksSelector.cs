@@ -74,6 +74,31 @@ namespace YouTube_downloader
                 return n >= 0 ? n.ToString() : null;
             };
         }
+
+        private void btnDownload_Click(object sender, System.EventArgs e)
+        {
+            var items = listViewTracksSelector.CheckedObjects;
+            if (items == null || items.Count == 0)
+            {
+                MessageBox.Show("Ничего не выбрано!", "Ошибатор ошибок",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            foreach (TrackItem item in items)
+            {
+                SelectedTracks.Add(item.Tag as YouTubeMediaFile);
+            }
+
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, System.EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
     }
 
     public sealed class TrackItem

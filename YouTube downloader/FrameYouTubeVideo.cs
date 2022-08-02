@@ -661,6 +661,21 @@ namespace YouTube_downloader
                 FormTracksSelector tracksSelector = new FormTracksSelector(formats);
                 DialogResult dialogResult = tracksSelector.ShowDialog();
                 lblStatus.Text = null;
+                if (dialogResult == DialogResult.OK)
+                {
+                    string t = string.Empty;
+                    foreach (YouTubeMediaFile mediaFile in tracksSelector.SelectedTracks)
+                    {
+                        t += $"{mediaFile}\n";
+                    }
+                    MessageBox.Show($"Выбранные форматы:\n{t}", "Отображатор выбранных форматов",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Скачивание отменено!", "Отменный отменятор отменения отмены",
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                }
                 downloading = false;
                 btnDownload.Enabled = true;
                 return;

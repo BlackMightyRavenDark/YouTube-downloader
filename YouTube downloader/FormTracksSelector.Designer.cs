@@ -38,6 +38,8 @@
             this.olvColumnFileSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumnChunkCount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.columnButtonRenderer1 = new BrightIdeasSoftware.ColumnButtonRenderer();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnDownload = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.listViewTracksSelector)).BeginInit();
             this.SuspendLayout();
             // 
@@ -65,13 +67,14 @@
             this.olvColumnChunkCount});
             this.listViewTracksSelector.Cursor = System.Windows.Forms.Cursors.Default;
             this.listViewTracksSelector.FullRowSelect = true;
+            this.listViewTracksSelector.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewTracksSelector.HideSelection = false;
             this.listViewTracksSelector.LabelWrap = false;
             this.listViewTracksSelector.Location = new System.Drawing.Point(12, 12);
             this.listViewTracksSelector.MultiSelect = false;
             this.listViewTracksSelector.Name = "listViewTracksSelector";
             this.listViewTracksSelector.ShowGroups = false;
-            this.listViewTracksSelector.Size = new System.Drawing.Size(648, 361);
+            this.listViewTracksSelector.Size = new System.Drawing.Size(648, 341);
             this.listViewTracksSelector.TabIndex = 0;
             this.listViewTracksSelector.UseCompatibleStateImageBehavior = false;
             this.listViewTracksSelector.View = System.Windows.Forms.View.Details;
@@ -128,11 +131,35 @@
             // 
             this.columnButtonRenderer1.ButtonPadding = new System.Drawing.Size(10, 10);
             // 
+            // btnCancel
+            // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnCancel.Location = new System.Drawing.Point(12, 359);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 1;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // btnDownload
+            // 
+            this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDownload.Location = new System.Drawing.Point(585, 359);
+            this.btnDownload.Name = "btnDownload";
+            this.btnDownload.Size = new System.Drawing.Size(75, 23);
+            this.btnDownload.TabIndex = 2;
+            this.btnDownload.Text = "OK";
+            this.btnDownload.UseVisualStyleBackColor = true;
+            this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
+            // 
             // FormTracksSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(672, 385);
+            this.Controls.Add(this.btnDownload);
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.listViewTracksSelector);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -157,5 +184,7 @@
         private BrightIdeasSoftware.OLVColumn olvColumnTrackType;
         private BrightIdeasSoftware.ColumnButtonRenderer columnButtonRenderer1;
         private BrightIdeasSoftware.OLVColumn olvColumnChunkCount;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Button btnDownload;
     }
 }
