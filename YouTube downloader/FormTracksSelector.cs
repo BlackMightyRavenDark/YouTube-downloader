@@ -55,12 +55,12 @@ namespace YouTube_downloader
             olvColumnFormalBitrate.AspectToStringConverter = (obj) =>
             {
                 int n = (int)obj;
-                return n > 0 ? $"~{n / 1024} kbps" : "Не известно";
+                return n > 0 ? $"~{n / 1024} kbps" : "Неизвестно";
             };
             olvColumnAverageBitrate.AspectToStringConverter = (obj) =>
             {
                 int n = (int)obj;
-                return n > 0 ? $"~{n / 1024} kbps" : "Не известно";
+                return n > 0 ? $"~{n / 1024} kbps" : "Неизвестно";
             };
             olvColumnFileExt.AspectToStringConverter = (obj) =>
             {
@@ -73,7 +73,7 @@ namespace YouTube_downloader
             olvColumnFileSize.AspectToStringConverter = (obj) =>
             {
                 long n = (long)obj;
-                return n > 0 ? Utils.FormatSize(n) : "Не известно";
+                return n > 0L ? Utils.FormatSize(n) : "Неизвестно";
             };
             olvColumnChunkCount.AspectToStringConverter = (obj) =>
             {
