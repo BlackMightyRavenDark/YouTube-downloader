@@ -171,11 +171,12 @@
             this.Controls.Add(this.btnDownload);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.listViewTracksSelector);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(834, 400);
             this.Name = "FormTracksSelector";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Выбор форматов";
             ((System.ComponentModel.ISupportInitialize)(this.listViewTracksSelector)).EndInit();

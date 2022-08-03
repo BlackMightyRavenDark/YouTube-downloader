@@ -585,7 +585,6 @@ namespace YouTube_downloader
                 }
 
                 cmdArgs += $"-c copy \"{destinationFileName}\"";
-                System.Diagnostics.Debug.WriteLine(cmdArgs);
                 process.StartInfo.Arguments = cmdArgs;
                 bool res = process.Start();
                 if (res && wait)
