@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using MultiThreadedDownloaderLib;
 using YouTube_downloader.Properties;
 using static YouTube_downloader.Utils;
 
@@ -514,7 +515,7 @@ namespace YouTube_downloader
             List<string> resList = new List<string>();
             foreach (string url in possibleUrls)
             {
-                if (FileDownloader.GetUrlContentLength(url, null, out _, out _) == 200)
+                if (FileDownloader.GetUrlContentLength(url, out _, out _) == 200)
                 {
                     resList.Add(url);
                 }

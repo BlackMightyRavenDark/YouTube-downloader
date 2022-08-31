@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using MultiThreadedDownloaderLib;
 using static YouTube_downloader.Utils;
 using YouTube_downloader.Properties;
 
@@ -397,7 +398,7 @@ namespace YouTube_downloader
 
                     videoFile.url = $"{videoFile.cipherUrl}&sig={cipherDecrypted}";
 
-                    if (FileDownloader.GetUrlContentLength(videoFile.url, null, out _, out _) != 200)
+                    if (FileDownloader.GetUrlContentLength(videoFile.url, out _, out _) != 200)
                     {
                         return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                     }
@@ -408,7 +409,7 @@ namespace YouTube_downloader
                         string audioCipherDecrypted = DecryptCipherSignature(
                             audioFormats[0].cipherSignatureEncrypted, config.CipherDecryptionAlgo);
                         audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
-                        if (FileDownloader.GetUrlContentLength(audioFormats[0].url, null, out _, out _) != 200)
+                        if (FileDownloader.GetUrlContentLength(audioFormats[0].url, out _, out _) != 200)
                         {
                             return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                         }
@@ -425,14 +426,14 @@ namespace YouTube_downloader
                 {
                     fnVideo = MultiThreadedDownloader.GetNumberedFileName(
                         $"{config.DownloadingDirPath}{formattedFileName}.{videoFile.mimeExt}");
-                    downloader.KeepDownloadedFileInMergingDirectory = false;
+                    downloader.KeepDownloadedFileInTempOrMergingDirectory = false;
                 }
                 else
                 {
                     if (config.MergeToContainer && IsFfmpegAvailable())
                     {
-                        downloader.MergingDirectory = config.ChunksMergingDirPath;
-                        downloader.KeepDownloadedFileInMergingDirectory = true;
+                        downloader.MergingDirectory = DecideMergingDirectory();
+                        downloader.KeepDownloadedFileInTempOrMergingDirectory = true;
                     }
                     else
                     {
@@ -459,7 +460,6 @@ namespace YouTube_downloader
 
                     lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
                         $" ({string.Format("{0:F2}", percent)}%), {videoFile.GetShortInfo()}";
-
                 };
                 downloader.CancelTest += (object s, ref bool cancel) =>
                 {
@@ -500,7 +500,7 @@ namespace YouTube_downloader
                 #region Расшифровка Cipher
                 if (audioFile.isCiphered)
                 {
-                    if (FileDownloader.GetUrlContentLength(audioFile.url, null, out _, out _) != 200)
+                    if (FileDownloader.GetUrlContentLength(audioFile.url, out _, out _) != 200)
                     {
 
                         if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
@@ -517,7 +517,7 @@ namespace YouTube_downloader
 
                         audioFile.url = $"{audioFile.cipherUrl}&sig={cipherDecrypted}";
 
-                        if (FileDownloader.GetUrlContentLength(audioFile.url, null, out _, out _) != 200)
+                        if (FileDownloader.GetUrlContentLength(audioFile.url, out _, out _) != 200)
                         {
                             return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                         }
@@ -532,8 +532,8 @@ namespace YouTube_downloader
 
                 if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
                 {
-                    downloader.MergingDirectory = config.ChunksMergingDirPath;
-                    downloader.KeepDownloadedFileInMergingDirectory = true;
+                    downloader.MergingDirectory = DecideMergingDirectory();
+                    downloader.KeepDownloadedFileInTempOrMergingDirectory = true;
                 }
                 else
                 {

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Newtonsoft.Json.Linq;
+using MultiThreadedDownloaderLib;
 
 namespace YouTube_downloader
 {
@@ -435,6 +436,13 @@ namespace YouTube_downloader
             }
           
             return dict["v"];
+        }
+
+        public static string DecideMergingDirectory()
+        {
+            return !string.IsNullOrEmpty(config.ChunksMergingDirPath) &&
+                !string.IsNullOrWhiteSpace(config.ChunksMergingDirPath) ?
+                config.ChunksMergingDirPath : config.TempDirPath;
         }
 
         public static string LeadZero(int n)
