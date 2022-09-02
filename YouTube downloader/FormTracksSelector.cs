@@ -5,7 +5,6 @@ namespace YouTube_downloader
 {
     public partial class FormTracksSelector : Form
     {
-        private List<YouTubeMediaFile> Tracks;
         public List<YouTubeMediaFile> SelectedTracks { get; private set; } = new List<YouTubeMediaFile>();
 
         public FormTracksSelector(List<YouTubeMediaFile> mediaFiles)
@@ -14,11 +13,10 @@ namespace YouTube_downloader
 
             SetupListView();
 
-            Tracks = mediaFiles;
             List<TrackItem> root = new List<TrackItem>();
             foreach (YouTubeMediaFile mediaFile in mediaFiles)
             {
-                if (!mediaFile.isContainer && mediaFile is YouTubeVideoFile)
+                if (!mediaFile.isContainer && !mediaFile.isHlsManifest && mediaFile is YouTubeVideoFile)
                 {
                     YouTubeVideoFile videoFile = mediaFile as YouTubeVideoFile;
                     string resolution = $"{videoFile.Width}x{videoFile.Height}";
@@ -31,7 +29,7 @@ namespace YouTube_downloader
             }
             foreach (YouTubeMediaFile mediaFile in mediaFiles)
             {
-                if (mediaFile is YouTubeAudioFile)
+                if (!mediaFile.isHlsManifest && mediaFile is YouTubeAudioFile)
                 {
                     YouTubeAudioFile audioFile = mediaFile as YouTubeAudioFile;
                     int chunkCount = audioFile.dashManifestUrls != null ? audioFile.dashManifestUrls.Count : -1;
