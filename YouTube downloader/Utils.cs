@@ -685,6 +685,8 @@ namespace YouTube_downloader
         public string FavoritesFilePath { get; set; }
         public string OutputFileNameFormat { get; set; }
         public int MaxSearch { get; set; }
+        public bool SortFormatsByFileSize { get; set; }
+        public bool MoveAudioId140First { get; set; }
         public bool MergeToContainer { get; set; }
         public bool DeleteSourceFiles { get; set; }
         public string CipherDecryptionAlgo { get; set; }
@@ -737,6 +739,8 @@ namespace YouTube_downloader
             json["ffmpegExeFilePath"] = FfmpegExeFilePath;
             json["outputFileNameFormat"] = OutputFileNameFormat;
             json["maxSearch"] = MaxSearch;
+            json["sortFormatsByFileSize"] = SortFormatsByFileSize;
+            json["moveAudioId140First"] = MoveAudioId140First;
             json["saveImagePreview"] = SaveImagePreview;
             json["useHiddenApiForGettingInfo"] = UseHiddenApiForGettingInfo;
             json["videoTitleFontSize"] = VideoTitleFontSize;
@@ -761,6 +765,8 @@ namespace YouTube_downloader
             FfmpegExeFilePath = "FFMPEG.EXE";
             OutputFileNameFormat = Utils.FILENAME_FORMAT_DEFAULT;
             MaxSearch = 50;
+            SortFormatsByFileSize = true;
+            MoveAudioId140First = false;
             SaveImagePreview = true;
             UseHiddenApiForGettingInfo = true;
             VideoTitleFontSize = 8;
@@ -874,6 +880,16 @@ namespace YouTube_downloader
                             VideoTitleFontSize = 16;
                         }
                     }
+                    jt = json.Value<JToken>("sortFormatsByFileSize");
+                    if (jt != null)
+                    {
+                        SortFormatsByFileSize = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("moveAudioId140First");
+                    if (jt != null)
+                    {
+                        MoveAudioId140First = jt.Value<bool>();
+                    }
                     jt = json.Value<JToken>("threadsVideo");
                     if (jt != null)
                     {
@@ -966,5 +982,17 @@ namespace YouTube_downloader
         public bool IsFamilySafe { get; set; } = true;
         public bool IsUnlisted { get; set; } = false;
         public bool IsAvailable { get; set; } = true;
+    }
+
+    public class FormatListSorterFileSize : IComparer<YouTubeMediaFile>
+    {
+        public int Compare(YouTubeMediaFile x, YouTubeMediaFile y)
+        {
+            if (x == null || x.isContainer || x.isDashManifest || x.isHlsManifest || x.contentLength <= 0L || y == null)
+            {
+                return 0;
+            }
+            return x.contentLength < y.contentLength ? 1 : -1;
+        }
     }
 }

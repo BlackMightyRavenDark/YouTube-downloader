@@ -55,6 +55,9 @@ namespace YouTube_downloader
             this.btnBrowseTempPath = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPageGUI = new System.Windows.Forms.TabPage();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.chkMoveAudioId140First = new System.Windows.Forms.CheckBox();
+            this.chkSortFormatsByFileSize = new System.Windows.Forms.CheckBox();
             this.groupBoxFonts = new System.Windows.Forms.GroupBox();
             this.numericUpDownVideoTitleFontSize = new System.Windows.Forms.NumericUpDown();
             this.label17 = new System.Windows.Forms.Label();
@@ -137,6 +140,7 @@ namespace YouTube_downloader
             this.tabControl2.SuspendLayout();
             this.tabPageFilesAndFolders.SuspendLayout();
             this.tabPageGUI.SuspendLayout();
+            this.groupBox12.SuspendLayout();
             this.groupBoxFonts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoTitleFontSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).BeginInit();
@@ -427,12 +431,50 @@ namespace YouTube_downloader
             // tabPageGUI
             // 
             this.tabPageGUI.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPageGUI.Controls.Add(this.groupBox12);
             this.tabPageGUI.Controls.Add(this.groupBoxFonts);
             this.tabPageGUI.Location = new System.Drawing.Point(4, 22);
             this.tabPageGUI.Name = "tabPageGUI";
             this.tabPageGUI.Size = new System.Drawing.Size(527, 357);
             this.tabPageGUI.TabIndex = 3;
             this.tabPageGUI.Text = "Интерфейс";
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox12.Controls.Add(this.chkMoveAudioId140First);
+            this.groupBox12.Controls.Add(this.chkSortFormatsByFileSize);
+            this.groupBox12.Location = new System.Drawing.Point(3, 120);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(521, 69);
+            this.groupBox12.TabIndex = 1;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Сортировка списка форматов для скачивания";
+            // 
+            // chkMoveAudioId140First
+            // 
+            this.chkMoveAudioId140First.AutoSize = true;
+            this.chkMoveAudioId140First.Location = new System.Drawing.Point(18, 42);
+            this.chkMoveAudioId140First.Name = "chkMoveAudioId140First";
+            this.chkMoveAudioId140First.Size = new System.Drawing.Size(302, 17);
+            this.chkMoveAudioId140First.TabIndex = 1;
+            this.chkMoveAudioId140First.Text = "Перемещать аудио-дорожку с ID 140 на первое место";
+            this.toolTip1.SetToolTip(this.chkMoveAudioId140First, "Независимо от сортировки");
+            this.chkMoveAudioId140First.UseVisualStyleBackColor = true;
+            this.chkMoveAudioId140First.CheckedChanged += new System.EventHandler(this.chkMoveAudioId140First_CheckedChanged);
+            // 
+            // chkSortFormatsByFileSize
+            // 
+            this.chkSortFormatsByFileSize.AutoSize = true;
+            this.chkSortFormatsByFileSize.Location = new System.Drawing.Point(18, 19);
+            this.chkSortFormatsByFileSize.Name = "chkSortFormatsByFileSize";
+            this.chkSortFormatsByFileSize.Size = new System.Drawing.Size(320, 17);
+            this.chkSortFormatsByFileSize.TabIndex = 0;
+            this.chkSortFormatsByFileSize.Text = "Сортировать форматы по размеру файла (если известен)";
+            this.toolTip1.SetToolTip(this.chkSortFormatsByFileSize, "Не применяется к HLS, DASH и контейнерным форматам!");
+            this.chkSortFormatsByFileSize.UseVisualStyleBackColor = true;
+            this.chkSortFormatsByFileSize.CheckedChanged += new System.EventHandler(this.chkSortFormatsByFileSize_CheckedChanged);
             // 
             // groupBoxFonts
             // 
@@ -941,39 +983,39 @@ namespace YouTube_downloader
             this.toolStripMenuItem1,
             this.selectAllTextToolStripMenuItem});
             this.menuCopyPaste.Name = "menuCopyPaste";
-            this.menuCopyPaste.Size = new System.Drawing.Size(149, 98);
+            this.menuCopyPaste.Size = new System.Drawing.Size(164, 106);
             this.menuCopyPaste.Opening += new System.ComponentModel.CancelEventHandler(this.menuCopyPaste_Opening);
             // 
             // cutTextToolStripMenuItem
             // 
             this.cutTextToolStripMenuItem.Name = "cutTextToolStripMenuItem";
-            this.cutTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.cutTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
             this.cutTextToolStripMenuItem.Text = "Вырезать";
             this.cutTextToolStripMenuItem.Click += new System.EventHandler(this.cutTextToolStripMenuItem_Click);
             // 
             // copyTextToolStripMenuItem
             // 
             this.copyTextToolStripMenuItem.Name = "copyTextToolStripMenuItem";
-            this.copyTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.copyTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
             this.copyTextToolStripMenuItem.Text = "Копировать";
             this.copyTextToolStripMenuItem.Click += new System.EventHandler(this.copyTextToolStripMenuItem_Click);
             // 
             // pasteTextToolStripMenuItem
             // 
             this.pasteTextToolStripMenuItem.Name = "pasteTextToolStripMenuItem";
-            this.pasteTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.pasteTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
             this.pasteTextToolStripMenuItem.Text = "Вставить";
             this.pasteTextToolStripMenuItem.Click += new System.EventHandler(this.pasteTextToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(145, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
             // 
             // selectAllTextToolStripMenuItem
             // 
             this.selectAllTextToolStripMenuItem.Name = "selectAllTextToolStripMenuItem";
-            this.selectAllTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.selectAllTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
             this.selectAllTextToolStripMenuItem.Text = "Выделить всё";
             this.selectAllTextToolStripMenuItem.Click += new System.EventHandler(this.selectAllTextToolStripMenuItem_Click);
             // 
@@ -1275,48 +1317,48 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem,
             this.copyDisplayNameWithIdToolStripMenuItem});
             this.menuFavorites.Name = "menuFavarites";
-            this.menuFavorites.Size = new System.Drawing.Size(281, 136);
+            this.menuFavorites.Size = new System.Drawing.Size(319, 148);
             this.menuFavorites.Opening += new System.ComponentModel.CancelEventHandler(this.menuFavorites_Opening);
             // 
             // openVideoInBrowserToolStripMenuItem
             // 
             this.openVideoInBrowserToolStripMenuItem.Name = "openVideoInBrowserToolStripMenuItem";
-            this.openVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.openVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.openVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
             this.openVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openVideoInBrowserToolStripMenuItem_Click);
             // 
             // miCopyVideoUrlToolStripMenuItem
             // 
             this.miCopyVideoUrlToolStripMenuItem.Name = "miCopyVideoUrlToolStripMenuItem";
-            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
             this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
             // 
             // openChannelInBrowserToolStripMenuItem
             // 
             this.openChannelInBrowserToolStripMenuItem.Name = "openChannelInBrowserToolStripMenuItem";
-            this.openChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.openChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.openChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
             this.openChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openChannelInBrowserToolStripMenuItem_Click);
             // 
             // miCopyChannelUrlToolStripMenuItem
             // 
             this.miCopyChannelUrlToolStripMenuItem.Name = "miCopyChannelUrlToolStripMenuItem";
-            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
             this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
             // 
             // copyDisplayNameToolStripMenuItem
             // 
             this.copyDisplayNameToolStripMenuItem.Name = "copyDisplayNameToolStripMenuItem";
-            this.copyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.copyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.copyDisplayNameToolStripMenuItem.Text = "Скопировать отображаемое имя";
             this.copyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameToolStripMenuItem_Click);
             // 
             // copyDisplayNameWithIdToolStripMenuItem
             // 
             this.copyDisplayNameWithIdToolStripMenuItem.Name = "copyDisplayNameWithIdToolStripMenuItem";
-            this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
@@ -1339,6 +1381,8 @@ namespace YouTube_downloader
             this.tabPageFilesAndFolders.ResumeLayout(false);
             this.tabPageFilesAndFolders.PerformLayout();
             this.tabPageGUI.ResumeLayout(false);
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
             this.groupBoxFonts.ResumeLayout(false);
             this.groupBoxFonts.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoTitleFontSize)).EndInit();
@@ -1486,6 +1530,9 @@ namespace YouTube_downloader
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.NumericUpDown numericUpDownVideoTitleFontSize;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.CheckBox chkSortFormatsByFileSize;
+        private System.Windows.Forms.CheckBox chkMoveAudioId140First;
     }
 }
 

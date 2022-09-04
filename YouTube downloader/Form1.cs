@@ -54,6 +54,8 @@ namespace YouTube_downloader
             numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
             numericUpDownMenusFontSize.Value = config.MenusFontSize;
             numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
+            chkSortFormatsByFileSize.Checked = config.SortFormatsByFileSize;
+            chkMoveAudioId140First.Checked = config.MoveAudioId140First;
             numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
             numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
             numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
@@ -84,6 +86,16 @@ namespace YouTube_downloader
         private void panelSearchResults_Resize(object sender, EventArgs e)
         {
             StackFrames();
+        }
+
+        private void chkSortFormatsByFileSize_CheckedChanged(object sender, EventArgs e)
+        {
+            config.SortFormatsByFileSize = chkSortFormatsByFileSize.Checked;
+        }
+
+        private void chkMoveAudioId140First_CheckedChanged(object sender, EventArgs e)
+        {
+            config.MoveAudioId140First = chkMoveAudioId140First.Checked;
         }
 
         private void SaveNode(FavoriteItem root, ref JArray jsonArr)

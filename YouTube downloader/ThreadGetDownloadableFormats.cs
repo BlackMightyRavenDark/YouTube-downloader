@@ -14,6 +14,9 @@ namespace YouTube_downloader
         public ThreadCompletedDelegate ThreadCompleted;
         public ThreadInfoSendDelegate Info;
 
+        private bool SortFormatsByFileSize;
+        private bool MoveAudioId140First;
+
         private SynchronizationContext synchronizationContext;
 
         public int ErrorCode { get; private set; } = 400;
@@ -26,9 +29,12 @@ namespace YouTube_downloader
         public string _videoId;
         public bool _ciphered;
 
-        public ThreadGetDownloadableFormats(YouTubeApiRequestType requestType, string webPageContent = null)
+        public ThreadGetDownloadableFormats(YouTubeApiRequestType requestType,
+            bool sortFormatsByFileSize, bool moveAudioId140First, string webPageContent = null)
         {
             YouTubeApiRequestType = requestType;
+            SortFormatsByFileSize = sortFormatsByFileSize;
+            MoveAudioId140First = moveAudioId140First;
             WebPage = webPageContent;
         }
 
@@ -396,17 +402,26 @@ namespace YouTube_downloader
 
         private void SortAudioTracks()
         {
-            for (int i = 0; i < audioFiles.Count; i++)
+            if (SortFormatsByFileSize)
             {
-                if (audioFiles[i].formatId == 140)
+                videoFiles.Sort(new FormatListSorterFileSize());
+                audioFiles.Sort(new FormatListSorterFileSize());
+            }
+
+            if (MoveAudioId140First)
+            {
+                for (int i = 0; i < audioFiles.Count; i++)
                 {
-                    if (i > 0)
+                    if (audioFiles[i].formatId == 140)
                     {
-                        YouTubeAudioFile tmp = audioFiles[i];
-                        audioFiles[i] = audioFiles[0];
-                        audioFiles[0] = tmp;
+                        if (i > 0)
+                        {
+                            YouTubeAudioFile tmp = audioFiles[i];
+                            audioFiles[i] = audioFiles[0];
+                            audioFiles[0] = tmp;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }

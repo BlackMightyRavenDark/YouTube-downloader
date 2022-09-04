@@ -210,7 +210,8 @@ namespace YouTube_downloader
             YouTubeApiRequestType requestType = config.UseHiddenApiForGettingInfo && !VideoInfo.Dashed ?
                 YouTubeApiRequestType.DecryptedUrls : YouTubeApiRequestType.EncryptedUrls;
 
-            ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats(requestType, webPage);
+            ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats(
+                requestType, config.SortFormatsByFileSize, config.MoveAudioId140First, webPage);
             thr.ThreadCompleted += EventThreadGetFormatsTerminate;
             thr.Info += (s, info) =>
             {      
