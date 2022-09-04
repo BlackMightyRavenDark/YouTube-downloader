@@ -313,6 +313,8 @@ namespace YouTube_downloader
             {
                 progressBarDownload.Value = n + 1;
                 double percent = 100.0 / progressBarDownload.Maximum * (n + 1);
+                lblStatus.Text = $"Скачивание чанков {mediaType}:";
+                lblProgress.Left = lblStatus.Left + lblStatus.Width;
                 lblProgress.Text = $"{n + 1} / {mediaFile.dashManifestUrls.Count}" +
                     $" ({string.Format("{0:F2}", percent)}%), {mediaFile.GetShortInfo()}";
             };
@@ -443,6 +445,13 @@ namespace YouTube_downloader
                         $"{formattedFileName}_{videoFile.formatId}.{videoFile.fileExtension}");
                 }
                 downloader.OutputFileName = fnVideo;
+
+                downloader.Connecting += (s, url) =>
+                {
+                    lblStatus.Text = $"Состояние: Подключение... {videoFile.GetShortInfo()}";
+                    lblProgress.Text = null;
+                    Application.DoEvents();
+                };
                 downloader.DownloadStarted += (s, size) =>
                 {
                     progressBarDownload.Value = 0;
@@ -544,6 +553,12 @@ namespace YouTube_downloader
                      $"{formattedFileName}_{audioFile.formatId}.{audioFile.fileExtension}");
                 downloader.OutputFileName = fnAudio;
 
+                downloader.Connecting += (s, url) =>
+                {
+                    lblStatus.Text = $"Состояние: Подключение... {audioFile.GetShortInfo()}";
+                    lblProgress.Text = null;
+                    Application.DoEvents();
+                };
                 downloader.DownloadStarted += (s, size) =>
                 {
                     progressBarDownload.Value = 0;
