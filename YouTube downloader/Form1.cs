@@ -59,7 +59,18 @@ namespace YouTube_downloader
             numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
             numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
             numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
-
+            if (Is64BitProcess)
+            {
+                chkUseRamForTempFiles.Checked = config.UseRamToStoreTemporaryFiles;
+                btnUseRamWhy.Left = panelRAM.Left;
+            }
+            else
+            {
+                config.UseRamToStoreTemporaryFiles = false;
+                chkUseRamForTempFiles.Enabled = false;
+                panelRAM.Visible = true;
+            }
+            
             ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
 
             dateTimePickerAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
@@ -1440,6 +1451,29 @@ namespace YouTube_downloader
             MessageBox.Show(msg, "Подсказатор подсказок",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             btnApiWtf.Enabled = true;
+        }
+
+        private void btnUseRamWhy_Click(object sender, EventArgs e)
+        {
+            btnUseRamWhy.Enabled = false;
+            string msg = "Это позволяет ускорить скачивание, сократив количество обращений к накопителю.";
+            MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnUseRamWhy.Enabled = true;
+        }
+
+        private void chkUseRamForTempFiles_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!Is64BitProcess && chkUseRamForTempFiles.Enabled)
+            {
+                chkUseRamForTempFiles.Enabled = false;
+                chkUseRamForTempFiles.Checked = false;
+                config.UseRamToStoreTemporaryFiles = false;
+                MessageBox.Show("Это должно быть доступно только в 64-битной версии программы!",
+                    "Низя так делать, Вася ты чо!",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
+                return;
+            }
+            config.UseRamToStoreTemporaryFiles = chkUseRamForTempFiles.Checked;
         }
     }
 }

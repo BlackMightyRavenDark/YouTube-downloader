@@ -419,10 +419,14 @@ namespace YouTube_downloader
                     }
                 }
                 #endregion
+
+                bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
                 MultiThreadedDownloader downloader = new MultiThreadedDownloader();
                 downloader.ThreadCount = config.ThreadCountVideo;
                 downloader.Url = videoFile.url;
                 downloader.TempDirectory = config.TempDirPath;
+                //TODO: Implement available enough free RAM checking
+                downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
                 string fnVideo;
                 if (videoFile.isContainer)
@@ -490,6 +494,10 @@ namespace YouTube_downloader
                     progressBarDownload.Value = chunkId + 1;
                 };
                 int res = await downloader.Download();
+                if (useRamToStoreTemporaryFiles)
+                {
+                    GC.Collect();
+                }
                 return new DownloadResult(res, downloader.LastErrorMessage, downloader.OutputFileName);
                 #endregion
             }
@@ -535,10 +543,13 @@ namespace YouTube_downloader
                 }
                 #endregion
 
+                bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
                 MultiThreadedDownloader downloader = new MultiThreadedDownloader();
                 downloader.ThreadCount = config.ThreadCountAudio;
                 downloader.Url = audioFile.url;
                 downloader.TempDirectory = config.TempDirPath;
+                //TODO: Implement available enough free RAM checking
+                downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
                 if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
                 {
@@ -597,6 +608,10 @@ namespace YouTube_downloader
                     progressBarDownload.Value = chunkId + 1;
                 };
                 int res = await downloader.Download();
+                if (useRamToStoreTemporaryFiles)
+                {
+                    GC.Collect();
+                }
                 return new DownloadResult(res, downloader.LastErrorMessage, downloader.OutputFileName);
                 #endregion
             }
@@ -635,19 +650,22 @@ namespace YouTube_downloader
                 btnDownload.Enabled = true;
                 return;
             }
-            if (string.IsNullOrEmpty(config.TempDirPath) || string.IsNullOrWhiteSpace(config.TempDirPath))
+            if (!config.UseRamToStoreTemporaryFiles)
             {
-                MessageBox.Show("Не указана папка для временных файлов!", "Ошибка!",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnDownload.Enabled = true;
-                return;
-            }
-            if (!Directory.Exists(config.TempDirPath))
-            {
-                MessageBox.Show("Папка для временных файлов не найдена!", "Ошибка!",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnDownload.Enabled = true;
-                return;
+                if (string.IsNullOrEmpty(config.TempDirPath) || string.IsNullOrWhiteSpace(config.TempDirPath))
+                {
+                    MessageBox.Show("Не указана папка для временных файлов!", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    btnDownload.Enabled = true;
+                    return;
+                }
+                if (!Directory.Exists(config.TempDirPath))
+                {
+                    MessageBox.Show("Папка для временных файлов не найдена!", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    btnDownload.Enabled = true;
+                    return;
+                }
             }
             if (!string.IsNullOrEmpty(config.ChunksMergingDirPath) &&
                 !string.IsNullOrWhiteSpace(config.ChunksMergingDirPath) &&

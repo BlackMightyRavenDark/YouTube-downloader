@@ -34,6 +34,8 @@ namespace YouTube_downloader
         public static FavoriteItem favoritesRootNode = null;
         public static MyConfiguration config = new MyConfiguration("config_ytdl.json");
 
+        public static readonly bool Is64BitProcess = Environment.Is64BitProcess;
+
         public const int ERROR_CIPHER_DECRYPTION = -100;
         public const int ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM = -101;
 
@@ -687,6 +689,7 @@ namespace YouTube_downloader
         public int MaxSearch { get; set; }
         public bool SortFormatsByFileSize { get; set; }
         public bool MoveAudioId140First { get; set; }
+        public bool UseRamToStoreTemporaryFiles { get; set; }
         public bool MergeToContainer { get; set; }
         public bool DeleteSourceFiles { get; set; }
         public string CipherDecryptionAlgo { get; set; }
@@ -741,6 +744,7 @@ namespace YouTube_downloader
             json["maxSearch"] = MaxSearch;
             json["sortFormatsByFileSize"] = SortFormatsByFileSize;
             json["moveAudioId140First"] = MoveAudioId140First;
+            json["useRamToStoreTemporaryFiles"] = UseRamToStoreTemporaryFiles;
             json["saveImagePreview"] = SaveImagePreview;
             json["useHiddenApiForGettingInfo"] = UseHiddenApiForGettingInfo;
             json["videoTitleFontSize"] = VideoTitleFontSize;
@@ -889,6 +893,11 @@ namespace YouTube_downloader
                     if (jt != null)
                     {
                         MoveAudioId140First = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("useRamToStoreTemporaryFiles");
+                    if (jt != null)
+                    {
+                        UseRamToStoreTemporaryFiles = jt.Value<bool>();
                     }
                     jt = json.Value<JToken>("threadsVideo");
                     if (jt != null)

@@ -71,6 +71,9 @@ namespace YouTube_downloader
             this.chkMergeAdaptive = new System.Windows.Forms.CheckBox();
             this.chkSaveImage = new System.Windows.Forms.CheckBox();
             this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.panelRAM = new System.Windows.Forms.Panel();
+            this.chkUseRamForTempFiles = new System.Windows.Forms.CheckBox();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.btnApiWtf = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -135,6 +138,7 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.btnUseRamWhy = new System.Windows.Forms.Button();
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -148,6 +152,7 @@ namespace YouTube_downloader
             this.tabPageDownloadingSettings.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.tabPageSystemSettings.SuspendLayout();
+            this.groupBox13.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -647,7 +652,9 @@ namespace YouTube_downloader
             // 
             // tabPageSystemSettings
             // 
+            this.tabPageSystemSettings.AutoScroll = true;
             this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageSystemSettings.Controls.Add(this.groupBox13);
             this.tabPageSystemSettings.Controls.Add(this.groupBox11);
             this.tabPageSystemSettings.Controls.Add(this.groupBox7);
             this.tabPageSystemSettings.Location = new System.Drawing.Point(4, 22);
@@ -657,6 +664,43 @@ namespace YouTube_downloader
             this.tabPageSystemSettings.TabIndex = 1;
             this.tabPageSystemSettings.Text = "Система";
             // 
+            // groupBox13
+            // 
+            this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox13.Controls.Add(this.btnUseRamWhy);
+            this.groupBox13.Controls.Add(this.panelRAM);
+            this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
+            this.groupBox13.Location = new System.Drawing.Point(12, 290);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(512, 66);
+            this.groupBox13.TabIndex = 14;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "Оперативная память (RAM)";
+            // 
+            // panelRAM
+            // 
+            this.panelRAM.BackgroundImage = global::YouTube_downloader.Properties.Resources.warning;
+            this.panelRAM.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panelRAM.Location = new System.Drawing.Point(313, 22);
+            this.panelRAM.Name = "panelRAM";
+            this.panelRAM.Size = new System.Drawing.Size(32, 32);
+            this.panelRAM.TabIndex = 15;
+            this.toolTip1.SetToolTip(this.panelRAM, "Доступно только в версии x64!");
+            this.panelRAM.Visible = false;
+            // 
+            // chkUseRamForTempFiles
+            // 
+            this.chkUseRamForTempFiles.Location = new System.Drawing.Point(17, 19);
+            this.chkUseRamForTempFiles.Name = "chkUseRamForTempFiles";
+            this.chkUseRamForTempFiles.Size = new System.Drawing.Size(288, 42);
+            this.chkUseRamForTempFiles.TabIndex = 13;
+            this.chkUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)" +
+    "";
+            this.toolTip1.SetToolTip(this.chkUseRamForTempFiles, "Не применяется к DASH и HLS");
+            this.chkUseRamForTempFiles.UseVisualStyleBackColor = true;
+            this.chkUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.chkUseRamForTempFiles_CheckedChanged);
+            // 
             // groupBox11
             // 
             this.groupBox11.Controls.Add(this.btnApiWtf);
@@ -665,7 +709,7 @@ namespace YouTube_downloader
             this.groupBox11.Controls.Add(this.chkUseHiddenApiForGettingInfo);
             this.groupBox11.Location = new System.Drawing.Point(12, 6);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(509, 174);
+            this.groupBox11.Size = new System.Drawing.Size(495, 174);
             this.groupBox11.TabIndex = 12;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "API";
@@ -689,7 +733,7 @@ namespace YouTube_downloader
             this.groupBox4.Controls.Add(this.editCipherDecryptionAlgo);
             this.groupBox4.Location = new System.Drawing.Point(11, 44);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(492, 58);
+            this.groupBox4.Size = new System.Drawing.Size(478, 58);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Алгоритм для расшифровки Cipher";
@@ -709,7 +753,7 @@ namespace YouTube_downloader
             | System.Windows.Forms.AnchorStyles.Right)));
             this.editCipherDecryptionAlgo.Location = new System.Drawing.Point(8, 32);
             this.editCipherDecryptionAlgo.Name = "editCipherDecryptionAlgo";
-            this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(476, 20);
+            this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(462, 20);
             this.editCipherDecryptionAlgo.TabIndex = 0;
             this.editCipherDecryptionAlgo.Leave += new System.EventHandler(this.editCipherDecryptionAlgo_Leave);
             // 
@@ -721,7 +765,7 @@ namespace YouTube_downloader
             this.groupBox5.Controls.Add(this.editYouTubeApiKey);
             this.groupBox5.Location = new System.Drawing.Point(11, 107);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(492, 61);
+            this.groupBox5.Size = new System.Drawing.Size(478, 61);
             this.groupBox5.TabIndex = 8;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Ключ от YouTube API V3";
@@ -741,7 +785,7 @@ namespace YouTube_downloader
             | System.Windows.Forms.AnchorStyles.Right)));
             this.editYouTubeApiKey.Location = new System.Drawing.Point(6, 35);
             this.editYouTubeApiKey.Name = "editYouTubeApiKey";
-            this.editYouTubeApiKey.Size = new System.Drawing.Size(480, 20);
+            this.editYouTubeApiKey.Size = new System.Drawing.Size(466, 20);
             this.editYouTubeApiKey.TabIndex = 0;
             this.editYouTubeApiKey.Leave += new System.EventHandler(this.editYouTubeApiKey_Leave);
             // 
@@ -1362,6 +1406,16 @@ namespace YouTube_downloader
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
+            // btnUseRamWhy
+            // 
+            this.btnUseRamWhy.Location = new System.Drawing.Point(371, 25);
+            this.btnUseRamWhy.Name = "btnUseRamWhy";
+            this.btnUseRamWhy.Size = new System.Drawing.Size(75, 23);
+            this.btnUseRamWhy.TabIndex = 16;
+            this.btnUseRamWhy.Text = "Зачем?";
+            this.btnUseRamWhy.UseVisualStyleBackColor = true;
+            this.btnUseRamWhy.Click += new System.EventHandler(this.btnUseRamWhy_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1393,6 +1447,7 @@ namespace YouTube_downloader
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.tabPageSystemSettings.ResumeLayout(false);
+            this.groupBox13.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1533,6 +1588,10 @@ namespace YouTube_downloader
         private System.Windows.Forms.GroupBox groupBox12;
         private System.Windows.Forms.CheckBox chkSortFormatsByFileSize;
         private System.Windows.Forms.CheckBox chkMoveAudioId140First;
+        private System.Windows.Forms.CheckBox chkUseRamForTempFiles;
+        private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.Panel panelRAM;
+        private System.Windows.Forms.Button btnUseRamWhy;
     }
 }
 
