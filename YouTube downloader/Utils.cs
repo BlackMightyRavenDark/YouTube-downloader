@@ -447,6 +447,19 @@ namespace YouTube_downloader
                 config.ChunksMergingDirPath : config.TempDirPath;
         }
 
+        public static bool IsEnoughDiskSpace(IEnumerable<char> driveLetters, long contentLength)
+        {
+            foreach (char letter in driveLetters)
+            {
+                DriveInfo driveInfo = new DriveInfo(letter.ToString());
+                if (driveInfo.AvailableFreeSpace < contentLength)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static string LeadZero(int n)
         {
             return n < 10 ? ("0" + n.ToString()) : n.ToString();

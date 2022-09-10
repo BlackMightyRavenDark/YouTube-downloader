@@ -337,6 +337,31 @@ namespace YouTube_downloader
                     {
                         Stream memChunk = new MemoryStream();
                         d.Url = mediaFile.dashManifestUrls[i];
+                        d.Connected += (object s, string url, long contentLength, ref int errCode) =>
+                        {
+                            if (errCode == 200 || errCode == 206)
+                            {
+                                if (contentLength > 0L)
+                                {
+                                    char driveLetter = fnDashTmp[0];
+                                    if (driveLetter != '\\')
+                                    {
+                                        DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
+                                        if (!driveInfo.IsReady)
+                                        {
+                                            errCode = FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
+                                            return;
+                                        }
+                                        long minimumFreeSpaceRequired = contentLength * 10;
+                                        if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
+                                        {
+                                            errCode = FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        };
                         errorCode = d.Download(memChunk);
                         if (errorCode != 200)
                         {
@@ -463,13 +488,22 @@ namespace YouTube_downloader
                         lblStatus.Text = $"Состояние: Подключено! {videoFile.GetShortInfo()}";
                         lblStatus.Refresh();
 
-                        MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
-
-                        if (mtd.UseRamForTempFiles && contentLength > 0L)
+                        if (contentLength > 0L)
                         {
-                            ulong minimumFreeSpaceRequired = (ulong)(contentLength * 1.1);
+                            long minimumFreeSpaceRequired = (long)(contentLength * 1.1);
 
-                            if (MemoryWatcher.Update() && MemoryWatcher.RamFree < minimumFreeSpaceRequired)
+                            MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
+
+                            List<char> driveLetters = mtd.GetUsedDriveLetters();
+                            if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
+                            {
+                                errorMessage = "Недостаточно места на диске!";
+                                errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
+                                return;
+                            }
+
+                            if (mtd.UseRamForTempFiles && MemoryWatcher.Update() &&
+                                MemoryWatcher.RamFree < (ulong)minimumFreeSpaceRequired)
                             {
                                 errorMessage = "Недостаточно памяти!";
                                 errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
@@ -598,13 +632,22 @@ namespace YouTube_downloader
                         lblStatus.Text = $"Состояние: Подключено! {audioFile.GetShortInfo()}";
                         lblStatus.Refresh();
 
-                        MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
-
-                        if (mtd.UseRamForTempFiles && contentLength > 0L)
+                        if (contentLength > 0L)
                         {
-                            ulong minimumFreeSpaceRequired = (ulong)(contentLength * 1.1);
+                            long minimumFreeSpaceRequired = (long)(contentLength * 1.1);
 
-                            if (MemoryWatcher.Update() && MemoryWatcher.RamFree < minimumFreeSpaceRequired)
+                            MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
+
+                            List<char> driveLetters = mtd.GetUsedDriveLetters();
+                            if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
+                            {
+                                errorMessage = "Недостаточно места на диске!";
+                                errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
+                                return;
+                            }
+
+                            if (mtd.UseRamForTempFiles && MemoryWatcher.Update() &&
+                                MemoryWatcher.RamFree < (ulong)minimumFreeSpaceRequired)
                             {
                                 errorMessage = "Недостаточно памяти!";
                                 errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
@@ -796,6 +839,37 @@ namespace YouTube_downloader
                 tracksToDownload.Add(mi.Tag as YouTubeAudioFile);
             }
 
+            //Подсчёт общего размера файлов.
+            long summaryFilesSize = 0L;
+            foreach (YouTubeMediaFile ytmf in tracksToDownload)
+            {
+                if (ytmf.contentLength > 0L)
+                {
+                    summaryFilesSize += ytmf.contentLength;
+                }
+            }
+
+            if (summaryFilesSize > 0L)
+            {
+                long minimumFreeSpaceRequired = (long)(summaryFilesSize * 1.1);
+
+                MultiThreadedDownloader tempDownloader = new MultiThreadedDownloader();
+                tempDownloader.OutputFileName = Path.Combine(config.DownloadingDirPath, "temp.tmp");
+                tempDownloader.TempDirectory = config.TempDirPath;
+                tempDownloader.MergingDirectory = config.ChunksMergingDirPath;
+
+                List<char> driveLetters = tempDownloader.GetUsedDriveLetters();
+                if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
+                {
+                    lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
+                    MessageBox.Show($"{VideoInfo.Title}\nНедостаточно места на диске!", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    downloading = false;
+                    btnDownload.Enabled = true;
+                    return;
+                }
+            }
+
             bool needToMerge = tracksToDownload.Count > 0 && !tracksToDownload[0].isContainer;
             if (needToMerge)
             {
@@ -902,6 +976,13 @@ namespace YouTube_downloader
                     case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
                         lblStatus.Text = "Состояние: Скачивание отменено";
                         MessageBox.Show($"{VideoInfo.Title}\nСкачивание успешно отменено!", "Ошибка!",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE:
+                        lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
+                        MessageBox.Show($"{VideoInfo.Title}\n" +
+                            "Недостаточно места на диске!", "Ошибка!",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
 
