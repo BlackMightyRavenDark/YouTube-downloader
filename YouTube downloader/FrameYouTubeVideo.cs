@@ -425,7 +425,6 @@ namespace YouTube_downloader
                 downloader.ThreadCount = config.ThreadCountVideo;
                 downloader.Url = videoFile.url;
                 downloader.TempDirectory = config.TempDirPath;
-                //TODO: Implement available enough free RAM checking
                 downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
                 string fnVideo;
@@ -456,6 +455,28 @@ namespace YouTube_downloader
                     lblStatus.Text = $"Состояние: Подключение... {videoFile.GetShortInfo()}";
                     lblProgress.Text = null;
                     Application.DoEvents();
+                };
+                downloader.Connected += (object s, string url, long contentLength, ref int errCode, ref string errorMessage) =>
+                {
+                    if (errCode == 200 || errCode == 206)
+                    {
+                        lblStatus.Text = $"Состояние: Подключено! {videoFile.GetShortInfo()}";
+                        lblStatus.Refresh();
+
+                        MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
+
+                        if (mtd.UseRamForTempFiles && contentLength > 0L)
+                        {
+                            ulong minimumFreeSpaceRequired = (ulong)(contentLength * 1.1);
+
+                            if (MemoryWatcher.Update() && MemoryWatcher.RamFree < minimumFreeSpaceRequired)
+                            {
+                                errorMessage = "Недостаточно памяти!";
+                                errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
+                                return;
+                            }
+                        }
+                    }
                 };
                 downloader.DownloadStarted += (s, size) =>
                 {
@@ -548,7 +569,6 @@ namespace YouTube_downloader
                 downloader.ThreadCount = config.ThreadCountAudio;
                 downloader.Url = audioFile.url;
                 downloader.TempDirectory = config.TempDirPath;
-                //TODO: Implement available enough free RAM checking
                 downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
                 if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
@@ -570,6 +590,28 @@ namespace YouTube_downloader
                     lblStatus.Text = $"Состояние: Подключение... {audioFile.GetShortInfo()}";
                     lblProgress.Text = null;
                     Application.DoEvents();
+                };
+                downloader.Connected += (object s, string url, long contentLength, ref int errCode, ref string errorMessage) =>
+                {
+                    if (errCode == 200 || errCode == 206)
+                    {
+                        lblStatus.Text = $"Состояние: Подключено! {audioFile.GetShortInfo()}";
+                        lblStatus.Refresh();
+
+                        MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
+
+                        if (mtd.UseRamForTempFiles && contentLength > 0L)
+                        {
+                            ulong minimumFreeSpaceRequired = (ulong)(contentLength * 1.1);
+
+                            if (MemoryWatcher.Update() && MemoryWatcher.RamFree < minimumFreeSpaceRequired)
+                            {
+                                errorMessage = "Недостаточно памяти!";
+                                errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
+                                return;
+                            }
+                        }
+                    }
                 };
                 downloader.DownloadStarted += (s, size) =>
                 {
