@@ -460,6 +460,99 @@ namespace YouTube_downloader
             return true;
         }
 
+        public static bool AdvancedFreeSpaceCheck(long totalFilesSize)
+        {
+            //TODO: Double-check this code for mistakes
+
+            long minimumFreeSpaceRequired = (long)(totalFilesSize * 1.1);
+
+            char chunkMergingDirDriveLetter;
+            if (!string.IsNullOrEmpty(config.ChunksMergingDirPath) && !string.IsNullOrWhiteSpace(config.ChunksMergingDirPath))
+            {
+                chunkMergingDirDriveLetter = config.ChunksMergingDirPath[0];
+            }
+            else if (!string.IsNullOrEmpty(config.TempDirPath) && !string.IsNullOrWhiteSpace(config.TempDirPath))
+            {
+                chunkMergingDirDriveLetter = config.TempDirPath[0];
+            }
+            else
+            {
+                chunkMergingDirDriveLetter = config.DownloadingDirPath[0];
+            }
+
+            char tempDirDriveLetter;
+            if (!config.UseRamToStoreTemporaryFiles)
+            {
+                if (!string.IsNullOrEmpty(config.TempDirPath) && !string.IsNullOrWhiteSpace(config.TempDirPath))
+                {
+                    tempDirDriveLetter = config.TempDirPath[0];
+                }
+                else
+                {
+                    tempDirDriveLetter = config.DownloadingDirPath[0];
+                }
+            }
+            else
+            {
+                tempDirDriveLetter = chunkMergingDirDriveLetter;
+            }
+
+            char downloadingDirDriveLetter = config.DownloadingDirPath[0];
+
+            DriveInfo driveInfoTempDir = new DriveInfo(tempDirDriveLetter.ToString());
+            if (tempDirDriveLetter == chunkMergingDirDriveLetter)
+            {
+                if (config.MergeToContainer && downloadingDirDriveLetter == chunkMergingDirDriveLetter)
+                {
+                    minimumFreeSpaceRequired += totalFilesSize;
+                }
+                if (driveInfoTempDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (!config.UseRamToStoreTemporaryFiles &&
+                    driveInfoTempDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+                {
+                    return false;
+                }
+
+                DriveInfo driveInfoMergingDir = new DriveInfo(chunkMergingDirDriveLetter.ToString());
+                if (driveInfoMergingDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+                {
+                    return false;
+                }
+
+                if (downloadingDirDriveLetter == chunkMergingDirDriveLetter)
+                {
+                    if (config.MergeToContainer)
+                    {
+                        minimumFreeSpaceRequired += totalFilesSize;
+                    }
+                    if (!config.UseRamToStoreTemporaryFiles && tempDirDriveLetter == downloadingDirDriveLetter)
+                    {
+                        minimumFreeSpaceRequired += totalFilesSize;
+                    }
+                    if (driveInfoMergingDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    DriveInfo driveInfoDownloadingDir = new DriveInfo(downloadingDirDriveLetter.ToString());
+                    if (driveInfoDownloadingDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         public static string LeadZero(int n)
         {
             return n < 10 ? ("0" + n.ToString()) : n.ToString();

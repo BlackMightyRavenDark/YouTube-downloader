@@ -449,7 +449,10 @@ namespace YouTube_downloader
                 MultiThreadedDownloader downloader = new MultiThreadedDownloader();
                 downloader.ThreadCount = config.ThreadCountVideo;
                 downloader.Url = videoFile.url;
-                downloader.TempDirectory = config.TempDirPath;
+                if (!useRamToStoreTemporaryFiles)
+                {
+                    downloader.TempDirectory = config.TempDirPath;
+                }
                 downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
                 string fnVideo;
@@ -602,7 +605,10 @@ namespace YouTube_downloader
                 MultiThreadedDownloader downloader = new MultiThreadedDownloader();
                 downloader.ThreadCount = config.ThreadCountAudio;
                 downloader.Url = audioFile.url;
-                downloader.TempDirectory = config.TempDirPath;
+                if (!useRamToStoreTemporaryFiles)
+                {
+                    downloader.TempDirectory = config.TempDirPath;
+                }
                 downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
                 if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
@@ -849,10 +855,9 @@ namespace YouTube_downloader
                 }
             }
 
-            if (summaryFilesSize > 0L)
+            long minimumFreeSpaceRequired = summaryFilesSize > 0L ? (long)(summaryFilesSize * 1.1) : 0L;
+            if (minimumFreeSpaceRequired > 0L)
             {
-                long minimumFreeSpaceRequired = (long)(summaryFilesSize * 1.1);
-
                 MultiThreadedDownloader tempDownloader = new MultiThreadedDownloader();
                 tempDownloader.OutputFileName = Path.Combine(config.DownloadingDirPath, "temp.tmp");
                 tempDownloader.TempDirectory = config.TempDirPath;
@@ -863,6 +868,17 @@ namespace YouTube_downloader
                 {
                     lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
                     MessageBox.Show($"{VideoInfo.Title}\nНедостаточно места на диске!", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    downloading = false;
+                    btnDownload.Enabled = true;
+                    return;
+                }
+
+                if (tracksToDownload.Count > 1 && !tracksToDownload[0].isContainer &&
+                    !AdvancedFreeSpaceCheck(summaryFilesSize))
+                {
+                    lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
+                    MessageBox.Show("Недостаточно места на диске!", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     downloading = false;
                     btnDownload.Enabled = true;
@@ -929,6 +945,22 @@ namespace YouTube_downloader
                 if (config.MergeToContainer && needToMerge && !audioOnly && IsFfmpegAvailable())
                 {
                     btnDownload.Enabled = false;
+                    if (minimumFreeSpaceRequired > 0L)
+                    {
+                        DriveInfo driveInfo = new DriveInfo(config.DownloadingDirPath[0].ToString());
+                        if (driveInfo.AvailableFreeSpace < minimumFreeSpaceRequired)
+                        {
+                            lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
+                            string dir = config.ChunksMergingDirPath;
+                            string msg = "Недостаточно места на диске для сборки контейнера! " +
+                                $"Оригинальные файлы сохранены в папку\n{dir}";
+                            MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            downloading = false;
+                            btnDownload.Text = "Скачать";
+                            btnDownload.Enabled = true;
+                            return;
+                        }
+                    }
 
                     string ext = "mp4";
                     foreach (YouTubeMediaFile mediaFile in tracksToDownload)
