@@ -144,6 +144,7 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -179,6 +180,7 @@ namespace YouTube_downloader
             this.tabPageSearchResults.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tvFavorites)).BeginInit();
             this.menuFavorites.SuspendLayout();
+            this.groupBox15.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlMain
@@ -616,12 +618,11 @@ namespace YouTube_downloader
             // 
             this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox10.Controls.Add(this.groupBox15);
             this.groupBox10.Controls.Add(this.groupBox14);
-            this.groupBox10.Controls.Add(this.chkDeleteSourceFiles);
-            this.groupBox10.Controls.Add(this.chkMergeAdaptive);
             this.groupBox10.Location = new System.Drawing.Point(14, 6);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(507, 184);
+            this.groupBox10.Size = new System.Drawing.Size(507, 212);
             this.groupBox10.TabIndex = 17;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Адаптивные форматы";
@@ -634,7 +635,7 @@ namespace YouTube_downloader
             this.groupBox14.Controls.Add(this.chkIfOnlyBiggerFileSize);
             this.groupBox14.Controls.Add(this.chkDownloadSecondAudioTrack);
             this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
-            this.groupBox14.Location = new System.Drawing.Point(6, 65);
+            this.groupBox14.Location = new System.Drawing.Point(6, 19);
             this.groupBox14.Name = "groupBox14";
             this.groupBox14.Size = new System.Drawing.Size(495, 112);
             this.groupBox14.TabIndex = 17;
@@ -688,29 +689,31 @@ namespace YouTube_downloader
             // chkDeleteSourceFiles
             // 
             this.chkDeleteSourceFiles.AutoSize = true;
-            this.chkDeleteSourceFiles.Location = new System.Drawing.Point(25, 42);
+            this.chkDeleteSourceFiles.Location = new System.Drawing.Point(30, 41);
             this.chkDeleteSourceFiles.Name = "chkDeleteSourceFiles";
             this.chkDeleteSourceFiles.Size = new System.Drawing.Size(158, 17);
             this.chkDeleteSourceFiles.TabIndex = 16;
-            this.chkDeleteSourceFiles.Text = "Удалить исходные файлы";
+            this.chkDeleteSourceFiles.Text = "Удалять исходные файлы";
+            this.toolTip1.SetToolTip(this.chkDeleteSourceFiles, "Не применяется, если скачаны только аудио-дорожки");
             this.chkDeleteSourceFiles.UseVisualStyleBackColor = true;
             this.chkDeleteSourceFiles.CheckedChanged += new System.EventHandler(this.chkDeleteSourceFiles_CheckedChanged);
             // 
             // chkMergeAdaptive
             // 
             this.chkMergeAdaptive.AutoSize = true;
-            this.chkMergeAdaptive.Location = new System.Drawing.Point(14, 19);
+            this.chkMergeAdaptive.Location = new System.Drawing.Point(20, 18);
             this.chkMergeAdaptive.Name = "chkMergeAdaptive";
-            this.chkMergeAdaptive.Size = new System.Drawing.Size(254, 17);
+            this.chkMergeAdaptive.Size = new System.Drawing.Size(274, 17);
             this.chkMergeAdaptive.TabIndex = 14;
-            this.chkMergeAdaptive.Text = "Объединять видео и аудио в один контейнер";
+            this.chkMergeAdaptive.Text = "Объединять дорожки видео и аудио в контейнер";
+            this.toolTip1.SetToolTip(this.chkMergeAdaptive, "Не применяется, если скачаны только аудио-дорожки");
             this.chkMergeAdaptive.UseVisualStyleBackColor = true;
             this.chkMergeAdaptive.CheckedChanged += new System.EventHandler(this.chkMergeAdaptive_CheckedChanged);
             // 
             // chkSaveImage
             // 
             this.chkSaveImage.AutoSize = true;
-            this.chkSaveImage.Location = new System.Drawing.Point(14, 196);
+            this.chkSaveImage.Location = new System.Drawing.Point(14, 224);
             this.chkSaveImage.Name = "chkSaveImage";
             this.chkSaveImage.Size = new System.Drawing.Size(175, 17);
             this.chkSaveImage.TabIndex = 15;
@@ -1484,6 +1487,19 @@ namespace YouTube_downloader
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
+            // groupBox15
+            // 
+            this.groupBox15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox15.Controls.Add(this.chkMergeAdaptive);
+            this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
+            this.groupBox15.Location = new System.Drawing.Point(6, 137);
+            this.groupBox15.Name = "groupBox15";
+            this.groupBox15.Size = new System.Drawing.Size(495, 71);
+            this.groupBox15.TabIndex = 18;
+            this.groupBox15.TabStop = false;
+            this.groupBox15.Text = "Контейнер";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1513,7 +1529,6 @@ namespace YouTube_downloader
             this.tabPageDownloadingSettings.ResumeLayout(false);
             this.tabPageDownloadingSettings.PerformLayout();
             this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
             this.groupBox14.ResumeLayout(false);
             this.groupBox14.PerformLayout();
             this.tabPageSystemSettings.ResumeLayout(false);
@@ -1548,6 +1563,8 @@ namespace YouTube_downloader
             this.tabPageSearchResults.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tvFavorites)).EndInit();
             this.menuFavorites.ResumeLayout(false);
+            this.groupBox15.ResumeLayout(false);
+            this.groupBox15.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1667,6 +1684,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.CheckBox chkIfOnlyBiggerFileSize;
         private System.Windows.Forms.CheckBox chkDownloadSecondAudioTrack;
         private System.Windows.Forms.CheckBox chkDownloadAllAudioTracks;
+        private System.Windows.Forms.GroupBox groupBox15;
     }
 }
 
