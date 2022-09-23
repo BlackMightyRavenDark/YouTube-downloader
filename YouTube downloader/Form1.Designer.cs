@@ -67,11 +67,17 @@ namespace YouTube_downloader
             this.numericUpDownMenusFontSize = new System.Windows.Forms.NumericUpDown();
             this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.chkDownloadFirstAudioTrack = new System.Windows.Forms.CheckBox();
+            this.chkIfOnlyBiggerFileSize = new System.Windows.Forms.CheckBox();
+            this.chkDownloadSecondAudioTrack = new System.Windows.Forms.CheckBox();
+            this.chkDownloadAllAudioTracks = new System.Windows.Forms.CheckBox();
             this.chkDeleteSourceFiles = new System.Windows.Forms.CheckBox();
             this.chkMergeAdaptive = new System.Windows.Forms.CheckBox();
             this.chkSaveImage = new System.Windows.Forms.CheckBox();
             this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.btnUseRamWhy = new System.Windows.Forms.Button();
             this.panelRAM = new System.Windows.Forms.Panel();
             this.chkUseRamForTempFiles = new System.Windows.Forms.CheckBox();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
@@ -138,7 +144,6 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.btnUseRamWhy = new System.Windows.Forms.Button();
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -151,6 +156,7 @@ namespace YouTube_downloader
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).BeginInit();
             this.tabPageDownloadingSettings.SuspendLayout();
             this.groupBox10.SuspendLayout();
+            this.groupBox14.SuspendLayout();
             this.tabPageSystemSettings.SuspendLayout();
             this.groupBox13.SuspendLayout();
             this.groupBox11.SuspendLayout();
@@ -608,14 +614,76 @@ namespace YouTube_downloader
             // 
             // groupBox10
             // 
+            this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox10.Controls.Add(this.groupBox14);
             this.groupBox10.Controls.Add(this.chkDeleteSourceFiles);
             this.groupBox10.Controls.Add(this.chkMergeAdaptive);
-            this.groupBox10.Location = new System.Drawing.Point(6, 7);
+            this.groupBox10.Location = new System.Drawing.Point(14, 6);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(268, 63);
+            this.groupBox10.Size = new System.Drawing.Size(507, 184);
             this.groupBox10.TabIndex = 17;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Адаптивные форматы";
+            // 
+            // groupBox14
+            // 
+            this.groupBox14.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox14.Controls.Add(this.chkDownloadFirstAudioTrack);
+            this.groupBox14.Controls.Add(this.chkIfOnlyBiggerFileSize);
+            this.groupBox14.Controls.Add(this.chkDownloadSecondAudioTrack);
+            this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
+            this.groupBox14.Location = new System.Drawing.Point(6, 65);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Size = new System.Drawing.Size(495, 112);
+            this.groupBox14.TabIndex = 17;
+            this.groupBox14.TabStop = false;
+            this.groupBox14.Text = "Скачивание аудио-дорожек";
+            // 
+            // chkDownloadFirstAudioTrack
+            // 
+            this.chkDownloadFirstAudioTrack.AutoSize = true;
+            this.chkDownloadFirstAudioTrack.Location = new System.Drawing.Point(20, 19);
+            this.chkDownloadFirstAudioTrack.Name = "chkDownloadFirstAudioTrack";
+            this.chkDownloadFirstAudioTrack.Size = new System.Drawing.Size(277, 17);
+            this.chkDownloadFirstAudioTrack.TabIndex = 19;
+            this.chkDownloadFirstAudioTrack.Text = "Автоматически скачивать первую аудио-дорожку";
+            this.chkDownloadFirstAudioTrack.UseVisualStyleBackColor = true;
+            this.chkDownloadFirstAudioTrack.CheckedChanged += new System.EventHandler(this.chkDownloadFirstAudioTrack_CheckedChanged);
+            // 
+            // chkIfOnlyBiggerFileSize
+            // 
+            this.chkIfOnlyBiggerFileSize.AutoSize = true;
+            this.chkIfOnlyBiggerFileSize.Location = new System.Drawing.Point(30, 65);
+            this.chkIfOnlyBiggerFileSize.Name = "chkIfOnlyBiggerFileSize";
+            this.chkIfOnlyBiggerFileSize.Size = new System.Drawing.Size(207, 17);
+            this.chkIfOnlyBiggerFileSize.TabIndex = 18;
+            this.chkIfOnlyBiggerFileSize.Text = "Только если размер файла больше";
+            this.chkIfOnlyBiggerFileSize.UseVisualStyleBackColor = true;
+            this.chkIfOnlyBiggerFileSize.CheckedChanged += new System.EventHandler(this.chkIfOnlyBiggerFileSize_CheckedChanged);
+            // 
+            // chkDownloadSecondAudioTrack
+            // 
+            this.chkDownloadSecondAudioTrack.AutoSize = true;
+            this.chkDownloadSecondAudioTrack.Location = new System.Drawing.Point(20, 42);
+            this.chkDownloadSecondAudioTrack.Name = "chkDownloadSecondAudioTrack";
+            this.chkDownloadSecondAudioTrack.Size = new System.Drawing.Size(276, 17);
+            this.chkDownloadSecondAudioTrack.TabIndex = 1;
+            this.chkDownloadSecondAudioTrack.Text = "Автоматически скачивать вторую аудио-дорожку";
+            this.chkDownloadSecondAudioTrack.UseVisualStyleBackColor = true;
+            this.chkDownloadSecondAudioTrack.CheckedChanged += new System.EventHandler(this.chkDownloadSecondAudioTrack_CheckedChanged);
+            // 
+            // chkDownloadAllAudioTracks
+            // 
+            this.chkDownloadAllAudioTracks.AutoSize = true;
+            this.chkDownloadAllAudioTracks.Location = new System.Drawing.Point(20, 88);
+            this.chkDownloadAllAudioTracks.Name = "chkDownloadAllAudioTracks";
+            this.chkDownloadAllAudioTracks.Size = new System.Drawing.Size(179, 17);
+            this.chkDownloadAllAudioTracks.TabIndex = 0;
+            this.chkDownloadAllAudioTracks.Text = "Скачивать все аудио-дорожки";
+            this.chkDownloadAllAudioTracks.UseVisualStyleBackColor = true;
+            this.chkDownloadAllAudioTracks.CheckedChanged += new System.EventHandler(this.chkDownloadAllAudioTracks_CheckedChanged);
             // 
             // chkDeleteSourceFiles
             // 
@@ -642,7 +710,7 @@ namespace YouTube_downloader
             // chkSaveImage
             // 
             this.chkSaveImage.AutoSize = true;
-            this.chkSaveImage.Location = new System.Drawing.Point(280, 7);
+            this.chkSaveImage.Location = new System.Drawing.Point(14, 196);
             this.chkSaveImage.Name = "chkSaveImage";
             this.chkSaveImage.Size = new System.Drawing.Size(175, 17);
             this.chkSaveImage.TabIndex = 15;
@@ -677,6 +745,16 @@ namespace YouTube_downloader
             this.groupBox13.TabIndex = 14;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Оперативная память (RAM)";
+            // 
+            // btnUseRamWhy
+            // 
+            this.btnUseRamWhy.Location = new System.Drawing.Point(371, 25);
+            this.btnUseRamWhy.Name = "btnUseRamWhy";
+            this.btnUseRamWhy.Size = new System.Drawing.Size(75, 23);
+            this.btnUseRamWhy.TabIndex = 16;
+            this.btnUseRamWhy.Text = "Зачем?";
+            this.btnUseRamWhy.UseVisualStyleBackColor = true;
+            this.btnUseRamWhy.Click += new System.EventHandler(this.btnUseRamWhy_Click);
             // 
             // panelRAM
             // 
@@ -1406,16 +1484,6 @@ namespace YouTube_downloader
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
-            // btnUseRamWhy
-            // 
-            this.btnUseRamWhy.Location = new System.Drawing.Point(371, 25);
-            this.btnUseRamWhy.Name = "btnUseRamWhy";
-            this.btnUseRamWhy.Size = new System.Drawing.Size(75, 23);
-            this.btnUseRamWhy.TabIndex = 16;
-            this.btnUseRamWhy.Text = "Зачем?";
-            this.btnUseRamWhy.UseVisualStyleBackColor = true;
-            this.btnUseRamWhy.Click += new System.EventHandler(this.btnUseRamWhy_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1446,6 +1514,8 @@ namespace YouTube_downloader
             this.tabPageDownloadingSettings.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
+            this.groupBox14.ResumeLayout(false);
+            this.groupBox14.PerformLayout();
             this.tabPageSystemSettings.ResumeLayout(false);
             this.groupBox13.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
@@ -1592,6 +1662,11 @@ namespace YouTube_downloader
         private System.Windows.Forms.GroupBox groupBox13;
         private System.Windows.Forms.Panel panelRAM;
         private System.Windows.Forms.Button btnUseRamWhy;
+        private System.Windows.Forms.GroupBox groupBox14;
+        private System.Windows.Forms.CheckBox chkDownloadFirstAudioTrack;
+        private System.Windows.Forms.CheckBox chkIfOnlyBiggerFileSize;
+        private System.Windows.Forms.CheckBox chkDownloadSecondAudioTrack;
+        private System.Windows.Forms.CheckBox chkDownloadAllAudioTracks;
     }
 }
 

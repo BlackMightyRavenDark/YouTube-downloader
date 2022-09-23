@@ -837,7 +837,41 @@ namespace YouTube_downloader
                 tracksToDownload.Add(videoFile);
                 if (audioFormats.Count > 0)
                 {
-                    tracksToDownload.Add(audioFormats[0]);
+                    if (config.DownloadAllAudioTracks)
+                    {
+                        foreach (YouTubeMediaFile audioFormat in audioFormats)
+                        {
+                            if (audioFormat is YouTubeAudioFile)
+                            {
+                                tracksToDownload.Add(audioFormat);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (config.DownloadFirstAudioTrack)
+                        {
+                            tracksToDownload.Add(audioFormats[0]);
+                        }
+                        if (config.DownloadSecondAudioTrack && audioFormats.Count > 1)
+                        {
+                            if (config.IfOnlySecondAudioTrackIsBetter)
+                            {
+                                if (audioFormats[1].contentLength > audioFormats[0].contentLength)
+                                {
+                                    tracksToDownload.Add(audioFormats[1]);
+                                }
+                                else if (!config.DownloadFirstAudioTrack)
+                                {
+                                    tracksToDownload.Add(audioFormats[0]);
+                                }
+                            }
+                            else
+                            {
+                                tracksToDownload.Add(audioFormats[1]);
+                            }
+                        }
+                    }
                 }
             }
             else if (mi.Tag is YouTubeAudioFile)

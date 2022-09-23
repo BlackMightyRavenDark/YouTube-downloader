@@ -56,6 +56,10 @@ namespace YouTube_downloader
             numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
             chkSortFormatsByFileSize.Checked = config.SortFormatsByFileSize;
             chkMoveAudioId140First.Checked = config.MoveAudioId140First;
+            chkDownloadFirstAudioTrack.Checked = config.DownloadFirstAudioTrack;
+            chkDownloadSecondAudioTrack.Checked = config.DownloadSecondAudioTrack;
+            chkIfOnlyBiggerFileSize.Checked = config.IfOnlySecondAudioTrackIsBetter;
+            chkDownloadAllAudioTracks.Checked = config.DownloadAllAudioTracks;
             numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
             numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
             numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
@@ -107,6 +111,51 @@ namespace YouTube_downloader
         private void chkMoveAudioId140First_CheckedChanged(object sender, EventArgs e)
         {
             config.MoveAudioId140First = chkMoveAudioId140First.Checked;
+        }
+
+        private void chkDownloadFirstAudioTrack_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDownloadFirstAudioTrack.Checked)
+            {
+                config.DownloadFirstAudioTrack = true;
+                chkDownloadSecondAudioTrack.Enabled = true;
+                chkIfOnlyBiggerFileSize.Enabled = chkDownloadSecondAudioTrack.Checked;
+            }
+            else
+            {
+                config.DownloadFirstAudioTrack = false;
+                chkDownloadSecondAudioTrack.Enabled = false;
+                chkIfOnlyBiggerFileSize.Enabled = false;
+            }
+        }
+
+        private void chkDownloadSecondAudioTrack_CheckedChanged(object sender, EventArgs e)
+        {
+            config.DownloadSecondAudioTrack = chkDownloadSecondAudioTrack.Checked;
+            chkIfOnlyBiggerFileSize.Enabled = config.DownloadSecondAudioTrack;
+        }
+
+        private void chkIfOnlyBiggerFileSize_CheckedChanged(object sender, EventArgs e)
+        {
+            config.IfOnlySecondAudioTrackIsBetter = chkIfOnlyBiggerFileSize.Checked;
+        }
+
+        private void chkDownloadAllAudioTracks_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDownloadAllAudioTracks.Checked)
+            {
+                config.DownloadAllAudioTracks = true;
+                chkDownloadFirstAudioTrack.Enabled = false;
+                chkDownloadSecondAudioTrack.Enabled = false;
+                chkIfOnlyBiggerFileSize.Enabled = false;
+            }
+            else
+            {
+                config.DownloadAllAudioTracks = false;
+                chkDownloadFirstAudioTrack.Enabled = true;
+                chkDownloadSecondAudioTrack.Enabled = true;
+                chkIfOnlyBiggerFileSize.Enabled = chkDownloadSecondAudioTrack.Checked;
+            }
         }
 
         private void SaveNode(FavoriteItem root, ref JArray jsonArr)

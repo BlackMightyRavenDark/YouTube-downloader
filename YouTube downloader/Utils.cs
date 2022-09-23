@@ -795,6 +795,10 @@ namespace YouTube_downloader
         public int MaxSearch { get; set; }
         public bool SortFormatsByFileSize { get; set; }
         public bool MoveAudioId140First { get; set; }
+        public bool DownloadFirstAudioTrack { get; set; }
+        public bool DownloadSecondAudioTrack { get; set; }
+        public bool IfOnlySecondAudioTrackIsBetter { get; set; }
+        public bool DownloadAllAudioTracks { get; set; }
         public bool UseRamToStoreTemporaryFiles { get; set; }
         public bool MergeToContainer { get; set; }
         public bool DeleteSourceFiles { get; set; }
@@ -850,6 +854,10 @@ namespace YouTube_downloader
             json["maxSearch"] = MaxSearch;
             json["sortFormatsByFileSize"] = SortFormatsByFileSize;
             json["moveAudioId140First"] = MoveAudioId140First;
+            json["downloadFirstAudioTrackAutomatically"] = DownloadFirstAudioTrack;
+            json["downloadSecondAudioTrackAutomatically"] = DownloadSecondAudioTrack;
+            json["ifOnlySecondAudioTrackIsBetter"] = IfOnlySecondAudioTrackIsBetter;
+            json["downloadAllAudioTracksAutomatically"] = DownloadAllAudioTracks;
             json["useRamToStoreTemporaryFiles"] = UseRamToStoreTemporaryFiles;
             json["saveImagePreview"] = SaveImagePreview;
             json["useHiddenApiForGettingInfo"] = UseHiddenApiForGettingInfo;
@@ -877,6 +885,10 @@ namespace YouTube_downloader
             MaxSearch = 50;
             SortFormatsByFileSize = true;
             MoveAudioId140First = false;
+            DownloadFirstAudioTrack = true;
+            DownloadSecondAudioTrack = false;
+            IfOnlySecondAudioTrackIsBetter = true;
+            DownloadAllAudioTracks = false;
             SaveImagePreview = true;
             UseHiddenApiForGettingInfo = true;
             VideoTitleFontSize = 8;
@@ -999,6 +1011,26 @@ namespace YouTube_downloader
                     if (jt != null)
                     {
                         MoveAudioId140First = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("downloadFirstAudioTrackAutomatically");
+                    if (jt != null)
+                    {
+                        DownloadFirstAudioTrack = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("downloadSecondAudioTrackAutomatically");
+                    if (jt != null)
+                    {
+                        DownloadSecondAudioTrack = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("ifOnlySecondAudioTrackIsBetter");
+                    if (jt != null)
+                    {
+                        IfOnlySecondAudioTrackIsBetter = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("downloadAllAudioTracksAutomatically");
+                    if (jt != null)
+                    {
+                        DownloadAllAudioTracks = jt.Value<bool>();
                     }
                     jt = json.Value<JToken>("useRamToStoreTemporaryFiles");
                     if (jt != null)
