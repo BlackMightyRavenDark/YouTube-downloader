@@ -799,6 +799,7 @@ namespace YouTube_downloader
         public bool DownloadSecondAudioTrack { get; set; }
         public bool IfOnlySecondAudioTrackIsBetter { get; set; }
         public bool DownloadAllAudioTracks { get; set; }
+        public bool DownloadAllAdaptiveVideoTracks { get; set; }
         public bool UseRamToStoreTemporaryFiles { get; set; }
         public bool MergeToContainer { get; set; }
         public bool DeleteSourceFiles { get; set; }
@@ -889,6 +890,7 @@ namespace YouTube_downloader
             DownloadSecondAudioTrack = false;
             IfOnlySecondAudioTrackIsBetter = true;
             DownloadAllAudioTracks = false;
+            DownloadAllAdaptiveVideoTracks = false;
             SaveImagePreview = true;
             UseHiddenApiForGettingInfo = true;
             VideoTitleFontSize = 8;

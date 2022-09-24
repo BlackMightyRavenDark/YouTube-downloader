@@ -834,7 +834,21 @@ namespace YouTube_downloader
                     return;
                 }
 
-                tracksToDownload.Add(videoFile);
+                if (config.DownloadAllAdaptiveVideoTracks)
+                {
+                    foreach (YouTubeMediaFile videoFormat in videoFormats)
+                    {
+                        if (videoFormat is YouTubeVideoFile && !videoFormat.isContainer && !videoFormat.isHlsManifest)
+                        {
+                            tracksToDownload.Add(videoFormat);
+                        }
+                    }
+                }
+                else
+                {
+                    tracksToDownload.Add(videoFile);
+                }
+
                 if (audioFormats.Count > 0)
                 {
                     if (config.DownloadAllAudioTracks)

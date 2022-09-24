@@ -158,6 +158,11 @@ namespace YouTube_downloader
             }
         }
 
+        private void chkDownloadAllAdaptiveVideoTracks_CheckedChanged(object sender, EventArgs e)
+        {
+            config.DownloadAllAdaptiveVideoTracks = chkDownloadAllAdaptiveVideoTracks.Checked;
+        }
+
         private void SaveNode(FavoriteItem root, ref JArray jsonArr)
         {
             JObject json = new JObject();
@@ -1508,6 +1513,19 @@ namespace YouTube_downloader
             string msg = "Это позволяет ускорить скачивание, сократив количество обращений к накопителю.";
             MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
             btnUseRamWhy.Enabled = true;
+        }
+
+        private void btnDownloadAllAdaptiveVideoTracksWtf_Click(object sender, EventArgs e)
+        {
+            btnDownloadAllAdaptiveVideoTracksWtf.Enabled = false;
+            string msg = "Будут скачаны все адаптивные форматы видео, " +
+                "не зависимо от того, какой формат был выбран.\n" +
+                "Данная опция игнорируется при выборе форматов из окна выбора.\n" +
+                "Данная опция не сохраняется в файле конфигурации " +
+                "и автоматически отключается при каждом перезапуске программы.";
+            MessageBox.Show(msg, "Подсказатор подсказок",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnDownloadAllAdaptiveVideoTracksWtf.Enabled = true;
         }
 
         private void chkUseRamForTempFiles_CheckedChanged(object sender, EventArgs e)
