@@ -49,6 +49,14 @@ namespace YouTube_downloader
             editFfmpeg.Text = config.FfmpegExeFilePath;
             chkMergeAdaptive.Checked = config.MergeToContainer;
             chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
+            if (config.AlwaysUseMkvContainer)
+            {
+                radioButtonContainerTypeMkv.Checked = true;
+            }
+            else
+            {
+                radioButtonContainerTypeMp4.Checked = true;
+            }
             chkSaveImage.Checked = config.SaveImagePreview;
             chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
             numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
@@ -1325,6 +1333,16 @@ namespace YouTube_downloader
         private void chkDeleteSourceFiles_CheckedChanged(object sender, EventArgs e)
         {
             config.DeleteSourceFiles = chkDeleteSourceFiles.Checked;
+        }
+
+        private void radioButtonContainerTypeMp4_CheckedChanged(object sender, EventArgs e)
+        {
+            config.AlwaysUseMkvContainer = !radioButtonContainerTypeMp4.Checked;
+        }
+
+        private void radioButtonContainerTypeMkv_CheckedChanged(object sender, EventArgs e)
+        {
+            config.AlwaysUseMkvContainer = radioButtonContainerTypeMkv.Checked;
         }
 
         private void chkSearchVideos_CheckedChanged(object sender, EventArgs e)

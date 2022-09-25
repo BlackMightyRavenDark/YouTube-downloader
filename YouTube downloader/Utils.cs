@@ -802,6 +802,7 @@ namespace YouTube_downloader
         public bool DownloadAllAdaptiveVideoTracks { get; set; }
         public bool UseRamToStoreTemporaryFiles { get; set; }
         public bool MergeToContainer { get; set; }
+        public bool AlwaysUseMkvContainer { get; set; }
         public bool DeleteSourceFiles { get; set; }
         public string CipherDecryptionAlgo { get; set; }
         public string YouTubeApiKey { get; set; }
@@ -859,6 +860,7 @@ namespace YouTube_downloader
             json["downloadSecondAudioTrackAutomatically"] = DownloadSecondAudioTrack;
             json["ifOnlySecondAudioTrackIsBetter"] = IfOnlySecondAudioTrackIsBetter;
             json["downloadAllAudioTracksAutomatically"] = DownloadAllAudioTracks;
+            json["alwaysUseMkvContainer"] = AlwaysUseMkvContainer;
             json["useRamToStoreTemporaryFiles"] = UseRamToStoreTemporaryFiles;
             json["saveImagePreview"] = SaveImagePreview;
             json["useHiddenApiForGettingInfo"] = UseHiddenApiForGettingInfo;
@@ -877,6 +879,7 @@ namespace YouTube_downloader
             TempDirPath = null;
             ChunksMergingDirPath = null;
             MergeToContainer = true;
+            AlwaysUseMkvContainer = false;
             DeleteSourceFiles = true;
             CipherDecryptionAlgo = null;
             YouTubeApiKey = null;
@@ -1033,6 +1036,11 @@ namespace YouTube_downloader
                     if (jt != null)
                     {
                         DownloadAllAudioTracks = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("alwaysUseMkvContainer");
+                    if (jt != null)
+                    {
+                        AlwaysUseMkvContainer = jt.Value<bool>();
                     }
                     jt = json.Value<JToken>("useRamToStoreTemporaryFiles");
                     if (jt != null)

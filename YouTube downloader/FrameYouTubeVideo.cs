@@ -1010,16 +1010,20 @@ namespace YouTube_downloader
                         }
                     }
 
-                    string ext = "mp4";
-                    foreach (YouTubeMediaFile mediaFile in tracksToDownload)
+                    string ext = "mkv";
+                    if (!config.AlwaysUseMkvContainer)
                     {
-                        if (mediaFile.mimeExt != "mp4")
+                        ext = "mp4";
+                        foreach (YouTubeMediaFile mediaFile in tracksToDownload)
                         {
-                            ext = "mkv";
-                            break;
+                            if (mediaFile.mimeExt != "mp4")
+                            {
+                                ext = "mkv";
+                                break;
+                            }
                         }
                     }
-                    
+
                     lblStatus.Text = $"Состояние: Создание контейнера {ext.ToUpper()}...";
                     lblStatus.Refresh();
 

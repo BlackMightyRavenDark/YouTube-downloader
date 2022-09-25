@@ -67,8 +67,12 @@ namespace YouTube_downloader
             this.numericUpDownMenusFontSize = new System.Windows.Forms.NumericUpDown();
             this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.btnDownloadAllAdaptiveVideoTracksWtf = new System.Windows.Forms.Button();
             this.chkDownloadAllAdaptiveVideoTracks = new System.Windows.Forms.CheckBox();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
+            this.groupBox16 = new System.Windows.Forms.GroupBox();
+            this.radioButtonContainerTypeMkv = new System.Windows.Forms.RadioButton();
+            this.radioButtonContainerTypeMp4 = new System.Windows.Forms.RadioButton();
             this.chkMergeAdaptive = new System.Windows.Forms.CheckBox();
             this.chkDeleteSourceFiles = new System.Windows.Forms.CheckBox();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
@@ -146,7 +150,6 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.btnDownloadAllAdaptiveVideoTracksWtf = new System.Windows.Forms.Button();
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -160,6 +163,7 @@ namespace YouTube_downloader
             this.tabPageDownloadingSettings.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox15.SuspendLayout();
+            this.groupBox16.SuspendLayout();
             this.groupBox14.SuspendLayout();
             this.tabPageSystemSettings.SuspendLayout();
             this.groupBox13.SuspendLayout();
@@ -626,10 +630,20 @@ namespace YouTube_downloader
             this.groupBox10.Controls.Add(this.groupBox14);
             this.groupBox10.Location = new System.Drawing.Point(14, 6);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(507, 231);
+            this.groupBox10.Size = new System.Drawing.Size(507, 249);
             this.groupBox10.TabIndex = 17;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Адаптивные форматы";
+            // 
+            // btnDownloadAllAdaptiveVideoTracksWtf
+            // 
+            this.btnDownloadAllAdaptiveVideoTracksWtf.Location = new System.Drawing.Point(339, 15);
+            this.btnDownloadAllAdaptiveVideoTracksWtf.Name = "btnDownloadAllAdaptiveVideoTracksWtf";
+            this.btnDownloadAllAdaptiveVideoTracksWtf.Size = new System.Drawing.Size(30, 23);
+            this.btnDownloadAllAdaptiveVideoTracksWtf.TabIndex = 20;
+            this.btnDownloadAllAdaptiveVideoTracksWtf.Text = "?";
+            this.btnDownloadAllAdaptiveVideoTracksWtf.UseVisualStyleBackColor = true;
+            this.btnDownloadAllAdaptiveVideoTracksWtf.Click += new System.EventHandler(this.btnDownloadAllAdaptiveVideoTracksWtf_Click);
             // 
             // chkDownloadAllAdaptiveVideoTracks
             // 
@@ -646,14 +660,52 @@ namespace YouTube_downloader
             // 
             this.groupBox15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox15.Controls.Add(this.groupBox16);
             this.groupBox15.Controls.Add(this.chkMergeAdaptive);
             this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
             this.groupBox15.Location = new System.Drawing.Point(6, 160);
             this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(495, 66);
+            this.groupBox15.Size = new System.Drawing.Size(495, 83);
             this.groupBox15.TabIndex = 18;
             this.groupBox15.TabStop = false;
             this.groupBox15.Text = "Контейнер";
+            // 
+            // groupBox16
+            // 
+            this.groupBox16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox16.Controls.Add(this.radioButtonContainerTypeMkv);
+            this.groupBox16.Controls.Add(this.radioButtonContainerTypeMp4);
+            this.groupBox16.Location = new System.Drawing.Point(295, 19);
+            this.groupBox16.Name = "groupBox16";
+            this.groupBox16.Size = new System.Drawing.Size(194, 60);
+            this.groupBox16.TabIndex = 17;
+            this.groupBox16.TabStop = false;
+            this.groupBox16.Text = "Тип контейнера";
+            // 
+            // radioButtonContainerTypeMkv
+            // 
+            this.radioButtonContainerTypeMkv.AutoSize = true;
+            this.radioButtonContainerTypeMkv.Location = new System.Drawing.Point(12, 40);
+            this.radioButtonContainerTypeMkv.Name = "radioButtonContainerTypeMkv";
+            this.radioButtonContainerTypeMkv.Size = new System.Drawing.Size(48, 17);
+            this.radioButtonContainerTypeMkv.TabIndex = 1;
+            this.radioButtonContainerTypeMkv.Text = "MKV";
+            this.radioButtonContainerTypeMkv.UseVisualStyleBackColor = true;
+            this.radioButtonContainerTypeMkv.CheckedChanged += new System.EventHandler(this.radioButtonContainerTypeMkv_CheckedChanged);
+            // 
+            // radioButtonContainerTypeMp4
+            // 
+            this.radioButtonContainerTypeMp4.AutoSize = true;
+            this.radioButtonContainerTypeMp4.Checked = true;
+            this.radioButtonContainerTypeMp4.Location = new System.Drawing.Point(12, 17);
+            this.radioButtonContainerTypeMp4.Name = "radioButtonContainerTypeMp4";
+            this.radioButtonContainerTypeMp4.Size = new System.Drawing.Size(135, 17);
+            this.radioButtonContainerTypeMp4.TabIndex = 0;
+            this.radioButtonContainerTypeMp4.TabStop = true;
+            this.radioButtonContainerTypeMp4.Text = "MP4 (если возможно)";
+            this.radioButtonContainerTypeMp4.UseVisualStyleBackColor = true;
+            this.radioButtonContainerTypeMp4.CheckedChanged += new System.EventHandler(this.radioButtonContainerTypeMp4_CheckedChanged);
             // 
             // chkMergeAdaptive
             // 
@@ -741,7 +793,7 @@ namespace YouTube_downloader
             // chkSaveImage
             // 
             this.chkSaveImage.AutoSize = true;
-            this.chkSaveImage.Location = new System.Drawing.Point(14, 243);
+            this.chkSaveImage.Location = new System.Drawing.Point(14, 261);
             this.chkSaveImage.Name = "chkSaveImage";
             this.chkSaveImage.Size = new System.Drawing.Size(175, 17);
             this.chkSaveImage.TabIndex = 15;
@@ -1515,16 +1567,6 @@ namespace YouTube_downloader
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
-            // btnDownloadAllAdaptiveVideoTracksWtf
-            // 
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Location = new System.Drawing.Point(339, 15);
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Name = "btnDownloadAllAdaptiveVideoTracksWtf";
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Size = new System.Drawing.Size(30, 23);
-            this.btnDownloadAllAdaptiveVideoTracksWtf.TabIndex = 20;
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Text = "?";
-            this.btnDownloadAllAdaptiveVideoTracksWtf.UseVisualStyleBackColor = true;
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Click += new System.EventHandler(this.btnDownloadAllAdaptiveVideoTracksWtf_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1557,6 +1599,8 @@ namespace YouTube_downloader
             this.groupBox10.PerformLayout();
             this.groupBox15.ResumeLayout(false);
             this.groupBox15.PerformLayout();
+            this.groupBox16.ResumeLayout(false);
+            this.groupBox16.PerformLayout();
             this.groupBox14.ResumeLayout(false);
             this.groupBox14.PerformLayout();
             this.tabPageSystemSettings.ResumeLayout(false);
@@ -1713,6 +1757,9 @@ namespace YouTube_downloader
         private System.Windows.Forms.GroupBox groupBox15;
         private System.Windows.Forms.CheckBox chkDownloadAllAdaptiveVideoTracks;
         private System.Windows.Forms.Button btnDownloadAllAdaptiveVideoTracksWtf;
+        private System.Windows.Forms.GroupBox groupBox16;
+        private System.Windows.Forms.RadioButton radioButtonContainerTypeMkv;
+        private System.Windows.Forms.RadioButton radioButtonContainerTypeMp4;
     }
 }
 
