@@ -56,6 +56,7 @@ namespace YouTube_downloader
             this.label4 = new System.Windows.Forms.Label();
             this.tabPageGUI = new System.Windows.Forms.TabPage();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.chkSortDashFormatsByBitrate = new System.Windows.Forms.CheckBox();
             this.chkMoveAudioId140First = new System.Windows.Forms.CheckBox();
             this.chkSortFormatsByFileSize = new System.Windows.Forms.CheckBox();
             this.groupBoxFonts = new System.Windows.Forms.GroupBox();
@@ -462,19 +463,31 @@ namespace YouTube_downloader
             // 
             this.groupBox12.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox12.Controls.Add(this.chkSortDashFormatsByBitrate);
             this.groupBox12.Controls.Add(this.chkMoveAudioId140First);
             this.groupBox12.Controls.Add(this.chkSortFormatsByFileSize);
             this.groupBox12.Location = new System.Drawing.Point(3, 120);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(521, 69);
+            this.groupBox12.Size = new System.Drawing.Size(521, 91);
             this.groupBox12.TabIndex = 1;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Сортировка списка форматов для скачивания";
             // 
+            // chkSortDashFormatsByBitrate
+            // 
+            this.chkSortDashFormatsByBitrate.AutoSize = true;
+            this.chkSortDashFormatsByBitrate.Location = new System.Drawing.Point(18, 42);
+            this.chkSortDashFormatsByBitrate.Name = "chkSortDashFormatsByBitrate";
+            this.chkSortDashFormatsByBitrate.Size = new System.Drawing.Size(320, 17);
+            this.chkSortDashFormatsByBitrate.TabIndex = 2;
+            this.chkSortDashFormatsByBitrate.Text = "Сортировать форматы DASH по битрейту (если известен)";
+            this.chkSortDashFormatsByBitrate.UseVisualStyleBackColor = true;
+            this.chkSortDashFormatsByBitrate.CheckedChanged += new System.EventHandler(this.chkSortDashFormatsByBitrate_CheckedChanged);
+            // 
             // chkMoveAudioId140First
             // 
             this.chkMoveAudioId140First.AutoSize = true;
-            this.chkMoveAudioId140First.Location = new System.Drawing.Point(18, 42);
+            this.chkMoveAudioId140First.Location = new System.Drawing.Point(18, 65);
             this.chkMoveAudioId140First.Name = "chkMoveAudioId140First";
             this.chkMoveAudioId140First.Size = new System.Drawing.Size(302, 17);
             this.chkMoveAudioId140First.TabIndex = 1;
@@ -1760,6 +1773,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.GroupBox groupBox16;
         private System.Windows.Forms.RadioButton radioButtonContainerTypeMkv;
         private System.Windows.Forms.RadioButton radioButtonContainerTypeMp4;
+        private System.Windows.Forms.CheckBox chkSortDashFormatsByBitrate;
     }
 }
 

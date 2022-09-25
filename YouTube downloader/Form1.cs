@@ -63,6 +63,7 @@ namespace YouTube_downloader
             numericUpDownMenusFontSize.Value = config.MenusFontSize;
             numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
             chkSortFormatsByFileSize.Checked = config.SortFormatsByFileSize;
+            chkSortDashFormatsByBitrate.Checked = config.SortDashFormatsByBitrate;
             chkMoveAudioId140First.Checked = config.MoveAudioId140First;
             chkDownloadFirstAudioTrack.Checked = config.DownloadFirstAudioTrack;
             chkDownloadSecondAudioTrack.Checked = config.DownloadSecondAudioTrack;
@@ -1559,6 +1560,11 @@ namespace YouTube_downloader
                 return;
             }
             config.UseRamToStoreTemporaryFiles = chkUseRamForTempFiles.Checked;
+        }
+
+        private void chkSortDashFormatsByBitrate_CheckedChanged(object sender, EventArgs e)
+        {
+            config.SortDashFormatsByBitrate = chkSortDashFormatsByBitrate.Checked;
         }
     }
 }

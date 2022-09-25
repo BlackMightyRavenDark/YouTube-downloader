@@ -15,6 +15,7 @@ namespace YouTube_downloader
         public ThreadInfoSendDelegate Info;
 
         private bool SortFormatsByFileSize;
+        private bool SortDashByBitrate;
         private bool MoveAudioId140First;
 
         private SynchronizationContext synchronizationContext;
@@ -30,10 +31,12 @@ namespace YouTube_downloader
         public bool _ciphered;
 
         public ThreadGetDownloadableFormats(YouTubeApiRequestType requestType,
-            bool sortFormatsByFileSize, bool moveAudioId140First, string webPageContent = null)
+            bool sortFormatsByFileSize, bool sortDashByBitrate,
+            bool moveAudioId140First, string webPageContent = null)
         {
             YouTubeApiRequestType = requestType;
             SortFormatsByFileSize = sortFormatsByFileSize;
+            SortDashByBitrate = sortDashByBitrate;
             MoveAudioId140First = moveAudioId140First;
             WebPage = webPageContent;
         }
@@ -217,7 +220,7 @@ namespace YouTube_downloader
                 }
             }
 
-            SortAudioTracks();
+            SortTracks();
         }
 
         private void ParseHlsManifest(string hlsManifestString)
@@ -397,15 +400,21 @@ namespace YouTube_downloader
                 }
             }
 
-            SortAudioTracks();
+            SortTracks();
         }
 
-        private void SortAudioTracks()
+        private void SortTracks()
         {
             if (SortFormatsByFileSize)
             {
                 videoFiles.Sort(new FormatListSorterFileSize());
                 audioFiles.Sort(new FormatListSorterFileSize());
+            }
+
+            if (SortDashByBitrate)
+            {
+                videoFiles.Sort(new FormatListSorterDashBitrate());
+                audioFiles.Sort(new FormatListSorterDashBitrate());
             }
 
             if (MoveAudioId140First)

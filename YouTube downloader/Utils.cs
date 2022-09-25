@@ -794,6 +794,7 @@ namespace YouTube_downloader
         public string OutputFileNameFormat { get; set; }
         public int MaxSearch { get; set; }
         public bool SortFormatsByFileSize { get; set; }
+        public bool SortDashFormatsByBitrate { get; set; }
         public bool MoveAudioId140First { get; set; }
         public bool DownloadFirstAudioTrack { get; set; }
         public bool DownloadSecondAudioTrack { get; set; }
@@ -855,6 +856,7 @@ namespace YouTube_downloader
             json["outputFileNameFormat"] = OutputFileNameFormat;
             json["maxSearch"] = MaxSearch;
             json["sortFormatsByFileSize"] = SortFormatsByFileSize;
+            json["sortDashFormatsByBitrate"] = SortDashFormatsByBitrate;
             json["moveAudioId140First"] = MoveAudioId140First;
             json["downloadFirstAudioTrackAutomatically"] = DownloadFirstAudioTrack;
             json["downloadSecondAudioTrackAutomatically"] = DownloadSecondAudioTrack;
@@ -888,6 +890,7 @@ namespace YouTube_downloader
             OutputFileNameFormat = Utils.FILENAME_FORMAT_DEFAULT;
             MaxSearch = 50;
             SortFormatsByFileSize = true;
+            SortDashFormatsByBitrate = true;
             MoveAudioId140First = false;
             DownloadFirstAudioTrack = true;
             DownloadSecondAudioTrack = false;
@@ -1011,6 +1014,11 @@ namespace YouTube_downloader
                     if (jt != null)
                     {
                         SortFormatsByFileSize = jt.Value<bool>();
+                    }
+                    jt = json.Value<JToken>("sortDashFormatsByBitrate");
+                    if (jt != null)
+                    {
+                        SortDashFormatsByBitrate = jt.Value<bool>();
                     }
                     jt = json.Value<JToken>("moveAudioId140First");
                     if (jt != null)
@@ -1179,6 +1187,18 @@ namespace YouTube_downloader
                 return 0;
             }
             return x.contentLength < y.contentLength ? 1 : -1;
+        }
+    }
+
+    public class FormatListSorterDashBitrate : IComparer<YouTubeMediaFile>
+    {
+        public int Compare(YouTubeMediaFile x, YouTubeMediaFile y)
+        {
+            if (x != null && y != null && x.isDashManifest && y.isDashManifest && !x.isHlsManifest && !y.isHlsManifest)
+            {
+                return x.bitrate < y.bitrate ? 1 : -1;
+            }
+            return 0;
         }
     }
 }
