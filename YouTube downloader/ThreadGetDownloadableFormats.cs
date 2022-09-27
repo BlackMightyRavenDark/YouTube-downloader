@@ -219,8 +219,6 @@ namespace YouTube_downloader
                     }
                 }
             }
-
-            SortTracks();
         }
 
         private void ParseHlsManifest(string hlsManifestString)

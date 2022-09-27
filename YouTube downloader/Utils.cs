@@ -1196,7 +1196,7 @@ namespace YouTube_downloader
         {
             if (x != null && y != null && x.isDashManifest && y.isDashManifest && !x.isHlsManifest && !y.isHlsManifest)
             {
-                return x.bitrate < y.bitrate ? 1 : -1;
+                return x.averageBitrate < y.averageBitrate ? 1 : -1;
             }
             return 0;
         }
