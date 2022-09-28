@@ -411,7 +411,11 @@ namespace YouTube_downloader
 
             if (SortDashByBitrate)
             {
+                //TODO: Fix this shit!
+                // Неправильная сортировка видео-дорожек у некоторых не-DASH видео,
+                // если флаг "SortDashByBitrate" включен.
                 videoFiles.Sort(new FormatListSorterDashBitrate());
+
                 audioFiles.Sort(new FormatListSorterDashBitrate());
             }
 
