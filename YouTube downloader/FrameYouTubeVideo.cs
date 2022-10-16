@@ -1046,7 +1046,7 @@ namespace YouTube_downloader
                 }
 
                 //сохранение картинки
-                if (config.SaveImagePreview && VideoInfo.ImageData != null)
+                if (config.SavePreviewImage && VideoInfo.ImageData != null)
                 {
                     SaveImageToFile(formattedFileName);
                 }

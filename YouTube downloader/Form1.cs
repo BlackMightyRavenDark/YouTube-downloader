@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
@@ -31,60 +30,310 @@ namespace YouTube_downloader
             favoritesRootNode = tvFavorites.Roots.Cast<FavoriteItem>().ToArray()[0];
             treeFavorites = tvFavorites;
 
+            config = new MainConfiguration("config_ytdl.json");
+            config.Saving += (s, json) =>
+            {
+                json["downloadingDirPath"] = config.DownloadingDirPath;
+                json["tempDirPath"] = config.TempDirPath;
+                json["chunksMergingDirPath"] = config.ChunksMergingDirPath;
+                json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgo;
+                json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
+                json["browserExeFilePath"] = config.BrowserExeFilePath;
+                json["ffmpegExeFilePath"] = config.FfmpegExeFilePath;
+                json["outputFileNameFormat"] = config.OutputFileNameFormat;
+                json["maxSearch"] = config.MaxSearch;
+                json["sortFormatsByFileSize"] = config.SortFormatsByFileSize;
+                json["sortDashFormatsByBitrate"] = config.SortDashFormatsByBitrate;
+                json["moveAudioId140First"] = config.MoveAudioId140First;
+                json["downloadFirstAudioTrackAutomatically"] = config.DownloadFirstAudioTrack;
+                json["downloadSecondAudioTrackAutomatically"] = config.DownloadSecondAudioTrack;
+                json["ifOnlySecondAudioTrackIsBetter"] = config.IfOnlySecondAudioTrackIsBetter;
+                json["downloadAllAudioTracksAutomatically"] = config.DownloadAllAudioTracks;
+                json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainer;
+                json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
+                json["savePreviewImage"] = config.SavePreviewImage;
+                json["useHiddenApiForGettingInfo"] = config.UseHiddenApiForGettingInfo;
+                json["videoTitleFontSize"] = config.VideoTitleFontSize;
+                json["menusFontSize"] = config.MenusFontSize;
+                json["favoritesListFontSize"] = config.FavoritesListFontSize;
+                json["threadCountVideo"] = config.ThreadCountVideo;
+                json["threadCountAudio"] = config.ThreadCountAudio;
+                json["globalThreadCountMaximum"] = config.GlobalThreadCountMaximum;
+            };
+            config.Loading += (s, json) =>
+            {
+                {
+                    JToken jt = json.Value<JToken>("downloadingDirPath");
+                    if (jt != null)
+                    {
+                        config.DownloadingDirPath = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("tempDirPath");
+                    if (jt != null)
+                    {
+                        config.TempDirPath = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("chunksMergingDirPath");
+                    if (jt != null)
+                    {
+                        config.ChunksMergingDirPath = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("cipherDecryptionAlgo");
+                    if (jt != null)
+                    {
+                        config.CipherDecryptionAlgo = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("youTubeApiV3Key");
+                    if (jt != null)
+                    {
+                        config.YouTubeApiV3Key = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("browserExeFilePath");
+                    if (jt != null)
+                    {
+                        config.BrowserExeFilePath = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("ffmpegExeFilePath");
+                    if (jt != null)
+                    {
+                        config.FfmpegExeFilePath = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("outputFileNameFormat");
+                    if (jt != null)
+                    {
+                        config.OutputFileNameFormat = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("maxSearch");
+                    if (jt != null)
+                    {
+                        config.MaxSearch = jt.Value<int>();
+                        if (config.MaxSearch < 1)
+                        {
+                            config.MaxSearch = 1;
+                        }
+                        else if (config.MaxSearch > 500)
+                        {
+                            config.MaxSearch = 500;
+                        }
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("savePreviewImage");
+                    if (jt != null)
+                    {
+                        config.SavePreviewImage = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("useApiForGettingInfo");
+                    if (jt != null)
+                    {
+                        config.UseHiddenApiForGettingInfo = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("menusFontSize");
+                    if (jt != null)
+                    {
+                        config.MenusFontSize = jt.Value<int>();
+                        if (config.MenusFontSize < 9)
+                        {
+                            config.MenusFontSize = 9;
+                        }
+                        else if (config.MenusFontSize > 16)
+                        {
+                            config.MenusFontSize = 16;
+                        }
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("favoritesListFontSize");
+                    if (jt != null)
+                    {
+                        config.FavoritesListFontSize = jt.Value<int>();
+                        if (config.FavoritesListFontSize < 8)
+                        {
+                            config.FavoritesListFontSize = 8;
+                        }
+                        else if (config.FavoritesListFontSize > 16)
+                        {
+                            config.FavoritesListFontSize = 16;
+                        }
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("videoTitleFontSize");
+                    if (jt != null)
+                    {
+                        config.VideoTitleFontSize = jt.Value<int>();
+                        if (config.VideoTitleFontSize < 8)
+                        {
+                            config.VideoTitleFontSize = 8;
+                        }
+                        else if (config.VideoTitleFontSize > 16)
+                        {
+                            config.VideoTitleFontSize = 16;
+                        }
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("sortFormatsByFileSize");
+                    if (jt != null)
+                    {
+                        config.SortFormatsByFileSize = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("sortDashFormatsByBitrate");
+                    if (jt != null)
+                    {
+                        config.SortDashFormatsByBitrate = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("moveAudioId140First");
+                    if (jt != null)
+                    {
+                        config.MoveAudioId140First = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("downloadFirstAudioTrackAutomatically");
+                    if (jt != null)
+                    {
+                        config.DownloadFirstAudioTrack = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("downloadSecondAudioTrackAutomatically");
+                    if (jt != null)
+                    {
+                        config.DownloadSecondAudioTrack = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("ifOnlySecondAudioTrackIsBetter");
+                    if (jt != null)
+                    {
+                        config.IfOnlySecondAudioTrackIsBetter = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("downloadAllAudioTracksAutomatically");
+                    if (jt != null)
+                    {
+                        config.DownloadAllAudioTracks = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("alwaysUseMkvContainer");
+                    if (jt != null)
+                    {
+                        config.AlwaysUseMkvContainer = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("useRamToStoreTemporaryFiles");
+                    if (jt != null)
+                    {
+                        config.UseRamToStoreTemporaryFiles = jt.Value<bool>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("threadCountVideo");
+                    if (jt != null)
+                    {
+                        config.ThreadCountVideo = jt.Value<int>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("threadCountAudio");
+                    if (jt != null)
+                    {
+                        config.ThreadCountAudio = jt.Value<int>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("globalThreadCountMaximum");
+                    if (jt != null)
+                    {
+                        config.GlobalThreadCountMaximum = jt.Value<int>();
+                    }
+                }
+            };
+            config.Loaded += (s) =>
+            {
+                editDownloadingDirPath.Text = config.DownloadingDirPath;
+                editTempDirPath.Text = config.TempDirPath;
+                editMergingDirPath.Text = config.ChunksMergingDirPath;
+                editCipherDecryptionAlgo.Text = config.CipherDecryptionAlgo;
+                editYouTubeApiKey.Text = config.YouTubeApiV3Key;
+                editBrowser.Text = config.BrowserExeFilePath;
+                editOutputFileNameFormat.Text = config.OutputFileNameFormat;
+                numericUpDownSearchResult.Value = config.MaxSearch;
+                editFfmpeg.Text = config.FfmpegExeFilePath;
+                chkMergeAdaptive.Checked = config.MergeToContainer;
+                chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
+                if (config.AlwaysUseMkvContainer)
+                {
+                    radioButtonContainerTypeMkv.Checked = true;
+                }
+                else
+                {
+                    radioButtonContainerTypeMp4.Checked = true;
+                }
+                chkSaveImage.Checked = config.SavePreviewImage;
+                chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
+                numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
+                numericUpDownMenusFontSize.Value = config.MenusFontSize;
+                numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
+                chkSortFormatsByFileSize.Checked = config.SortFormatsByFileSize;
+                chkSortDashFormatsByBitrate.Checked = config.SortDashFormatsByBitrate;
+                chkMoveAudioId140First.Checked = config.MoveAudioId140First;
+                chkDownloadFirstAudioTrack.Checked = config.DownloadFirstAudioTrack;
+                chkDownloadSecondAudioTrack.Checked = config.DownloadSecondAudioTrack;
+                chkIfOnlyBiggerFileSize.Checked = config.IfOnlySecondAudioTrackIsBetter;
+                chkDownloadAllAudioTracks.Checked = config.DownloadAllAudioTracks;
+                numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
+                numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
+                numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
+                if (Is64BitProcess)
+                {
+                    chkUseRamForTempFiles.Checked = config.UseRamToStoreTemporaryFiles;
+                    btnUseRamWhy.Left = panelRAM.Left;
+                }
+                else
+                {
+                    config.UseRamToStoreTemporaryFiles = false;
+                    chkUseRamForTempFiles.Enabled = false;
+                    panelRAM.Visible = true;
+                }
+
+                MultiThreadedDownloader.SetMaximumConnectionsLimit(config.GlobalThreadCountMaximum);
+            };
+            config.Load();
+
             if (File.Exists(config.FavoritesFilePath))
             {
                 LoadFavorites(config.FavoritesFilePath);
                 tvFavorites.Expand(favoritesRootNode);
             }
-
-            config.Load();
-            editDownloadingDirPath.Text = config.DownloadingDirPath;
-            editTempDirPath.Text = config.TempDirPath;
-            editMergingDirPath.Text = config.ChunksMergingDirPath;
-            editCipherDecryptionAlgo.Text = config.CipherDecryptionAlgo;
-            editYouTubeApiKey.Text = config.YouTubeApiKey;
-            editBrowser.Text = config.BrowserExeFilePath;
-            editOutputFileNameFormat.Text = config.OutputFileNameFormat;
-            numericUpDownSearchResult.Value = config.MaxSearch;
-            editFfmpeg.Text = config.FfmpegExeFilePath;
-            chkMergeAdaptive.Checked = config.MergeToContainer;
-            chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
-            if (config.AlwaysUseMkvContainer)
-            {
-                radioButtonContainerTypeMkv.Checked = true;
-            }
-            else
-            {
-                radioButtonContainerTypeMp4.Checked = true;
-            }
-            chkSaveImage.Checked = config.SaveImagePreview;
-            chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
-            numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
-            numericUpDownMenusFontSize.Value = config.MenusFontSize;
-            numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
-            chkSortFormatsByFileSize.Checked = config.SortFormatsByFileSize;
-            chkSortDashFormatsByBitrate.Checked = config.SortDashFormatsByBitrate;
-            chkMoveAudioId140First.Checked = config.MoveAudioId140First;
-            chkDownloadFirstAudioTrack.Checked = config.DownloadFirstAudioTrack;
-            chkDownloadSecondAudioTrack.Checked = config.DownloadSecondAudioTrack;
-            chkIfOnlyBiggerFileSize.Checked = config.IfOnlySecondAudioTrackIsBetter;
-            chkDownloadAllAudioTracks.Checked = config.DownloadAllAudioTracks;
-            numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
-            numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
-            numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadsMaximum;
-            if (Is64BitProcess)
-            {
-                chkUseRamForTempFiles.Checked = config.UseRamToStoreTemporaryFiles;
-                btnUseRamWhy.Left = panelRAM.Left;
-            }
-            else
-            {
-                config.UseRamToStoreTemporaryFiles = false;
-                chkUseRamForTempFiles.Enabled = false;
-                panelRAM.Visible = true;
-            }
-            
-            ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
 
             dateTimePickerAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
         }
@@ -300,7 +549,7 @@ namespace YouTube_downloader
             int errorCode;
             do
             {
-                string url = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiKey}" +
+                string url = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiV3Key}" +
                     $"&channelId={channelId}&maxResults=50&type=video&order=date";
                 if (chkPublishedAfter.Checked)
                 {
@@ -384,7 +633,7 @@ namespace YouTube_downloader
                 resultType = resultType.Replace("video,", string.Empty);
             }
 
-            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiKey}" +
+            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiV3Key}" +
                 $"&q={searchString}&maxResults={maxResults}&{resultType}&order=date";
 
             if (chkPublishedAfter.Checked)
@@ -724,7 +973,7 @@ namespace YouTube_downloader
                 editQuery.Focus();
                 return;
             }
-            if (string.IsNullOrEmpty(config.YouTubeApiKey))
+            if (string.IsNullOrEmpty(config.YouTubeApiV3Key))
             {
                 MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                     "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -974,7 +1223,7 @@ namespace YouTube_downloader
                         if (MessageBox.Show($"Перейти на канал {item.DisplayName}?", "Переход на канал",
                             MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
-                            if (string.IsNullOrEmpty(config.YouTubeApiKey) || string.IsNullOrWhiteSpace(config.YouTubeApiKey))
+                            if (string.IsNullOrEmpty(config.YouTubeApiV3Key) || string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
                             {
                                 MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                                     "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1132,7 +1381,7 @@ namespace YouTube_downloader
             if (MessageBox.Show($"Перейти на канал {channelName}?", "Переход на канал",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                if (string.IsNullOrEmpty(config.YouTubeApiKey))
+                if (string.IsNullOrEmpty(config.YouTubeApiV3Key))
                 {
                     MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
                         "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1172,7 +1421,7 @@ namespace YouTube_downloader
 
         private void editYouTubeApiKey_Leave(object sender, EventArgs e)
         {
-            config.YouTubeApiKey = editYouTubeApiKey.Text;
+            config.YouTubeApiV3Key = editYouTubeApiKey.Text;
         }
 
         private void rbSearchRessultsMax_Click(object sender, EventArgs e)
@@ -1207,7 +1456,7 @@ namespace YouTube_downloader
 
         private void chkSaveImage_CheckedChanged(object sender, EventArgs e)
         {
-            config.SaveImagePreview = chkSaveImage.Checked;
+            config.SavePreviewImage = chkSaveImage.Checked;
         }
 
         private void editOutputFileNameFormat_Leave(object sender, EventArgs e)
@@ -1280,8 +1529,8 @@ namespace YouTube_downloader
 
         private void numericUpDownGlobalThreadsMaximum_ValueChanged(object sender, EventArgs e)
         {
-            config.GlobalThreadsMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
-            ServicePointManager.DefaultConnectionLimit = config.GlobalThreadsMaximum;
+            config.GlobalThreadCountMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
+            MultiThreadedDownloader.SetMaximumConnectionsLimit(config.GlobalThreadCountMaximum);
         }
 
         private void numericUpDownVideoTitleFontSize_ValueChanged(object sender, EventArgs e)
