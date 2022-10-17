@@ -400,73 +400,84 @@ namespace YouTube_downloader
             );
         }
 
-        private async Task<DownloadResult> DownloadYouTubeVideoFile(YouTubeVideoFile videoFile, string formattedFileName)
+        private async Task<DownloadResult> DownloadYouTubeMediaFile(
+            YouTubeMediaFile mediaFile, string formattedFileName, bool audioOnly)
         {
-            if (videoFile.isDashManifest)
+            if (mediaFile.isDashManifest)
             {
-                #region Скачивание видео Даши
-                return await DownloadDash(videoFile, formattedFileName);
-                #endregion
+                return await DownloadDash(mediaFile, formattedFileName);
             }
-            else //без Даши
+            else
             {
-                #region Скачивание видео-дорожки
+                YouTubeVideoFile videoFile = mediaFile as YouTubeVideoFile;
+                bool isVideo = videoFile != null;
+                if (isVideo)
+                {
+                    audioOnly = false;
+                }
+                string mediaTypeString = isVideo ? "видео" : "аудио";
+
                 #region Расшифровка Cipher
-                if (videoFile.isCiphered)
+                //TODO: Вынести это в отдельный метод.
+                if (mediaFile.isCiphered)
                 {
                     if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
                     {
                         return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null, null);
                     }
 
-                    string cipherDecrypted = DecryptCipherSignature(videoFile.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
+                    #region Расшифровка ссылки на видео-дорожку
+                    string cipherDecrypted = DecryptCipherSignature(mediaFile.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
 
                     if (string.IsNullOrEmpty(cipherDecrypted))
                     {
                         return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                     }
 
-                    videoFile.url = $"{videoFile.cipherUrl}&sig={cipherDecrypted}";
+                    mediaFile.url = $"{mediaFile.cipherUrl}&sig={cipherDecrypted}";
 
-                    if (FileDownloader.GetUrlContentLength(videoFile.url, out _, out _) != 200)
+                    if (FileDownloader.GetUrlContentLength(mediaFile.url, out _, out _) != 200)
                     {
                         return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                     }
+                    #endregion
 
-                    if (!videoFile.isContainer)
+                    #region Расшифровка ссылки на аудио-дорожку
+                    if (!mediaFile.isContainer && !isVideo && audioFormats.Count > 0)
                     {
-                        //расшифровка аудио
+                        YouTubeAudioFile audioFile = audioFormats[0];
                         string audioCipherDecrypted = DecryptCipherSignature(
-                            audioFormats[0].cipherSignatureEncrypted, config.CipherDecryptionAlgo);
-                        audioFormats[0].url = $"{audioFormats[0].cipherUrl}&sig={audioCipherDecrypted}";
-                        if (FileDownloader.GetUrlContentLength(audioFormats[0].url, out _, out _) != 200)
+                            audioFile.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
+                        audioFile.url = $"{audioFile.cipherUrl}&sig={audioCipherDecrypted}";
+                        if (FileDownloader.GetUrlContentLength(audioFile.url, out _, out _) != 200)
                         {
                             return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                         }
                     }
+                    #endregion
                 }
                 #endregion
 
                 bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
                 MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                downloader.ThreadCount = config.ThreadCountVideo;
-                downloader.Url = videoFile.url;
+                downloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
+                downloader.Url = mediaFile.url;
                 if (!useRamToStoreTemporaryFiles)
                 {
                     downloader.TempDirectory = config.TempDirPath;
                 }
                 downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
 
-                string fnVideo;
-                if (videoFile.isContainer)
+                string destFilePath;
+                if (isVideo && mediaFile.isContainer)
                 {
-                    fnVideo = MultiThreadedDownloader.GetNumberedFileName(
-                        $"{config.DownloadingDirPath}{formattedFileName}.{videoFile.mimeExt}");
+                    destFilePath = MultiThreadedDownloader.GetNumberedFileName(
+                        $"{config.DownloadingDirPath}{formattedFileName}.{mediaFile.mimeExt}");
                     downloader.KeepDownloadedFileInTempOrMergingDirectory = false;
                 }
                 else
                 {
-                    if (config.MergeToContainer && IsFfmpegAvailable())
+                    if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
                     {
                         downloader.MergingDirectory = DecideMergingDirectory();
                         downloader.KeepDownloadedFileInTempOrMergingDirectory = true;
@@ -475,14 +486,15 @@ namespace YouTube_downloader
                     {
                         downloader.MergingDirectory = config.DownloadingDirPath;
                     }
-                    fnVideo = MultiThreadedDownloader.GetNumberedFileName(config.DownloadingDirPath +
-                        $"{formattedFileName}_{videoFile.formatId}.{videoFile.fileExtension}");
+                    destFilePath = MultiThreadedDownloader.GetNumberedFileName(config.DownloadingDirPath +
+                        $"{formattedFileName}_{mediaFile.formatId}.{mediaFile.fileExtension}");
                 }
-                downloader.OutputFileName = fnVideo;
+                downloader.OutputFileName = destFilePath;
 
                 downloader.Connecting += (s, url) =>
                 {
-                    lblStatus.Text = $"Состояние: Подключение... {videoFile.GetShortInfo()}";
+                    string shortInfo = isVideo ? videoFile.GetShortInfo() : (mediaFile as YouTubeAudioFile).GetShortInfo();
+                    lblStatus.Text = $"Состояние: Подключение... {shortInfo}";
                     lblProgress.Text = null;
                     Application.DoEvents();
                 };
@@ -490,7 +502,8 @@ namespace YouTube_downloader
                 {
                     if (errCode == 200 || errCode == 206)
                     {
-                        lblStatus.Text = $"Состояние: Подключено! {videoFile.GetShortInfo()}";
+                        string shortInfo = isVideo ? videoFile.GetShortInfo() : (mediaFile as YouTubeAudioFile).GetShortInfo();
+                        lblStatus.Text = $"Состояние: Подключено! {shortInfo}";
                         lblStatus.Refresh();
 
                         if (contentLength > 0L)
@@ -522,18 +535,21 @@ namespace YouTube_downloader
                     progressBarDownload.Value = 0;
                     progressBarDownload.Maximum = 100;
 
-                    lblStatus.Text = "Скачивание видео:";
-                    lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {videoFile.GetShortInfo()}";
+                    lblStatus.Text = $"Скачивание {mediaTypeString}:";
+                    string shortInfo = isVideo ? videoFile.GetShortInfo() : (mediaFile as YouTubeAudioFile).GetShortInfo();
+                    lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
                     lblProgress.Left = lblStatus.Left + lblStatus.Width;
                 };
                 downloader.DownloadProgress += (object s, long bytesTransfered) =>
                 {
-                    long fileSize = downloader.ContentLength != 0 ? downloader.ContentLength : videoFile.contentLength;
+                    long fileSize = downloader.ContentLength != 0L ? downloader.ContentLength : videoFile.contentLength;
                     double percent = 100.0 / fileSize * bytesTransfered;
                     progressBarDownload.Value = (int)Math.Round(percent);
 
+                    string percentString = string.Format("{0:F2}", percent);
+                    string shortInfo = isVideo ? videoFile.GetShortInfo() : (mediaFile as YouTubeAudioFile).GetShortInfo();
                     lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
-                        $" ({string.Format("{0:F2}", percent)}%), {videoFile.GetShortInfo()}";
+                        $" ({percentString}%), {shortInfo}";
                 };
                 downloader.CancelTest += (object s, ref bool cancel) =>
                 {
@@ -544,7 +560,7 @@ namespace YouTube_downloader
                     progressBarDownload.Value = 0;
                     progressBarDownload.Maximum = chunkCount;
 
-                    lblStatus.Text = "Объединение чанков видео:";
+                    lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
                     lblProgress.Text = $"0 / {chunkCount}";
                     lblProgress.Left = lblStatus.Left + lblStatus.Width;
                 };
@@ -559,170 +575,7 @@ namespace YouTube_downloader
                     GC.Collect();
                 }
                 return new DownloadResult(res, downloader.LastErrorMessage, downloader.OutputFileName);
-                #endregion
             }
-        }
-
-        private async Task<DownloadResult> DownloadYouTubeAudioFile(
-            YouTubeAudioFile audioFile, string formattedFileName, bool audioOnly)
-        {
-            if (audioFile.isDashManifest)
-            {
-                #region Скачивание аудио Даши
-                return await DownloadDash(audioFile, formattedFileName);
-                #endregion
-            }
-            else // без Даши
-            {
-                #region Скачивание аудио-дорожки
-                #region Расшифровка Cipher
-                if (audioFile.isCiphered)
-                {
-                    if (FileDownloader.GetUrlContentLength(audioFile.url, out _, out _) != 200)
-                    {
-
-                        if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
-                        {
-                            return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null, null);
-                        }
-
-                        string cipherDecrypted = DecryptCipherSignature(audioFile.cipherSignatureEncrypted, config.CipherDecryptionAlgo);
-
-                        if (string.IsNullOrEmpty(cipherDecrypted))
-                        {
-                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
-                        }
-
-                        audioFile.url = $"{audioFile.cipherUrl}&sig={cipherDecrypted}";
-
-                        if (FileDownloader.GetUrlContentLength(audioFile.url, out _, out _) != 200)
-                        {
-                            return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
-                        }
-                    }
-                }
-                #endregion
-
-                bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
-                MultiThreadedDownloader downloader = new MultiThreadedDownloader();
-                downloader.ThreadCount = config.ThreadCountAudio;
-                downloader.Url = audioFile.url;
-                if (!useRamToStoreTemporaryFiles)
-                {
-                    downloader.TempDirectory = config.TempDirPath;
-                }
-                downloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
-
-                if (!audioOnly && config.MergeToContainer && IsFfmpegAvailable())
-                {
-                    downloader.MergingDirectory = DecideMergingDirectory();
-                    downloader.KeepDownloadedFileInTempOrMergingDirectory = true;
-                }
-                else
-                {
-                    downloader.MergingDirectory = config.DownloadingDirPath;
-                }
-
-                string fnAudio = MultiThreadedDownloader.GetNumberedFileName(config.DownloadingDirPath +
-                     $"{formattedFileName}_{audioFile.formatId}.{audioFile.fileExtension}");
-                downloader.OutputFileName = fnAudio;
-
-                downloader.Connecting += (s, url) =>
-                {
-                    lblStatus.Text = $"Состояние: Подключение... {audioFile.GetShortInfo()}";
-                    lblProgress.Text = null;
-                    Application.DoEvents();
-                };
-                downloader.Connected += (object s, string url, long contentLength, ref int errCode, ref string errorMessage) =>
-                {
-                    if (errCode == 200 || errCode == 206)
-                    {
-                        lblStatus.Text = $"Состояние: Подключено! {audioFile.GetShortInfo()}";
-                        lblStatus.Refresh();
-
-                        if (contentLength > 0L)
-                        {
-                            long minimumFreeSpaceRequired = (long)(contentLength * 1.1);
-
-                            MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
-
-                            List<char> driveLetters = mtd.GetUsedDriveLetters();
-                            if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
-                            {
-                                errorMessage = "Недостаточно места на диске!";
-                                errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
-                                return;
-                            }
-
-                            if (mtd.UseRamForTempFiles && MemoryWatcher.Update() &&
-                                MemoryWatcher.RamFree < (ulong)minimumFreeSpaceRequired)
-                            {
-                                errorMessage = "Недостаточно памяти!";
-                                errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
-                                return;
-                            }
-                        }
-                    }
-                };
-                downloader.DownloadStarted += (s, size) =>
-                {
-                    progressBarDownload.Value = 0;
-                    progressBarDownload.Maximum = 100;
-
-                    lblStatus.Text = "Скачивание аудио:";
-                    lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {audioFile.GetShortInfo()}";
-                    lblProgress.Left = lblStatus.Left + lblStatus.Width;
-                };
-                downloader.DownloadProgress += (object s, long bytesTransfered) =>
-                {
-                    long fileSize = downloader.ContentLength != 0 ? downloader.ContentLength : audioFile.contentLength;
-                    double percent = 100 / (double)fileSize * bytesTransfered;
-                    progressBarDownload.Value = (int)Math.Round(percent);
-
-                    lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
-                        $" ({string.Format("{0:F2}", percent)}%), {audioFile.GetShortInfo()}";
-                };
-                downloader.CancelTest += (object s, ref bool cancel) =>
-                {
-                    cancel = downloadCancelRequired;
-                };
-                downloader.MergingStarted += (s, chunkCount) =>
-                {
-                    progressBarDownload.Value = 0;
-                    progressBarDownload.Maximum = chunkCount;
-
-                    lblStatus.Text = "Объединение чанков аудио:";
-                    lblProgress.Text = $"0 / {chunkCount}";
-                    lblProgress.Left = lblStatus.Left + lblStatus.Width;
-                };
-                downloader.MergingProgress += (s, chunkId) =>
-                {
-                    lblProgress.Text = $"{chunkId + 1} / {downloader.ThreadCount}";
-                    progressBarDownload.Value = chunkId + 1;
-                };
-                int res = await downloader.Download();
-                if (useRamToStoreTemporaryFiles)
-                {
-                    GC.Collect();
-                }
-                return new DownloadResult(res, downloader.LastErrorMessage, downloader.OutputFileName);
-                #endregion
-            }
-        }
-
-        private async Task<DownloadResult> DownloadYouTubeMediaFile(
-            YouTubeMediaFile mediaFile, string formattedFileName, bool audioOnly = false)
-        {
-            if (mediaFile is YouTubeVideoFile)
-            {
-                return await DownloadYouTubeVideoFile(mediaFile as YouTubeVideoFile, formattedFileName);
-            }
-            else if (mediaFile is YouTubeAudioFile)
-            {
-                return await DownloadYouTubeAudioFile(mediaFile as YouTubeAudioFile, formattedFileName, audioOnly);
-            }
-
-            return null;
         }
 
         private async void MenuItemDownloadClick(object sender, EventArgs e)
