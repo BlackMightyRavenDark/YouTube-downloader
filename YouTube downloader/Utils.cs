@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Net;
 using System.Text;
@@ -228,6 +229,38 @@ namespace YouTube_downloader
             json["videoId"] = videoId;
 
             return json;
+        }
+
+        public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos)
+        {
+            NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            query.Add("part", "snippet");
+            query.Add("type", "video");
+            query.Add("order", "date");
+            query.Add("key", config.YouTubeApiV3Key);
+            query.Add("channelId", channelId);
+            query.Add("maxResults", maxVideos.ToString());
+
+            string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
+            return url;
+        }
+
+        public static string GetYouTubeSearchQueryRequestUrl(
+            string searchingPhrase, string resultTypes, int maxResults)
+        {
+            NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            query.Add("part", "snippet");
+            query.Add("order", "date");
+            query.Add("key", config.YouTubeApiV3Key);
+            query.Add("q", searchingPhrase);
+            query.Add("maxResults", maxResults.ToString());
+            if (!string.IsNullOrEmpty(resultTypes))
+            {
+                query.Add("type", resultTypes);
+            }
+
+            string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
+            return url;
         }
 
         public static int GetYouTubeVideoWebPage(string videoId, out string resultPage)

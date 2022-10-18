@@ -552,8 +552,7 @@ namespace YouTube_downloader
             int errorCode;
             do
             {
-                string url = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiV3Key}" +
-                    $"&channelId={channelId}&maxResults=50&type=video&order=date";
+                string url = GetYouTubeChannelVideosRequestUrl(channelId, maxVideos);
                 if (chkPublishedAfter.Checked)
                 {
                     string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
@@ -603,12 +602,12 @@ namespace YouTube_downloader
             } while (errorCode == 200 && sum < maxVideos && !string.IsNullOrEmpty(pageToken));
 
             JObject jsonRes = new JObject();
-            jsonRes.Add(new JProperty("videos", jaVideos));
+            jsonRes["videos"] = jaVideos;
             resJsonList = jsonRes.ToString();
             return jaVideos.Count;
         }
 
-        public int SearchYouTube(string searchString, int maxResults, out string resList)
+        public int SearchYouTube(string searchingPhrase, int maxResults, out string resList)
         {
             if (chkPublishedAfter.Checked && chkPublishedBefore.Checked &&
                 dateTimePickerAfter.Value > dateTimePickerBefore.Value)
@@ -626,32 +625,30 @@ namespace YouTube_downloader
             JArray jaChannels = new JArray();
             JArray jaVideos = new JArray();
 
-            string resultType = "type=video,channel";
+            string resultTypes = "video,channel";
             if (!chkSearchChannels.Checked)
             {
-                resultType = resultType.Replace(",channel", string.Empty);
+                resultTypes = resultTypes.Replace(",channel", string.Empty);
             }
             if (!chkSearchVideos.Checked)
             {
-                resultType = resultType.Replace("video,", string.Empty);
+                resultTypes = resultTypes.Replace("video,", string.Empty);
             }
 
-            string req = $"{YOUTUBE_SEARCH_BASE_URL}?part=snippet&key={config.YouTubeApiV3Key}" +
-                $"&q={searchString}&maxResults={maxResults}&{resultType}&order=date";
-
+            string url = GetYouTubeSearchQueryRequestUrl(searchingPhrase, resultTypes, maxResults);
             if (chkPublishedAfter.Checked)
             {
                 string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                req += $"&publishedAfter={dateAfter}";
+                url += $"&publishedAfter={dateAfter}";
             }
 
             if (chkPublishedBefore.Checked)
             {
                 string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-                req += $"&publishedBefore={dateBefore}";
+                url += $"&publishedBefore={dateBefore}";
             }
 
-            int errorCode = DownloadString(req, out string buf);
+            int errorCode = DownloadString(url, out string buf);
             if (errorCode == 200)
             {
                 JObject json = JObject.Parse(buf);
