@@ -149,7 +149,9 @@ namespace YouTube_downloader
             this.openChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
@@ -1533,9 +1535,11 @@ namespace YouTube_downloader
             this.openChannelInBrowserToolStripMenuItem,
             this.miCopyChannelUrlToolStripMenuItem,
             this.copyDisplayNameToolStripMenuItem,
+            this.miCopyVideoIdToolStripMenuItem,
+            this.miCopyChannelIdToolStripMenuItem,
             this.copyDisplayNameWithIdToolStripMenuItem});
             this.menuFavorites.Name = "menuFavarites";
-            this.menuFavorites.Size = new System.Drawing.Size(319, 148);
+            this.menuFavorites.Size = new System.Drawing.Size(319, 216);
             this.menuFavorites.Opening += new System.ComponentModel.CancelEventHandler(this.menuFavorites_Opening);
             // 
             // openVideoInBrowserToolStripMenuItem
@@ -1573,12 +1577,26 @@ namespace YouTube_downloader
             this.copyDisplayNameToolStripMenuItem.Text = "Скопировать отображаемое имя";
             this.copyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameToolStripMenuItem_Click);
             // 
+            // miCopyVideoIdToolStripMenuItem
+            // 
+            this.miCopyVideoIdToolStripMenuItem.Name = "miCopyVideoIdToolStripMenuItem";
+            this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.miCopyVideoIdToolStripMenuItem.Text = "Скопировать ID видео";
+            this.miCopyVideoIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoIdToolStripMenuItem_Click);
+            // 
             // copyDisplayNameWithIdToolStripMenuItem
             // 
             this.copyDisplayNameWithIdToolStripMenuItem.Name = "copyDisplayNameWithIdToolStripMenuItem";
             this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
             this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
             this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
+            // 
+            // miCopyChannelIdToolStripMenuItem
+            // 
+            this.miCopyChannelIdToolStripMenuItem.Name = "miCopyChannelIdToolStripMenuItem";
+            this.miCopyChannelIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.miCopyChannelIdToolStripMenuItem.Text = "Скопировать ID канала";
+            this.miCopyChannelIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelIdToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -1774,6 +1792,8 @@ namespace YouTube_downloader
         private System.Windows.Forms.RadioButton radioButtonContainerTypeMkv;
         private System.Windows.Forms.RadioButton radioButtonContainerTypeMp4;
         private System.Windows.Forms.CheckBox chkSortDashFormatsByBitrate;
+        private System.Windows.Forms.ToolStripMenuItem miCopyVideoIdToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miCopyChannelIdToolStripMenuItem;
     }
 }
 
