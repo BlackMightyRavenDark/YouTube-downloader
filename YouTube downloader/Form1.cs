@@ -325,8 +325,11 @@ namespace YouTube_downloader
                     panelRAM.Visible = true;
                 }
 
-                chkDownloadFirstAudioTrack_CheckedChanged(null, null);
-                chkIfOnlyBiggerFileSize.Enabled = config.DownloadFirstAudioTrack && config.DownloadSecondAudioTrack;
+                if (!config.DownloadAllAudioTracks)
+                {
+                    chkDownloadFirstAudioTrack_CheckedChanged(null, null);
+                    chkIfOnlyBiggerFileSize.Enabled = config.DownloadFirstAudioTrack && config.DownloadSecondAudioTrack;
+                }
 
                 MultiThreadedDownloader.SetMaximumConnectionsLimit(config.GlobalThreadCountMaximum);
             };
