@@ -770,10 +770,14 @@ namespace YouTube_downloader
                         jData = jStreamingData.Value<JToken>("formats");
                     }
 
-                    JArray jArray = jData.Value<JArray>();
-                    if (jArray.Count > 0)
+                    JArray jArray = jData?.Value<JArray>();
+                    if (jArray != null && jArray.Count > 0)
                     {
                         video.Ciphered = jArray[0].Value<JToken>("signatureCipher") != null;
+                    }
+                    else
+                    {
+                        video.Ciphered = false;
                     }
                     video.Dashed = jStreamingData.Value<JToken>("dashManifestUrl") != null;
                     video.Hlsed = jStreamingData.Value<JToken>("hlsManifestUrl") != null;
