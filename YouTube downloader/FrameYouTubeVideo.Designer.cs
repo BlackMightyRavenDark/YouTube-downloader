@@ -47,10 +47,12 @@
             this.miCopyVideoUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.miOpenImageInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyImageUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miSaveImageAssToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuChannelTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miCopyChannelTitleToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyChannelNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miOpenChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnGetWebPage = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -60,8 +62,7 @@
             this.contextMenuVideoTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miCopyTitleAsIsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyFixedTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miCopyImageUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -221,38 +222,45 @@
             this.miCopyImageUrlToolStripMenuItem,
             this.miSaveImageAssToolStripMenuItem});
             this.contextMenuImage.Name = "contextMenuImage";
-            this.contextMenuImage.Size = new System.Drawing.Size(283, 142);
+            this.contextMenuImage.Size = new System.Drawing.Size(317, 130);
             // 
             // miOpenVideoInBrowserToolStripMenuItem
             // 
             this.miOpenVideoInBrowserToolStripMenuItem.Name = "miOpenVideoInBrowserToolStripMenuItem";
-            this.miOpenVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+            this.miOpenVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(316, 24);
             this.miOpenVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
             this.miOpenVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenVideoInBrowserToolStripMenuItem_Click);
             // 
             // miCopyVideoUrlToolStripMenuItem
             // 
             this.miCopyVideoUrlToolStripMenuItem.Name = "miCopyVideoUrlToolStripMenuItem";
-            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(316, 24);
             this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
             this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(279, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(313, 6);
             // 
             // miOpenImageInBrowserToolStripMenuItem
             // 
             this.miOpenImageInBrowserToolStripMenuItem.Name = "miOpenImageInBrowserToolStripMenuItem";
-            this.miOpenImageInBrowserToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+            this.miOpenImageInBrowserToolStripMenuItem.Size = new System.Drawing.Size(316, 24);
             this.miOpenImageInBrowserToolStripMenuItem.Text = "Открыть изображение в браузере";
             this.miOpenImageInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenImageInBrowserToolStripMenuItem_Click);
+            // 
+            // miCopyImageUrlToolStripMenuItem
+            // 
+            this.miCopyImageUrlToolStripMenuItem.Name = "miCopyImageUrlToolStripMenuItem";
+            this.miCopyImageUrlToolStripMenuItem.Size = new System.Drawing.Size(316, 24);
+            this.miCopyImageUrlToolStripMenuItem.Text = "Скопировать ссылку на изображение";
+            this.miCopyImageUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyImageUrlToolStripMenuItem_Click);
             // 
             // miSaveImageAssToolStripMenuItem
             // 
             this.miSaveImageAssToolStripMenuItem.Name = "miSaveImageAssToolStripMenuItem";
-            this.miSaveImageAssToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+            this.miSaveImageAssToolStripMenuItem.Size = new System.Drawing.Size(316, 24);
             this.miSaveImageAssToolStripMenuItem.Text = "Сохранить изображение...";
             this.miSaveImageAssToolStripMenuItem.Click += new System.EventHandler(this.miSaveImageAssToolStripMenuItem_Click);
             // 
@@ -260,30 +268,38 @@
             // 
             this.contextMenuChannelTitle.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miCopyChannelTitleToolStripMenuItem1,
+            this.miCopyChannelIdToolStripMenuItem,
             this.miCopyChannelNameWithIdToolStripMenuItem,
             this.miCopyChannelUrlToolStripMenuItem,
             this.miOpenChannelInBrowserToolStripMenuItem});
             this.contextMenuChannelTitle.Name = "contextMenuChannelTitle";
-            this.contextMenuChannelTitle.Size = new System.Drawing.Size(265, 92);
+            this.contextMenuChannelTitle.Size = new System.Drawing.Size(301, 146);
             // 
             // miCopyChannelTitleToolStripMenuItem1
             // 
             this.miCopyChannelTitleToolStripMenuItem1.Name = "miCopyChannelTitleToolStripMenuItem1";
-            this.miCopyChannelTitleToolStripMenuItem1.Size = new System.Drawing.Size(264, 22);
+            this.miCopyChannelTitleToolStripMenuItem1.Size = new System.Drawing.Size(300, 24);
             this.miCopyChannelTitleToolStripMenuItem1.Text = "Скопировать название канала";
             this.miCopyChannelTitleToolStripMenuItem1.Click += new System.EventHandler(this.miCopyChannelTitleToolStripMenuItem_Click);
             // 
             // miCopyChannelNameWithIdToolStripMenuItem
             // 
             this.miCopyChannelNameWithIdToolStripMenuItem.Name = "miCopyChannelNameWithIdToolStripMenuItem";
-            this.miCopyChannelNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.miCopyChannelNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(300, 24);
             this.miCopyChannelNameWithIdToolStripMenuItem.Text = "Скопировать название и ID канала";
             this.miCopyChannelNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelNameWithIdToolStripMenuItem_Click);
+            // 
+            // miCopyChannelUrlToolStripMenuItem
+            // 
+            this.miCopyChannelUrlToolStripMenuItem.Name = "miCopyChannelUrlToolStripMenuItem";
+            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(300, 24);
+            this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
+            this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
             // 
             // miOpenChannelInBrowserToolStripMenuItem
             // 
             this.miOpenChannelInBrowserToolStripMenuItem.Name = "miOpenChannelInBrowserToolStripMenuItem";
-            this.miOpenChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
+            this.miOpenChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(300, 24);
             this.miOpenChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
             this.miOpenChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenChannelInBrowserToolStripMenuItem_Click);
             // 
@@ -334,35 +350,28 @@
             this.miCopyTitleAsIsToolStripMenuItem,
             this.miCopyFixedTitleToolStripMenuItem});
             this.contextMenuVideoTitle.Name = "contextMenuVideoTitle";
-            this.contextMenuVideoTitle.Size = new System.Drawing.Size(317, 48);
+            this.contextMenuVideoTitle.Size = new System.Drawing.Size(357, 52);
             // 
             // miCopyTitleAsIsToolStripMenuItem
             // 
             this.miCopyTitleAsIsToolStripMenuItem.Name = "miCopyTitleAsIsToolStripMenuItem";
-            this.miCopyTitleAsIsToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.miCopyTitleAsIsToolStripMenuItem.Size = new System.Drawing.Size(356, 24);
             this.miCopyTitleAsIsToolStripMenuItem.Text = "Скопировать название как есть";
             this.miCopyTitleAsIsToolStripMenuItem.Click += new System.EventHandler(this.miCopyTitleAsIsToolStripMenuItem_Click);
             // 
             // miCopyFixedTitleToolStripMenuItem
             // 
             this.miCopyFixedTitleToolStripMenuItem.Name = "miCopyFixedTitleToolStripMenuItem";
-            this.miCopyFixedTitleToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+            this.miCopyFixedTitleToolStripMenuItem.Size = new System.Drawing.Size(356, 24);
             this.miCopyFixedTitleToolStripMenuItem.Text = "Скопировать название с заменой символов";
             this.miCopyFixedTitleToolStripMenuItem.Click += new System.EventHandler(this.miCopyFixedTitleToolStripMenuItem_Click);
             // 
-            // miCopyImageUrlToolStripMenuItem
+            // miCopyChannelIdToolStripMenuItem
             // 
-            this.miCopyImageUrlToolStripMenuItem.Name = "miCopyImageUrlToolStripMenuItem";
-            this.miCopyImageUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
-            this.miCopyImageUrlToolStripMenuItem.Text = "Скопировать ссылку на изображение";
-            this.miCopyImageUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyImageUrlToolStripMenuItem_Click);
-            // 
-            // miCopyChannelUrlToolStripMenuItem
-            // 
-            this.miCopyChannelUrlToolStripMenuItem.Name = "miCopyChannelUrlToolStripMenuItem";
-            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(264, 22);
-            this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
-            this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
+            this.miCopyChannelIdToolStripMenuItem.Name = "miCopyChannelIdToolStripMenuItem";
+            this.miCopyChannelIdToolStripMenuItem.Size = new System.Drawing.Size(300, 24);
+            this.miCopyChannelIdToolStripMenuItem.Text = "Скопировать ID канала";
+            this.miCopyChannelIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelIdToolStripMenuItem_Click);
             // 
             // FrameYouTubeVideo
             // 
@@ -439,5 +448,6 @@
         private System.Windows.Forms.ToolStripMenuItem miOpenImageInBrowserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miCopyImageUrlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miCopyChannelUrlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miCopyChannelIdToolStripMenuItem;
     }
 }

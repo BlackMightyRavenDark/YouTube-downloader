@@ -1409,6 +1409,18 @@ namespace YouTube_downloader
             SetClipboardText(VideoInfo.ChannelOwned.Title);
         }
 
+        private void miCopyChannelIdToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (VideoInfo == null || VideoInfo.ChannelOwned == null)
+            {
+                string msg = "Произошла ошибация! По-этому, в настоящее время " +
+                    "данное действие совершить невозможно! Сорян, бро!";
+                MessageBox.Show(msg, "Ошибатор ошибок",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            SetClipboardText(VideoInfo.ChannelOwned.Id);
+        }
+
         private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id));
