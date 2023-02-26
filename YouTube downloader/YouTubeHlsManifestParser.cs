@@ -8,15 +8,11 @@ namespace YouTube_downloader
 
         public int Count => streamInfos.Count;
 
-        public YouTubeStreamInfo this[int number]
+        public YouTubeStreamInfo this[int id]
         {
             get
             {
-                if (Count == 0 || number < 0 || number >= Count)
-                {
-                    return null;
-                }
-                return streamInfos[number];
+                return streamInfos[id];
             }
         }
 
@@ -59,6 +55,16 @@ namespace YouTube_downloader
 
                 streamInfos.Add(new YouTubeStreamInfo(formatId, width, height, bandwidth, codecs, frameRate, url));
             }
+        }
+
+        public YouTubeStreamInfo GetItem(int id)
+        {
+            if (streamInfos == null || Count == 0 || id < 0 || id >= Count)
+            {
+                return null;
+            }
+
+            return streamInfos[id];
         }
 
         public string GetParameter(string info, string parameterName)
