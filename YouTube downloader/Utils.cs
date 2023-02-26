@@ -360,26 +360,35 @@ namespace YouTube_downloader
 
         public static int SearchSingleVideo(string videoId, out string resList)
         {
-            int errorCode = GetYouTubeVideoInfoEx(videoId, out string response, config.UseHiddenApiForGettingInfo);
-            if (errorCode == 200)
+            try
             {
-                JObject j = JObject.Parse(response);
-                if (j == null)
+                int errorCode = GetYouTubeVideoInfoEx(videoId, out string response, config.UseHiddenApiForGettingInfo);
+                if (errorCode == 200)
                 {
-                    resList = null;
-                    return 400;
+                    JObject j = JObject.Parse(response);
+                    if (j == null)
+                    {
+                        resList = null;
+                        return 400;
+                    }
+                    JArray jaVideos = new JArray();
+                    jaVideos.Add(j);
+                    JObject json = new JObject();
+                    json.Add(new JProperty("videos", jaVideos));
+                    resList = json.ToString();
                 }
-                JArray jaVideos = new JArray();
-                jaVideos.Add(j);
-                JObject json = new JObject();
-                json.Add(new JProperty("videos", jaVideos));
-                resList = json.ToString();
+                else
+                {
+                    resList = response;
+                }
+                return errorCode;
             }
-            else
+            catch (Exception ex)
             {
-                resList = response;
+                Debug.WriteLine(ex.Message);
+                resList = ex.Message;
+                return ex.HResult;
             }
-            return errorCode;
         }
 
         public static bool StringToDateTime(string inputString, out DateTime resDateTime, string format = "yyyy-MM-dd")
