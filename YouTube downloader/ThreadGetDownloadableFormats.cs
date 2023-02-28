@@ -45,57 +45,65 @@ namespace YouTube_downloader
         {
             this.synchronizationContext = (SynchronizationContext)synchronizationContext;
             this.synchronizationContext?.Send(InfoSend, "Состояние: Определение доступных форматов...");
-
-            string videoInfo = null;
-            if (string.IsNullOrEmpty(WebPage) || string.IsNullOrWhiteSpace(WebPage))
+            try
             {
-                if (_ciphered && YouTubeApiRequestType != YouTubeApiRequestType.DecryptedUrls)
+                string videoInfo = null;
+                if (string.IsNullOrEmpty(WebPage) || string.IsNullOrWhiteSpace(WebPage))
                 {
-                    ErrorCode = GetYouTubeVideoWebPage(_videoId, out string page);
-                    if (ErrorCode != 200)
+                    if (_ciphered && YouTubeApiRequestType != YouTubeApiRequestType.DecryptedUrls)
                     {
-                        this.synchronizationContext?.Send(Finished, this);
-                        return;
+                        ErrorCode = GetYouTubeVideoWebPage(_videoId, out string page);
+                        if (ErrorCode != 200)
+                        {
+                            this.synchronizationContext?.Send(Finished, this);
+                            return;
+                        }
+                        if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+                        {
+                            ErrorCode = 400;
+                            this.synchronizationContext?.Send(Finished, this);
+                            return;
+                        }
+
+                        WebPage = page;
+                        videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+                        if (string.IsNullOrEmpty(videoInfo) || string.IsNullOrWhiteSpace(videoInfo))
+                        {
+                            ErrorCode = 400;
+                            this.synchronizationContext?.Send(Finished, this);
+                            return;
+                        }
                     }
-                    if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+                    else
                     {
-                        ErrorCode = 400;
-                        this.synchronizationContext?.Send(Finished, this);
-                        return;
+                        ErrorCode = GetYouTubeVideoInfoViaApi(_videoId, YouTubeApiRequestType, out videoInfo);
                     }
 
-                    WebPage = page;
-                    videoInfo = ExtractVideoInfoFromWebPage(WebPage);
-                    if (string.IsNullOrEmpty(videoInfo) || string.IsNullOrWhiteSpace(videoInfo))
+                    if (ErrorCode == 200)
                     {
-                        ErrorCode = 400;
-                        this.synchronizationContext?.Send(Finished, this);
-                        return;
+                        ParseFormats(videoInfo);
                     }
-                }
-                else
-                {
-                    ErrorCode = GetYouTubeVideoInfoViaApi(_videoId, YouTubeApiRequestType, out videoInfo);
+
+                    this.synchronizationContext?.Send(Finished, this);
+                    return;
                 }
 
-                if (ErrorCode == 200)
+                videoInfo = ExtractVideoInfoFromWebPage(WebPage);
+                if (string.IsNullOrEmpty(videoInfo) || string.IsNullOrWhiteSpace(videoInfo))
                 {
-                    ParseFormats(videoInfo);
+                    ErrorCode = 404;
+                    this.synchronizationContext?.Send(Finished, this);
+                    return;
                 }
 
-                this.synchronizationContext?.Send(Finished, this);
-                return;
+                ParseFormats(videoInfo);
+            }
+            catch (System.Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                ErrorCode = ex.HResult;
             }
 
-            videoInfo = ExtractVideoInfoFromWebPage(WebPage);
-            if (string.IsNullOrEmpty(videoInfo) || string.IsNullOrWhiteSpace(videoInfo))
-            {
-                ErrorCode = 404;
-                this.synchronizationContext?.Send(Finished, this);
-                return;
-            }
-
-            ParseFormats(videoInfo);
             this.synchronizationContext?.Send(Finished, this);
         }
 
