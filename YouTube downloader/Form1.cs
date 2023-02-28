@@ -796,16 +796,19 @@ namespace YouTube_downloader
                         }
                     }
                 }
-                JObject jMicroformatRenderer = jMicroformat.Value<JObject>("playerMicroformatRenderer");
-                if (jMicroformatRenderer != null)
+                if (jMicroformat != null)
                 {
-                    StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
-                    video.DateUploaded = dateUploaded;
-                    StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
-                    video.DatePublished = datePublished;
-                    video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
-                    video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
-                    video.ImageUrls = GetThumbnailUrls(jMicroformatRenderer, video.Id);
+                    JObject jMicroformatRenderer = jMicroformat.Value<JObject>("playerMicroformatRenderer");
+                    if (jMicroformatRenderer != null)
+                    {
+                        StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out DateTime dateUploaded);
+                        video.DateUploaded = dateUploaded;
+                        StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out DateTime datePublished);
+                        video.DatePublished = datePublished;
+                        video.IsFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
+                        video.IsUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
+                        video.ImageUrls = GetThumbnailUrls(jMicroformatRenderer, video.Id);
+                    }
                 }
             }
             else
