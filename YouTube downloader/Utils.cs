@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
+using YouTubeApiLib;
 
 namespace YouTube_downloader
 {
@@ -358,37 +359,10 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static int SearchSingleVideo(string videoId, out string resList)
+        public static YouTubeApiLib.YouTubeVideo SearchSingleVideo(VideoId videoId)
         {
-            try
-            {
-                int errorCode = GetYouTubeVideoInfoEx(videoId, out string response, config.UseHiddenApiForGettingInfo);
-                if (errorCode == 200)
-                {
-                    JObject j = JObject.Parse(response);
-                    if (j == null)
-                    {
-                        resList = null;
-                        return 400;
-                    }
-                    JArray jaVideos = new JArray();
-                    jaVideos.Add(j);
-                    JObject json = new JObject();
-                    json.Add(new JProperty("videos", jaVideos));
-                    resList = json.ToString();
-                }
-                else
-                {
-                    resList = response;
-                }
-                return errorCode;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                resList = ex.Message;
-                return ex.HResult;
-            }
+            YouTubeApi api = new YouTubeApi();
+            return api.GetVideo(videoId);
         }
 
         public static bool StringToDateTime(string inputString, out DateTime resDateTime, string format = "yyyy-MM-dd")

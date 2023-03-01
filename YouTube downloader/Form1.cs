@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
+using YouTubeApiLib;
 using YouTube_downloader.Properties;
 using static YouTube_downloader.Utils;
 
@@ -690,6 +691,65 @@ namespace YouTube_downloader
             return count;
         }
 
+        private FrameYouTubeVideo MakeFrameVideo(YouTubeApiLib.YouTubeVideo youTubeVideo)
+        {
+            YouTubeVideo video = new YouTubeVideo();
+            video.Id = youTubeVideo.Id;
+            video.Title = youTubeVideo.Title;
+            video.Length = youTubeVideo.Length;
+            video.ChannelOwned = new YouTubeChannel();
+            video.ChannelOwned.Id = youTubeVideo.OwnerChannelId;
+            video.ChannelOwned.Title = youTubeVideo.OwnerChannelTitle;
+            video.Dashed = youTubeVideo.IsDashed;
+            video.Hlsed = youTubeVideo.IsLiveNow;
+            video.Ciphered = false; //TODO: Update the library to detect cipher state.
+            video.DatePublished = youTubeVideo.DatePublished;
+            video.DateUploaded = youTubeVideo.DateUploaded;
+            video.IsFamilySafe = youTubeVideo.IsFamilySafe;
+            video.IsUnlisted = youTubeVideo.IsUnlisted;
+            if (youTubeVideo.Status.IsPlayable)
+            {
+                foreach (YouTubeVideoThumbnail thumbnail in youTubeVideo.ThumbnailUrls)
+                {
+                    video.ImageUrls.Add(thumbnail.Url);
+                }
+            }
+            else
+            {
+                video.Title = youTubeVideo.Status.Reason;
+
+                JArray jaThumbs = youTubeVideo.Status.RawInfo.Value<JObject>("errorScreen").Value<JObject>("playerErrorMessageRenderer")
+                    .Value<JObject>("thumbnail").Value<JArray>("thumbnails");
+                if (jaThumbs != null && jaThumbs.Count > 0)
+                {
+                    string imgUrl = $"https:{(jaThumbs[0] as JObject).Value<string>("url")}";
+                    video.ImageUrls.Add(imgUrl);
+                }
+
+                video.IsAvailable = false;
+            }
+
+            if (video.ImageUrls.Count > 0)
+            {
+                video.ImageData = new MemoryStream();
+                if (DownloadData(video.ImageUrls[0], video.ImageData) == 200)
+                {
+                    video.ImageData.Position = 0L;
+                    video.Image = Image.FromStream(video.ImageData);
+                    video.ImageData.Position = 0L;
+                }
+                else
+                {
+                    video.ImageData.Dispose();
+                    video.ImageData = null;
+                }
+            }
+
+            FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
+            frame.VideoInfo = video;
+            return frame;
+        }
+
         private int ParseList(string jsonString)
         {
             JObject json = JObject.Parse(jsonString);
@@ -1036,8 +1096,8 @@ namespace YouTube_downloader
                 return;
             }
 
-            string videoId = ExtractVideoIdFromUrl(url);
-            if (string.IsNullOrEmpty(videoId) || string.IsNullOrWhiteSpace(videoId))
+            VideoId videoId = YouTubeApiLib.Utils.ExtractVideoIdFromUrl(url);
+            if (videoId == null || string.IsNullOrEmpty(videoId.Id) || string.IsNullOrWhiteSpace(videoId.Id))
             {
                 MessageBox.Show("Не удалось распознать ID видео!", "Ошибатор ошибок",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1045,10 +1105,10 @@ namespace YouTube_downloader
                 return;
             }
 
-            if (videoId.Length != 11)
+            if (videoId.Id.Length != 11)
             {
                 MessageBox.Show("Введённый вами или автоматически определённый ID видео " +
-                    $"имеет длину {videoId.Length} символов. Такого не может быть!", "Ошибатор ошибок",
+                    $"имеет длину {videoId.Id.Length} символов. Такого не может быть!", "Ошибатор ошибок",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 EnableControls();
                 return;
@@ -1063,21 +1123,29 @@ namespace YouTube_downloader
             Application.DoEvents();
             scrollBarSearchResults.Value = 0;
 
-            int errorCode = SearchSingleVideo(videoId, out string resList);
-            if (errorCode == 200)
+            try
             {
-                int count = ParseList(resList);
-                if (count > 0)
+                YouTubeApiLib.YouTubeVideo video = SearchSingleVideo(videoId);
+                if (video != null)
                 {
+                    FrameYouTubeVideo frame = MakeFrameVideo(video);
+                    framesVideo.Add(frame);
                     StackFrames();
+
+                    tabPageSearchResults.Text = "Результаты поиска: 1";
+                    tabControlMain.SelectedTab = tabPageSearchResults;
+                    editSearchUrl.Text = null;
                 }
-                tabPageSearchResults.Text = $"Результаты поиска: {count}";
-                tabControlMain.SelectedTab = tabPageSearchResults;
-                editSearchUrl.Text = null;
+                else
+                {
+                    MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка {errorCode}\n{resList}", "Ошибка!",
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message, "Ошибатор ошибок",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -1211,24 +1279,30 @@ namespace YouTube_downloader
                             Application.DoEvents();
                             scrollBarSearchResults.Value = 0;
 
-                            int errorCode = SearchSingleVideo(item.ID, out string list);
-                            if (errorCode == 200)
+                            try
                             {
-                                int count = ParseList(list);
-                                if (count > 0)
+                                VideoId videoId = new VideoId(item.ID);
+                                YouTubeApiLib.YouTubeVideo video = SearchSingleVideo(videoId);
+                                if (video != null)
                                 {
+                                    FrameYouTubeVideo frame = MakeFrameVideo(video);
+                                    framesVideo.Add(frame);
                                     StackFrames();
+
+                                    tabPageSearchResults.Text = "Результаты поиска: 1";
                                     tabControlMain.SelectedTab = tabPageSearchResults;
+                                    editSearchUrl.Text = null;
                                 }
                                 else
                                 {
-                                    scrollBarSearchResults.Enabled = false;
+                                    MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
-                                tabPageSearchResults.Text = $"Результаты поиска: {count}";
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                MessageBox.Show($"Ошибка {errorCode}\n{list}", "Ошибка!",
+                                System.Diagnostics.Debug.WriteLine(ex.Message);
+                                MessageBox.Show(ex.Message, "Ошибатор ошибок",
                                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
