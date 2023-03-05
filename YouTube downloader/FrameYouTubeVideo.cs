@@ -15,8 +15,10 @@ namespace YouTube_downloader
     public partial class FrameYouTubeVideo : UserControl
     {
         private SynchronizationContext synchronizationContext;
-        private YouTubeVideo _youTubeVideo = null;
-        public YouTubeVideo VideoInfo { get { return _youTubeVideo; } set { SetVideoInfo(value); } }
+        private YouTubeApiLib.YouTubeVideo _youTubeVideo = null;
+        public YouTubeApiLib.YouTubeVideo VideoInfo { get { return _youTubeVideo; } set { SetVideoInfo(value); } }
+        private Stream _videoImageData = null;
+        private bool _ciphered;
         private bool favoriteVideo = false;
         private bool favoriteChannel = false;
         public string webPage = null;
@@ -104,27 +106,31 @@ namespace YouTube_downloader
             }
         }
 
-        private void SetVideoInfo(YouTubeVideo videoInfo)
+        private void SetVideoInfo(YouTubeApiLib.YouTubeVideo videoInfo)
         {
             _youTubeVideo = videoInfo;
             lblVideoTitle.Text = videoInfo.Title;
-            if (videoInfo.ChannelOwned == null)
+            if (string.IsNullOrEmpty(videoInfo.OwnerChannelId) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelId) ||
+                string.IsNullOrEmpty(videoInfo.OwnerChannelTitle) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelTitle))
             {
                 lblChannelTitle.Text = "Имя канала: Не доступно";
                 lblDatePublished.Text = "Дата публикации: Не доступно";
                 return;
             }
 
-            lblChannelTitle.Text = videoInfo.ChannelOwned.Title;
+            lblChannelTitle.Text = videoInfo.OwnerChannelTitle;
             lblDatePublished.Text = $"Дата публикации: {videoInfo.DatePublished:yyyy.MM.dd}";
             FavoriteItem favoriteItem = new FavoriteItem(
                 videoInfo.Title, videoInfo.Title, videoInfo.Id,
-                videoInfo.ChannelOwned.Title, videoInfo.ChannelOwned.Id, null);
+                videoInfo.OwnerChannelTitle, videoInfo.OwnerChannelId, null);
             favoriteVideo = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 
             favoriteItem.DisplayName = VideoInfo.Title;
-            favoriteItem.ID = VideoInfo.ChannelOwned.Id;
+            favoriteItem.ID = VideoInfo.OwnerChannelId;
             favoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
+            _ciphered = VideoInfo.IsCiphered();
+            _videoImageData = videoInfo.DownloadPreviewImage();
+            imagePreview.Refresh();
         }
 
         public void SetFavoriteVideo(bool fav)
@@ -134,7 +140,7 @@ namespace YouTube_downloader
             {   
                 FavoriteItem favoriteItem = new FavoriteItem(
                     VideoInfo.Title, VideoInfo.Title, VideoInfo.Id,
-                    VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id, favoritesRootNode);
+                    VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId, favoritesRootNode);
                 favoriteItem.ItemType = FavoriteItemType.Video;
                 if (FindInFavorites(favoriteItem, favoritesRootNode) == null)
                 {
@@ -160,10 +166,10 @@ namespace YouTube_downloader
             favoriteChannel = fav;
             if (favoriteChannel)
             {
-                if (FindInFavorites(VideoInfo.ChannelOwned.Id) == null)
+                if (FindInFavorites(VideoInfo.OwnerChannelId) == null)
                 {
                     FavoriteItem favoriteItem = new FavoriteItem(
-                        VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id, 
+                        VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
                         null, null, favoritesRootNode);
                     favoriteItem.ItemType = FavoriteItemType.Channel;
                     favoritesRootNode.Children.Add(favoriteItem);
@@ -172,7 +178,7 @@ namespace YouTube_downloader
             }
             else
             {
-                FavoriteItem favoriteItem = FindInFavorites(VideoInfo.ChannelOwned.Id);
+                FavoriteItem favoriteItem = FindInFavorites(VideoInfo.OwnerChannelId);
                 if (favoriteItem != null)
                 {
                     treeFavorites.RemoveObject(favoriteItem);
@@ -185,7 +191,7 @@ namespace YouTube_downloader
 
         private void btnDownload_Click(object sender, EventArgs e)
         {
-            if (!VideoInfo.IsAvailable)
+            if (!VideoInfo.IsInfoAvailable)
             {
                 MessageBox.Show("Видео недоступно!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -207,10 +213,10 @@ namespace YouTube_downloader
                 progressBarDownload.Value = 0;
             }
 
-            YouTubeApiRequestType requestType = config.UseHiddenApiForGettingInfo && !VideoInfo.Dashed ?
+            YouTubeApiRequestType requestType = config.UseHiddenApiForGettingInfo && !VideoInfo.IsDashed ?
                 YouTubeApiRequestType.DecryptedUrls : YouTubeApiRequestType.EncryptedUrls;
 
-            bool needToSortDash = VideoInfo.Dashed && config.SortDashFormatsByBitrate;
+            bool needToSortDash = VideoInfo.IsDashed && config.SortDashFormatsByBitrate;
             ThreadGetDownloadableFormats thr = new ThreadGetDownloadableFormats(
                 requestType, config.SortFormatsByFileSize, needToSortDash,
                 config.MoveAudioId140First, webPage);
@@ -222,7 +228,7 @@ namespace YouTube_downloader
             };
 
             thr._videoId = VideoInfo.Id;
-            thr._ciphered = VideoInfo.Ciphered;
+            thr._ciphered = _ciphered;
             Thread thread = new Thread(thr.Run);
             thread.Start(synchronizationContext);
         }
@@ -899,7 +905,7 @@ namespace YouTube_downloader
                 }
 
                 //сохранение картинки
-                if (config.SavePreviewImage && VideoInfo.ImageData != null)
+                if (config.SavePreviewImage && _videoImageData != null)
                 {
                     SaveImageToFile(formattedFileName);
                 }
@@ -983,10 +989,13 @@ namespace YouTube_downloader
 
         private void SaveImageToFile(string formattedFileName)
         {
-            string imageFileName = VideoInfo.Image != null ?
-                $"_image_{VideoInfo.Image.Width}x{VideoInfo.Image.Height}.jpg" : "_image.bin";
-            string filePath = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
-            VideoInfo.ImageData.SaveToFile(filePath);
+            if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName))
+            {
+                Image img = Image.FromStream(_videoImageData);
+                string imageFileName = $"_image_{img.Width}x{img.Height}.jpg";
+                string filePath = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
+                _videoImageData.SaveToFile(filePath);
+            }
         }
 
         private void FrameYouTubeVideo_MouseDown(object sender, MouseEventArgs e)
@@ -1033,11 +1042,13 @@ namespace YouTube_downloader
 
         private void imagePreview_Paint(object sender, PaintEventArgs e)
         {
-            if (VideoInfo.Image != null)
+            if (_videoImageData != null && _videoImageData.Length > 0L)
             {
-                Rectangle imageRect = new Rectangle(0, 0, VideoInfo.Image.Width, VideoInfo.Image.Height);
+                _videoImageData.Position = 0L;
+                Image img = Image.FromStream(_videoImageData);
+                Rectangle imageRect = new Rectangle(0, 0, img.Width, img.Height);
                 Rectangle resizedRect = imageRect.ResizeTo(imagePreview.Size).CenterIn(imagePreview.ClientRectangle);
-                e.Graphics.DrawImage(VideoInfo.Image, resizedRect);
+                e.Graphics.DrawImage(img, resizedRect);
             }
             Font fnt = new Font("Lucida Console", 10.0f);
             if (fnt != null)
@@ -1053,19 +1064,19 @@ namespace YouTube_downloader
                     e.Graphics.DrawString(videoLength, fnt, Brushes.White, new PointF(x, y));
                 }
             
-                if (VideoInfo.Ciphered || VideoInfo.Dashed)
+                if (_ciphered || VideoInfo.IsDashed)
                 {
-                    string t = VideoInfo.Dashed ? "dash" : "cipher";
+                    string t = VideoInfo.IsDashed ? "dash" : "cipher";
                     SizeF sz = e.Graphics.MeasureString(t, fnt);
                     RectangleF rect = new RectangleF(0, imagePreview.Height - sz.Height, sz.Width, sz.Height);
                     e.Graphics.FillRectangle(Brushes.Black, rect);
                     e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
                 }
-                if (VideoInfo.Hlsed)
+                if (VideoInfo.IsLiveNow)
                 {
                     string t = "hls";
                     SizeF sz = e.Graphics.MeasureString(t, fnt);
-                    float y = (VideoInfo.Ciphered || VideoInfo.Dashed) ? 
+                    float y = (_ciphered || VideoInfo.IsDashed) ? 
                         imagePreview.Height - sz.Height * 2 : imagePreview.Height - sz.Height;
                     RectangleF rect = new RectangleF(0, y, sz.Width, sz.Height);
                     e.Graphics.FillRectangle(Brushes.Black, rect);
@@ -1097,7 +1108,7 @@ namespace YouTube_downloader
 
         private void btnGetVideoInfo_Click(object sender, EventArgs e)
         {
-            if (!VideoInfo.IsAvailable)
+            if (!VideoInfo.IsInfoAvailable)
             {
                 MessageBox.Show("Видео недоступно!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1127,7 +1138,7 @@ namespace YouTube_downloader
         private void btnGetWebPage_Click(object sender, EventArgs e)
         {
             btnGetWebPage.Enabled = false;
-            if (!VideoInfo.IsAvailable)
+            if (!VideoInfo.IsInfoAvailable)
             {
                 MessageBox.Show("Видео недоступно!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1152,7 +1163,7 @@ namespace YouTube_downloader
 
         private void btnGetDashManifest_Click(object sender, EventArgs e)
         {
-            if (!VideoInfo.IsAvailable)
+            if (!VideoInfo.IsInfoAvailable)
             {
                 MessageBox.Show("Видео недоступно!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1189,7 +1200,7 @@ namespace YouTube_downloader
 
         private void btnGetHlsManifest_Click(object sender, EventArgs e)
         {
-            if (!VideoInfo.IsAvailable)
+            if (!VideoInfo.IsInfoAvailable)
             {
                 MessageBox.Show("Видео недоступно!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1226,7 +1237,7 @@ namespace YouTube_downloader
 
         private void btnGetPlayerCode_Click(object sender, EventArgs e)
         {
-            if (!VideoInfo.IsAvailable)
+            if (!VideoInfo.IsInfoAvailable)
             {
                 MessageBox.Show("Видео недоступно!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1282,7 +1293,7 @@ namespace YouTube_downloader
         private void imagePreview_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (VideoInfo.IsAvailable && e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
             {
                 contextMenuImage.Show(Cursor.Position);
             }
@@ -1300,7 +1311,7 @@ namespace YouTube_downloader
         private void lblVideoTitle_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (VideoInfo.IsAvailable && e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
             {
                 contextMenuVideoTitle.Show(Cursor.Position);
             }
@@ -1309,7 +1320,7 @@ namespace YouTube_downloader
         private void imageFavorite_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (VideoInfo.IsAvailable && e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
             {
                 SetFavoriteVideo(!favoriteVideo);
             }
@@ -1318,11 +1329,11 @@ namespace YouTube_downloader
         private void imageFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
-            if (VideoInfo.IsAvailable)
+            if (VideoInfo.IsInfoAvailable)
             {
                 if (FavoriteChannelChanged != null)
                 {
-                    FavoriteChannelChanged.Invoke(this, VideoInfo.ChannelOwned.Id, !FavoriteChannel);
+                    FavoriteChannelChanged.Invoke(this, VideoInfo.OwnerChannelId, !FavoriteChannel);
                 }
                 else
                 {
@@ -1406,24 +1417,29 @@ namespace YouTube_downloader
 
         private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetClipboardText(VideoInfo.ChannelOwned.Title);
+            if (!string.IsNullOrEmpty(VideoInfo.OwnerChannelTitle) && !string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
+            {
+                SetClipboardText(VideoInfo.OwnerChannelTitle);
+            }
         }
 
         private void miCopyChannelIdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (VideoInfo == null || VideoInfo.ChannelOwned == null)
+            if (VideoInfo == null || string.IsNullOrEmpty(VideoInfo.OwnerChannelId) ||
+                string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelId))
             {
                 string msg = "Произошла ошибация! По-этому, в настоящее время " +
                     "данное действие совершить невозможно! Сорян, бро!";
                 MessageBox.Show(msg, "Ошибатор ошибок",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            SetClipboardText(VideoInfo.ChannelOwned.Id);
+            SetClipboardText(VideoInfo.OwnerChannelId);
         }
 
         private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id));
+            OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId));
         }
 
         private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1433,33 +1449,37 @@ namespace YouTube_downloader
 
         private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            OpenChannel?.Invoke(this, VideoInfo.ChannelOwned.Title, VideoInfo.ChannelOwned.Id);
+            OpenChannel?.Invoke(this, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId);
         }
 
         private void miSaveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (VideoInfo.ImageData != null)
+            if (_videoImageData != null)
             {
+                Image img = Image.FromStream(_videoImageData);
+
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.Title = "Сохранить изображение";
                 sfd.Filter = "jpg|*.jpg";
                 sfd.DefaultExt = ".jpg";
                 sfd.AddExtension = true;
                 sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
-                string imageFileName = VideoInfo.Image != null ? $"_image_{VideoInfo.Image.Width}x{VideoInfo.Image.Height}" : "_image";
+                string imageFileName = $"_image_{img.Width}x{img.Height}";
                 string filePath = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo)) + imageFileName;
                 sfd.FileName = filePath;
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    VideoInfo.ImageData.SaveToFile(sfd.FileName);
+                    _videoImageData.SaveToFile(sfd.FileName);
                 }
                 sfd.Dispose();
+
+                img.Dispose();
             }
         }
 
         private void miCopyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SetClipboardText($"{VideoInfo.ChannelOwned.Title} [{VideoInfo.ChannelOwned.Id}]");
+            SetClipboardText($"{VideoInfo.OwnerChannelTitle} [{VideoInfo.OwnerChannelId}]");
         }
 
         private void miCopyTitleAsIsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1475,28 +1495,29 @@ namespace YouTube_downloader
 
         private void miOpenImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (VideoInfo.ImageUrls.Count > 0)
+            if (VideoInfo.ThumbnailUrls.Count > 0)
             {
-                string url = VideoInfo.ImageUrls[0];
+                string url = VideoInfo.ThumbnailUrls[0].Url;
                 OpenUrlInBrowser(url);
             }
         }
 
         private void miCopyChannelUrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.ChannelOwned.Id);
+            string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId);
             SetClipboardText(url);
         }
 
         private void miCopyImageUrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (VideoInfo.ImageUrls == null || VideoInfo.ImageUrls.Count == 0 || string.IsNullOrEmpty(VideoInfo.ImageUrls[0]))
+            if (VideoInfo.ThumbnailUrls == null || VideoInfo.ThumbnailUrls.Count == 0 ||
+                string.IsNullOrEmpty(VideoInfo.ThumbnailUrls[0].Url) || string.IsNullOrWhiteSpace(VideoInfo.ThumbnailUrls[0].Url))
             {
                 MessageBox.Show("Ссылка на изображение отсутствует!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            SetClipboardText(VideoInfo.ImageUrls[0]);
+            SetClipboardText(VideoInfo.ThumbnailUrls[0].Url);
         }
     }
 }

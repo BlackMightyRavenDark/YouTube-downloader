@@ -28,7 +28,7 @@ namespace YouTube_downloader
 
         public const string FILENAME_FORMAT_DEFAULT = "[<year>-<month>-<day>] <video_title> (id_<video_id>)";
         public static List<YouTubeChannel> channels = new List<YouTubeChannel>();
-        public static List<YouTubeVideo> videos = new List<YouTubeVideo>();
+        public static List<YouTubeApiLib.YouTubeVideo> videos = new List<YouTubeApiLib.YouTubeVideo>();
         public static List<FrameYouTubeChannel> framesChannel = new List<FrameYouTubeChannel>();
         public static List<FrameYouTubeVideo> framesVideo = new List<FrameYouTubeVideo>();
 
@@ -274,9 +274,10 @@ namespace YouTube_downloader
         public static int GetYouTubeVideoInfoViaApi(string videoId,
             YouTubeApiRequestType requestType, out string resInfo)
         {
+            const string apiV1Key = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
             JObject body = requestType == YouTubeApiRequestType.EncryptedUrls ?
                 GenerateVideoInfoEncryptedRequestBody(videoId) : GenerateVideoInfoDecryptedRequestBody(videoId);
-            string url = string.Format(YOUTUBEI_API_URL_TEMPLATE, "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8");
+            string url = string.Format(YOUTUBEI_API_URL_TEMPLATE, apiV1Key);
             return HttpsPost(url, body.ToString(), out resInfo);
         }
 
@@ -574,7 +575,7 @@ namespace YouTube_downloader
             return n < 10 ? ("0" + n.ToString()) : n.ToString();
         }
 
-        public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
+        public static string FormatFileName(string fmt, YouTubeApiLib.YouTubeVideo videoInfo)
         {
             return fmt.Replace("<year>", LeadZero(videoInfo.DatePublished.Year))
                 .Replace("<month>", LeadZero(videoInfo.DatePublished.Month))

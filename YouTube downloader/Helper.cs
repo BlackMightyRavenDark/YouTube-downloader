@@ -2,30 +2,70 @@
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
+using MultiThreadedDownloaderLib;
+using YouTubeApiLib;
 
 namespace YouTube_downloader
 {
     public static class Helper
     {
-        public static bool SaveToFile(this Stream stream, string filePath)
+        public static void SaveToFile(this Stream stream, string filePath)
         {
-            if (!string.IsNullOrEmpty(filePath) && !string.IsNullOrWhiteSpace(filePath))
+            try
             {
-                try
+                using (Stream fileStream = File.OpenWrite(filePath))
                 {
-                    using (Stream fileStream = File.OpenWrite(filePath))
-                    {
-                        stream.Position = 0L;
-                        MultiThreadedDownloaderLib.MultiThreadedDownloader.AppendStream(stream, fileStream);
-                        return true;
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    stream.Position = 0L;
+                    MultiThreadedDownloaderLib.MultiThreadedDownloader.AppendStream(stream, fileStream);
                 }
             }
+            catch (System.Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+        }
+
+        public static bool IsCiphered(this YouTubeApiLib.YouTubeVideo video)
+        {
+            if (!video.IsInfoAvailable || video.RawInfo == null || video.RawInfo.RawData == null)
+            {
+                return false;
+            }
+            
+            StreamingData streamingData = video.RawInfo.StreamingData;
+            JArray jaFormats = streamingData.RawData.Value<JArray>("formats");
+            if (jaFormats != null && jaFormats.Count > 0)
+            {
+                return jaFormats[0].Value<JToken>("signatureCipher") != null;
+            }
+            JArray jaAdaptiveFormats = streamingData.RawData.Value<JArray>("adaptiveFormats");
+            if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
+            {
+                return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
+            }
+
             return false;
+        }
+
+        public static Stream DownloadPreviewImage(this YouTubeApiLib.YouTubeVideo video)
+        {
+            if (video.ThumbnailUrls != null)
+            {
+                FileDownloader d = new FileDownloader();
+                foreach (YouTubeVideoThumbnail thumbnail in video.ThumbnailUrls)
+                {
+                    Stream mem = new MemoryStream();
+                    d.Url = thumbnail.Url;
+                    if (d.Download(mem) == 200)
+                    {
+                        return mem;
+                    }
+                    mem.Dispose();
+                }
+            }
+
+            return null;
         }
 
         public static Rectangle ResizeTo(this Rectangle source, Size newSize)
