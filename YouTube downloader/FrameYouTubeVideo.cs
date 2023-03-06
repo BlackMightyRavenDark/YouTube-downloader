@@ -18,6 +18,7 @@ namespace YouTube_downloader
         private YouTubeApiLib.YouTubeVideo _youTubeVideo = null;
         public YouTubeApiLib.YouTubeVideo VideoInfo { get { return _youTubeVideo; } set { SetVideoInfo(value); } }
         private Stream _videoImageData = null;
+        private Image _videoImage = null;
         private bool _ciphered;
         private bool favoriteVideo = false;
         private bool favoriteChannel = false;
@@ -130,6 +131,7 @@ namespace YouTube_downloader
             favoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
             _ciphered = VideoInfo.IsCiphered();
             _videoImageData = videoInfo.DownloadPreviewImage();
+            _videoImage = _videoImageData != null && _videoImageData.Length > 0L ? Image.FromStream(_videoImageData) : null;
             imagePreview.Refresh();
         }
 
@@ -991,8 +993,8 @@ namespace YouTube_downloader
         {
             if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName))
             {
-                Image img = Image.FromStream(_videoImageData);
-                string imageFileName = $"_image_{img.Width}x{img.Height}.jpg";
+                string imageFileName = _videoImage != null ?
+                    $"_image_{_videoImage.Width}x{_videoImage.Height}.jpg" : "_image.dat";
                 string filePath = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
                 _videoImageData.SaveToFile(filePath);
             }
@@ -1042,13 +1044,11 @@ namespace YouTube_downloader
 
         private void imagePreview_Paint(object sender, PaintEventArgs e)
         {
-            if (_videoImageData != null && _videoImageData.Length > 0L)
+            if (_videoImage != null)
             {
-                _videoImageData.Position = 0L;
-                Image img = Image.FromStream(_videoImageData);
-                Rectangle imageRect = new Rectangle(0, 0, img.Width, img.Height);
+                Rectangle imageRect = new Rectangle(0, 0, _videoImage.Width, _videoImage.Height);
                 Rectangle resizedRect = imageRect.ResizeTo(imagePreview.Size).CenterIn(imagePreview.ClientRectangle);
-                e.Graphics.DrawImage(img, resizedRect);
+                e.Graphics.DrawImage(_videoImage, resizedRect);
             }
             Font fnt = new Font("Lucida Console", 10.0f);
             if (fnt != null)
