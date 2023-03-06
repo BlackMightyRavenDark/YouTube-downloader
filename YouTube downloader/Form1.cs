@@ -536,7 +536,7 @@ namespace YouTube_downloader
         {
             JObject json = JObject.Parse(File.ReadAllText(fileName));
             JArray jItems = json.Value<JArray>("items");
-            for (int i = 0; i < jItems.Count; i++)
+            for (int i = 0; i < jItems.Count; ++i)
             {
                 JObject j = JObject.Parse(jItems[i].Value<JObject>().ToString());
                 ParseDataItem(j, favoritesRootNode);
@@ -585,7 +585,7 @@ namespace YouTube_downloader
                     JToken jt = json.Value<JToken>("nextPageToken");
                     pageToken = jt == null ? null : jt.Value<string>();
                     JArray jsonArr = json.Value<JArray>("items");
-                    for (int i = 0; i < jsonArr.Count; i++)
+                    for (int i = 0; i < jsonArr.Count; ++i)
                     {
                         JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
                         string videoId = jObject.Value<JObject>("id").Value<string>("videoId");
@@ -663,7 +663,7 @@ namespace YouTube_downloader
 
                 JArray jsonArr = json.Value<JArray>("items");
 
-                for (int i = 0; i < jsonArr.Count(); i++)
+                for (int i = 0; i < jsonArr.Count(); ++i)
                 {
                     JObject j = JObject.Parse(jsonArr[i].ToString());
                     string kind = j.Value<JObject>("id").Value<string>("kind");

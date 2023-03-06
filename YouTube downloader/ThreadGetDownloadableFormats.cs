@@ -232,7 +232,7 @@ namespace YouTube_downloader
         private void ParseHlsManifest(string hlsManifestString)
         {
             YouTubeHlsManifestParser parser = new YouTubeHlsManifestParser(hlsManifestString);
-            for (int i = 0; i < parser.Count; i++)
+            for (int i = 0; i < parser.Count; ++i)
             {
                 YouTubeStreamInfo youTubeStreamInfo = parser[i];
                 if (youTubeStreamInfo != null)
@@ -285,7 +285,7 @@ namespace YouTube_downloader
                 JArray jaAdaptiveFormats = jStreamingData.Value<JArray>("adaptiveFormats");
                 if (jaAdaptiveFormats != null)
                 {
-                    for (int i = 0; i < jaAdaptiveFormats.Count; i++)
+                    for (int i = 0; i < jaAdaptiveFormats.Count; ++i)
                     {
                         string mime = jaAdaptiveFormats[i].Value<string>("mimeType");
                         if (mime.Contains("video"))
@@ -365,7 +365,7 @@ namespace YouTube_downloader
                 JArray jaFormats = jStreamingData.Value<JArray>("formats");
                 if (jaFormats != null)
                 {
-                    for (int i = 0; i < jaFormats.Count; i++)
+                    for (int i = 0; i < jaFormats.Count; ++i)
                     {
                         int width = jaFormats[i].Value<int>("width");
                         int height = jaFormats[i].Value<int>("height");
@@ -429,7 +429,7 @@ namespace YouTube_downloader
 
             if (MoveAudioId140First)
             {
-                for (int i = 0; i < audioFiles.Count; i++)
+                for (int i = 0; i < audioFiles.Count; ++i)
                 {
                     if (audioFiles[i].formatId == 140)
                     {

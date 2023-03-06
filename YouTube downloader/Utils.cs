@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Net;
-using System.Text;
 using System.Globalization;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -41,50 +40,10 @@ namespace YouTube_downloader
         public const int ERROR_CIPHER_DECRYPTION = -100;
         public const int ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM = -101;
 
-        public static WebClient GetYouTubeWebClient()
+        public static int DownloadString(string url, out string responseString)
         {
-            WebClient wc = new WebClient();
-            wc.Headers.Add("Accept", YOUTUBE_ACCEPT_STRING);
-            wc.Encoding = Encoding.UTF8;
-            return wc;
-        }
-
-        public static int DownloadString(string url, out string response)
-        {
-            WebClient client = GetYouTubeWebClient();
-            int result = DownloadString(client, url, out response);
-            client.Dispose();
-            return result;
-        }
-
-        public static int DownloadString(WebClient webClient, string url, out string response)
-        {
-            int errorCode;
-            try
-            {
-                response = webClient.DownloadString(url);
-                errorCode = 200;
-            }
-            catch (WebException e)
-            {
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse httpWebResponse = (HttpWebResponse)e.Response;
-                    response = httpWebResponse.StatusDescription;
-                    errorCode = (int)httpWebResponse.StatusCode;
-                }
-                else
-                {
-                    errorCode = 400;
-                    response = "Client error";
-                }
-            }
-            catch (Exception ex)
-            {
-                response = ex.Message;
-                return 400;
-            }
-            return errorCode;
+            FileDownloader d = new FileDownloader() { Url = url };
+            return d.DownloadString(out responseString);
         }
 
         public static int HttpsPost(string aUrl, string body, out string responseString)
@@ -150,25 +109,31 @@ namespace YouTube_downloader
 
         public static int DownloadImage(string url, out Image image)
         {
-            MemoryStream memoryStream = new MemoryStream();
-            int errorCode = DownloadData(url, memoryStream);
-            if (errorCode == 200)
+            image = null;
+            try
             {
-                memoryStream.Position = 0L;
-                image = Image.FromStream(memoryStream);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    int errorCode = DownloadData(url, memoryStream);
+                    if (errorCode == 200)
+                    {
+                        memoryStream.Position = 0L;
+                        image = Image.FromStream(memoryStream);
+                    }
+                    return errorCode;
+                }
             }
-            else
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
                 image = null;
+                return ex.HResult;
             }
-            memoryStream.Dispose();
-            return errorCode;
         }
 
         public static int DownloadData(string url, Stream stream)
         {
-            FileDownloader d = new FileDownloader();
-            d.Url = url;
+            FileDownloader d = new FileDownloader() { Url = url };
             return d.Download(stream);
         }
 
@@ -360,7 +325,7 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static YouTubeApiLib.YouTubeVideo SearchSingleVideo(VideoId videoId)
+        public static YouTubeVideo SearchSingleVideo(VideoId videoId)
         {
             YouTubeApi api = new YouTubeApi();
             return api.GetVideo(videoId);
@@ -384,7 +349,7 @@ namespace YouTube_downloader
                 return root;
             }
 
-            for (int i = 0; i < root.Children.Count; i++)
+            for (int i = 0; i < root.Children.Count; ++i)
             {
                 FavoriteItem favoriteItem = FindFavoriteItem(item, root.Children[i]);
                 if (favoriteItem != null)
@@ -397,7 +362,7 @@ namespace YouTube_downloader
 
         public static FavoriteItem FindInFavorites(FavoriteItem find, FavoriteItem root)
         {
-            for (int i = 0; i < root.Children.Count; i++)
+            for (int i = 0; i < root.Children.Count; ++i)
             {
                 FavoriteItem item = FindFavoriteItem(find, root.Children[i]);
                 if (item != null)
@@ -572,10 +537,10 @@ namespace YouTube_downloader
 
         public static string LeadZero(int n)
         {
-            return n < 10 ? ("0" + n.ToString()) : n.ToString();
+            return n < 10 ? $"0{n}" : n.ToString();
         }
 
-        public static string FormatFileName(string fmt, YouTubeApiLib.YouTubeVideo videoInfo)
+        public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
         {
             return fmt.Replace("<year>", LeadZero(videoInfo.DatePublished.Year))
                 .Replace("<month>", LeadZero(videoInfo.DatePublished.Month))
@@ -600,7 +565,7 @@ namespace YouTube_downloader
             }
             string[] keyValues = inputString.Split(keySeparaor);
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            for (int i = 0; i < keyValues.Length; i++)
+            for (int i = 0; i < keyValues.Length; ++i)
             {
                 string[] t = keyValues[i].Split(valueSeparator);
                 dict.Add(t[0], t[1]);
@@ -633,7 +598,7 @@ namespace YouTube_downloader
             }
             string[] ints = algo.Split(',');
             string res = string.Empty;
-            for (int i = 0; i < ints.Length; i++)
+            for (int i = 0; i < ints.Length; ++i)
             {
                 if (!int.TryParse(ints[i], out int index))
                 {
@@ -771,7 +736,7 @@ namespace YouTube_downloader
         {
             PointF[] points = new PointF[11];
             int a = 18;
-            for (int i = 0; i < 11; i++)
+            for (int i = 0; i < 11; ++i)
             {
                 if (i % 2 == 0)
                 {
@@ -852,25 +817,6 @@ namespace YouTube_downloader
         public string ImageUrl { get; set; }
         public List<string> ImageUrls { get; set; } = new List<string>();
         public Stream ImageData { get; set; } = null;
-    }
-
-    public sealed class YouTubeVideo
-    {
-        public string Title { get; set; }
-        public string Id { get; set; }
-        public TimeSpan Length { get; set; } = new TimeSpan(0L);
-        public DateTime DateUploaded { get; set; }
-        public DateTime DatePublished { get; set; }
-        public List<string> ImageUrls { get; set; } = new List<string>();
-        public Stream ImageData { get; set; } = null;
-        public Image Image { get; set; } = null;
-        public YouTubeChannel ChannelOwned { get; set; } = null;
-        public bool Ciphered { get; set; } = false;
-        public bool Dashed { get; set; } = false;
-        public bool Hlsed { get; set; } = false;
-        public bool IsFamilySafe { get; set; } = true;
-        public bool IsUnlisted { get; set; } = false;
-        public bool IsAvailable { get; set; } = true;
     }
 
     public static class MemoryWatcher

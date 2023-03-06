@@ -256,7 +256,7 @@ namespace YouTube_downloader
             }
 
             int adaptiveCount = 0;
-            for (int i = 0; i < thr.videoFiles.Count; i++)
+            for (int i = 0; i < thr.videoFiles.Count; ++i)
             {
                 if (!thr.videoFiles[i].isContainer)
                 {
@@ -272,7 +272,7 @@ namespace YouTube_downloader
             if (thr.audioFiles.Count > 0)
             {
                 contextMenuDownloads.Items.Add("-");
-                for (int i = 0; i < thr.audioFiles.Count; i++)
+                for (int i = 0; i < thr.audioFiles.Count; ++i)
                 {
                     if (!thr.audioFiles[i].isContainer)
                     {
@@ -338,7 +338,7 @@ namespace YouTube_downloader
                 Stream fileStream = File.OpenWrite(fnDashTmp);
                 FileDownloader d = new FileDownloader();
                 int errorCode = 400;
-                for (int i = 0; i < mediaFile.dashManifestUrls.Count; i++)
+                for (int i = 0; i < mediaFile.dashManifestUrls.Count; ++i)
                 {
                     int errors = 0;
                     do
