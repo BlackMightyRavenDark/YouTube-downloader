@@ -226,6 +226,7 @@ namespace YouTube_downloader
             if (VideoInfo.MediaTracks == null || VideoInfo.MediaTracks.Count == 0)
             {
                 string t = "Ссылки для скачивания не найдены!";
+                lblStatus.Text = $"Состояние: Ошибка! {t}";
                 if (!VideoInfo.IsFamilySafe)
                 {
                     t += "\nДля этого видео установлено ограничение по возрасту. " +
