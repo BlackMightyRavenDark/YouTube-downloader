@@ -222,8 +222,19 @@ namespace YouTube_downloader
             containerFormats.Clear();
             audioFormats.Clear();
             contextMenuDownloads.Items.Clear();
-            await Task.Run(() => VideoInfo.UpdateMediaFormats());
-            if (VideoInfo.MediaTracks == null || VideoInfo.MediaTracks.Count == 0)
+
+            LinkedList<YouTubeMediaTrack> mediaTracks = null;
+            await Task.Run(() =>
+            {
+                YouTubeApi api = new YouTubeApi();
+                RawVideoInfoResult rawVideoInfoResult = api.GetRawVideoInfo(new VideoId(VideoInfo.Id));
+                mediaTracks = rawVideoInfoResult?.RawVideoInfo?.StreamingData?.Parse();
+
+                //TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
+                //VideoInfo.UpdateMediaFormats());
+            });
+
+            if (mediaTracks == null || mediaTracks.Count == 0)
             {
                 string t = "Ссылки для скачивания не найдены!";
                 lblStatus.Text = $"Состояние: Ошибка! {t}";
@@ -238,8 +249,8 @@ namespace YouTube_downloader
                 return;
             }
 
-            videoFormats = FilterVideoTracks(VideoInfo.MediaTracks);
-            audioFormats = FilterAudioTracks(VideoInfo.MediaTracks);
+            videoFormats = FilterVideoTracks(mediaTracks);
+            audioFormats = FilterAudioTracks(mediaTracks);
             if (VideoInfo.IsDashed)
             {
                 if (config.SortDashFormatsByBitrate)
@@ -266,7 +277,7 @@ namespace YouTube_downloader
                 contextMenuDownloads.Items.Add(mi);
             }
 
-            containerFormats = FilterContainerTracks(VideoInfo.MediaTracks);
+            containerFormats = FilterContainerTracks(mediaTracks);
             if (containerFormats.Count > 0)
             {
                 contextMenuDownloads.Items.Add("-");
