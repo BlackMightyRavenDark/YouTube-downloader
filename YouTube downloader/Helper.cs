@@ -17,7 +17,7 @@ namespace YouTube_downloader
                 using (Stream fileStream = File.OpenWrite(filePath))
                 {
                     stream.Position = 0L;
-                    MultiThreadedDownloaderLib.MultiThreadedDownloader.AppendStream(stream, fileStream);
+                    MultiThreadedDownloader.AppendStream(stream, fileStream);
                 }
             }
             catch (System.Exception ex)
@@ -26,7 +26,7 @@ namespace YouTube_downloader
             }
         }
 
-        public static bool IsCiphered(this YouTubeApiLib.YouTubeVideo video)
+        public static bool IsCiphered(this YouTubeVideo video)
         {
             if (!video.IsInfoAvailable || video.RawInfo == null || video.RawInfo.RawData == null)
             {
@@ -48,7 +48,7 @@ namespace YouTube_downloader
             return false;
         }
 
-        public static Stream DownloadPreviewImage(this YouTubeApiLib.YouTubeVideo video)
+        public static Stream DownloadPreviewImage(this YouTubeVideo video)
         {
             if (video.ThumbnailUrls != null)
             {

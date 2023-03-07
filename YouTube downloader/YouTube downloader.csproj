@@ -111,12 +111,7 @@
     <Compile Include="MainConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThreadGetDownloadableFormats.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="YouTubeAudioFile.cs" />
-    <Compile Include="YouTubeHlsManifestParser.cs" />
-    <Compile Include="YouTubeMediaFile.cs" />
-    <Compile Include="YouTubeVideoFile.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

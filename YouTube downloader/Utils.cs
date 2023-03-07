@@ -331,6 +331,141 @@ namespace YouTube_downloader
             return api.GetVideo(videoId);
         }
 
+        public static List<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+        {
+            List<YouTubeMediaTrackVideo> list = new List<YouTubeMediaTrackVideo>();
+            foreach (YouTubeMediaTrack track in mediaTracks)
+            {
+                if (track is YouTubeMediaTrackVideo)
+                {
+                    list.Add(track as YouTubeMediaTrackVideo);
+                }
+            }
+            return list;
+        }
+
+        public static List<YouTubeMediaTrackContainer> FilterContainerTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+        {
+            List<YouTubeMediaTrackContainer> list = new List<YouTubeMediaTrackContainer>();
+            foreach (YouTubeMediaTrack track in mediaTracks)
+            {
+                if (track is YouTubeMediaTrackContainer)
+                {
+                    list.Add(track as YouTubeMediaTrackContainer);
+                }
+            }
+            return list;
+        }
+
+        public static List<YouTubeMediaTrackAudio> FilterAudioTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+        {
+            List<YouTubeMediaTrackAudio> list = new List<YouTubeMediaTrackAudio>();
+            foreach (YouTubeMediaTrack track in mediaTracks)
+            {
+                if (track is YouTubeMediaTrackAudio)
+                {
+                    list.Add(track as YouTubeMediaTrackAudio);
+                }
+            }
+            return list;
+        }
+
+        public static string MediaTrackToString(YouTubeMediaTrack track)
+        {
+            string res = null;
+            if (track is YouTubeMediaTrackAudio)
+            {
+                YouTubeMediaTrackAudio audio = track as YouTubeMediaTrackAudio;
+                res = audio.IsDashManifest ? "DASH Audio: " : "Audio: ";
+                if (audio.FormatId != 0)
+                    res += $"ID {audio.FormatId}";
+                if (audio.AverageBitrate != 0)
+                    res += $", ~{audio.AverageBitrate / 1024} kbps";
+                if (!string.IsNullOrEmpty(audio.FileExtension))
+                    res += $", {audio.FileExtension}";
+                if (!string.IsNullOrEmpty(audio.MimeCodecs))
+                    res += $", {audio.MimeCodecs}";
+                if (audio.ContentLength > 0L)
+                    res += $", {FormatSize(audio.ContentLength)}";
+                if (audio.IsDashManifest && audio.DashUrls != null)
+                    res += $", {audio.DashUrls.Count} chunks";
+            }
+            else if (track is YouTubeMediaTrackVideo)
+            {
+                YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
+                res = video.IsHlsManifest ? "HLS: " : "Video: ";
+                if (video.FormatId != 0)
+                    res += $"ID {video.FormatId}, ";
+                res += $"{video.VideoWidth}x{video.VideoHeight}";
+                if (video.FrameRate != 0)
+                    res += $", {video.FrameRate} fps";
+                if (video.AverageBitrate != 0)
+                    res += $", ~{video.AverageBitrate / 1024} kbps";
+                if (!string.IsNullOrEmpty(video.FileExtension))
+                    res += $", {video.FileExtension}";
+                if (!string.IsNullOrEmpty(video.MimeCodecs))
+                    res += $", {video.MimeCodecs}";
+                if (video.ContentLength > 0L)
+                    res += $", {FormatSize(video.ContentLength)}";
+                if (video.IsDashManifest && video.DashUrls != null)
+                    res += $", {video.DashUrls.Count} chunks";
+            }
+            else if (track is YouTubeMediaTrackContainer)
+            {
+                YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
+                res = "Video: ";
+                if (container.FormatId != 0)
+                    res += $"ID {container.FormatId}, ";
+                res += $"{container.VideoWidth}x{container.VideoHeight}";
+                if (container.VideoFrameRate != 0)
+                    res += $", {container.VideoFrameRate} fps";
+                if (container.AverageBitrate != 0)
+                    res += $", ~{container.AverageBitrate / 1024} kbps";
+                if (!string.IsNullOrEmpty(container.FileExtension))
+                    res += $", {container.FileExtension}";
+                if (!string.IsNullOrEmpty(container.MimeCodecs))
+                    res += $", {container.MimeCodecs}";
+                if (container.ContentLength > 0L)
+                    res += $", {FormatSize(container.ContentLength)}";
+            }
+            return res;
+        }
+
+        public static string GetTrackShortInfo(YouTubeMediaTrack track)
+        {
+            string res = null;
+            if (track is YouTubeMediaTrackAudio)
+            {
+                YouTubeMediaTrackAudio audio = track as YouTubeMediaTrackAudio;
+                res = string.Empty;
+                if (audio.AverageBitrate != 0)
+                    res += $", ~{audio.AverageBitrate / 1024} kbps";
+                if (!string.IsNullOrEmpty(audio.FileExtension))
+                    res += $", {audio.FileExtension}";
+                if (!string.IsNullOrEmpty(audio.MimeCodecs))
+                    res += $", {audio.MimeCodecs}";
+            }
+            else if (track is YouTubeMediaTrackVideo)
+            {
+                YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
+                res = $"{video.VideoWidth}x{video.VideoHeight}";
+                if (video.FrameRate != 0)
+                    res += $", {video.FrameRate} fps";
+                if (video.AverageBitrate != 0)
+                    res += $", ~{video.AverageBitrate / 1024} kbps";
+            }
+            else if (track is YouTubeMediaTrackContainer)
+            {
+                YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
+                res = $"Video: {container.VideoWidth}x{container.VideoHeight}";
+                if (container.VideoFrameRate != 0)
+                    res += $", {container.VideoFrameRate} fps";
+                if (container.AverageBitrate != 0)
+                    res += $", ~{container.AverageBitrate / 1024} kbps";
+            }
+            return res;
+        }
+
         public static bool StringToDateTime(string inputString, out DateTime resDateTime, string format = "yyyy-MM-dd")
         {
             bool res = DateTime.TryParseExact(inputString, format,
@@ -848,25 +983,25 @@ namespace YouTube_downloader
         }
     }
 
-    public class FormatListSorterFileSize : IComparer<YouTubeMediaFile>
+    public class FormatListSorterFileSize : IComparer<YouTubeMediaTrack>
     {
-        public int Compare(YouTubeMediaFile x, YouTubeMediaFile y)
+        public int Compare(YouTubeMediaTrack x, YouTubeMediaTrack y)
         {
-            if (x == null || x.isContainer || x.isDashManifest || x.isHlsManifest || x.contentLength <= 0L || y == null)
+            if (x == null || x.IsDashManifest || x.IsHlsManifest || x.ContentLength <= 0L || y == null)
             {
                 return 0;
             }
-            return x.contentLength < y.contentLength ? 1 : -1;
+            return x.ContentLength < y.ContentLength ? 1 : -1;
         }
     }
 
-    public class FormatListSorterDashBitrate : IComparer<YouTubeMediaFile>
+    public class FormatListSorterDashBitrate : IComparer<YouTubeMediaTrack>
     {
-        public int Compare(YouTubeMediaFile x, YouTubeMediaFile y)
+        public int Compare(YouTubeMediaTrack x, YouTubeMediaTrack y)
         {
-            if (x != null && y != null && x.isDashManifest && y.isDashManifest && !x.isHlsManifest && !y.isHlsManifest)
+            if (x != null && y != null && x.IsDashManifest && y.IsDashManifest && !x.IsHlsManifest && !y.IsHlsManifest)
             {
-                return x.averageBitrate < y.averageBitrate ? 1 : -1;
+                return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
             }
             return 0;
         }

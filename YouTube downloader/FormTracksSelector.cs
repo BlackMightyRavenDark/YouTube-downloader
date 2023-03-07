@@ -1,41 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
+using YouTubeApiLib;
 
 namespace YouTube_downloader
 {
     public partial class FormTracksSelector : Form
     {
-        public List<YouTubeMediaFile> SelectedTracks { get; private set; } = new List<YouTubeMediaFile>();
+        public List<YouTubeMediaTrack> SelectedTracks { get; private set; } = new List<YouTubeMediaTrack>();
 
-        public FormTracksSelector(List<YouTubeMediaFile> mediaFiles)
+        public FormTracksSelector(List<YouTubeMediaTrack> mediaTracks)
         {
             InitializeComponent();
 
             SetupListView();
 
             List<TrackItem> root = new List<TrackItem>();
-            foreach (YouTubeMediaFile mediaFile in mediaFiles)
+            foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
             {
-                if (!mediaFile.isContainer && !mediaFile.isHlsManifest && mediaFile is YouTubeVideoFile)
+                if ((mediaTrack is YouTubeMediaTrackVideo) && !mediaTrack.IsHlsManifest)
                 {
-                    YouTubeVideoFile videoFile = mediaFile as YouTubeVideoFile;
-                    string resolution = $"{videoFile.Width}x{videoFile.Height}";
-                    int chunkCount = videoFile.dashManifestUrls != null ? videoFile.dashManifestUrls.Count : -1;
-                    TrackItem trackItem = new TrackItem("Видео", resolution, videoFile.Fps,
-                        videoFile.bitrate, videoFile.averageBitrate, videoFile.fileExtension,
-                        videoFile.contentLength, chunkCount, mediaFile);
+                    YouTubeMediaTrackVideo videoFile = mediaTrack as YouTubeMediaTrackVideo;
+                    string resolution = $"{videoFile.VideoWidth}x{videoFile.VideoHeight}";
+                    int chunkCount = videoFile.DashUrls != null ? videoFile.DashUrls.Count : -1;
+                    TrackItem trackItem = new TrackItem("Видео", resolution, videoFile.FrameRate,
+                        videoFile.Bitrate, videoFile.AverageBitrate, videoFile.FileExtension,
+                        videoFile.ContentLength, chunkCount, mediaTrack);
                     root.Add(trackItem);
                 }
             }
-            foreach (YouTubeMediaFile mediaFile in mediaFiles)
+            foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
             {
-                if (!mediaFile.isHlsManifest && mediaFile is YouTubeAudioFile)
+                if (mediaTrack is YouTubeMediaTrackAudio)
                 {
-                    YouTubeAudioFile audioFile = mediaFile as YouTubeAudioFile;
-                    int chunkCount = audioFile.dashManifestUrls != null ? audioFile.dashManifestUrls.Count : -1;
+                    YouTubeMediaTrackAudio audioTrack = mediaTrack as YouTubeMediaTrackAudio;
+                    int chunkCount = audioTrack.DashUrls != null ? audioTrack.DashUrls.Count : -1;
                     TrackItem trackItem = new TrackItem("Аудио", null, -1,
-                        audioFile.bitrate, audioFile.averageBitrate, audioFile.fileExtension,
-                        audioFile.contentLength, chunkCount, mediaFile);
+                        audioTrack.Bitrate, audioTrack.AverageBitrate, audioTrack.FileExtension,
+                        audioTrack.ContentLength, chunkCount, mediaTrack);
                     root.Add(trackItem);
                 }
             }
@@ -92,7 +93,7 @@ namespace YouTube_downloader
 
             foreach (TrackItem item in items)
             {
-                SelectedTracks.Add(item.Tag as YouTubeMediaFile);
+                SelectedTracks.Add(item.Tag as YouTubeMediaTrack);
             }
 
             DialogResult = DialogResult.OK;
