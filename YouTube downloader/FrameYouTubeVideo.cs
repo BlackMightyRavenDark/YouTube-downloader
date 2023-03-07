@@ -238,6 +238,24 @@ namespace YouTube_downloader
             }
 
             videoFormats = FilterVideoTracks(VideoInfo.MediaTracks);
+            audioFormats = FilterAudioTracks(VideoInfo.MediaTracks);
+            if (VideoInfo.IsDashed)
+            {
+                if (config.SortDashFormatsByBitrate)
+                {
+                    videoFormats.Sort(new FormatListSorterDashBitrate());
+                    audioFormats.Sort(new FormatListSorterDashBitrate());
+                }
+            }
+            else
+            {
+                if (config.SortFormatsByFileSize)
+                {
+                    videoFormats.Sort(new FormatListSorterFileSize());
+                    audioFormats.Sort(new FormatListSorterFileSize());
+                }
+            }
+
             foreach (YouTubeMediaTrackVideo trackVideo in videoFormats)
             {
                 string title = MediaTrackToString(trackVideo);
@@ -261,7 +279,6 @@ namespace YouTube_downloader
                 }
             }
 
-            audioFormats = FilterAudioTracks(VideoInfo.MediaTracks);
             if (audioFormats.Count > 0)
             {
                 contextMenuDownloads.Items.Add("-");
