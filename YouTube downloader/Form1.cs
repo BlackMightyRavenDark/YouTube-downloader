@@ -1067,6 +1067,7 @@ namespace YouTube_downloader
                 {
                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
                     frame.VideoInfo = video;
+                    frame.SetMenusFontSize(config.MenusFontSize);
                     framesVideo.Add(frame);
                     StackFrames();
 
@@ -1225,6 +1226,7 @@ namespace YouTube_downloader
                                 {
                                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
                                     frame.VideoInfo = video;
+                                    frame.SetMenusFontSize(config.MenusFontSize);
                                     framesVideo.Add(frame);
                                     StackFrames();
 
