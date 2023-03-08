@@ -227,8 +227,15 @@ namespace YouTube_downloader
             await Task.Run(() =>
             {
                 YouTubeApi api = new YouTubeApi();
-                RawVideoInfoResult rawVideoInfoResult = api.GetRawVideoInfo(new VideoId(VideoInfo.Id));
-                mediaTracks = rawVideoInfoResult?.RawVideoInfo?.StreamingData?.Parse();
+                YouTubeVideo video = api.GetVideo(new VideoId(VideoInfo.Id));
+                if (video != null)
+                {
+                    if (!YouTubeApi.getMediaTracksInfoImmediately)
+                    {
+                        video.UpdateMediaFormats(YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls);
+                    }
+                    mediaTracks = video.MediaTracks;
+                }
 
                 //TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
                 //VideoInfo.UpdateMediaFormats());
