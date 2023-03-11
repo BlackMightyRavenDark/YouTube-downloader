@@ -413,7 +413,7 @@ namespace YouTube_downloader
             else if (track is YouTubeMediaTrackContainer)
             {
                 YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
-                res = "Video: ";
+                res = "Container: ";
                 if (container.FormatId != 0)
                     res += $"ID {container.FormatId}, ";
                 res += $"{container.VideoWidth}x{container.VideoHeight}";
