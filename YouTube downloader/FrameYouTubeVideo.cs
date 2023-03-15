@@ -275,6 +275,24 @@ namespace YouTube_downloader
                 }
             }
 
+            if (config.MoveAudioId140First)
+            {
+                for (int i = 0; i < audioFormats.Count; ++i)
+                {
+                    if (audioFormats[i].FormatId == 140)
+                    {
+                        if (i != 0)
+                        {
+                            YouTubeMediaTrackAudio track = audioFormats[0];
+                            audioFormats[0] = audioFormats[i];
+                            audioFormats[i] = track;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
             foreach (YouTubeMediaTrackVideo trackVideo in videoFormats)
             {
                 string title = MediaTrackToString(trackVideo);
