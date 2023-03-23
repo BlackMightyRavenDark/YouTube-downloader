@@ -34,15 +34,18 @@ namespace YouTube_downloader
             }
             
             StreamingData streamingData = video.RawInfo.StreamingData;
-            JArray jaFormats = streamingData.RawData.Value<JArray>("formats");
-            if (jaFormats != null && jaFormats.Count > 0)
+            if (streamingData != null)
             {
-                return jaFormats[0].Value<JToken>("signatureCipher") != null;
-            }
-            JArray jaAdaptiveFormats = streamingData.RawData.Value<JArray>("adaptiveFormats");
-            if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
-            {
-                return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
+                JArray jaFormats = streamingData.RawData?.Value<JArray>("formats");
+                if (jaFormats != null && jaFormats.Count > 0)
+                {
+                    return jaFormats[0].Value<JToken>("signatureCipher") != null;
+                }
+                JArray jaAdaptiveFormats = streamingData.RawData?.Value<JArray>("adaptiveFormats");
+                if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
+                {
+                    return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
+                }
             }
 
             return false;
