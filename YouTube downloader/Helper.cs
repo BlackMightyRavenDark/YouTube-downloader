@@ -28,12 +28,7 @@ namespace YouTube_downloader
 
         public static bool IsCiphered(this YouTubeVideo video)
         {
-            if (!video.IsInfoAvailable || video.RawInfo == null || video.RawInfo.RawData == null)
-            {
-                return false;
-            }
-            
-            StreamingData streamingData = video.RawInfo.StreamingData;
+            StreamingData streamingData = video.RawInfo?.StreamingData;
             if (streamingData != null)
             {
                 JArray jaFormats = streamingData.RawData?.Value<JArray>("formats");
