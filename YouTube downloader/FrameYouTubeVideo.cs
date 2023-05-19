@@ -112,17 +112,38 @@ namespace YouTube_downloader
         private void SetVideoInfo(YouTubeVideo videoInfo)
         {
             _youTubeVideo = videoInfo;
+
+            if (!videoInfo.IsInfoAvailable)
+            {
+                lblChannelTitle.Text = "Имя канала: Недоступно";
+                lblDatePublished.Text = "Дата публикации: Недоступно";
+                lblVideoTitle.Text = $"{videoInfo.Status.Status}, {videoInfo.Status.Reason}";
+                _videoImageData = new MemoryStream();
+                if (DownloadData(videoInfo.Status.ThumbnailUrl, _videoImageData) == 200)
+                {
+                    _videoImage = Image.FromStream(_videoImageData);
+                }
+                else
+                {
+                    _videoImageData.Dispose();
+                    _videoImageData = null;
+                    _videoImage = null;
+                }
+                return;
+            }
+
             lblVideoTitle.Text = videoInfo.Title;
             if (string.IsNullOrEmpty(videoInfo.OwnerChannelId) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelId) ||
                 string.IsNullOrEmpty(videoInfo.OwnerChannelTitle) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelTitle))
             {
-                lblChannelTitle.Text = "Имя канала: Не доступно";
-                lblDatePublished.Text = "Дата публикации: Не доступно";
-                return;
+                lblChannelTitle.Text = "Имя канала: Недоступно";
+                lblDatePublished.Text = "Дата публикации: Недоступно";
             }
 
             lblChannelTitle.Text = videoInfo.OwnerChannelTitle;
-            lblDatePublished.Text = $"Дата публикации: {videoInfo.DatePublished:yyyy.MM.dd}";
+            string datePublishedString = videoInfo.SimplifiedInfo.IsMicroformatInfoAvailable ?
+                videoInfo.DatePublished.ToString("yyyy.MM.dd") : "Недоступно";
+            lblDatePublished.Text = $"Дата публикации: {datePublishedString}";
             FavoriteItem favoriteItem = new FavoriteItem(
                 videoInfo.Title, videoInfo.Title, videoInfo.Id,
                 videoInfo.OwnerChannelTitle, videoInfo.OwnerChannelId, null);
