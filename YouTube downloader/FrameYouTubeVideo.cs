@@ -245,15 +245,18 @@ namespace YouTube_downloader
             contextMenuDownloads.Items.Clear();
 
             LinkedList<YouTubeMediaTrack> mediaTracks = null;
+            bool useHiddenApi = config.UseHiddenApiForGettingInfo;
             await Task.Run(() =>
             {
-                YouTubeApi api = new YouTubeApi();
-                YouTubeVideo video = api.GetVideo(new VideoId(VideoInfo.Id));
+                YouTubeVideo video = GetSingleVideo(new VideoId(VideoInfo.Id));
                 if (video != null)
                 {
                     if (!YouTubeApi.getMediaTracksInfoImmediately)
                     {
-                        video.UpdateMediaFormats(YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls);
+                        YouTubeApiLib.Utils.VideoInfoGettingMethod method = useHiddenApi ?
+                            YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
+                            YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+                        video.UpdateMediaFormats(method);
                     }
                     mediaTracks = video.MediaTracks;
                 }

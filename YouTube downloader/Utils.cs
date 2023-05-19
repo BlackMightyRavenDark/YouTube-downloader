@@ -325,10 +325,25 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static YouTubeVideo SearchSingleVideo(VideoId videoId)
+        public static YouTubeVideo GetSingleVideo(VideoId videoId)
         {
+            YouTubeApi.getMediaTracksInfoImmediately = false;
+            YouTubeApi.decryptMediaTrackUrlsAutomaticallyIfPossible = false;
             YouTubeApi api = new YouTubeApi();
-            return api.GetVideo(videoId);
+            if (config.UseHiddenApiForGettingInfo)
+            {
+                YouTubeVideo video = api.GetVideo(videoId);
+                return video;
+            }
+            else
+            {
+                YouTubeVideoWebPageResult youTubeVideoWebPageResult = YouTubeVideoWebPage.Get(videoId);
+                if (youTubeVideoWebPageResult.ErrorCode == 200)
+                {
+                    return api.GetVideo(youTubeVideoWebPageResult.VideoWebPage.WebPageCode);
+                }
+            }
+            return null;
         }
 
         public static List<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)

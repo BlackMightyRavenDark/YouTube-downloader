@@ -1062,7 +1062,7 @@ namespace YouTube_downloader
 
             try
             {
-                YouTubeApiLib.YouTubeVideo video = SearchSingleVideo(videoId);
+                YouTubeApiLib.YouTubeVideo video = GetSingleVideo(videoId);
                 if (video != null)
                 {
                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
@@ -1221,7 +1221,7 @@ namespace YouTube_downloader
                             try
                             {
                                 VideoId videoId = new VideoId(item.ID);
-                                YouTubeApiLib.YouTubeVideo video = SearchSingleVideo(videoId);
+                                YouTubeApiLib.YouTubeVideo video = GetSingleVideo(videoId);
                                 if (video != null)
                                 {
                                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
