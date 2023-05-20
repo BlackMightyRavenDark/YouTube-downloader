@@ -239,31 +239,39 @@ namespace YouTube_downloader
             }
 
             lblStatus.Text = "Состояние: Определение доступных форматов...";
+
             videoFormats.Clear();
             containerFormats.Clear();
             audioFormats.Clear();
             contextMenuDownloads.Items.Clear();
 
             LinkedList<YouTubeMediaTrack> mediaTracks = null;
-            bool useHiddenApi = config.UseHiddenApiForGettingInfo;
-            await Task.Run(() =>
+            if (VideoInfo.RawInfo.DataGettingMethod != YouTubeApiLib.Utils.VideoInfoGettingMethod.Manual)
             {
-                YouTubeVideo video = GetSingleVideo(new VideoId(VideoInfo.Id));
-                if (video != null)
+                bool useHiddenApi = config.UseHiddenApiForGettingInfo;
+                await Task.Run(() =>
                 {
-                    if (!YouTubeApi.getMediaTracksInfoImmediately)
+                    YouTubeVideo video = GetSingleVideo(new VideoId(VideoInfo.Id));
+                    if (video != null)
                     {
-                        YouTubeApiLib.Utils.VideoInfoGettingMethod method = useHiddenApi ?
-                            YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-                            YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-                        video.UpdateMediaFormats(method);
+                        if (!YouTubeApi.getMediaTracksInfoImmediately)
+                        {
+                            YouTubeApiLib.Utils.VideoInfoGettingMethod method = useHiddenApi ?
+                                YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
+                                YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+                            video.UpdateMediaFormats(method);
+                        }
+                        mediaTracks = video.MediaTracks;
                     }
-                    mediaTracks = video.MediaTracks;
-                }
 
-                //TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
-                //VideoInfo.UpdateMediaFormats());
-            });
+                    //TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
+                    //VideoInfo.UpdateMediaFormats());
+                });
+            }
+            else
+            {
+                mediaTracks = VideoInfo.MediaTracks;
+            }
 
             if (mediaTracks == null || mediaTracks.Count == 0)
             {

@@ -1095,8 +1095,8 @@ namespace YouTube_downloader
         {
             DisableControls();
 
-            string webPage = richTextBoxWebPage.Text;
-            if (string.IsNullOrEmpty(webPage) || string.IsNullOrWhiteSpace(webPage))
+            string webPageCode = richTextBoxWebPage.Text;
+            if (string.IsNullOrEmpty(webPageCode) || string.IsNullOrWhiteSpace(webPageCode))
             {
                 MessageBox.Show("Вставьте код веб-страницы с видео!", "Ошибка!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1113,34 +1113,37 @@ namespace YouTube_downloader
             Application.DoEvents();
             scrollBarSearchResults.Value = 0;
 
-            string videoInfo = ExtractVideoInfoFromWebPage(webPage);
-            if (!string.IsNullOrEmpty(videoInfo))
+            try
             {
-                JObject j = JObject.Parse(videoInfo);
-                if (j != null)
+                YouTubeApi api = new YouTubeApi();
+                YouTubeVideo video = api.GetVideo(webPageCode);
+                if (video != null)
                 {
-                    JArray jaVideos = new JArray();
-                    jaVideos.Add(j);
-                    JObject json = new JObject();
-                    json.Add(new JProperty("videos", jaVideos));
-                    int count = ParseList(json.ToString());
-                    if (count > 0)
+                    if (!YouTubeApi.getMediaTracksInfoImmediately)
                     {
-                        framesVideo[0].webPage = webPage;
-                        StackFrames();
+                        video.UpdateMediaFormats(video.RawInfo);
                     }
-                    tabPageSearchResults.Text = $"Результаты поиска: {count}";
+                    FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
+                    frame.VideoInfo = video;
+                    frame.SetMenusFontSize(config.MenusFontSize);
+                    framesVideo.Add(frame);
+                    StackFrames();
+
+                    tabPageSearchResults.Text = "Результаты поиска: 1";
                     tabControlMain.SelectedTab = tabPageSearchResults;
+                    editSearchUrl.Text = null;
+                    richTextBoxWebPage.Text = null;
                 }
                 else
                 {
-                    MessageBox.Show("Ошибка парсинга!", "Ошибка!",
+                    MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Ошибка парсинга!", "Ошибка!",
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message, "Ошибатор ошибок",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
