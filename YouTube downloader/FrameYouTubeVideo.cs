@@ -896,26 +896,7 @@ namespace YouTube_downloader
 
             List<DownloadResult> downloadResults = new List<DownloadResult>();
             bool audioOnly = IsAudioOnly(tracksToDownload);
-            int errorCode;
-            int counter = 0;
-            do
-            {
-                DownloadResult downloadResult = await DownloadYouTubeMediaTrack(
-                    tracksToDownload[counter], formattedFileName, audioOnly);
-                if (downloadResult == null)
-                {
-                    errorCode = 400;
-                    break;
-                }
-                else
-                {
-                    errorCode = downloadResult.ErrorCode;
-                    downloadResults.Add(downloadResult);
-                }
-                counter++;
-            }
-            while (errorCode == 200 && counter < tracksToDownload.Count);
-
+            int errorCode = await DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults);
             lblProgress.Text = null;
             lblProgress.Refresh();
 
@@ -1043,6 +1024,28 @@ namespace YouTube_downloader
             downloading = false;
             btnDownload.Text = "Скачать";
             btnDownload.Enabled = true;
+        }
+
+        private async Task<int> DownloadTracks(IEnumerable<YouTubeMediaTrack> tracks,
+            string formattedFileName, bool audioOnly, List<DownloadResult> results)
+        {
+            foreach (YouTubeMediaTrack track in tracks)
+            {
+                DownloadResult downloadResult = await DownloadYouTubeMediaTrack(
+                    track, formattedFileName, audioOnly);
+                if (downloadResult == null)
+                {
+                    return 400;
+                }
+                else if (downloadResult.ErrorCode != 200)
+                {
+                    return downloadResult.ErrorCode;
+                }
+
+                results.Add(downloadResult);
+            }
+
+            return 200;
         }
 
         private bool IsAudioOnly(IEnumerable<YouTubeMediaTrack> mediaTracks)
