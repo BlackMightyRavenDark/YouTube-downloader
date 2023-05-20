@@ -1003,28 +1003,15 @@ namespace YouTube_downloader
 
                     default:
                         {
-                            string errorMessage = $"{VideoInfo.Title}\nСкачивание прервано!";
-                            if (downloadResults != null && downloadResults.Count > 0)
-                            {
-                                DownloadResult dr = downloadResults[downloadResults.Count - 1];
-                                if (!string.IsNullOrEmpty(dr.ErrorMessage))
-                                {
-                                    errorMessage += $"\n{dr.ErrorMessage}";
-                                    lblStatus.Text = $"Состояние: Ошибка {dr.ErrorMessage}";
-                                }
-                                else
-                                {
-                                    lblStatus.Text = $"Состояние: Ошибка {dr.ErrorCode}";
-                                }
-                            }
-                            else
-                            {
-                                errorMessage += $"\nСписок форматов для скачивания оказался пуст!";
-                                lblStatus.Text = "Состояние: Ошибка!";
-                            }
+                            lblStatus.Text = $"Состояние: Ошибка {errorCode}";
 
+                            string errorMessage = $"{VideoInfo.Title}\nСкачивание прервано!\n";
+                            errorMessage += downloadResults == null || downloadResults.Count == 0 ?
+                                "Список форматов для скачивания оказался пуст!" :
+                                $"Код ошибки: {errorCode}";
                             MessageBox.Show(errorMessage, "Ошибатор ошибок",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                             break;
                         }
                 }
