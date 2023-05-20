@@ -408,7 +408,7 @@ namespace YouTube_downloader
             else if (track is YouTubeMediaTrackVideo)
             {
                 YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
-                res = video.IsHlsManifest ? "HLS: " : "Video: ";
+                res = video.IsHlsManifest ? "HLS: " : video.IsDashManifest ? "DASH Video: " : "Video: ";
                 if (video.FormatId != 0)
                     res += $"ID {video.FormatId}, ";
                 res += $"{video.VideoWidth}x{video.VideoHeight}";
