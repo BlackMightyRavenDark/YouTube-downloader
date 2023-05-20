@@ -745,10 +745,10 @@ namespace YouTube_downloader
                     return;
                 }
             }
-            else if (mi.Tag is YouTubeMediaTrack)
+            else if (mi.Tag is YouTubeMediaTrackVideo)
             {
-                YouTubeMediaTrack videoFile = mi.Tag as YouTubeMediaTrack;
-                if (videoFile.IsHlsManifest)
+                YouTubeMediaTrackVideo videoTrack = mi.Tag as YouTubeMediaTrackVideo;
+                if (videoTrack.IsHlsManifest)
                 {
                     if (IsFfmpegAvailable())
                     {
@@ -757,7 +757,7 @@ namespace YouTube_downloader
 
                         string filePath = MultiThreadedDownloader.GetNumberedFileName(
                             $"{config.DownloadingDirPath}{formattedFileName}.ts");
-                        GrabHls(videoFile.FileUrl, filePath);
+                        GrabHls(videoTrack.FileUrl, filePath);
                         lblStatus.Text = null;
                     }
                     else
@@ -785,7 +785,7 @@ namespace YouTube_downloader
                 }
                 else
                 {
-                    tracksToDownload.Add(videoFile);
+                    tracksToDownload.Add(videoTrack);
                 }
 
                 if (audioFormats.Count > 0)
@@ -826,6 +826,10 @@ namespace YouTube_downloader
                         }
                     }
                 }
+            }
+            else if (mi.Tag is YouTubeMediaTrackContainer)
+            {
+                tracksToDownload.Add(mi.Tag as YouTubeMediaTrackContainer);
             }
             else if (mi.Tag is YouTubeMediaTrackAudio)
             {
