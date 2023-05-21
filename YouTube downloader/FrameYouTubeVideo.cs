@@ -908,11 +908,12 @@ namespace YouTube_downloader
 
             List<DownloadResult> downloadResults = new List<DownloadResult>();
             bool audioOnly = IsAudioOnly(tracksToDownload);
-            int errorCode = await DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults);
+            DownloadResult downloadResult =
+                await DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults);
             lblProgress.Text = null;
             lblProgress.Refresh();
 
-            if (errorCode == 200)
+            if (downloadResult.ErrorCode == 200)
             {
                 if (config.MergeToContainer && needToMerge && !audioOnly && IsFfmpegAvailable())
                 {
@@ -957,11 +958,11 @@ namespace YouTube_downloader
 
                     if (config.DeleteSourceFiles)
                     {
-                        foreach (DownloadResult downloadResult in downloadResults)
+                        foreach (DownloadResult dr in downloadResults)
                         {
-                            if (File.Exists(downloadResult.FileName))
+                            if (File.Exists(dr.FileName))
                             {
-                                File.Delete(downloadResult.FileName);
+                                File.Delete(dr.FileName);
                             }
                         }
                     }
@@ -979,7 +980,7 @@ namespace YouTube_downloader
             }
             else
             {
-                switch (errorCode)
+                switch (downloadResult.ErrorCode)
                 {
                     case FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER:
                         lblStatus.Text = "Состояние: Скачивание отменено";
@@ -988,14 +989,13 @@ namespace YouTube_downloader
                         break;
 
                     case FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE:
-                        lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
-                        MessageBox.Show($"{VideoInfo.Title}\n" +
-                            "Недостаточно места на диске!", "Ошибка!",
+                        lblStatus.Text = "Состояние: Ошибка! Недостаточно места на диске!";
+                        MessageBox.Show($"{VideoInfo.Title}\nНедостаточно места на диске!", "Ошибка!",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
 
                     case ERROR_CIPHER_DECRYPTION:
-                        lblStatus.Text = "Состояние: Ошибка ERROR_CIPHER_DECRYPTION";
+                        lblStatus.Text = "Состояние: Ошибка расшифровки Cipher!";
                         MessageBox.Show($"{VideoInfo.Title}\n" +
                             "Ошибка расшифровки ссылки! Попробуйте ещё раз.", "Ошибка!",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1003,7 +1003,7 @@ namespace YouTube_downloader
 
                     case ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM:
                         {
-                            lblStatus.Text = "Состояние: Ошибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM";
+                            lblStatus.Text = "Состояние: Ошибка! Не указан алгоритм для расшифровки Cipher!";
                             string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
                                 "для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
                                 "известную одному лишь дьяволу.\n" +
@@ -1013,19 +1013,57 @@ namespace YouTube_downloader
                             break;
                         }
 
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS:
+                        lblStatus.Text = "Состояние: Ошибка объединения чанков!";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\nОшибка объединения чанков!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_CREATE_FILE:
+                        lblStatus.Text = "Состояние: Ошибка создания файла!";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\nОшибка создания файла!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_NO_URL_SPECIFIED:
+                        lblStatus.Text = "Состояние: Ошибка! Не указана ссылка на файл!";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\nНе указана ссылка на файл!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_NO_FILE_NAME_SPECIFIED:
+                        lblStatus.Text = "Состояние: Ошибка! Не указано имя файла!";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\nОшибка создания файла!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_TEMPORARY_DIR_NOT_EXISTS:
+                        lblStatus.Text = "Состояние: Ошибка! Папка для временных файлов не существует!";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\n" +
+                            "Папка для временных файлов не существует!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_DIR_NOT_EXISTS:
+                        lblStatus.Text = "Состояние: Ошибка! Папка для объединения чанков не существует!";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\n" +
+                            "Папка для объединения чанков не существует!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM:
+                        lblStatus.Text = $"Состояние: Ошибка! {downloadResult.ErrorMessage}";
+                        MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\n{downloadResult.ErrorMessage}", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
                     default:
-                        {
-                            lblStatus.Text = $"Состояние: Ошибка {errorCode}";
-
-                            string errorMessage = $"{VideoInfo.Title}\nСкачивание прервано!\n";
-                            errorMessage += downloadResults == null || downloadResults.Count == 0 ?
-                                "Список форматов для скачивания оказался пуст!" :
-                                $"Код ошибки: {errorCode}";
-                            MessageBox.Show(errorMessage, "Ошибатор ошибок",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                            break;
-                        }
+                        lblStatus.Text = $"Состояние: Ошибка {downloadResult.ErrorCode}";
+                        MessageBox.Show(
+                            $"{VideoInfo.Title}\nСкачивание прервано!\nКод ошибки: {downloadResult.ErrorCode}",
+                            "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
                 }
             }
 
@@ -1034,26 +1072,23 @@ namespace YouTube_downloader
             btnDownload.Enabled = true;
         }
 
-        private async Task<int> DownloadTracks(IEnumerable<YouTubeMediaTrack> tracks,
+        private async Task<DownloadResult> DownloadTracks(IEnumerable<YouTubeMediaTrack> tracks,
             string formattedFileName, bool audioOnly, List<DownloadResult> results)
         {
+            DownloadResult result = null;
             foreach (YouTubeMediaTrack track in tracks)
             {
-                DownloadResult downloadResult = await DownloadYouTubeMediaTrack(
-                    track, formattedFileName, audioOnly);
-                if (downloadResult == null)
+                result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly);
+                if (result.ErrorCode != 200)
                 {
-                    return 400;
-                }
-                else if (downloadResult.ErrorCode != 200)
-                {
-                    return downloadResult.ErrorCode;
+                    return result;
                 }
 
-                results.Add(downloadResult);
+                results.Add(result);
             }
 
-            return 200;
+            return result == null ? new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
+                "Список ссылок для скачивания пуст!", null) : result;
         }
 
         private bool IsAudioOnly(IEnumerable<YouTubeMediaTrack> mediaTracks)
