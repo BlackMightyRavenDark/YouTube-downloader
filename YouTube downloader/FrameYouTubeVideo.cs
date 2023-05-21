@@ -501,6 +501,8 @@ namespace YouTube_downloader
                 bool isContainer = mediaTrack is YouTubeMediaTrackContainer;
                 string mediaTypeString = isVideo || isContainer ? "видео" : "аудио";
 
+                string fileUrl = mediaTrack.FileUrl;
+
                 #region Расшифровка Cipher
                 //TODO: Вынести это в отдельный метод.
                 if (mediaTrack.IsCiphered)
@@ -518,9 +520,9 @@ namespace YouTube_downloader
                         return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                     }
 
-                    string url = $"{mediaTrack.CipherEncryptedFileUrl}&sig={cipherDecrypted}";
+                    fileUrl = $"{mediaTrack.CipherEncryptedFileUrl}&sig={cipherDecrypted}";
 
-                    if (FileDownloader.GetUrlContentLength(url, out _, out _) != 200)
+                    if (FileDownloader.GetUrlContentLength(fileUrl, out _, out _) != 200)
                     {
                         return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
                     }
@@ -545,7 +547,7 @@ namespace YouTube_downloader
                 bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
                 MultiThreadedDownloader downloader = new MultiThreadedDownloader();
                 downloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
-                downloader.Url = mediaTrack.FileUrl;
+                downloader.Url = fileUrl;
                 if (!useRamToStoreTemporaryFiles)
                 {
                     downloader.TempDirectory = config.TempDirPath;
