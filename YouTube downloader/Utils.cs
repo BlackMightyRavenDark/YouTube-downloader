@@ -340,7 +340,7 @@ namespace YouTube_downloader
                 YouTubeVideoWebPageResult youTubeVideoWebPageResult = YouTubeVideoWebPage.Get(videoId);
                 if (youTubeVideoWebPageResult.ErrorCode == 200)
                 {
-                    return api.GetVideo(youTubeVideoWebPageResult.VideoWebPage.WebPageCode);
+                    return api.GetVideo(youTubeVideoWebPageResult.VideoWebPage);
                 }
             }
             return null;
