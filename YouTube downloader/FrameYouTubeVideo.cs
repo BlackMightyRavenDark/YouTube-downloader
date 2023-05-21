@@ -251,19 +251,32 @@ namespace YouTube_downloader
                 bool useHiddenApi = config.UseHiddenApiForGettingInfo;
                 await Task.Run(() =>
                 {
-                    YouTubeVideo video = GetSingleVideo(new VideoId(VideoInfo.Id));
-                    if (video != null)
+                    if (useHiddenApi)
                     {
-                        if (!YouTubeApi.getMediaTracksInfoImmediately)
+                        JObject body = GenerateVideoInfoDecryptedRequestBody(VideoInfo.Id);
+                        string url = "https://www.youtube.com/youtubei/v1/player";
+                        if (HttpsPost(url, body.ToString(), out string response) == 200)
                         {
-                            YouTubeApiLib.Utils.VideoInfoGettingMethod method = useHiddenApi ?
-                                YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-                                YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-                            video.UpdateMediaFormats(method);
+                            RawVideoInfo rawVideoInfo = new RawVideoInfo(JObject.Parse(response),
+                                YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls);
+                            mediaTracks = rawVideoInfo.StreamingData?.Parse();
                         }
-                        mediaTracks = video.MediaTracks;
                     }
-
+                    else
+                    {
+                        YouTubeVideo video = GetSingleVideo(new VideoId(VideoInfo.Id));
+                        if (video != null)
+                        {
+                            if (!YouTubeApi.getMediaTracksInfoImmediately)
+                            {
+                                YouTubeApiLib.Utils.VideoInfoGettingMethod method = useHiddenApi ?
+                                    YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
+                                    YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+                                video.UpdateMediaFormats(method);
+                            }
+                            mediaTracks = video.MediaTracks;
+                        }
+                    }
                     //TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
                     //VideoInfo.UpdateMediaFormats());
                 });

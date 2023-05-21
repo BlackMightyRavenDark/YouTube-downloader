@@ -54,7 +54,7 @@ namespace YouTube_downloader
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.ContentLength = body.Length;
             httpWebRequest.Host = "www.youtube.com";
-            httpWebRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3591.2 Safari/537.36";
+            httpWebRequest.UserAgent = "com.google.android.youtube/17.36.4 (Linux; U; Android 12; GB) gzip";
             httpWebRequest.Headers.Add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
             httpWebRequest.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
             httpWebRequest.Method = "POST";
@@ -175,24 +175,24 @@ namespace YouTube_downloader
         /// <returns>Тело запроса</returns>
         public static JObject GenerateVideoInfoDecryptedRequestBody(string videoId)
         {
-            const string CLIENT_VERSION = "16.46.37";
+            const string CLIENT_NAME = "ANDROID_TESTSUITE";
+            const string CLIENT_VERSION = "1.9";
+            const int SDK_VERSION = 30;
 
             JObject jClient = new JObject();
+            jClient["clientName"] = CLIENT_NAME;
+            jClient["clientVersion"] = CLIENT_VERSION;
+            jClient["androidSdkVersion"] = SDK_VERSION;
             jClient["hl"] = "en";
             jClient["gl"] = "US";
-            jClient["clientName"] = "ANDROID";
-            jClient["clientVersion"] = CLIENT_VERSION;
-            jClient["clientScreen"] = null;
             jClient["utcOffsetMinutes"] = 0;
 
             JObject jContext = new JObject();
             jContext.Add(new JProperty("client", jClient));
 
             JObject json = new JObject();
-            json.Add(new JProperty("context", jContext));
-            json["contentCheckOk"] = true;
-            json["racyCheckOk"] = true;
             json["videoId"] = videoId;
+            json.Add(new JProperty("context", jContext));
 
             return json;
         }
