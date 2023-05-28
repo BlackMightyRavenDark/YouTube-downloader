@@ -585,20 +585,28 @@ namespace YouTube_downloader
                     JToken jt = json.Value<JToken>("nextPageToken");
                     pageToken = jt == null ? null : jt.Value<string>();
                     JArray jsonArr = json.Value<JArray>("items");
-                    for (int i = 0; i < jsonArr.Count; ++i)
+                    if (jsonArr != null && jsonArr.Count > 0)
                     {
-                        JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
-                        string videoId = jObject.Value<JObject>("id").Value<string>("videoId");
-                        if (GetYouTubeVideoInfoEx(videoId, out string info, config.UseHiddenApiForGettingInfo) == 200)
+                        for (int i = 0; i < jsonArr.Count; ++i)
                         {
-                            JObject j = JObject.Parse(info);
-                            jaVideos.Add(j);
+                            JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
+                            string videoId = jObject.Value<JObject>("id")?.Value<string>("videoId");
+                            if (!string.IsNullOrEmpty(videoId) && !string.IsNullOrWhiteSpace(videoId))
+                            {
+                                //TODO: Fix this shit!
+                                YouTubeVideo video = GetSingleVideo(new VideoId(videoId));
+                                if (video != null)
+                                {
+                                    jaVideos.Add(video.RawInfo.RawData);
+                                    if (sum++ + 1 >= maxVideos)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            Application.DoEvents();
                         }
-                        if (sum++ + 1 >= maxVideos)
-                        {
-                            break;
-                        }
-                        Application.DoEvents();
                     }
                 }
 
@@ -731,12 +739,17 @@ namespace YouTube_downloader
             {
                 for (int i = 0; i < jaVideos.Count; ++i)
                 {
-                    YouTubeApiLib.YouTubeVideo video = ParseVideoInfo(jaVideos[i].Value<JObject>());
+                    //TODO: Fix this shit!
+                    YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+                        YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
+                        YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+                    RawVideoInfo rawVideoInfo = new RawVideoInfo(jaVideos[i].Value<JObject>(), method);
+                    YouTubeApiLib.YouTubeVideo video = YouTubeApiLib.Utils.MakeYouTubeVideo(rawVideoInfo);
                     if (video != null)
                     {
                         videos.Add(video);
 
-                        FrameYouTubeVideo frameVideo =  new FrameYouTubeVideo(panelSearchResults);
+                        FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(panelSearchResults);
                         frameVideo.VideoInfo = video;
                         frameVideo.SetMenusFontSize(config.MenusFontSize);
                         frameVideo.FavoriteChannelChanged += (s, id, newState) =>
