@@ -736,7 +736,7 @@ namespace YouTube_downloader
                     {
                         videos.Add(video);
 
-                        FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(panelSearchResults);
+                        FrameYouTubeVideo frameVideo =  new FrameYouTubeVideo(panelSearchResults);
                         frameVideo.VideoInfo = video;
                         frameVideo.SetMenusFontSize(config.MenusFontSize);
                         frameVideo.FavoriteChannelChanged += (s, id, newState) =>
@@ -1068,6 +1068,18 @@ namespace YouTube_downloader
                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
                     frame.VideoInfo = video;
                     frame.SetMenusFontSize(config.MenusFontSize);
+                    frame.FavoriteChannelChanged += (s, id, newState) =>
+                    {
+                        for (int j = 0; j < framesVideo.Count; ++j)
+                        {
+                            if (framesVideo[j].VideoInfo.OwnerChannelId == id)
+                            {
+                                framesVideo[j].FavoriteChannel = newState;
+                            }
+                        }
+                    };
+                    frame.Activated += event_FrameActivated;
+                    frame.OpenChannel += event_OpenChannel;
                     framesVideo.Add(frame);
                     StackFrames();
 
@@ -1126,6 +1138,18 @@ namespace YouTube_downloader
                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
                     frame.VideoInfo = video;
                     frame.SetMenusFontSize(config.MenusFontSize);
+                    frame.FavoriteChannelChanged += (s, id, newState) =>
+                    {
+                        for (int j = 0; j < framesVideo.Count; ++j)
+                        {
+                            if (framesVideo[j].VideoInfo.OwnerChannelId == id)
+                            {
+                                framesVideo[j].FavoriteChannel = newState;
+                            }
+                        }
+                    };
+                    frame.Activated += event_FrameActivated;
+                    frame.OpenChannel += event_OpenChannel;
                     framesVideo.Add(frame);
                     StackFrames();
 
@@ -1230,6 +1254,18 @@ namespace YouTube_downloader
                                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
                                     frame.VideoInfo = video;
                                     frame.SetMenusFontSize(config.MenusFontSize);
+                                    frame.FavoriteChannelChanged += (s, id, newState) =>
+                                    {
+                                        for (int j = 0; j < framesVideo.Count; ++j)
+                                        {
+                                            if (framesVideo[j].VideoInfo.OwnerChannelId == id)
+                                            {
+                                                framesVideo[j].FavoriteChannel = newState;
+                                            }
+                                        }
+                                    };
+                                    frame.Activated += event_FrameActivated;
+                                    frame.OpenChannel += event_OpenChannel;
                                     framesVideo.Add(frame);
                                     StackFrames();
 
