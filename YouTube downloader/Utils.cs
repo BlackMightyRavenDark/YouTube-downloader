@@ -997,28 +997,4 @@ namespace YouTube_downloader
             }
         }
     }
-
-    public class FormatListSorterFileSize : IComparer<YouTubeMediaTrack>
-    {
-        public int Compare(YouTubeMediaTrack x, YouTubeMediaTrack y)
-        {
-            if (x == null || x.IsDashManifest || x.IsHlsManifest || x.ContentLength <= 0L || y == null)
-            {
-                return 0;
-            }
-            return x.ContentLength < y.ContentLength ? 1 : -1;
-        }
-    }
-
-    public class FormatListSorterDashBitrate : IComparer<YouTubeMediaTrack>
-    {
-        public int Compare(YouTubeMediaTrack x, YouTubeMediaTrack y)
-        {
-            if (x != null && y != null && x.IsDashManifest && y.IsDashManifest && !x.IsHlsManifest && !y.IsHlsManifest)
-            {
-                return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
-            }
-            return 0;
-        }
-    }
 }

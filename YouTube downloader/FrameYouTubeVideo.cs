@@ -307,16 +307,37 @@ namespace YouTube_downloader
             {
                 if (config.SortDashFormatsByBitrate)
                 {
-                    videoFormats.Sort(new FormatListSorterDashBitrate());
-                    audioFormats.Sort(new FormatListSorterDashBitrate());
+                    int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
+                    {
+                        if (x == null || x.IsHlsManifest || x.AverageBitrate <= 0 ||
+                            y == null || y.IsHlsManifest || y.AverageBitrate <= 0)
+                        {
+                            return 0;
+                        }
+                        return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
+                    }
+
+                    videoFormats.Sort(SorterFunc);
+                    audioFormats.Sort(SorterFunc);
                 }
             }
             else
             {
                 if (config.SortFormatsByFileSize)
                 {
-                    videoFormats.Sort(new FormatListSorterFileSize());
-                    audioFormats.Sort(new FormatListSorterFileSize());
+                    int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
+                    {
+                        if (x == null || x.IsHlsManifest || x.ContentLength <= 0L ||
+                            y == null || y.IsHlsManifest || y.ContentLength <= 0L ||
+                            x.ContentLength == y.ContentLength)
+                        {
+                            return 0;
+                        }
+                        return x.ContentLength < y.ContentLength ? 1 : -1;
+                    }
+
+                    videoFormats.Sort(SorterFunc);
+                    audioFormats.Sort(SorterFunc);
                 }
             }
 
@@ -328,9 +349,7 @@ namespace YouTube_downloader
                     {
                         if (i != 0)
                         {
-                            YouTubeMediaTrackAudio track = audioFormats[0];
-                            audioFormats[0] = audioFormats[i];
-                            audioFormats[i] = track;
+                            (audioFormats[i], audioFormats[0]) = (audioFormats[0], audioFormats[i]);
                         }
 
                         break;
