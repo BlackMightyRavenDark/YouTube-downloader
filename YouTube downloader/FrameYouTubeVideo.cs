@@ -141,7 +141,9 @@ namespace YouTube_downloader
             }
 
             lblChannelTitle.Text = videoInfo.OwnerChannelTitle;
-            string datePublishedString = videoInfo.SimplifiedInfo != null && videoInfo.SimplifiedInfo.IsMicroformatInfoAvailable ?
+            string datePublishedString = videoInfo.SimplifiedInfo != null &&
+                videoInfo.SimplifiedInfo.IsMicroformatInfoAvailable &&
+                videoInfo.DatePublished < DateTime.MaxValue ?
                 videoInfo.DatePublished.ToString("yyyy.MM.dd") : "Недоступно";
             lblDatePublished.Text = $"Дата публикации: {datePublishedString}";
             FavoriteItem favoriteItem = new FavoriteItem(
