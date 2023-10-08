@@ -141,9 +141,7 @@ namespace YouTube_downloader
             }
 
             lblChannelTitle.Text = videoInfo.OwnerChannelTitle;
-            string datePublishedString = videoInfo.SimplifiedInfo != null &&
-                videoInfo.SimplifiedInfo.IsMicroformatInfoAvailable &&
-                videoInfo.DatePublished < DateTime.MaxValue ?
+            string datePublishedString = IsVideoDateAvailable(videoInfo) ?
                 videoInfo.DatePublished.ToString("yyyy.MM.dd") : "Недоступно";
             lblDatePublished.Text = $"Дата публикации: {datePublishedString}";
             FavoriteItem favoriteItem = new FavoriteItem(
@@ -750,7 +748,10 @@ namespace YouTube_downloader
             lblStatus.Text = null;
             lblProgress.Text = null;
 
-            string formattedFileName = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo));
+            string formattedFileName = FixFileName(FormatFileName(
+                IsVideoDateAvailable(VideoInfo) ?
+                config.OutputFileNameFormatWithDate :
+                config.OutputFileNameFormatWithoutDate, VideoInfo));
 
             List<YouTubeMediaTrack> tracksToDownload = new List<YouTubeMediaTrack>();
 
@@ -1615,7 +1616,8 @@ namespace YouTube_downloader
                 sfd.AddExtension = true;
                 sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
                 string imageFileName = $"_image_{img.Width}x{img.Height}";
-                string filePath = FixFileName(FormatFileName(config.OutputFileNameFormat, VideoInfo)) + imageFileName;
+                string filePath = FixFileName(FormatFileName(
+                    config.OutputFileNameFormatWithDate, VideoInfo)) + imageFileName;
                 sfd.FileName = filePath;
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {

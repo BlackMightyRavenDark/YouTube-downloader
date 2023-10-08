@@ -42,7 +42,8 @@ namespace YouTube_downloader
                 json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
                 json["browserExeFilePath"] = config.BrowserExeFilePath;
                 json["ffmpegExeFilePath"] = config.FfmpegExeFilePath;
-                json["outputFileNameFormat"] = config.OutputFileNameFormat;
+                json["outputFileNameFormatWithDate"] = config.OutputFileNameFormatWithDate;
+                json["outputFileNameFormatWithoutDate"] = config.OutputFileNameFormatWithoutDate;
                 json["maxSearch"] = config.MaxSearch;
                 json["sortFormatsByFileSize"] = config.SortFormatsByFileSize;
                 json["sortDashFormatsByBitrate"] = config.SortDashFormatsByBitrate;
@@ -114,10 +115,17 @@ namespace YouTube_downloader
                     }
                 }
                 {
-                    JToken jt = json.Value<JToken>("outputFileNameFormat");
+                    JToken jt = json.Value<JToken>("outputFileNameFormatWithDate");
                     if (jt != null)
                     {
-                        config.OutputFileNameFormat = jt.Value<string>();
+                        config.OutputFileNameFormatWithDate = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("outputFileNameFormatWithoutDate");
+                    if (jt != null)
+                    {
+                        config.OutputFileNameFormatWithoutDate = jt.Value<string>();
                     }
                 }
                 {
@@ -287,7 +295,8 @@ namespace YouTube_downloader
                 editCipherDecryptionAlgo.Text = config.CipherDecryptionAlgo;
                 editYouTubeApiKey.Text = config.YouTubeApiV3Key;
                 editBrowser.Text = config.BrowserExeFilePath;
-                editOutputFileNameFormat.Text = config.OutputFileNameFormat;
+                editOutputFileNameFormatWithDate.Text = config.OutputFileNameFormatWithDate;
+                editOutputFileNameFormatWithoutDate.Text = config.OutputFileNameFormatWithoutDate;
                 numericUpDownSearchResult.Value = config.MaxSearch;
                 editFfmpeg.Text = config.FfmpegExeFilePath;
                 chkMergeAdaptive.Checked = config.MergeToContainer;
@@ -1541,15 +1550,26 @@ namespace YouTube_downloader
             config.SavePreviewImage = chkSaveImage.Checked;
         }
 
-        private void editOutputFileNameFormat_Leave(object sender, EventArgs e)
+        private void editOutputFileNameFormatWithDate_TextChanged(object sender, EventArgs e)
         {
-            config.OutputFileNameFormat = editOutputFileNameFormat.Text;
+            config.OutputFileNameFormatWithDate = editOutputFileNameFormatWithDate.Text;
         }
 
-        private void btnResetFileNameFormat_Click(object sender, EventArgs e)
+        private void btnResetFileNameFormatWithDate_Click(object sender, EventArgs e)
         {
-            config.OutputFileNameFormat = FILENAME_FORMAT_DEFAULT;
-            editOutputFileNameFormat.Text = FILENAME_FORMAT_DEFAULT;
+            config.OutputFileNameFormatWithDate = FILENAME_FORMAT_DEFAULT_WITH_DATE;
+            editOutputFileNameFormatWithDate.Text = FILENAME_FORMAT_DEFAULT_WITH_DATE;
+        }
+
+        private void editOutputFileNameFormatWithoutDate_TextChanged(object sender, EventArgs e)
+        {
+            config.OutputFileNameFormatWithoutDate = editOutputFileNameFormatWithoutDate.Text;
+        }
+
+        private void btnResetFileNameFormatWithoutDate_Click(object sender, EventArgs e)
+        {
+            config.OutputFileNameFormatWithoutDate = FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
+            editOutputFileNameFormatWithoutDate.Text = FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
         }
 
         private void numericUpDownThreadsAudio_ValueChanged(object sender, EventArgs e)

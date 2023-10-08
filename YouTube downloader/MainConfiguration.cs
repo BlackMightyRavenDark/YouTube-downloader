@@ -14,7 +14,8 @@ namespace YouTube_downloader
         public string TempDirPath { get; set; }
         public string ChunksMergingDirPath { get; set; }
         public string FavoritesFilePath { get; set; }
-        public string OutputFileNameFormat { get; set; }
+        public string OutputFileNameFormatWithDate { get; set; }
+        public string OutputFileNameFormatWithoutDate { get; set; }
         public int MaxSearch { get; set; }
         public bool SortFormatsByFileSize { get; set; }
         public bool SortDashFormatsByBitrate { get; set; }
@@ -92,7 +93,8 @@ namespace YouTube_downloader
             YouTubeApiV3Key = null;
             BrowserExeFilePath = null;
             FfmpegExeFilePath = "FFMPEG.EXE";
-            OutputFileNameFormat = Utils.FILENAME_FORMAT_DEFAULT;
+            OutputFileNameFormatWithDate = Utils.FILENAME_FORMAT_DEFAULT_WITH_DATE;
+            OutputFileNameFormatWithoutDate = Utils.FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
             MaxSearch = 50;
             SortFormatsByFileSize = true;
             SortDashFormatsByBitrate = true;

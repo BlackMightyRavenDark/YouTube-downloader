@@ -35,6 +35,9 @@ namespace YouTube_downloader
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPageFilesAndFolders = new System.Windows.Forms.TabPage();
+            this.label18 = new System.Windows.Forms.Label();
+            this.editOutputFileNameFormatWithDate = new System.Windows.Forms.TextBox();
+            this.btnResetFileNameFormatWithDate = new System.Windows.Forms.Button();
             this.btnQ = new System.Windows.Forms.Button();
             this.editMergingDirPath = new System.Windows.Forms.TextBox();
             this.btnSelectMergingPath = new System.Windows.Forms.Button();
@@ -43,8 +46,8 @@ namespace YouTube_downloader
             this.btnBrowseFfmpeg = new System.Windows.Forms.Button();
             this.editFfmpeg = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.editOutputFileNameFormat = new System.Windows.Forms.TextBox();
-            this.btnResetFileNameFormat = new System.Windows.Forms.Button();
+            this.editOutputFileNameFormatWithoutDate = new System.Windows.Forms.TextBox();
+            this.btnResetFileNameFormatWithoutDate = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.btnBrowseDowloadingPath = new System.Windows.Forms.Button();
             this.btnSelectBrowser = new System.Windows.Forms.Button();
@@ -150,8 +153,8 @@ namespace YouTube_downloader
             this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
@@ -235,6 +238,9 @@ namespace YouTube_downloader
             // tabPageFilesAndFolders
             // 
             this.tabPageFilesAndFolders.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageFilesAndFolders.Controls.Add(this.label18);
+            this.tabPageFilesAndFolders.Controls.Add(this.editOutputFileNameFormatWithDate);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnResetFileNameFormatWithDate);
             this.tabPageFilesAndFolders.Controls.Add(this.btnQ);
             this.tabPageFilesAndFolders.Controls.Add(this.editMergingDirPath);
             this.tabPageFilesAndFolders.Controls.Add(this.btnSelectMergingPath);
@@ -243,8 +249,8 @@ namespace YouTube_downloader
             this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseFfmpeg);
             this.tabPageFilesAndFolders.Controls.Add(this.editFfmpeg);
             this.tabPageFilesAndFolders.Controls.Add(this.label8);
-            this.tabPageFilesAndFolders.Controls.Add(this.editOutputFileNameFormat);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnResetFileNameFormat);
+            this.tabPageFilesAndFolders.Controls.Add(this.editOutputFileNameFormatWithoutDate);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnResetFileNameFormatWithoutDate);
             this.tabPageFilesAndFolders.Controls.Add(this.label7);
             this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseDowloadingPath);
             this.tabPageFilesAndFolders.Controls.Add(this.btnSelectBrowser);
@@ -260,6 +266,36 @@ namespace YouTube_downloader
             this.tabPageFilesAndFolders.Size = new System.Drawing.Size(527, 357);
             this.tabPageFilesAndFolders.TabIndex = 0;
             this.tabPageFilesAndFolders.Text = "Файлы и папки";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(10, 126);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(217, 13);
+            this.label18.TabIndex = 25;
+            this.label18.Text = "Формат имени файла (дата определена):";
+            // 
+            // editOutputFileNameFormatWithDate
+            // 
+            this.editOutputFileNameFormatWithDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.editOutputFileNameFormatWithDate.Location = new System.Drawing.Point(13, 142);
+            this.editOutputFileNameFormatWithDate.Name = "editOutputFileNameFormatWithDate";
+            this.editOutputFileNameFormatWithDate.Size = new System.Drawing.Size(392, 20);
+            this.editOutputFileNameFormatWithDate.TabIndex = 24;
+            this.editOutputFileNameFormatWithDate.TextChanged += new System.EventHandler(this.editOutputFileNameFormatWithDate_TextChanged);
+            // 
+            // btnResetFileNameFormatWithDate
+            // 
+            this.btnResetFileNameFormatWithDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnResetFileNameFormatWithDate.Location = new System.Drawing.Point(411, 142);
+            this.btnResetFileNameFormatWithDate.Name = "btnResetFileNameFormatWithDate";
+            this.btnResetFileNameFormatWithDate.Size = new System.Drawing.Size(110, 20);
+            this.btnResetFileNameFormatWithDate.TabIndex = 23;
+            this.btnResetFileNameFormatWithDate.Text = "Вернуть как было";
+            this.btnResetFileNameFormatWithDate.UseVisualStyleBackColor = true;
+            this.btnResetFileNameFormatWithDate.Click += new System.EventHandler(this.btnResetFileNameFormatWithDate_Click);
             // 
             // btnQ
             // 
@@ -304,7 +340,7 @@ namespace YouTube_downloader
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(10, 204);
+            this.label11.Location = new System.Drawing.Point(10, 243);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(113, 13);
             this.label11.TabIndex = 18;
@@ -313,7 +349,7 @@ namespace YouTube_downloader
             // btnBrowseFfmpeg
             // 
             this.btnBrowseFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseFfmpeg.Location = new System.Drawing.Point(489, 220);
+            this.btnBrowseFfmpeg.Location = new System.Drawing.Point(489, 259);
             this.btnBrowseFfmpeg.Name = "btnBrowseFfmpeg";
             this.btnBrowseFfmpeg.Size = new System.Drawing.Size(32, 20);
             this.btnBrowseFfmpeg.TabIndex = 17;
@@ -325,7 +361,7 @@ namespace YouTube_downloader
             // 
             this.editFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editFfmpeg.Location = new System.Drawing.Point(13, 220);
+            this.editFfmpeg.Location = new System.Drawing.Point(13, 259);
             this.editFfmpeg.Name = "editFfmpeg";
             this.editFfmpeg.Size = new System.Drawing.Size(470, 20);
             this.editFfmpeg.TabIndex = 16;
@@ -334,37 +370,37 @@ namespace YouTube_downloader
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(10, 126);
+            this.label8.Location = new System.Drawing.Point(10, 165);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(122, 13);
+            this.label8.Size = new System.Drawing.Size(232, 13);
             this.label8.TabIndex = 15;
-            this.label8.Text = "Формат имени файла:";
+            this.label8.Text = "Формат имени файла (дата не определена):";
             // 
-            // editOutputFileNameFormat
+            // editOutputFileNameFormatWithoutDate
             // 
-            this.editOutputFileNameFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.editOutputFileNameFormatWithoutDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editOutputFileNameFormat.Location = new System.Drawing.Point(13, 142);
-            this.editOutputFileNameFormat.Name = "editOutputFileNameFormat";
-            this.editOutputFileNameFormat.Size = new System.Drawing.Size(392, 20);
-            this.editOutputFileNameFormat.TabIndex = 14;
-            this.editOutputFileNameFormat.Leave += new System.EventHandler(this.editOutputFileNameFormat_Leave);
+            this.editOutputFileNameFormatWithoutDate.Location = new System.Drawing.Point(13, 181);
+            this.editOutputFileNameFormatWithoutDate.Name = "editOutputFileNameFormatWithoutDate";
+            this.editOutputFileNameFormatWithoutDate.Size = new System.Drawing.Size(392, 20);
+            this.editOutputFileNameFormatWithoutDate.TabIndex = 14;
+            this.editOutputFileNameFormatWithoutDate.TextChanged += new System.EventHandler(this.editOutputFileNameFormatWithoutDate_TextChanged);
             // 
-            // btnResetFileNameFormat
+            // btnResetFileNameFormatWithoutDate
             // 
-            this.btnResetFileNameFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnResetFileNameFormat.Location = new System.Drawing.Point(411, 142);
-            this.btnResetFileNameFormat.Name = "btnResetFileNameFormat";
-            this.btnResetFileNameFormat.Size = new System.Drawing.Size(110, 20);
-            this.btnResetFileNameFormat.TabIndex = 13;
-            this.btnResetFileNameFormat.Text = "Вернуть как было";
-            this.btnResetFileNameFormat.UseVisualStyleBackColor = true;
-            this.btnResetFileNameFormat.Click += new System.EventHandler(this.btnResetFileNameFormat_Click);
+            this.btnResetFileNameFormatWithoutDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnResetFileNameFormatWithoutDate.Location = new System.Drawing.Point(411, 181);
+            this.btnResetFileNameFormatWithoutDate.Name = "btnResetFileNameFormatWithoutDate";
+            this.btnResetFileNameFormatWithoutDate.Size = new System.Drawing.Size(110, 20);
+            this.btnResetFileNameFormatWithoutDate.TabIndex = 13;
+            this.btnResetFileNameFormatWithoutDate.Text = "Вернуть как было";
+            this.btnResetFileNameFormatWithoutDate.UseVisualStyleBackColor = true;
+            this.btnResetFileNameFormatWithoutDate.Click += new System.EventHandler(this.btnResetFileNameFormatWithoutDate_Click);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(10, 165);
+            this.label7.Location = new System.Drawing.Point(10, 204);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(73, 13);
             this.label7.TabIndex = 12;
@@ -384,7 +420,7 @@ namespace YouTube_downloader
             // btnSelectBrowser
             // 
             this.btnSelectBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectBrowser.Location = new System.Drawing.Point(489, 181);
+            this.btnSelectBrowser.Location = new System.Drawing.Point(489, 220);
             this.btnSelectBrowser.Name = "btnSelectBrowser";
             this.btnSelectBrowser.Size = new System.Drawing.Size(32, 20);
             this.btnSelectBrowser.TabIndex = 11;
@@ -406,7 +442,7 @@ namespace YouTube_downloader
             // 
             this.editBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editBrowser.Location = new System.Drawing.Point(13, 181);
+            this.editBrowser.Location = new System.Drawing.Point(13, 220);
             this.editBrowser.Name = "editBrowser";
             this.editBrowser.Size = new System.Drawing.Size(470, 20);
             this.editBrowser.TabIndex = 10;
@@ -1203,39 +1239,39 @@ namespace YouTube_downloader
             this.toolStripMenuItem1,
             this.selectAllTextToolStripMenuItem});
             this.menuCopyPaste.Name = "menuCopyPaste";
-            this.menuCopyPaste.Size = new System.Drawing.Size(164, 106);
+            this.menuCopyPaste.Size = new System.Drawing.Size(149, 98);
             this.menuCopyPaste.Opening += new System.ComponentModel.CancelEventHandler(this.menuCopyPaste_Opening);
             // 
             // cutTextToolStripMenuItem
             // 
             this.cutTextToolStripMenuItem.Name = "cutTextToolStripMenuItem";
-            this.cutTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
+            this.cutTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.cutTextToolStripMenuItem.Text = "Вырезать";
             this.cutTextToolStripMenuItem.Click += new System.EventHandler(this.cutTextToolStripMenuItem_Click);
             // 
             // copyTextToolStripMenuItem
             // 
             this.copyTextToolStripMenuItem.Name = "copyTextToolStripMenuItem";
-            this.copyTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
+            this.copyTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.copyTextToolStripMenuItem.Text = "Копировать";
             this.copyTextToolStripMenuItem.Click += new System.EventHandler(this.copyTextToolStripMenuItem_Click);
             // 
             // pasteTextToolStripMenuItem
             // 
             this.pasteTextToolStripMenuItem.Name = "pasteTextToolStripMenuItem";
-            this.pasteTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
+            this.pasteTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.pasteTextToolStripMenuItem.Text = "Вставить";
             this.pasteTextToolStripMenuItem.Click += new System.EventHandler(this.pasteTextToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(145, 6);
             // 
             // selectAllTextToolStripMenuItem
             // 
             this.selectAllTextToolStripMenuItem.Name = "selectAllTextToolStripMenuItem";
-            this.selectAllTextToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
+            this.selectAllTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.selectAllTextToolStripMenuItem.Text = "Выделить всё";
             this.selectAllTextToolStripMenuItem.Click += new System.EventHandler(this.selectAllTextToolStripMenuItem_Click);
             // 
@@ -1539,64 +1575,64 @@ namespace YouTube_downloader
             this.miCopyChannelIdToolStripMenuItem,
             this.copyDisplayNameWithIdToolStripMenuItem});
             this.menuFavorites.Name = "menuFavarites";
-            this.menuFavorites.Size = new System.Drawing.Size(319, 216);
+            this.menuFavorites.Size = new System.Drawing.Size(281, 180);
             this.menuFavorites.Opening += new System.ComponentModel.CancelEventHandler(this.menuFavorites_Opening);
             // 
             // openVideoInBrowserToolStripMenuItem
             // 
             this.openVideoInBrowserToolStripMenuItem.Name = "openVideoInBrowserToolStripMenuItem";
-            this.openVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.openVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.openVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
             this.openVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openVideoInBrowserToolStripMenuItem_Click);
             // 
             // miCopyVideoUrlToolStripMenuItem
             // 
             this.miCopyVideoUrlToolStripMenuItem.Name = "miCopyVideoUrlToolStripMenuItem";
-            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
             this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
             // 
             // openChannelInBrowserToolStripMenuItem
             // 
             this.openChannelInBrowserToolStripMenuItem.Name = "openChannelInBrowserToolStripMenuItem";
-            this.openChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.openChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.openChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
             this.openChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openChannelInBrowserToolStripMenuItem_Click);
             // 
             // miCopyChannelUrlToolStripMenuItem
             // 
             this.miCopyChannelUrlToolStripMenuItem.Name = "miCopyChannelUrlToolStripMenuItem";
-            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.miCopyChannelUrlToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
             this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
             // 
             // copyDisplayNameToolStripMenuItem
             // 
             this.copyDisplayNameToolStripMenuItem.Name = "copyDisplayNameToolStripMenuItem";
-            this.copyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.copyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.copyDisplayNameToolStripMenuItem.Text = "Скопировать отображаемое имя";
             this.copyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameToolStripMenuItem_Click);
             // 
             // miCopyVideoIdToolStripMenuItem
             // 
             this.miCopyVideoIdToolStripMenuItem.Name = "miCopyVideoIdToolStripMenuItem";
-            this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.miCopyVideoIdToolStripMenuItem.Text = "Скопировать ID видео";
             this.miCopyVideoIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoIdToolStripMenuItem_Click);
-            // 
-            // copyDisplayNameWithIdToolStripMenuItem
-            // 
-            this.copyDisplayNameWithIdToolStripMenuItem.Name = "copyDisplayNameWithIdToolStripMenuItem";
-            this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
-            this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
-            this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
             // miCopyChannelIdToolStripMenuItem
             // 
             this.miCopyChannelIdToolStripMenuItem.Name = "miCopyChannelIdToolStripMenuItem";
-            this.miCopyChannelIdToolStripMenuItem.Size = new System.Drawing.Size(318, 24);
+            this.miCopyChannelIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
             this.miCopyChannelIdToolStripMenuItem.Text = "Скопировать ID канала";
             this.miCopyChannelIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelIdToolStripMenuItem_Click);
+            // 
+            // copyDisplayNameWithIdToolStripMenuItem
+            // 
+            this.copyDisplayNameWithIdToolStripMenuItem.Name = "copyDisplayNameWithIdToolStripMenuItem";
+            this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
+            this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -1715,8 +1751,8 @@ namespace YouTube_downloader
         private System.Windows.Forms.ToolStripMenuItem openChannelInBrowserToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPageFilesAndFolders;
-        private System.Windows.Forms.TextBox editOutputFileNameFormat;
-        private System.Windows.Forms.Button btnResetFileNameFormat;
+        private System.Windows.Forms.TextBox editOutputFileNameFormatWithoutDate;
+        private System.Windows.Forms.Button btnResetFileNameFormatWithoutDate;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TabPage tabPageSystemSettings;
         private System.Windows.Forms.Label label8;
@@ -1794,6 +1830,9 @@ namespace YouTube_downloader
         private System.Windows.Forms.CheckBox chkSortDashFormatsByBitrate;
         private System.Windows.Forms.ToolStripMenuItem miCopyVideoIdToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miCopyChannelIdToolStripMenuItem;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox editOutputFileNameFormatWithDate;
+        private System.Windows.Forms.Button btnResetFileNameFormatWithDate;
     }
 }
 

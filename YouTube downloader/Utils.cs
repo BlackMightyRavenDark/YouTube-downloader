@@ -25,7 +25,10 @@ namespace YouTube_downloader
         public const string YOUTUBE_GET_VIDEO_INFO_URL = "https://www.youtube.com/get_video_info?video_id=";
         public const string YOUTUBEI_API_URL_TEMPLATE = "https://www.youtube.com/youtubei/v1/player?key={0}";
 
-        public const string FILENAME_FORMAT_DEFAULT = "[<year>-<month>-<day>] <video_title> (id_<video_id>)";
+        public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
+            "[<year>-<month>-<day>] <video_title> (id_<video_id>)";
+        public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
+
         public static List<YouTubeChannel> channels = new List<YouTubeChannel>();
         public static List<YouTubeApiLib.YouTubeVideo> videos = new List<YouTubeApiLib.YouTubeVideo>();
         public static List<FrameYouTubeChannel> framesChannel = new List<FrameYouTubeChannel>();
@@ -761,6 +764,13 @@ namespace YouTube_downloader
                 res += signatureEncrypted[index];
             }
             return res;
+        }
+
+        public static bool IsVideoDateAvailable(YouTubeVideo video)
+        {
+            return video.SimplifiedInfo != null &&
+                video.SimplifiedInfo.IsMicroformatInfoAvailable &&
+                video.DatePublished < DateTime.MaxValue;
         }
 
         public static void SetClipboardText(string text)
