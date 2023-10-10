@@ -1438,7 +1438,7 @@ namespace YouTube_downloader
             this.rbSearchResultsMax.TabStop = true;
             this.rbSearchResultsMax.Text = "Максимум (500)";
             this.rbSearchResultsMax.UseVisualStyleBackColor = true;
-            this.rbSearchResultsMax.Click += new System.EventHandler(this.rbSearchRessultsMax_Click);
+            this.rbSearchResultsMax.Click += new System.EventHandler(this.rbSearchResultsMax_Click);
             // 
             // numericUpDownSearchResult
             // 

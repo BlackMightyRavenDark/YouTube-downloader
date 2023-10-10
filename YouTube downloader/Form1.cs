@@ -1377,7 +1377,7 @@ namespace YouTube_downloader
             config.YouTubeApiV3Key = editYouTubeApiKey.Text;
         }
 
-        private void rbSearchRessultsMax_Click(object sender, EventArgs e)
+        private void rbSearchResultsMax_Click(object sender, EventArgs e)
         {
             rbSearchResultsUserDefined.Checked = false;
             rbSearchResultsMax.Checked = true;
