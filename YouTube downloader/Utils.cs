@@ -287,6 +287,13 @@ namespace YouTube_downloader
             return res;
         }
 
+        internal static DateTime GetVideoPublishedDate(string videoId)
+        {
+            YouTubeApi api = new YouTubeApi();
+            YouTubeVideo video = api.GetVideo(new VideoId(videoId));
+            return video != null ? video.DatePublished : DateTime.MaxValue;
+        }
+
         private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)
         {
             if (root.ID != null && root.ID.Equals(item.ID))

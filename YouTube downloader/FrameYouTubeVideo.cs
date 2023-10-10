@@ -1528,6 +1528,10 @@ namespace YouTube_downloader
         private void lblDatePublished_MouseDown(object sender, MouseEventArgs e)
         {
             Activated?.Invoke(this);
+            if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+            {
+                contextMenuDate.Show(Cursor.Position);
+            }
         }
 
         private void btnGetVideoInfo_MouseDown(object sender, MouseEventArgs e)
@@ -1590,6 +1594,7 @@ namespace YouTube_downloader
             contextMenuImage.SetFontSize(fontSize);
             contextMenuVideoTitle.SetFontSize(fontSize);
             contextMenuChannelTitle.SetFontSize(fontSize);
+            contextMenuDate.SetFontSize(fontSize);
             contextMenuDownloads.SetFontSize(fontSize);
         }
 
@@ -1702,6 +1707,26 @@ namespace YouTube_downloader
                 return;
             }
             SetClipboardText(VideoInfo.ThumbnailUrls[0].Url);
+        }
+
+        private void miUpdateVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DateTime dateTime = GetVideoPublishedDate(VideoInfo.Id);
+            if (dateTime == DateTime.MaxValue)
+            {
+                MessageBox.Show("Не получилось.", "Ошибка!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            VideoInfo = new YouTubeVideo(VideoInfo.Title, VideoInfo.Id,
+                VideoInfo.Length, VideoInfo.DateUploaded, dateTime,
+                VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
+                VideoInfo.Description, VideoInfo.ViewCount, VideoInfo.Category,
+                VideoInfo.IsPrivate, VideoInfo.IsUnlisted, VideoInfo.IsFamilySafe,
+                VideoInfo.IsLiveContent, VideoInfo.ThumbnailUrls, VideoInfo.MediaTracks,
+                VideoInfo.RawInfo, VideoInfo.SimplifiedInfo, VideoInfo.Status);
+            lblDatePublished.Text = $"Дата публикации: {dateTime:yyyy.MM.dd, HH:mm:ss}";
         }
     }
 }
