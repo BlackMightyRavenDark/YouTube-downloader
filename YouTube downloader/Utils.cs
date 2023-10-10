@@ -3,13 +3,11 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
-using System.Net;
-using System.Globalization;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
 
@@ -18,19 +16,16 @@ namespace YouTube_downloader
     public static class Utils
     {
         public const string YOUTUBE_ACCEPT_STRING = "application/json";
-        public const string YOUTUBE_VIDEOS_URL_BASE = "https://www.googleapis.com/youtube/v3/videos";
         public const string YOUTUBE_SEARCH_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
-        public const string YOUTUBE_VIDEO_URL_BASE = "https://www.youtube.com/watch?v=";
         public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
-        public const string YOUTUBE_GET_VIDEO_INFO_URL = "https://www.youtube.com/get_video_info?video_id=";
-        public const string YOUTUBEI_API_URL_TEMPLATE = "https://www.youtube.com/youtubei/v1/player?key={0}";
+        public const string YOUTUBE_VIDEO_URL_BASE = "https://www.youtube.com/";
 
         public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
             "[<year>-<month>-<day>] <video_title> (id_<video_id>)";
         public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
 
         public static List<YouTubeChannel> channels = new List<YouTubeChannel>();
-        public static List<YouTubeApiLib.YouTubeVideo> videos = new List<YouTubeApiLib.YouTubeVideo>();
+        public static List<YouTubeVideo> videos = new List<YouTubeVideo>();
         public static List<FrameYouTubeChannel> framesChannel = new List<FrameYouTubeChannel>();
         public static List<FrameYouTubeVideo> framesVideo = new List<FrameYouTubeVideo>();
 
@@ -49,87 +44,36 @@ namespace YouTube_downloader
             return d.DownloadString(out responseString);
         }
 
-        public static int HttpsPost(string aUrl, string body, out string responseString)
+        public static int HttpsPost(string url, string body, out string responseString)
         {
-            responseString = "Client error";
-            int res = 400;
-            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(aUrl);
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.ContentLength = body.Length;
-            httpWebRequest.Host = "www.youtube.com";
-            httpWebRequest.UserAgent = "com.google.android.youtube/17.36.4 (Linux; U; Android 12; GB) gzip";
-            httpWebRequest.Headers.Add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
-            httpWebRequest.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-            httpWebRequest.Method = "POST";
-            StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream());
             try
             {
-                streamWriter.Write(body);
-                streamWriter.Close();
-                streamWriter.Dispose();
-            }
-            catch
-            {
-                if (streamWriter != null)
+                int bodyLength = string.IsNullOrEmpty(body) ? 0 : Encoding.UTF8.GetByteCount(body);
+                NameValueCollection headers = new NameValueCollection()
                 {
-                    streamWriter.Close();
-                    streamWriter.Dispose();
-                }
-                return res;
-            }
-            try
-            {
-                HttpWebResponse httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                StreamReader streamReader = new StreamReader(httpResponse.GetResponseStream());
-                try
-                {
-                    responseString = streamReader.ReadToEnd();
-                    streamReader.Close();
-                    streamReader.Dispose();
-                    res = (int)httpResponse.StatusCode;
-                }
-                catch
-                {
-                    if (streamReader != null)
-                    {
-                        streamReader.Close();
-                        streamReader.Dispose();
-                    }
-                    return 400;
-                }
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse httpWebResponse = (HttpWebResponse)ex.Response;
-                    responseString = ex.Message;
-                    res = (int)httpWebResponse.StatusCode;
-                }
-            }
-            return res;
-        }
+                    { "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" },
+                    { "Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7" },
+                    { "Content-Type", "application/json" },
+                    { "Content-Length", bodyLength.ToString() },
+                    { "Host", "www.youtube.com" },
+                    { "User-Agent", "com.google.android.youtube/17.36.4 (Linux; U; Android 12; GB) gzip" }
+                };
 
-        public static int DownloadImage(string url, out Image image)
-        {
-            image = null;
-            try
-            {
-                using (MemoryStream memoryStream = new MemoryStream())
+                using (HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, body, headers))
                 {
-                    int errorCode = DownloadData(url, memoryStream);
-                    if (errorCode == 200)
+                    if (requestResult.ErrorCode == 200)
                     {
-                        memoryStream.Position = 0L;
-                        image = Image.FromStream(memoryStream);
+                        return requestResult.WebContent.ContentToString(out responseString);
                     }
-                    return errorCode;
+
+                    responseString = requestResult.ErrorMessage;
+                    return requestResult.ErrorCode;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                image = null;
+                responseString = ex.Message;
                 return ex.HResult;
             }
         }
@@ -138,66 +82,6 @@ namespace YouTube_downloader
         {
             FileDownloader d = new FileDownloader() { Url = url };
             return d.Download(stream);
-        }
-
-        /// <summary>
-        /// Генерирует тело POST-запроса для получения информации о видео.
-        /// Полученный JSON будет содержать всё необходимое, кроме ссылок для скачивания.
-        /// Ссылки будут зашифрованы (Cipher, ограничение скорости и т.д.).
-        /// </summary>
-        /// <param name="videoId">ID видео</param>
-        /// <returns>Тело запроса</returns>
-        public static JObject GenerateVideoInfoEncryptedRequestBody(string videoId)
-        {
-            const string CLIENT_VERSION = "2.20201021.03.00";
-
-            JObject jClient = new JObject();
-            jClient["hl"] = "en";
-            jClient["gl"] = "US";
-            jClient["clientName"] = "WEB";
-            jClient["clientVersion"] = CLIENT_VERSION;
-
-            JObject jContext = new JObject();
-            jContext.Add(new JProperty("client", jClient));
-
-            JObject json = new JObject();
-            json.Add(new JProperty("context", jContext));
-            json["videoId"] = videoId;
-
-            return json;
-        }
-
-        /// <summary>
-        /// Генерирует тело POST-запроса для получения информации о видео.
-        /// Ответ будет содержать уже расшифрованные ссылки для скачивания
-        /// без ограничения скорости, но остальная информация будет не полной.
-        /// Используйте этот запрос только для получения ссылок.
-        /// Внимание! Этот запрос не работает для видео с доступом только по ссылке (unlisted)!
-        /// </summary>
-        /// <param name="videoId">ID видео</param>
-        /// <returns>Тело запроса</returns>
-        public static JObject GenerateVideoInfoDecryptedRequestBody(string videoId)
-        {
-            const string CLIENT_NAME = "ANDROID_TESTSUITE";
-            const string CLIENT_VERSION = "1.9";
-            const int SDK_VERSION = 30;
-
-            JObject jClient = new JObject();
-            jClient["clientName"] = CLIENT_NAME;
-            jClient["clientVersion"] = CLIENT_VERSION;
-            jClient["androidSdkVersion"] = SDK_VERSION;
-            jClient["hl"] = "en";
-            jClient["gl"] = "US";
-            jClient["utcOffsetMinutes"] = 0;
-
-            JObject jContext = new JObject();
-            jContext.Add(new JProperty("client", jClient));
-
-            JObject json = new JObject();
-            json["videoId"] = videoId;
-            json.Add(new JProperty("context", jContext));
-
-            return json;
         }
 
         public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos)
@@ -232,23 +116,6 @@ namespace YouTube_downloader
             return url;
         }
 
-        public static int GetYouTubeVideoWebPage(string videoId, out string resultPage)
-        {
-            string videoUrl = YOUTUBE_VIDEO_URL_BASE + videoId;
-            int res = DownloadString(videoUrl, out resultPage);
-            return res;
-        }
-
-        public static int GetYouTubeVideoInfoViaApi(string videoId,
-            YouTubeApiRequestType requestType, out string resInfo)
-        {
-            const string apiV1Key = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
-            JObject body = requestType == YouTubeApiRequestType.EncryptedUrls ?
-                GenerateVideoInfoEncryptedRequestBody(videoId) : GenerateVideoInfoDecryptedRequestBody(videoId);
-            string url = string.Format(YOUTUBEI_API_URL_TEMPLATE, apiV1Key);
-            return HttpsPost(url, body.ToString(), out resInfo);
-        }
-
         public static string ExtractPlayerUrlFromWebPage(string webPage)
         {
             int n = webPage.IndexOf("\"jsUrl\":\"");
@@ -262,70 +129,6 @@ namespace YouTube_downloader
                 }
             }
             return null;
-        }
-
-        public static string ExtractVideoInfoFromWebPage(string webPage)
-        {
-            int n = webPage.IndexOf("var ytInitialPlayerResponse");
-            if (n > 0)
-            {
-                int n2 = webPage.IndexOf("}};var meta =");
-                if (n2 > 0)
-                {
-                    return webPage.Substring(n + 30, n2 - n - 28);
-                }
-
-                n2 = webPage.IndexOf("};\nvar meta =");
-                if (n2 > 0)
-                {
-                    return webPage.Substring(n + 29, n2 - n - 28);
-                }
-
-                n2 = webPage.IndexOf("}};var head =");
-                if (n2 > 0)
-                {
-                    return webPage.Substring(n + 30, n2 - n - 28);
-                }
-
-                n2 = webPage.IndexOf("};\nvar head =");
-                if (n2 > 0)
-                {
-                    return webPage.Substring(n + 29, n2 - n - 28);
-                }
-
-                n2 = webPage.IndexOf(";</script><div");
-                if (n2 > 0)
-                {
-                    return webPage.Substring(n + 30, n2 - n - 30);
-                }
-            }
-            return null;
-        }
-
-        public static int GetYouTubeVideoInfoEx(string videoId, out string resInfo, bool useHiddenApi)
-        {
-            resInfo = "Client error";
-            int res = 400;
-            if (useHiddenApi)
-            {
-                res = GetYouTubeVideoInfoViaApi(videoId, YouTubeApiRequestType.DecryptedUrls, out resInfo);
-            }
-            if (res == 200)
-            {
-                return res;
-            }
-            
-            res = GetYouTubeVideoWebPage(videoId, out string page);
-            if (res == 200)
-            {
-                resInfo = ExtractVideoInfoFromWebPage(page);
-                return string.IsNullOrEmpty(resInfo) ? 404 : res;
-            }
-            else
-            {
-                resInfo = page;
-            }
-            return res;
         }
 
         public static YouTubeVideo GetSingleVideo(VideoId videoId)
@@ -484,17 +287,6 @@ namespace YouTube_downloader
             return res;
         }
 
-        public static bool StringToDateTime(string inputString, out DateTime resDateTime, string format = "yyyy-MM-dd")
-        {
-            bool res = DateTime.TryParseExact(inputString, format,
-                CultureInfo.InvariantCulture, DateTimeStyles.None, out resDateTime);
-            if (!res)
-            {
-                resDateTime = DateTime.MinValue;
-            }
-            return res;
-        }
-
         private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)
         {
             if (root.ID != null && root.ID.Equals(item.ID))
@@ -530,49 +322,6 @@ namespace YouTube_downloader
         {
             FavoriteItem item = new FavoriteItem(null, null, itemId, null, null, null);
             return FindInFavorites(item, favoritesRootNode);
-        }
-
-        public static string ExtractVideoIdFromUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
-            {
-                return null;
-            }
-
-            Uri uri;
-            try
-            {
-                uri = new Uri(url);
-            }
-            catch (Exception ex)
-            {
-                //подразумевается, что юзер ввёл ID видео, а не ссылку.
-                Debug.WriteLine(ex.Message);
-                return url;
-            }
-
-            if (string.IsNullOrEmpty(uri.Query))
-            {
-                if (!string.IsNullOrEmpty(uri.AbsolutePath) && !string.IsNullOrWhiteSpace(uri.AbsolutePath))
-                {
-                    if (uri.AbsolutePath.StartsWith("/shorts/", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return uri.AbsolutePath.Substring(8);
-                    }
-                    else if (uri.AbsolutePath.StartsWith("/embed/", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return uri.AbsolutePath.Substring(7);
-                    }
-                }
-                return null;
-            }
-            Dictionary<string, string> dict = SplitUrlQueryToDictionary(uri.Query);
-            if (dict == null || !dict.ContainsKey("v"))
-            {
-                return null;
-            }
-          
-            return dict["v"];
         }
 
         public static string DecideMergingDirectory()
@@ -724,19 +473,6 @@ namespace YouTube_downloader
                 dict.Add(t[0], t[1]);
             }
             return dict;
-        }
-
-        public static Dictionary<string, string> SplitUrlQueryToDictionary(string urlQuery)
-        {
-            if (string.IsNullOrEmpty(urlQuery) || string.IsNullOrWhiteSpace(urlQuery))
-            {
-                return null;
-            }
-            if (urlQuery[0] == '?')
-            {
-                urlQuery = urlQuery.Remove(0, 1);
-            }
-            return SplitStringToKeyValues(urlQuery, '&', '=');
         }
 
         public static string DecryptCipherSignature(string signatureEncrypted, string algo)
@@ -924,7 +660,6 @@ namespace YouTube_downloader
         }
     }
 
-    public enum YouTubeApiRequestType { EncryptedUrls, DecryptedUrls }
     public enum FavoriteItemType { Video, Channel, Directory };
 
     public sealed class FavoriteItem

@@ -10,7 +10,6 @@ using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
 using YouTube_downloader.Properties;
 using static YouTube_downloader.Utils;
-using System.Text.RegularExpressions;
 
 namespace YouTube_downloader
 {
@@ -694,10 +693,13 @@ namespace YouTube_downloader
                         if (kind.Equals("youtube#video"))
                         {
                             string id = j.Value<JObject>("id").Value<string>("videoId");
-                            if (GetYouTubeVideoInfoEx(id, out buf, config.UseHiddenApiForGettingInfo) == 200)
+                            YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+                                YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
+                                YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+                            RawVideoInfoResult rawVideoInfoResult = YouTubeApiLib.Utils.GetRawVideoInfo(id, method);
+                            if (rawVideoInfoResult.ErrorCode == 200)
                             {
-                                JObject j2 = JObject.Parse(buf);
-                                jaVideos.Add(j2);
+                                jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
                             }
                         }
                     }
@@ -753,7 +755,7 @@ namespace YouTube_downloader
                         YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
                         YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
                     RawVideoInfo rawVideoInfo = new RawVideoInfo(jaVideos[i].Value<JObject>(), method);
-                    YouTubeApiLib.YouTubeVideo video = YouTubeApiLib.Utils.MakeYouTubeVideo(rawVideoInfo);
+                    YouTubeVideo video = YouTubeApiLib.Utils.MakeYouTubeVideo(rawVideoInfo);
                     if (video != null)
                     {
                         videos.Add(video);
@@ -778,146 +780,6 @@ namespace YouTube_downloader
                 }
             }
             return framesChannel.Count + framesVideo.Count;
-        }
-
-        private static YouTubeApiLib.YouTubeVideo ParseVideoInfo(JObject jVideoInfo)
-        {
-            //TODO: Implement error checking
-            RawVideoInfo rawVideoInfo = new RawVideoInfo(jVideoInfo, YouTubeApiLib.Utils.VideoInfoGettingMethod.Manual);
-            JObject jVideoDetails = rawVideoInfo.VideoDetails;
-            if (jVideoDetails != null)
-            {
-                string videoTitle = jVideoDetails.Value<string>("title");
-                string videoId = jVideoDetails.Value<string>("videoId");
-                JToken jt = jVideoDetails.Value<JToken>("lengthSeconds");
-                TimeSpan videoLength = jt != null ? TimeSpan.FromSeconds(int.Parse(jt.Value<string>())) : new TimeSpan(0L);
-                string channelId = jVideoDetails.Value<string>("channelId");
-                string channelTitle = jVideoDetails.Value<string>("author");
-                JObject jStreamingData = jVideoInfo.Value<JObject>("streamingData");
-                StreamingData streamingData = jStreamingData != null ? new StreamingData(jStreamingData,
-                    YouTubeApiLib.Utils.VideoInfoGettingMethod.Manual) : null;
-                bool ciphered = false;
-                bool dashed = false;
-                bool hlsed = false;
-                if (streamingData != null)
-                {
-                    JToken jData = streamingData.RawData.Value<JToken>("adaptiveFormats");
-                    if (jData == null)
-                    {
-                        jData = streamingData.RawData.Value<JToken>("formats");
-                    }
-
-                    JArray jArray = jData?.Value<JArray>();
-                    if (jArray != null && jArray.Count > 0)
-                    {
-                        ciphered = jArray[0].Value<JToken>("signatureCipher") != null;
-                    }
-
-                    dashed = streamingData.RawData.Value<JToken>("dashManifestUrl") != null;
-                    hlsed = streamingData.RawData.Value<JToken>("hlsManifestUrl") != null;
-                }
-
-                DateTime uploadDate = DateTime.MinValue;
-                DateTime publishDate = DateTime.MinValue;
-                bool isUnlisted = false;
-                bool isFamilySafe = true;
-                List<YouTubeVideoThumbnail> thumbnails = new List<YouTubeVideoThumbnail>();
-
-                JObject jMicroformat = rawVideoInfo.Microformat;
-                if (jMicroformat == null)
-                {
-                    if (GetYouTubeVideoInfoEx(videoId, out string info, false) == 200)
-                    {
-                        JObject jObject = JObject.Parse(info);
-                        jt = jObject.Value<JToken>("microformat");
-                        if (jt != null)
-                        {
-                            jMicroformat = jt.Value<JObject>();
-                        }
-                    }
-                }
-                if (jMicroformat != null)
-                {
-                    JObject jMicroformatRenderer = jMicroformat.Value<JObject>("playerMicroformatRenderer");
-                    if (jMicroformatRenderer != null)
-                    {
-                        StringToDateTime(jMicroformatRenderer.Value<string>("uploadDate"), out uploadDate);
-                        StringToDateTime(jMicroformatRenderer.Value<string>("publishDate"), out publishDate);
-                        isFamilySafe = jMicroformatRenderer.Value<bool>("isFamilySafe");
-                        isUnlisted = jMicroformatRenderer.Value<bool>("isUnlisted");
-                        List<string> thumbs = GetThumbnailUrls(jMicroformatRenderer, videoId);
-                        foreach (string url in thumbs)
-                        {
-                            string id = "unnamed";
-                            Regex regex = new Regex(@"\/(\w*)\.");
-                            MatchCollection matches = regex.Matches(url);
-                            if (matches.Count > 0 && matches[matches.Count - 1].Groups.Count > 0)
-                            {
-                                id = matches[matches.Count - 1].Groups[matches[matches.Count - 1].Groups.Count - 1].Value;
-                            }
-                            thumbnails.Add(new YouTubeVideoThumbnail(id, url));
-                        }
-                    }
-                }
-
-                YouTubeVideoPlayabilityStatus playabilityStatus = rawVideoInfo.PlayabilityStatus;
-
-                YouTubeApiLib.YouTubeVideo video = new YouTubeApiLib.YouTubeVideo(
-                    videoTitle, videoId, videoLength, uploadDate, publishDate,
-                    channelTitle, channelId, null, 0L, null, false, isUnlisted, isFamilySafe, hlsed,
-                    thumbnails, null, rawVideoInfo, null, playabilityStatus);
-                return video;
-            }
-
-            return null;
-        }
-
-        private static List<string> GetThumbnailUrls(JObject jMicroformatRenderer, string videoId)
-        {
-            List<string> possibleUrls = new List<string>()
-            {
-                $"https://i.ytimg.com/vi/{videoId}/maxresdefault.jpg",
-                $"https://i.ytimg.com/vi/{videoId}/hqdefault.jpg",
-                $"https://i.ytimg.com/vi/{videoId}/mqdefault.jpg",
-                $"https://i.ytimg.com/vi/{videoId}/sddefault.jpg",
-                $"https://i.ytimg.com/vi/{videoId}/default.jpg"
-            };
-            List<string> resList = new List<string>();
-            foreach (string url in possibleUrls)
-            {
-                if (FileDownloader.GetUrlContentLength(url, out _, out _) == 200)
-                {
-                    resList.Add(url);
-                }
-            }
-
-            if (jMicroformatRenderer != null)
-            {
-                JToken jt = jMicroformatRenderer.Value<JToken>("thumbnail");
-                if (jt != null)
-                {
-                    JArray jaThumbnails = jt.Value<JObject>().Value<JArray>("thumbnails");
-                    for (int i = jaThumbnails.Count - 1; i >= 0; i--)
-                    {
-                        string t = jaThumbnails[i].Value<JObject>().Value<string>("url");
-                        if (t.Contains("?"))
-                        {
-                            t = t.Substring(0, t.IndexOf("?"));
-                        }
-                        if (t.Contains("vi_webp"))
-                        {
-                            t = t.Replace("vi_webp", "vi").Replace(".webp", ".jpg");
-                        }
-
-                        if (!resList.Contains(t))
-                        {
-                            resList.Add(t);
-                        }
-                    }
-                }
-            }
-
-            return resList;
         }
 
         private void ClearChannels()
@@ -1084,7 +946,7 @@ namespace YouTube_downloader
 
             try
             {
-                YouTubeApiLib.YouTubeVideo video = GetSingleVideo(videoId);
+                YouTubeVideo video = GetSingleVideo(videoId);
                 if (video != null)
                 {
                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
@@ -1270,7 +1132,7 @@ namespace YouTube_downloader
                             try
                             {
                                 VideoId videoId = new VideoId(item.ID);
-                                YouTubeApiLib.YouTubeVideo video = GetSingleVideo(videoId);
+                                YouTubeVideo video = GetSingleVideo(videoId);
                                 if (video != null)
                                 {
                                     FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
