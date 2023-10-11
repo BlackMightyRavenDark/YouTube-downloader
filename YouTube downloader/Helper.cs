@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
+using System;
 
 namespace YouTube_downloader
 {
@@ -100,6 +101,12 @@ namespace YouTube_downloader
         public static void SetFontSize(this ContextMenuStrip contextMenu, int newSize)
         {
             contextMenu.Font = new Font(contextMenu.Font.FontFamily, newSize);
+        }
+
+        public static DateTime ToGmt(this DateTime dateTime)
+        {
+            TimeSpan offset = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time").BaseUtcOffset;
+            return dateTime.ToUniversalTime().AddHours(offset.Hours);
         }
     }
 }

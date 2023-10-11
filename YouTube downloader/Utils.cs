@@ -21,7 +21,7 @@ namespace YouTube_downloader
         public const string YOUTUBE_VIDEO_URL_BASE = "https://www.youtube.com/";
 
         public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
-            "[<year>-<month>-<day>] <video_title> (id_<video_id>)";
+            "[<year>-<month>-<day> <hour>-<minute>-<second>] <video_title> (id_<video_id>)";
         public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
 
         public static List<YouTubeChannel> channels = new List<YouTubeChannel>();
@@ -451,9 +451,14 @@ namespace YouTube_downloader
 
         public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
         {
-            return fmt.Replace("<year>", LeadZero(videoInfo.DatePublished.Year))
-                .Replace("<month>", LeadZero(videoInfo.DatePublished.Month))
-                .Replace("<day>", LeadZero(videoInfo.DatePublished.Day))
+            DateTime date = videoInfo.DatePublished < DateTime.MaxValue && config.UseGmtTime ?
+                videoInfo.DatePublished.ToGmt() : videoInfo.DatePublished;
+            return fmt.Replace("<year>", LeadZero(date.Year))
+                .Replace("<month>", LeadZero(date.Month))
+                .Replace("<day>", LeadZero(date.Day))
+                .Replace("<hour>", LeadZero(date.Hour))
+                .Replace("<minute>", LeadZero(date.Minute))
+                .Replace("<second>", LeadZero(date.Second))
                 .Replace("<video_title>", videoInfo.Title)
                 .Replace("<video_id>", videoInfo.Id);
         }

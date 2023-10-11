@@ -86,6 +86,7 @@ namespace YouTube_downloader
             this.chkDownloadAllAudioTracks = new System.Windows.Forms.CheckBox();
             this.chkSaveImage = new System.Windows.Forms.CheckBox();
             this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
+            this.checkBoxUseGmtTime = new System.Windows.Forms.CheckBox();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.btnUseRamWhy = new System.Windows.Forms.Button();
             this.panelRAM = new System.Windows.Forms.Panel();
@@ -856,6 +857,7 @@ namespace YouTube_downloader
             // 
             this.tabPageSystemSettings.AutoScroll = true;
             this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageSystemSettings.Controls.Add(this.checkBoxUseGmtTime);
             this.tabPageSystemSettings.Controls.Add(this.groupBox13);
             this.tabPageSystemSettings.Controls.Add(this.groupBox11);
             this.tabPageSystemSettings.Controls.Add(this.groupBox7);
@@ -866,6 +868,20 @@ namespace YouTube_downloader
             this.tabPageSystemSettings.TabIndex = 1;
             this.tabPageSystemSettings.Text = "Система";
             // 
+            // checkBoxUseGmtTime
+            // 
+            this.checkBoxUseGmtTime.AutoSize = true;
+            this.checkBoxUseGmtTime.Checked = true;
+            this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxUseGmtTime.Location = new System.Drawing.Point(12, 365);
+            this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
+            this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxUseGmtTime.TabIndex = 15;
+            this.checkBoxUseGmtTime.Text = "Время по GMT";
+            this.toolTip1.SetToolTip(this.checkBoxUseGmtTime, "После изменения этого параметра необходимо повторить поиск видео!");
+            this.checkBoxUseGmtTime.UseVisualStyleBackColor = true;
+            this.checkBoxUseGmtTime.CheckedChanged += new System.EventHandler(this.checkBoxUseGmtTime_CheckedChanged);
+            // 
             // groupBox13
             // 
             this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -875,7 +891,7 @@ namespace YouTube_downloader
             this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
             this.groupBox13.Location = new System.Drawing.Point(12, 290);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(512, 66);
+            this.groupBox13.Size = new System.Drawing.Size(478, 66);
             this.groupBox13.TabIndex = 14;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Оперативная память (RAM)";
@@ -907,8 +923,7 @@ namespace YouTube_downloader
             this.chkUseRamForTempFiles.Name = "chkUseRamForTempFiles";
             this.chkUseRamForTempFiles.Size = new System.Drawing.Size(288, 42);
             this.chkUseRamForTempFiles.TabIndex = 13;
-            this.chkUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)" +
-    "";
+            this.chkUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)";
             this.toolTip1.SetToolTip(this.chkUseRamForTempFiles, "Не применяется к DASH и HLS");
             this.chkUseRamForTempFiles.UseVisualStyleBackColor = true;
             this.chkUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.chkUseRamForTempFiles_CheckedChanged);
@@ -1671,6 +1686,7 @@ namespace YouTube_downloader
             this.groupBox14.ResumeLayout(false);
             this.groupBox14.PerformLayout();
             this.tabPageSystemSettings.ResumeLayout(false);
+            this.tabPageSystemSettings.PerformLayout();
             this.groupBox13.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
@@ -1833,6 +1849,7 @@ namespace YouTube_downloader
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox editOutputFileNameFormatWithDate;
         private System.Windows.Forms.Button btnResetFileNameFormatWithDate;
+        private System.Windows.Forms.CheckBox checkBoxUseGmtTime;
     }
 }
 

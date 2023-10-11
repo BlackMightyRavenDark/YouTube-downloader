@@ -16,6 +16,7 @@ namespace YouTube_downloader
         public string FavoritesFilePath { get; set; }
         public string OutputFileNameFormatWithDate { get; set; }
         public string OutputFileNameFormatWithoutDate { get; set; }
+        public bool UseGmtTime { get; set; }
         public int MaxSearch { get; set; }
         public bool SortFormatsByFileSize { get; set; }
         public bool SortDashFormatsByBitrate { get; set; }
@@ -95,6 +96,7 @@ namespace YouTube_downloader
             FfmpegExeFilePath = "FFMPEG.EXE";
             OutputFileNameFormatWithDate = Utils.FILENAME_FORMAT_DEFAULT_WITH_DATE;
             OutputFileNameFormatWithoutDate = Utils.FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
+            UseGmtTime = true;
             MaxSearch = 50;
             SortFormatsByFileSize = true;
             SortDashFormatsByBitrate = true;

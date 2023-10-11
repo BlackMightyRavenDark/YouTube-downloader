@@ -43,6 +43,7 @@ namespace YouTube_downloader
                 json["ffmpegExeFilePath"] = config.FfmpegExeFilePath;
                 json["outputFileNameFormatWithDate"] = config.OutputFileNameFormatWithDate;
                 json["outputFileNameFormatWithoutDate"] = config.OutputFileNameFormatWithoutDate;
+                json["useGmtTime"] = config.UseGmtTime;
                 json["maxSearch"] = config.MaxSearch;
                 json["sortFormatsByFileSize"] = config.SortFormatsByFileSize;
                 json["sortDashFormatsByBitrate"] = config.SortDashFormatsByBitrate;
@@ -125,6 +126,13 @@ namespace YouTube_downloader
                     if (jt != null)
                     {
                         config.OutputFileNameFormatWithoutDate = jt.Value<string>();
+                    }
+                }
+                {
+                    JToken jt = json.Value<JToken>("useGmtTime");
+                    if (jt != null)
+                    {
+                        config.UseGmtTime = jt.Value<bool>();
                     }
                 }
                 {
@@ -340,6 +348,8 @@ namespace YouTube_downloader
                     chkDownloadFirstAudioTrack_CheckedChanged(null, null);
                     chkIfOnlyBiggerFileSize.Enabled = config.DownloadFirstAudioTrack && config.DownloadSecondAudioTrack;
                 }
+
+                checkBoxUseGmtTime.Checked = config.UseGmtTime;
 
                 MultiThreadedDownloader.SetMaximumConnectionsLimit(config.GlobalThreadCountMaximum);
             };
@@ -1800,6 +1810,11 @@ namespace YouTube_downloader
         private void chkSortDashFormatsByBitrate_CheckedChanged(object sender, EventArgs e)
         {
             config.SortDashFormatsByBitrate = chkSortDashFormatsByBitrate.Checked;
+        }
+
+        private void checkBoxUseGmtTime_CheckedChanged(object sender, EventArgs e)
+        {
+            config.UseGmtTime = checkBoxUseGmtTime.Checked;
         }
     }
 }
