@@ -1739,5 +1739,14 @@ namespace YouTube_downloader
 
             lblDatePublished.Text = datePublishedString;
         }
+
+        private void miCopyVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DateTime date = config.UseGmtTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished;
+            string datePublishedString = date.ToString("yyyy-MM-dd HH-mm-ss");
+            if (config.UseGmtTime) { datePublishedString += " GMT"; }
+
+            SetClipboardText(datePublishedString);
+        }
     }
 }

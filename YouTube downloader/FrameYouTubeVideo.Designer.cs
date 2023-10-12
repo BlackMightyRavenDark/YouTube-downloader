@@ -65,6 +65,7 @@
             this.miCopyFixedTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuDate = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miUpdateVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -379,16 +380,24 @@
             // contextMenuDate
             // 
             this.contextMenuDate.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miUpdateVideoPublishedDateToolStripMenuItem});
+            this.miUpdateVideoPublishedDateToolStripMenuItem,
+            this.miCopyVideoPublishedDateToolStripMenuItem});
             this.contextMenuDate.Name = "contextMenuDate";
-            this.contextMenuDate.Size = new System.Drawing.Size(225, 48);
+            this.contextMenuDate.Size = new System.Drawing.Size(243, 70);
             // 
             // miUpdateVideoPublishedDateToolStripMenuItem
             // 
             this.miUpdateVideoPublishedDateToolStripMenuItem.Name = "miUpdateVideoPublishedDateToolStripMenuItem";
-            this.miUpdateVideoPublishedDateToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.miUpdateVideoPublishedDateToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.miUpdateVideoPublishedDateToolStripMenuItem.Text = "Обновить дату публикации";
             this.miUpdateVideoPublishedDateToolStripMenuItem.Click += new System.EventHandler(this.miUpdateVideoPublishedDateToolStripMenuItem_Click);
+            // 
+            // miCopyVideoPublishedDateToolStripMenuItem
+            // 
+            this.miCopyVideoPublishedDateToolStripMenuItem.Name = "miCopyVideoPublishedDateToolStripMenuItem";
+            this.miCopyVideoPublishedDateToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.miCopyVideoPublishedDateToolStripMenuItem.Text = "Скопировать дату публикации";
+            this.miCopyVideoPublishedDateToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoPublishedDateToolStripMenuItem_Click);
             // 
             // FrameYouTubeVideo
             // 
@@ -469,5 +478,6 @@
         private System.Windows.Forms.ToolStripMenuItem miCopyChannelIdToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuDate;
         private System.Windows.Forms.ToolStripMenuItem miUpdateVideoPublishedDateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miCopyVideoPublishedDateToolStripMenuItem;
     }
 }
