@@ -143,6 +143,7 @@ namespace YouTube_downloader
                 DateTime date = config.UseGmtTime ?
                     videoInfo.DatePublished.ToGmt() : videoInfo.DatePublished;
                 datePublishedString = date.ToString("yyyy.MM.dd, HH:mm:ss");
+                if (config.UseGmtTime) { datePublishedString += " GMT"; }
             }
             lblDatePublished.Text = $"Дата публикации: {datePublishedString}";
             FavoriteItem favoriteItem = new FavoriteItem(
@@ -1733,7 +1734,10 @@ namespace YouTube_downloader
                 VideoInfo.RawInfo, VideoInfo.SimplifiedInfo, VideoInfo.Status);
 
             DateTime date = config.UseGmtTime ? dateTime.ToGmt() : dateTime;
-            lblDatePublished.Text = $"Дата публикации: {date:yyyy.MM.dd, HH:mm:ss}";
+            string datePublishedString = $"Дата публикации: {date:yyyy.MM.dd, HH:mm:ss}";
+            if (config.UseGmtTime) { datePublishedString += " GMT"; }
+
+            lblDatePublished.Text = datePublishedString;
         }
     }
 }
