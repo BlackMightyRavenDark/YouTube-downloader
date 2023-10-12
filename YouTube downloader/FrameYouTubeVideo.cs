@@ -14,36 +14,15 @@ namespace YouTube_downloader
     public partial class FrameYouTubeVideo : UserControl
     {
         private MultiThreadedDownloader _multiThreadedDownloader;
-        private YouTubeVideo _youTubeVideo = null;
-        public YouTubeVideo VideoInfo { get { return _youTubeVideo; } set { SetVideoInfo(value); } }
+        public YouTubeVideo VideoInfo { get; private set; }
         private Stream _videoImageData = null;
         private Image _videoImage = null;
         private bool _ciphered;
-        private bool favoriteVideo = false;
-        private bool favoriteChannel = false;
-        public string webPage = null;
-        public bool FavoriteVideo
-        {
-            get
-            {
-                return favoriteVideo;
-            }
-            set
-            {
-                SetFavoriteVideo(value);
-            }
-        }
-        public bool FavoriteChannel
-        {
-            get
-            {
-                return favoriteChannel;
-            }
-            set
-            {
-                SetFavoriteChannel(value);
-            }
-        }
+        private bool _isFavoriteVideo = false;
+        private bool _isFavoriteChannel = false;
+        public string _webPage = null;
+        public bool IsFavoriteVideo { get { return _isFavoriteVideo; } set { SetFavoriteVideo(value); } }
+        public bool IsFavoriteChannel { get { return _isFavoriteChannel; } set { SetFavoriteChannel(value); } }
 
         public bool IsDownloadInProgress { get; private set; }
 
@@ -65,9 +44,10 @@ namespace YouTube_downloader
         public const int EXTRA_WIDTH = 140;
         private bool _dashCancelRequired;
 
-        public FrameYouTubeVideo(Control parent)
+        public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
         {
             InitializeComponent();
+
             if (parent != null)
             {
                 Parent = parent;
@@ -75,6 +55,8 @@ namespace YouTube_downloader
 
             SetVideoTitleFontSize(config.VideoTitleFontSize);
             imgScrollbar.SetDoubleBuffered(true);
+
+            SetVideoInfo(videoInfo);
         }
 
         private void FrameYouTubeVideo_Load(object sender, EventArgs e)
@@ -107,7 +89,7 @@ namespace YouTube_downloader
 
         private void SetVideoInfo(YouTubeVideo videoInfo)
         {
-            _youTubeVideo = videoInfo;
+            VideoInfo = videoInfo;
 
             if (!videoInfo.IsInfoAvailable)
             {
@@ -149,11 +131,11 @@ namespace YouTube_downloader
             FavoriteItem favoriteItem = new FavoriteItem(
                 videoInfo.Title, videoInfo.Title, videoInfo.Id,
                 videoInfo.OwnerChannelTitle, videoInfo.OwnerChannelId, null);
-            favoriteVideo = FindInFavorites(favoriteItem, favoritesRootNode) != null;
+            _isFavoriteVideo = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 
             favoriteItem.DisplayName = VideoInfo.Title;
             favoriteItem.ID = VideoInfo.OwnerChannelId;
-            favoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
+            _isFavoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
             _ciphered = VideoInfo.IsCiphered();
             _videoImageData = videoInfo.DownloadPreviewImage();
             _videoImage = _videoImageData != null && _videoImageData.Length > 0L ? Image.FromStream(_videoImageData) : null;
@@ -162,8 +144,8 @@ namespace YouTube_downloader
 
         public void SetFavoriteVideo(bool fav)
         {
-            favoriteVideo = fav;
-            if (favoriteVideo)
+            _isFavoriteVideo = fav;
+            if (_isFavoriteVideo)
             {   
                 FavoriteItem favoriteItem = new FavoriteItem(
                     VideoInfo.Title, VideoInfo.Title, VideoInfo.Id,
@@ -190,8 +172,8 @@ namespace YouTube_downloader
 
         private void SetFavoriteChannel(bool fav)
         {
-            favoriteChannel = fav;
-            if (favoriteChannel)
+            _isFavoriteChannel = fav;
+            if (_isFavoriteChannel)
             {
                 if (FindInFavorites(VideoInfo.OwnerChannelId) == null)
                 {
@@ -1267,13 +1249,13 @@ namespace YouTube_downloader
         private void imageFavorite_Paint(object sender, PaintEventArgs e)
         {
             DrawStar(e.Graphics, imageFavorite.Width / 2f, imageFavorite.Height / 2f,
-                imageFavorite.Width / 2f, 35f, 3f, Color.LimeGreen, favoriteVideo);
+                imageFavorite.Width / 2f, 35f, 3f, Color.LimeGreen, IsFavoriteVideo);
         }
 
         private void imgFavoriteChannel_Paint(object sender, PaintEventArgs e)
         {
             DrawStar(e.Graphics, imageFavoriteChannel.Width / 2f, imageFavoriteChannel.Height / 2f,
-                imageFavoriteChannel.Width / 2f, 35f, 3f, Color.LimeGreen, FavoriteChannel);
+                imageFavoriteChannel.Width / 2f, 35f, 3f, Color.LimeGreen, IsFavoriteChannel);
         }
 
         private void btnGetVideoInfo_Click(object sender, EventArgs e)
@@ -1286,9 +1268,9 @@ namespace YouTube_downloader
             }
 
             {
-                if (!string.IsNullOrEmpty(webPage))
+                if (!string.IsNullOrEmpty(_webPage))
                 {
-                    YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(webPage);
+                    YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
                     RawVideoInfoResult rawVideoInfoResult =
                         YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
                     if (rawVideoInfoResult.ErrorCode == 200)
@@ -1335,9 +1317,9 @@ namespace YouTube_downloader
                 return;
             }
 
-            if (!string.IsNullOrEmpty(webPage))
+            if (!string.IsNullOrEmpty(_webPage))
             {
-                SetClipboardText(webPage);
+                SetClipboardText(_webPage);
                 MessageBox.Show("Скопировано в буфер обмена");
                 btnGetWebPage.Enabled = true;
                 return;
@@ -1427,7 +1409,7 @@ namespace YouTube_downloader
                 return;
             }
 
-            string page = webPage;
+            string page = _webPage;
             if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
             {
                 YouTubeVideoWebPageResult webPageResult =
@@ -1511,7 +1493,7 @@ namespace YouTube_downloader
             Activated?.Invoke(this);
             if (e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
             {
-                SetFavoriteVideo(!favoriteVideo);
+                SetFavoriteVideo(!IsFavoriteVideo);
             }
         }
 
@@ -1522,11 +1504,11 @@ namespace YouTube_downloader
             {
                 if (FavoriteChannelChanged != null)
                 {
-                    FavoriteChannelChanged.Invoke(this, VideoInfo.OwnerChannelId, !FavoriteChannel);
+                    FavoriteChannelChanged.Invoke(this, VideoInfo.OwnerChannelId, !IsFavoriteChannel);
                 }
                 else
                 {
-                    FavoriteChannel = !favoriteChannel;
+                    IsFavoriteChannel = !IsFavoriteChannel;
                 }
             }
         }

@@ -770,8 +770,7 @@ namespace YouTube_downloader
                     {
                         videos.Add(video);
 
-                        FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(panelSearchResults);
-                        frameVideo.VideoInfo = video;
+                        FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(video, panelSearchResults);
                         frameVideo.SetMenusFontSize(config.MenusFontSize);
                         frameVideo.FavoriteChannelChanged += (s, id, newState) =>
                         {
@@ -779,7 +778,7 @@ namespace YouTube_downloader
                             {
                                 if (framesVideo[j].VideoInfo.OwnerChannelId == id)
                                 {
-                                    framesVideo[j].FavoriteChannel = newState;
+                                    framesVideo[j].IsFavoriteChannel = newState;
                                 }
                             }
                         };
@@ -959,8 +958,7 @@ namespace YouTube_downloader
                 YouTubeVideo video = GetSingleVideo(videoId);
                 if (video != null)
                 {
-                    FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
-                    frame.VideoInfo = video;
+                    FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
                     frame.SetMenusFontSize(config.MenusFontSize);
                     frame.FavoriteChannelChanged += (s, id, newState) =>
                     {
@@ -968,7 +966,7 @@ namespace YouTube_downloader
                         {
                             if (framesVideo[j].VideoInfo.OwnerChannelId == id)
                             {
-                                framesVideo[j].FavoriteChannel = newState;
+                                framesVideo[j].IsFavoriteChannel = newState;
                             }
                         }
                     };
@@ -1029,8 +1027,7 @@ namespace YouTube_downloader
                     {
                         video.UpdateMediaFormats(video.RawInfo);
                     }
-                    FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
-                    frame.VideoInfo = video;
+                    FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
                     frame.SetMenusFontSize(config.MenusFontSize);
                     frame.FavoriteChannelChanged += (s, id, newState) =>
                     {
@@ -1038,7 +1035,7 @@ namespace YouTube_downloader
                         {
                             if (framesVideo[j].VideoInfo.OwnerChannelId == id)
                             {
-                                framesVideo[j].FavoriteChannel = newState;
+                                framesVideo[j].IsFavoriteChannel = newState;
                             }
                         }
                     };
@@ -1145,8 +1142,7 @@ namespace YouTube_downloader
                                 YouTubeVideo video = GetSingleVideo(videoId);
                                 if (video != null)
                                 {
-                                    FrameYouTubeVideo frame = new FrameYouTubeVideo(panelSearchResults);
-                                    frame.VideoInfo = video;
+                                    FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
                                     frame.SetMenusFontSize(config.MenusFontSize);
                                     frame.FavoriteChannelChanged += (s, id, newState) =>
                                     {
@@ -1154,7 +1150,7 @@ namespace YouTube_downloader
                                         {
                                             if (framesVideo[j].VideoInfo.OwnerChannelId == id)
                                             {
-                                                framesVideo[j].FavoriteChannel = newState;
+                                                framesVideo[j].IsFavoriteChannel = newState;
                                             }
                                         }
                                     };
