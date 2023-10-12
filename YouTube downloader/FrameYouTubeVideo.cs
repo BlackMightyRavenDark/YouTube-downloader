@@ -1603,6 +1603,11 @@ namespace YouTube_downloader
             contextMenuDownloads.SetFontSize(fontSize);
         }
 
+        private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenUrlInBrowser($"{YOUTUBE_VIDEO_URL_BASE}/watch?v={VideoInfo.Id}");
+        }
+
         private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetClipboardText($"{YOUTUBE_VIDEO_URL_BASE}/watch?v={VideoInfo.Id}");
@@ -1633,11 +1638,6 @@ namespace YouTube_downloader
         private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId));
-        }
-
-        private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenUrlInBrowser($"{YOUTUBE_VIDEO_URL_BASE}/watch?v={VideoInfo.Id}");
         }
 
         private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
