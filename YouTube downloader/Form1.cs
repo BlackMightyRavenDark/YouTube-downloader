@@ -1541,7 +1541,6 @@ namespace YouTube_downloader
         private void chkUseHiddenApiForGettingInfo_CheckedChanged(object sender, EventArgs e)
         {
             config.UseHiddenApiForGettingInfo = chkUseHiddenApiForGettingInfo.Checked;
-            editCipherDecryptionAlgo.Enabled = !chkUseHiddenApiForGettingInfo.Checked;
         }
 
         private void editFfmpeg_Leave(object sender, EventArgs e)
