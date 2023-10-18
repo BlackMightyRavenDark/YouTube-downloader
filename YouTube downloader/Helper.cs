@@ -18,7 +18,7 @@ namespace YouTube_downloader
                 using (Stream fileStream = File.OpenWrite(filePath))
                 {
                     stream.Position = 0L;
-                    MultiThreadedDownloader.AppendStream(stream, fileStream);
+                    StreamAppender.Append(stream, fileStream);
                 }
             }
             catch (System.Exception ex)

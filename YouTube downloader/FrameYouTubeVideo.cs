@@ -471,8 +471,8 @@ namespace YouTube_downloader
                             memChunk.Dispose();
                             continue;
                         }
-                        memChunk.Position = 0;
-                        bool appended = MultiThreadedDownloader.AppendStream(memChunk, fileStream);
+                        memChunk.Position = 0L;
+                        bool appended = StreamAppender.Append(memChunk, fileStream);
                         memChunk.Dispose();
                         if (!appended)
                         {
@@ -662,7 +662,7 @@ namespace YouTube_downloader
                     lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
                         $" ({percentString}%), {shortInfo}";
                 };
-                _multiThreadedDownloader.MergingStarted += (s, chunkCount) =>
+                _multiThreadedDownloader.ChunkMergingStarted += (s, chunkCount) =>
                 {
                     progressBarDownload.Value = 0;
                     progressBarDownload.Maximum = chunkCount;
@@ -671,9 +671,12 @@ namespace YouTube_downloader
                     lblProgress.Text = $"0 / {chunkCount}";
                     lblProgress.Left = lblStatus.Left + lblStatus.Width;
                 };
-                _multiThreadedDownloader.MergingProgress += (s, chunkId) =>
+                _multiThreadedDownloader.ChunkMergingProgress += (s, chunkId, chunkCount, chunkPosition, chunkSize) =>
                 {
-                    lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}";
+                    double percent = 100.0 / chunkSize * chunkPosition;
+                    string percentString = string.Format("{0:F2}", percent);
+                    lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
+                        $"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
                     progressBarDownload.Value = chunkId + 1;
                 };
                 int res = await _multiThreadedDownloader.Download();
