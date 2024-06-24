@@ -1652,25 +1652,33 @@ namespace YouTube_downloader
         {
             if (_videoImageData != null)
             {
-                Image img = Image.FromStream(_videoImageData);
-
-                SaveFileDialog sfd = new SaveFileDialog();
-                sfd.Title = "Сохранить изображение";
-                sfd.Filter = "jpg|*.jpg";
-                sfd.DefaultExt = ".jpg";
-                sfd.AddExtension = true;
-                sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
-                string imageFileName = $"_image_{img.Width}x{img.Height}";
-                string filePath = FixFileName(FormatFileName(
-                    config.OutputFileNameFormatWithDate, VideoInfo)) + imageFileName;
-                sfd.FileName = filePath;
-                if (sfd.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    _videoImageData.SaveToFile(sfd.FileName);
+                    using (Image img = Image.FromStream(_videoImageData))
+                    {
+                        using (SaveFileDialog sfd = new SaveFileDialog())
+                        {
+                            sfd.Title = "Сохранить изображение";
+                            sfd.Filter = "jpg|*.jpg";
+                            sfd.DefaultExt = ".jpg";
+                            sfd.AddExtension = true;
+                            sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
+                            string fileNameSuffix = $"_image_{img.Width}x{img.Height}";
+                            string fileName = FixFileName(FormatFileName(
+                                config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
+                            sfd.FileName = fileName;
+                            if (sfd.ShowDialog() == DialogResult.OK)
+                            {
+                                _videoImageData.SaveToFile(sfd.FileName);
+                            }
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    MessageBox.Show(ex.Message, "Ошибатор ошибок",
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
                 }
-                sfd.Dispose();
-
-                img.Dispose();
             }
         }
 
