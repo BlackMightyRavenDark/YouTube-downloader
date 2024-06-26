@@ -1651,12 +1651,12 @@ namespace YouTube_downloader
 
 		private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenUrlInBrowser($"{YOUTUBE_VIDEO_URL_BASE}/watch?v={VideoInfo.Id}");
+			OpenUrlInBrowser($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
 		}
 
 		private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SetClipboardText($"{YOUTUBE_VIDEO_URL_BASE}/watch?v={VideoInfo.Id}");
+			SetClipboardText($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
 		}
 
 		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)

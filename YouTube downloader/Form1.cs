@@ -1400,7 +1400,8 @@ namespace YouTube_downloader
 			FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
 			if (item != null)
 			{
-				OpenUrlInBrowser(YOUTUBE_VIDEO_URL_BASE + item.ID);
+				string url = $"{YOUTUBE_WATCH_URL_BASE}?v={item.ID}";
+				OpenUrlInBrowser(url);
 			}
 		}
 
@@ -1691,7 +1692,7 @@ namespace YouTube_downloader
 			FavoriteItem item = (FavoriteItem)tvFavorites.SelectedObject;
 			if (item != null && item.ItemType == FavoriteItemType.Video)
 			{
-				string url = YOUTUBE_VIDEO_URL_BASE + item.ID;
+				string url = $"{YOUTUBE_WATCH_URL_BASE}?v={item.ID}";
 				SetClipboardText(url);
 			}
 		}

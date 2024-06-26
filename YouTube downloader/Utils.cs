@@ -18,7 +18,8 @@ namespace YouTube_downloader
 		public const string YOUTUBE_ACCEPT_STRING = "application/json";
 		public const string YOUTUBE_SEARCH_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
 		public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
-		public const string YOUTUBE_VIDEO_URL_BASE = "https://www.youtube.com";
+		public const string YOUTUBE_URL_BASE = "https://www.youtube.com";
+		public const string YOUTUBE_WATCH_URL_BASE = "https://www.youtube.com/watch";
 
 		public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
 			"[<year>-<month>-<day> <hour>-<minute>-<second>] <video_title> (id_<video_id>)";
