@@ -1,11 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
-using System;
+using static YouTube_downloader.Utils;
 
 namespace YouTube_downloader
 {
@@ -103,6 +104,90 @@ namespace YouTube_downloader
 			contextMenu.Font = new Font(contextMenu.Font.FontFamily, newSize);
 		}
 
+		public static string GetTypeAsString(this YouTubeMediaTrack track)
+		{
+			if (track is YouTubeMediaTrackAudio)
+			{
+				return track.IsDashManifest ? "DASH Audio" : "Audio";
+			}
+			else if (track is YouTubeMediaTrackVideo)
+			{
+				return track.IsHlsManifest ? "HLS" :
+					track.IsDashManifest ? "DASH Video" : "Video";
+			}
+			else if (track is YouTubeMediaTrackContainer) { return "Container"; }
+			else { return "Unknown"; }
+		}
+
+		public static string GetFormattedResolution(this YouTubeMediaTrack track)
+		{
+			if (track is YouTubeMediaTrackVideo)
+			{
+				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
+				return $"{video.VideoWidth}x{video.VideoHeight}";
+			}
+			else if (track is YouTubeMediaTrackContainer)
+			{
+				YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
+				return $"{container.VideoWidth}x{container.VideoHeight}";
+			}
+			else
+			{
+				return string.Empty;
+			}
+		}
+
+		public static string GetFormattedFrameRate(this YouTubeMediaTrack track)
+		{
+			if (track is YouTubeMediaTrackVideo)
+			{
+				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
+				return $"{video.FrameRate} fps";
+			}
+			else if (track is YouTubeMediaTrackContainer)
+			{
+				YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
+				return $"{container.VideoFrameRate} fps";
+			}
+			else
+			{
+				return string.Empty;
+			}
+		}
+
+		public static string GetFormattedChunkCount(this YouTubeMediaTrack track)
+		{
+			if (track is YouTubeMediaTrackVideo)
+			{
+				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
+				if (video.IsDashManifest)
+				{
+					return $"{(video.DashUrls != null ? video.DashUrls.Count : 0)} chunks";
+				}
+			}
+
+			return string.Empty;
+		}
+
+		internal static TableRow ToTableRow(this YouTubeMediaTrack track)
+		{
+			string trackType = track.GetTypeAsString();
+			string trackId = $"ID {track.FormatId,3}";
+			string resolution = track.GetFormattedResolution();
+			string fps = track.GetFormattedFrameRate();
+			string bitrate = track.AverageBitrate > 0 ? $"~{track.AverageBitrate / 1024} kbps" : string.Empty;
+			string formattedFileSize = track.ContentLength > 0 ? FormatSize(track.ContentLength) : string.Empty;
+			string chunkCount = track.GetFormattedChunkCount();
+
+			string[] data = new string[]
+			{
+				trackType, trackId, resolution, fps, bitrate,
+				track.FileExtension, track.MimeCodecs, formattedFileSize, chunkCount
+			};
+
+			return new TableRow(data, track);
+		}
+		
 		public static DateTime ToGmt(this DateTime dateTime)
 		{
 			TimeSpan offset = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time").BaseUtcOffset;

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using YouTubeApiLib;
@@ -213,7 +214,7 @@ namespace YouTube_downloader
 				StopDownload();
 				return;
 			}
-			
+
 			btnDownload.Enabled = false;
 			BtnDownloadClicked?.Invoke(this, e);
 
@@ -341,39 +342,81 @@ namespace YouTube_downloader
 				}
 			}
 
+			List<TableRow> tableRows = new List<TableRow>();
+			List<TableColumn> tableColumns = new List<TableColumn>()
+			{
+				new TableColumn(TableColumnAlignment.Left),
+				new TableColumn(TableColumnAlignment.Left),
+				new TableColumn(TableColumnAlignment.Right),
+				new TableColumn(TableColumnAlignment.Right),
+				new TableColumn(TableColumnAlignment.Right),
+				new TableColumn(TableColumnAlignment.Left),
+				new TableColumn(TableColumnAlignment.Left),
+				new TableColumn(TableColumnAlignment.Right),
+				new TableColumn(TableColumnAlignment.Right)
+			};
+
 			foreach (YouTubeMediaTrackVideo trackVideo in videoFormats)
 			{
-				string title = MediaTrackToString(trackVideo);
+				tableRows.Add(trackVideo.ToTableRow());
+			}
+
+			containerFormats = FilterContainerTracks(mediaTracks);
+			foreach (YouTubeMediaTrackContainer trackContainer in containerFormats)
+			{
+				tableRows.Add(trackContainer.ToTableRow());
+			}
+
+			foreach (YouTubeMediaTrackAudio trackAudio in audioFormats)
+			{
+				tableRows.Add(trackAudio.ToTableRow());
+			}
+
+			Table table = new Table(tableRows, tableColumns);
+			table.Format();
+
+			List<YouTubeMediaTrackVideo> videos = table.Rows.Where(
+				o => o.Tag is YouTubeMediaTrackVideo).Select(o => o.Tag as YouTubeMediaTrackVideo).ToList();
+			List<YouTubeMediaTrackContainer> containers = table.Rows.Where(
+				o => o.Tag is YouTubeMediaTrackContainer).Select(o => o.Tag as YouTubeMediaTrackContainer).ToList();
+			List<YouTubeMediaTrackAudio> audios = table.Rows.Where(
+				o => o.Tag is YouTubeMediaTrackAudio).Select(o => o.Tag as YouTubeMediaTrackAudio).ToList();
+
+			const string columnSeparator = " | ";
+			int tableRowId = 0;
+			foreach (YouTubeMediaTrackVideo trackVideo in videos)
+			{
+				string title = table.Rows[tableRowId].Join(columnSeparator);
 				ToolStripMenuItem mi = new ToolStripMenuItem(title);
 				mi.Tag = trackVideo;
 				mi.Click += MenuItemDownloadClick;
 				contextMenuDownloads.Items.Add(mi);
+				tableRowId++;
 			}
-
-			containerFormats = FilterContainerTracks(mediaTracks);
-			if (containerFormats.Count > 0)
+			if (containers.Count > 0)
 			{
 				contextMenuDownloads.Items.Add("-");
-				foreach (YouTubeMediaTrackContainer trackContainer in containerFormats)
+				foreach (YouTubeMediaTrackContainer trackContainer in containers)
 				{
-					string title = MediaTrackToString(trackContainer);
+					string title = table.Rows[tableRowId].Join(columnSeparator);
 					ToolStripMenuItem mi = new ToolStripMenuItem(title);
 					mi.Tag = trackContainer;
 					mi.Click += MenuItemDownloadClick;
 					contextMenuDownloads.Items.Add(mi);
+					tableRowId++;
 				}
 			}
-
-			if (audioFormats.Count > 0)
+			if (audios.Count > 0)
 			{
 				contextMenuDownloads.Items.Add("-");
-				foreach (YouTubeMediaTrackAudio trackAudio in audioFormats)
+				foreach (YouTubeMediaTrackAudio trackAudio in audios)
 				{
-					string title = MediaTrackToString(trackAudio);
+					string title = table.Rows[tableRowId].Join(columnSeparator);
 					ToolStripMenuItem mi = new ToolStripMenuItem(title);
 					mi.Tag = trackAudio;
 					mi.Click += MenuItemDownloadClick;
 					contextMenuDownloads.Items.Add(mi);
+					tableRowId++;
 				}
 			}
 
