@@ -1311,14 +1311,16 @@ namespace YouTube_downloader
 
 		private void imageFavorite_Paint(object sender, PaintEventArgs e)
 		{
-			DrawStar(e.Graphics, imageFavorite.Width / 2f, imageFavorite.Height / 2f,
-				imageFavorite.Width / 2f, 35f, 3f, Color.LimeGreen, IsFavoriteVideo);
+			double x = imageFavorite.Width / 2.0;
+			double y = imageFavorite.Height / 2.0;
+			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteVideo, Color.LimeGreen);
 		}
 
 		private void imgFavoriteChannel_Paint(object sender, PaintEventArgs e)
 		{
-			DrawStar(e.Graphics, imageFavoriteChannel.Width / 2f, imageFavoriteChannel.Height / 2f,
-				imageFavoriteChannel.Width / 2f, 35f, 3f, Color.LimeGreen, IsFavoriteChannel);
+			double x = imageFavorite.Width / 2.0;
+			double y = imageFavorite.Height / 2.0;
+			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteChannel, Color.LimeGreen);
 		}
 
 		private void btnGetVideoInfo_Click(object sender, EventArgs e)

@@ -193,5 +193,38 @@ namespace YouTube_downloader
 			TimeSpan offset = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time").BaseUtcOffset;
 			return dateTime.ToUniversalTime().AddHours(offset.Hours);
 		}
+
+		public static void DrawStar(this Graphics graphics,
+			double positionX, double positionY, double outerRadius,
+			double spikeSizeDivider, double rotationAngle, bool fillArea, Color areaColor)
+		{
+			const int vertexCount = 10;
+			double innerRadius = outerRadius / spikeSizeDivider;
+			const double oneRadian = Math.PI / 180.0;
+			PointF[] vertices = new PointF[vertexCount + 1];
+			double step = 360.0 / vertexCount;
+			double angle = rotationAngle;
+			for (int i = 0; i < vertexCount; ++i)
+			{
+				double angleRadian = angle * oneRadian;
+				double radius = i % 2 == 0 ? innerRadius : outerRadius;
+				float x = (float)(positionX + Math.Sin(angleRadian) * radius);
+				float y = (float)(positionY + Math.Cos(angleRadian) * radius);
+				vertices[i] = new PointF(x, y);
+				if (i == 0)
+				{
+					vertices[vertexCount] = new PointF(x, y);
+				}
+				angle += step;
+			}
+
+			if (fillArea)
+			{
+				Brush brush = new SolidBrush(areaColor);
+				graphics.FillPolygon(brush, vertices);
+				brush.Dispose();
+			}
+			graphics.DrawLines(Pens.Black, vertices);
+		}
 	}
 }

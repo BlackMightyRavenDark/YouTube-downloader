@@ -639,38 +639,6 @@ namespace YouTube_downloader
 				!string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
 				File.Exists(config.FfmpegExeFilePath);
 		}
-
-		public static void DrawStar(Graphics graphics, float x, float y, double radius, 
-			double rotAngle, float depth, Color color, bool fill)
-		{
-			PointF[] points = new PointF[11];
-			int a = 18;
-			for (int i = 0; i < 11; ++i)
-			{
-				if (i % 2 == 0)
-				{
-					int xx = (int)Math.Round(x + Math.Cos((a + rotAngle) * 2 * Math.PI / 360.0) * (radius / depth));
-					int yy = (int)Math.Round(y - Math.Sin((a + rotAngle) * 2 * Math.PI / 360.0) * (radius / depth));
-					points[i] = new PointF(xx, yy);
-				}
-				else
-				{
-					int xx = (int)Math.Round(x + Math.Cos((a + rotAngle) * 2 * Math.PI / 360.0) * radius);
-					int yy = (int)Math.Round(y - Math.Sin((a + rotAngle) * 2 * Math.PI / 360.0) * radius);
-					points[i] = new PointF(xx, yy);
-
-				}
-				a += 36;
-			}
-
-			if (fill)
-			{
-				Brush brush = new SolidBrush(color);
-				graphics.FillPolygon(brush, points);
-				brush.Dispose();
-			}
-			graphics.DrawPolygon(Pens.Black, points);
-		}
 	}
 
 	public enum FavoriteItemType { Video, Channel, Directory };
