@@ -407,16 +407,16 @@ namespace YouTube_downloader
 			this.label7.TabIndex = 12;
 			this.label7.Text = "Веб-браузер:";
 			// 
-			// btnBrowseDowloadingPath
+			// btnBrowseDownloadingPath
 			// 
 			this.btnBrowseDowloadingPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnBrowseDowloadingPath.Location = new System.Drawing.Point(489, 23);
-			this.btnBrowseDowloadingPath.Name = "btnBrowseDowloadingPath";
+			this.btnBrowseDowloadingPath.Name = "btnBrowseDownloadingPath";
 			this.btnBrowseDowloadingPath.Size = new System.Drawing.Size(32, 20);
 			this.btnBrowseDowloadingPath.TabIndex = 2;
 			this.btnBrowseDowloadingPath.Text = "...";
 			this.btnBrowseDowloadingPath.UseVisualStyleBackColor = true;
-			this.btnBrowseDowloadingPath.Click += new System.EventHandler(this.btnBrowseDowloadingDirPath_Click);
+			this.btnBrowseDowloadingPath.Click += new System.EventHandler(this.btnBrowseDownloadingDirPath_Click);
 			// 
 			// btnSelectBrowser
 			// 

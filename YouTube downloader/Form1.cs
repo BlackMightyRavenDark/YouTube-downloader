@@ -1237,7 +1237,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void btnBrowseDowloadingDirPath_Click(object sender, EventArgs e)
+		private void btnBrowseDownloadingDirPath_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
 			folderBrowserDialog.Description = "Выберите папку для скачивания";
