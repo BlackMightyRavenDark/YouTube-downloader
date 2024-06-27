@@ -22,7 +22,7 @@ namespace YouTube_downloader
 					StreamAppender.Append(stream, fileStream);
 				}
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}

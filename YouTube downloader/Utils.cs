@@ -2,9 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Drawing;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
@@ -15,10 +13,8 @@ namespace YouTube_downloader
 {
 	public static class Utils
 	{
-		public const string YOUTUBE_ACCEPT_STRING = "application/json";
 		public const string YOUTUBE_SEARCH_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
 		public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
-		public const string YOUTUBE_URL_BASE = "https://www.youtube.com";
 		public const string YOUTUBE_WATCH_URL_BASE = "https://www.youtube.com/watch";
 
 		public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
@@ -43,40 +39,6 @@ namespace YouTube_downloader
 		{
 			FileDownloader d = new FileDownloader() { Url = url };
 			return d.DownloadString(out responseString);
-		}
-
-		public static int HttpsPost(string url, string body, out string responseString)
-		{
-			try
-			{
-				int bodyLength = string.IsNullOrEmpty(body) ? 0 : Encoding.UTF8.GetByteCount(body);
-				NameValueCollection headers = new NameValueCollection()
-				{
-					{ "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" },
-					{ "Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7" },
-					{ "Content-Type", "application/json" },
-					{ "Content-Length", bodyLength.ToString() },
-					{ "Host", "www.youtube.com" },
-					{ "User-Agent", "com.google.android.youtube/17.36.4 (Linux; U; Android 12; GB) gzip" }
-				};
-
-				using (HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, body, headers))
-				{
-					if (requestResult.ErrorCode == 200)
-					{
-						return requestResult.WebContent.ContentToString(out responseString);
-					}
-
-					responseString = requestResult.ErrorMessage;
-					return requestResult.ErrorCode;
-				}
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex.Message);
-				responseString = ex.Message;
-				return ex.HResult;
-			}
 		}
 
 		public static int DownloadData(string url, Stream stream)
@@ -190,67 +152,6 @@ namespace YouTube_downloader
 				}
 			}
 			return list;
-		}
-
-		public static string MediaTrackToString(YouTubeMediaTrack track)
-		{
-			string res = null;
-			if (track is YouTubeMediaTrackAudio)
-			{
-				YouTubeMediaTrackAudio audio = track as YouTubeMediaTrackAudio;
-				res = audio.IsDashManifest ? "DASH Audio: " : "Audio: ";
-				if (audio.FormatId != 0)
-					res += $"ID {audio.FormatId}";
-				if (audio.AverageBitrate != 0)
-					res += $", ~{audio.AverageBitrate / 1024} kbps";
-				if (!string.IsNullOrEmpty(audio.FileExtension))
-					res += $", {audio.FileExtension}";
-				if (!string.IsNullOrEmpty(audio.MimeCodecs))
-					res += $", {audio.MimeCodecs}";
-				if (audio.ContentLength > 0L)
-					res += $", {FormatSize(audio.ContentLength)}";
-				if (audio.IsDashManifest && audio.DashUrls != null)
-					res += $", {audio.DashUrls.Count} chunks";
-			}
-			else if (track is YouTubeMediaTrackVideo)
-			{
-				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
-				res = video.IsHlsManifest ? "HLS: " : video.IsDashManifest ? "DASH Video: " : "Video: ";
-				if (video.FormatId != 0)
-					res += $"ID {video.FormatId}, ";
-				res += $"{video.VideoWidth}x{video.VideoHeight}";
-				if (video.FrameRate != 0)
-					res += $", {video.FrameRate} fps";
-				if (video.AverageBitrate != 0)
-					res += $", ~{video.AverageBitrate / 1024} kbps";
-				if (!string.IsNullOrEmpty(video.FileExtension))
-					res += $", {video.FileExtension}";
-				if (!string.IsNullOrEmpty(video.MimeCodecs))
-					res += $", {video.MimeCodecs}";
-				if (video.ContentLength > 0L)
-					res += $", {FormatSize(video.ContentLength)}";
-				if (video.IsDashManifest && video.DashUrls != null)
-					res += $", {video.DashUrls.Count} chunks";
-			}
-			else if (track is YouTubeMediaTrackContainer)
-			{
-				YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
-				res = "Container: ";
-				if (container.FormatId != 0)
-					res += $"ID {container.FormatId}, ";
-				res += $"{container.VideoWidth}x{container.VideoHeight}";
-				if (container.VideoFrameRate != 0)
-					res += $", {container.VideoFrameRate} fps";
-				if (container.AverageBitrate != 0)
-					res += $", ~{container.AverageBitrate / 1024} kbps";
-				if (!string.IsNullOrEmpty(container.FileExtension))
-					res += $", {container.FileExtension}";
-				if (!string.IsNullOrEmpty(container.MimeCodecs))
-					res += $", {container.MimeCodecs}";
-				if (container.ContentLength > 0L)
-					res += $", {FormatSize(container.ContentLength)}";
-			}
-			return res;
 		}
 
 		public static string GetTrackShortInfo(YouTubeMediaTrack track)
@@ -469,23 +370,6 @@ namespace YouTube_downloader
 			return fn.Replace("\\", "\u29F9").Replace("|", "\u2758").Replace("/", "\u2044")
 				.Replace("?", "\u2753").Replace(":", "\uFE55").Replace("<", "\u227A").Replace(">", "\u227B")
 				.Replace("\"", "\u201C").Replace("*", "\uFE61").Replace("^", "\u2303").Replace("\n", " ");
-		}
-
-		public static Dictionary<string,string> SplitStringToKeyValues(
-			string inputString, char keySeparator, char valueSeparator)
-		{
-			if (string.IsNullOrEmpty(inputString) || string.IsNullOrWhiteSpace(inputString))
-			{
-				return null;
-			}
-			string[] keyValues = inputString.Split(keySeparator);
-			Dictionary<string, string> dict = new Dictionary<string, string>();
-			for (int i = 0; i < keyValues.Length; ++i)
-			{
-				string[] t = keyValues[i].Split(valueSeparator);
-				dict.Add(t[0], t[1]);
-			}
-			return dict;
 		}
 
 		public static string DecryptCipherSignature(string signatureEncrypted, string algo)
