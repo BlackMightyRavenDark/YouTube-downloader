@@ -696,15 +696,15 @@ namespace YouTube_downloader
 						lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
 						lblProgress.Left = lblStatus.Left + lblStatus.Width;
 					};
-					_multiThreadedDownloader.DownloadProgress += (object s, long bytesTransfered) =>
+					_multiThreadedDownloader.DownloadProgress += (object s, long bytesTransferred) =>
 					{
 						long fileSize = _multiThreadedDownloader.ContentLength != 0L ? _multiThreadedDownloader.ContentLength : videoTrack.ContentLength;
-						double percent = 100.0 / fileSize * bytesTransfered;
+						double percent = 100.0 / fileSize * bytesTransferred;
 						progressBarDownload.Value = (int)Math.Round(percent);
 
 						string percentString = string.Format("{0:F2}", percent);
 						string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-						lblProgress.Text = $"{FormatSize(bytesTransfered)} / {FormatSize(fileSize)}" +
+						lblProgress.Text = $"{FormatSize(bytesTransferred)} / {FormatSize(fileSize)}" +
 							$" ({percentString}%), {shortInfo}";
 					};
 					_multiThreadedDownloader.ChunkMergingStarted += (s, chunkCount) =>
