@@ -162,11 +162,20 @@ namespace YouTube_downloader
 				YouTubeMediaTrackAudio audio = track as YouTubeMediaTrackAudio;
 				res = string.Empty;
 				if (audio.AverageBitrate != 0)
-					res += $", ~{audio.AverageBitrate / 1024} kbps";
+				{
+					string comma = !string.IsNullOrEmpty(res) ? "," : string.Empty;
+					res += $"{comma} ~{audio.AverageBitrate / 1024} kbps";
+				}
 				if (!string.IsNullOrEmpty(audio.FileExtension))
-					res += $", {audio.FileExtension}";
+				{
+					string comma = !string.IsNullOrEmpty(res) ? "," : string.Empty;
+					res += $"{comma} {audio.FileExtension}";
+				}
 				if (!string.IsNullOrEmpty(audio.MimeCodecs))
-					res += $", {audio.MimeCodecs}";
+				{
+					string comma = !string.IsNullOrEmpty(res) ? "," : string.Empty;
+					res += $"{comma} {audio.MimeCodecs}";
+				}
 			}
 			else if (track is YouTubeMediaTrackVideo)
 			{
