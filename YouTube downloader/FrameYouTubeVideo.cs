@@ -1449,7 +1449,7 @@ namespace YouTube_downloader
 				MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
-		private void btnGetHlsManifest_Click(object sender, EventArgs e)
+		private async void btnGetHlsManifest_Click(object sender, EventArgs e)
 		{
 			if (!VideoInfo.IsInfoAvailable)
 			{
@@ -1458,12 +1458,15 @@ namespace YouTube_downloader
 				return;
 			}
 
-			YouTubeApi api = new YouTubeApi();
-			YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-				YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-				YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-			RawVideoInfoResult rawVideoInfoResult = api.GetRawVideoInfo(
-				new VideoId(VideoInfo.Id), method);
+			RawVideoInfoResult rawVideoInfoResult = null;
+			await Task.Run(() =>
+			{
+				YouTubeApi api = new YouTubeApi();
+				YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+					YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
+					YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+				rawVideoInfoResult = api.GetRawVideoInfo(new VideoId(VideoInfo.Id), method);
+			});
 			if (rawVideoInfoResult.ErrorCode == 200)
 			{
 				string dashManifestUrl = rawVideoInfoResult.RawVideoInfo.StreamingData?.RawData?.Value<string>("hlsManifestUrl");
@@ -1471,12 +1474,14 @@ namespace YouTube_downloader
 				if (d.DownloadString(out string manifest) == 200)
 				{
 					SetClipboardText(manifest);
-					MessageBox.Show("Скопировано в буфер обмена.");
+					MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
 					return;
 				}
 			}
 
-			MessageBox.Show("Ошибка!", "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show("HLS manifest не найден!", "Ошибатор ошибок",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void btnGetPlayerCode_Click(object sender, EventArgs e)

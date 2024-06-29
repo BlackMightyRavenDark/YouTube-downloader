@@ -338,12 +338,13 @@
             // 
             // btnGetHlsManifest
             // 
+            this.btnGetHlsManifest.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.btnGetHlsManifest.Location = new System.Drawing.Point(508, 102);
             this.btnGetHlsManifest.Name = "btnGetHlsManifest";
             this.btnGetHlsManifest.Size = new System.Drawing.Size(112, 23);
             this.btnGetHlsManifest.TabIndex = 14;
             this.btnGetHlsManifest.Text = "Get HLS manifest";
-            this.btnGetHlsManifest.UseVisualStyleBackColor = true;
+            this.btnGetHlsManifest.UseVisualStyleBackColor = false;
             this.btnGetHlsManifest.Click += new System.EventHandler(this.btnGetHlsManifest_Click);
             // 
             // btnGetPlayerCode
