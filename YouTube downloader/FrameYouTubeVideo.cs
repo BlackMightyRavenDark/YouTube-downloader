@@ -42,7 +42,7 @@ namespace YouTube_downloader
 
 		private int oldX;
 		private bool canDrag = false;
-		public const int EXTRA_WIDTH = 140;
+		public const int EXTRA_WIDTH = 260;
 		private bool _dashCancelRequired;
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
@@ -76,11 +76,7 @@ namespace YouTube_downloader
 				btnDownload.Left = parentControl.Width - btnDownload.Width - offset;
 				lblVideoTitle.Width = imageFavorite.Left - lblVideoTitle.Left - 4;
 				progressBarDownload.Width = btnDownload.Left - progressBarDownload.Left - 4;
-				btnGetVideoInfo.Left = parentControl.Width + offset;
-				btnGetWebPage.Left = btnGetVideoInfo.Left;
-				btnGetDashManifest.Left = btnGetVideoInfo.Left;
-				btnGetHlsManifest.Left = btnGetVideoInfo.Left;
-				btnGetPlayerCode.Left = btnGetVideoInfo.Left;
+				groupBoxButtons.Left = parentControl.Width + offset;
 
 				imgScrollbar.Left = 0;
 				imgScrollbar.Width = parentControl.Width;
@@ -1413,7 +1409,34 @@ namespace YouTube_downloader
 				}
 			}
 		}
-		
+
+		private async void btnGetVideoUrls_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			StreamingData streamingData = await Task.Run(() =>
+				!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage) ?
+				ExtractStreamingDataFromWebPageCode(_webPage) :
+				YouTubeApiLib.Utils.GetStreamingData(VideoInfo.Id, YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls));
+
+			if (streamingData == null || streamingData.RawData == null)
+			{
+				MessageBox.Show("Не удалось получить ссылки для скачивания! ", "Ссылки для скачивания",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			string t = streamingData.RawData.ToString();
+			SetClipboardText(t);
+			MessageBox.Show("Скопировано в буфер обмена", "Ссылки для скачивания",
+				MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
 		private async void btnGetDashManifest_Click(object sender, EventArgs e)
 		{
 			if (!VideoInfo.IsInfoAvailable)

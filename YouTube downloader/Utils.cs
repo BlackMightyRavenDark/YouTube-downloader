@@ -205,6 +205,21 @@ namespace YouTube_downloader
 			return video != null ? video.DatePublished : DateTime.MaxValue;
 		}
 
+		internal static StreamingData ExtractStreamingDataFromWebPageCode(string webPageCode)
+		{
+			YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
+			if (webPageResult.ErrorCode == 200)
+			{
+				RawVideoInfoResult rawVideoInfoResult = YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(webPageResult.VideoWebPage);
+				if (rawVideoInfoResult.ErrorCode == 200)
+				{
+					return rawVideoInfoResult.RawVideoInfo.StreamingData;
+				}
+			}
+
+			return null;
+		}
+
 		private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)
 		{
 			if (root.ID != null && root.ID.Equals(item.ID))

@@ -66,6 +66,8 @@
             this.contextMenuDate = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miUpdateVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnGetVideoUrls = new System.Windows.Forms.Button();
+            this.groupBoxButtons = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -74,6 +76,7 @@
             this.contextMenuChannelTitle.SuspendLayout();
             this.contextMenuVideoTitle.SuspendLayout();
             this.contextMenuDate.SuspendLayout();
+            this.groupBoxButtons.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblVideoTitle
@@ -196,9 +199,9 @@
             // btnGetVideoInfo
             // 
             this.btnGetVideoInfo.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnGetVideoInfo.Location = new System.Drawing.Point(508, 43);
+            this.btnGetVideoInfo.Location = new System.Drawing.Point(8, 49);
             this.btnGetVideoInfo.Name = "btnGetVideoInfo";
-            this.btnGetVideoInfo.Size = new System.Drawing.Size(112, 24);
+            this.btnGetVideoInfo.Size = new System.Drawing.Size(112, 25);
             this.btnGetVideoInfo.TabIndex = 10;
             this.btnGetVideoInfo.Text = "Get video info";
             this.btnGetVideoInfo.UseVisualStyleBackColor = false;
@@ -317,7 +320,7 @@
             // btnGetWebPage
             // 
             this.btnGetWebPage.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnGetWebPage.Location = new System.Drawing.Point(508, 12);
+            this.btnGetWebPage.Location = new System.Drawing.Point(8, 18);
             this.btnGetWebPage.Name = "btnGetWebPage";
             this.btnGetWebPage.Size = new System.Drawing.Size(112, 25);
             this.btnGetWebPage.TabIndex = 12;
@@ -328,9 +331,9 @@
             // btnGetDashManifest
             // 
             this.btnGetDashManifest.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnGetDashManifest.Location = new System.Drawing.Point(508, 73);
+            this.btnGetDashManifest.Location = new System.Drawing.Point(126, 18);
             this.btnGetDashManifest.Name = "btnGetDashManifest";
-            this.btnGetDashManifest.Size = new System.Drawing.Size(112, 23);
+            this.btnGetDashManifest.Size = new System.Drawing.Size(112, 25);
             this.btnGetDashManifest.TabIndex = 13;
             this.btnGetDashManifest.Text = "Get DASH manifest";
             this.btnGetDashManifest.UseVisualStyleBackColor = false;
@@ -339,9 +342,9 @@
             // btnGetHlsManifest
             // 
             this.btnGetHlsManifest.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnGetHlsManifest.Location = new System.Drawing.Point(508, 102);
+            this.btnGetHlsManifest.Location = new System.Drawing.Point(126, 49);
             this.btnGetHlsManifest.Name = "btnGetHlsManifest";
-            this.btnGetHlsManifest.Size = new System.Drawing.Size(112, 23);
+            this.btnGetHlsManifest.Size = new System.Drawing.Size(112, 25);
             this.btnGetHlsManifest.TabIndex = 14;
             this.btnGetHlsManifest.Text = "Get HLS manifest";
             this.btnGetHlsManifest.UseVisualStyleBackColor = false;
@@ -350,9 +353,9 @@
             // btnGetPlayerCode
             // 
             this.btnGetPlayerCode.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnGetPlayerCode.Location = new System.Drawing.Point(508, 131);
+            this.btnGetPlayerCode.Location = new System.Drawing.Point(126, 80);
             this.btnGetPlayerCode.Name = "btnGetPlayerCode";
-            this.btnGetPlayerCode.Size = new System.Drawing.Size(112, 23);
+            this.btnGetPlayerCode.Size = new System.Drawing.Size(112, 25);
             this.btnGetPlayerCode.TabIndex = 15;
             this.btnGetPlayerCode.Text = "Get player code";
             this.btnGetPlayerCode.UseVisualStyleBackColor = false;
@@ -402,17 +405,39 @@
             this.miCopyVideoPublishedDateToolStripMenuItem.Text = "Скопировать дату публикации";
             this.miCopyVideoPublishedDateToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoPublishedDateToolStripMenuItem_Click);
             // 
+            // btnGetVideoUrls
+            // 
+            this.btnGetVideoUrls.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnGetVideoUrls.Location = new System.Drawing.Point(8, 80);
+            this.btnGetVideoUrls.Name = "btnGetVideoUrls";
+            this.btnGetVideoUrls.Size = new System.Drawing.Size(112, 25);
+            this.btnGetVideoUrls.TabIndex = 16;
+            this.btnGetVideoUrls.Text = "Get video URLs";
+            this.btnGetVideoUrls.UseVisualStyleBackColor = false;
+            this.btnGetVideoUrls.Click += new System.EventHandler(this.btnGetVideoUrls_Click);
+            // 
+            // groupBoxButtons
+            // 
+            this.groupBoxButtons.Controls.Add(this.btnGetDashManifest);
+            this.groupBoxButtons.Controls.Add(this.btnGetVideoUrls);
+            this.groupBoxButtons.Controls.Add(this.btnGetVideoInfo);
+            this.groupBoxButtons.Controls.Add(this.btnGetWebPage);
+            this.groupBoxButtons.Controls.Add(this.btnGetHlsManifest);
+            this.groupBoxButtons.Controls.Add(this.btnGetPlayerCode);
+            this.groupBoxButtons.Location = new System.Drawing.Point(500, 12);
+            this.groupBoxButtons.Name = "groupBoxButtons";
+            this.groupBoxButtons.Size = new System.Drawing.Size(248, 111);
+            this.groupBoxButtons.TabIndex = 17;
+            this.groupBoxButtons.TabStop = false;
+            this.groupBoxButtons.Text = "Кнопки";
+            // 
             // FrameYouTubeVideo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.Controls.Add(this.btnGetPlayerCode);
-            this.Controls.Add(this.btnGetHlsManifest);
-            this.Controls.Add(this.btnGetDashManifest);
-            this.Controls.Add(this.btnGetWebPage);
+            this.Controls.Add(this.groupBoxButtons);
             this.Controls.Add(this.imageFavoriteChannel);
-            this.Controls.Add(this.btnGetVideoInfo);
             this.Controls.Add(this.imgScrollbar);
             this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.lblStatus);
@@ -424,7 +449,7 @@
             this.Controls.Add(this.imagePreview);
             this.Controls.Add(this.lblVideoTitle);
             this.Name = "FrameYouTubeVideo";
-            this.Size = new System.Drawing.Size(663, 179);
+            this.Size = new System.Drawing.Size(771, 179);
             this.Load += new System.EventHandler(this.FrameYouTubeVideo_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FrameYouTubeVideo_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FrameYouTubeVideo_MouseMove);
@@ -438,6 +463,7 @@
             this.contextMenuChannelTitle.ResumeLayout(false);
             this.contextMenuVideoTitle.ResumeLayout(false);
             this.contextMenuDate.ResumeLayout(false);
+            this.groupBoxButtons.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -482,5 +508,7 @@
 		private System.Windows.Forms.ContextMenuStrip contextMenuDate;
 		private System.Windows.Forms.ToolStripMenuItem miUpdateVideoPublishedDateToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyVideoPublishedDateToolStripMenuItem;
-	}
+        private System.Windows.Forms.Button btnGetVideoUrls;
+        private System.Windows.Forms.GroupBox groupBoxButtons;
+    }
 }
