@@ -1371,7 +1371,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void btnGetWebPage_Click(object sender, EventArgs e)
+		private async void btnGetWebPage_Click(object sender, EventArgs e)
 		{
 			btnGetWebPage.Enabled = false;
 			if (!VideoInfo.IsInfoAvailable)
@@ -1385,16 +1385,18 @@ namespace YouTube_downloader
 			if (!string.IsNullOrEmpty(_webPage))
 			{
 				SetClipboardText(_webPage);
-				MessageBox.Show("Скопировано в буфер обмена");
+				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
 				btnGetWebPage.Enabled = true;
 				return;
 			}
 
-			YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.Get(new VideoId(VideoInfo.Id));
+			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new VideoId(VideoInfo.Id)));
 			if (webPageResult.ErrorCode == 200)
 			{
 				SetClipboardText(webPageResult.VideoWebPage.WebPageCode);
-				MessageBox.Show("Скопировано в буфер обмена");
+				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else
 			{
