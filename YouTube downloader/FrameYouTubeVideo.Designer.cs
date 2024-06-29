@@ -327,12 +327,13 @@
             // 
             // btnGetDashManifest
             // 
+            this.btnGetDashManifest.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.btnGetDashManifest.Location = new System.Drawing.Point(508, 73);
             this.btnGetDashManifest.Name = "btnGetDashManifest";
             this.btnGetDashManifest.Size = new System.Drawing.Size(112, 23);
             this.btnGetDashManifest.TabIndex = 13;
             this.btnGetDashManifest.Text = "Get DASH manifest";
-            this.btnGetDashManifest.UseVisualStyleBackColor = true;
+            this.btnGetDashManifest.UseVisualStyleBackColor = false;
             this.btnGetDashManifest.Click += new System.EventHandler(this.btnGetDashManifest_Click);
             // 
             // btnGetHlsManifest
