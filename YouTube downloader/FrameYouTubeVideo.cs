@@ -1484,7 +1484,7 @@ namespace YouTube_downloader
 				MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
-		private void btnGetPlayerCode_Click(object sender, EventArgs e)
+		private async void btnGetPlayerCode_Click(object sender, EventArgs e)
 		{
 			if (!VideoInfo.IsInfoAvailable)
 			{
@@ -1496,11 +1496,11 @@ namespace YouTube_downloader
 			string page = _webPage;
 			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
 			{
-				YouTubeVideoWebPageResult webPageResult =
-					YouTubeVideoWebPage.Get(new VideoId(VideoInfo.Id));
+				YouTubeVideoWebPageResult webPageResult = null;
+				await Task.Run(() => webPageResult = YouTubeVideoWebPage.Get(new VideoId(VideoInfo.Id)));
 				if (webPageResult.ErrorCode != 200)
 				{
-					MessageBox.Show("Ошибка скачивания плеера!", "Ошибка!",
+					MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
@@ -1511,38 +1511,51 @@ namespace YouTube_downloader
 			string url = ExtractPlayerUrlFromWebPage(page);
 			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
 			{
-				MessageBox.Show("Ошибка скачивания плеера!", "Ошибка!",
+				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			FileDownloader d = new FileDownloader() { Url = url };
-			int errorCode = d.DownloadString(out string code);
-			if (errorCode != 200)
+			string code = null;
+			int errCode = await Task.Run(() =>
 			{
+				FileDownloader d = new FileDownloader() { Url = url };
+				int errorCode = d.DownloadString(out code);
 				d.Dispose();
-				MessageBox.Show("Ошибка скачивания плеера!", "Ошибка!",
+				return errorCode;
+			});
+			if (errCode != 200)
+			{
+				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			d.Dispose();
 
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.InitialDirectory = config.DownloadingDirPath;
-			sfd.Title = "Сохранить плеер как...";
-			sfd.Filter = "JS-files|*.js";
-			sfd.DefaultExt = ".js";
-			sfd.AddExtension = true;
-			sfd.FileName = $"Player for {VideoInfo.Id}";
-			if (sfd.ShowDialog() == DialogResult.OK)
+			try
 			{
-				if (File.Exists(sfd.FileName))
+				using (SaveFileDialog sfd = new SaveFileDialog())
 				{
-					File.Delete(sfd.FileName);
+					sfd.InitialDirectory = config.DownloadingDirPath;
+					sfd.Title = "Сохранить код плеера как...";
+					sfd.Filter = "JS-files|*.js";
+					sfd.DefaultExt = ".js";
+					sfd.AddExtension = true;
+					sfd.FileName = $"Player for {VideoInfo.Id}";
+					if (sfd.ShowDialog() == DialogResult.OK)
+					{
+						if (File.Exists(sfd.FileName))
+						{
+							File.Delete(sfd.FileName);
+						}
+						File.WriteAllText(sfd.FileName, code);
+					}
 				}
-				File.WriteAllText(sfd.FileName, code);
+			} catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-			sfd.Dispose();
 		}
 
 		private void imagePreview_MouseDown(object sender, MouseEventArgs e)

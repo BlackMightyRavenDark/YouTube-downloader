@@ -349,12 +349,13 @@
             // 
             // btnGetPlayerCode
             // 
+            this.btnGetPlayerCode.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.btnGetPlayerCode.Location = new System.Drawing.Point(508, 131);
             this.btnGetPlayerCode.Name = "btnGetPlayerCode";
             this.btnGetPlayerCode.Size = new System.Drawing.Size(112, 23);
             this.btnGetPlayerCode.TabIndex = 15;
             this.btnGetPlayerCode.Text = "Get player code";
-            this.btnGetPlayerCode.UseVisualStyleBackColor = true;
+            this.btnGetPlayerCode.UseVisualStyleBackColor = false;
             this.btnGetPlayerCode.Click += new System.EventHandler(this.btnGetPlayerCode_Click);
             // 
             // contextMenuVideoTitle
