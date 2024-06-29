@@ -1323,54 +1323,6 @@ namespace YouTube_downloader
 			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteChannel, Color.LimeGreen);
 		}
 
-		private void btnGetVideoInfo_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			{
-				if (!string.IsNullOrEmpty(_webPage))
-				{
-					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
-					RawVideoInfoResult rawVideoInfoResult =
-						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
-					if (rawVideoInfoResult.ErrorCode == 200)
-					{
-						string t = rawVideoInfoResult.RawVideoInfo.RawData.ToString();
-						SetClipboardText(t);
-						MessageBox.Show("Скопировано в буфер обмена");
-					}
-					else
-					{
-						MessageBox.Show("Не удалось!");
-					}
-					return;
-				}
-			}
-			{
-				YouTubeApi api = new YouTubeApi();
-				YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-					YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiEncryptedUrls :
-					YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-				RawVideoInfoResult rawVideoInfoResult = api.GetRawVideoInfo(
-					new VideoId(VideoInfo.Id), method);
-				if (rawVideoInfoResult.ErrorCode == 200)
-				{
-					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
-					MessageBox.Show("Скопировано в буфер обмена");
-				}
-				else
-				{
-					MessageBox.Show("Ошибатор ошибок", $"Ошибка {rawVideoInfoResult.ErrorCode}",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-		}
-
 		private async void btnGetWebPage_Click(object sender, EventArgs e)
 		{
 			btnGetWebPage.Enabled = false;
@@ -1407,6 +1359,61 @@ namespace YouTube_downloader
 			btnGetWebPage.Enabled = true;
 		}
 
+		private async void btnGetVideoInfo_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			{
+				if (!string.IsNullOrEmpty(_webPage))
+				{
+					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
+					RawVideoInfoResult rawVideoInfoResult =
+						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
+					if (rawVideoInfoResult.ErrorCode == 200)
+					{
+						string t = rawVideoInfoResult.RawVideoInfo.RawData.ToString();
+						SetClipboardText(t);
+						MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+					else
+					{
+						MessageBox.Show("Не удалось получить информацию о видео!", "Ошибатор ошибок",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+					return;
+				}
+			}
+			{
+				RawVideoInfoResult rawVideoInfoResult = null;
+				await Task.Run(() =>
+				{
+					YouTubeApi api = new YouTubeApi();
+					YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+						YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiEncryptedUrls :
+						YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
+					rawVideoInfoResult = api.GetRawVideoInfo(
+						new VideoId(VideoInfo.Id), method);
+				});
+				if (rawVideoInfoResult.ErrorCode == 200)
+				{
+					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
+					MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show("Ошибатор ошибок", $"Ошибка {rawVideoInfoResult.ErrorCode}",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+		
 		private void btnGetDashManifest_Click(object sender, EventArgs e)
 		{
 			if (!VideoInfo.IsInfoAvailable)

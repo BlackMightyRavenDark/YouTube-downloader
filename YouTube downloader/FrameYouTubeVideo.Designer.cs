@@ -195,7 +195,7 @@
             // 
             // btnGetVideoInfo
             // 
-            this.btnGetVideoInfo.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnGetVideoInfo.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.btnGetVideoInfo.Location = new System.Drawing.Point(508, 43);
             this.btnGetVideoInfo.Name = "btnGetVideoInfo";
             this.btnGetVideoInfo.Size = new System.Drawing.Size(112, 24);
