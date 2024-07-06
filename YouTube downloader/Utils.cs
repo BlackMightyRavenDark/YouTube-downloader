@@ -370,21 +370,16 @@ namespace YouTube_downloader
 			return true;
 		}
 
-		public static string LeadZero(int n)
-		{
-			return n < 10 ? $"0{n}" : n.ToString();
-		}
-
 		public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
 		{
 			DateTime date = videoInfo.DatePublished < DateTime.MaxValue && config.UseGmtTime ?
 				videoInfo.DatePublished.ToGmt() : videoInfo.DatePublished;
-			return fmt.Replace("<year>", LeadZero(date.Year))
-				.Replace("<month>", LeadZero(date.Month))
-				.Replace("<day>", LeadZero(date.Day))
-				.Replace("<hour>", LeadZero(date.Hour))
-				.Replace("<minute>", LeadZero(date.Minute))
-				.Replace("<second>", LeadZero(date.Second))
+			return fmt.Replace("<year>", date.Year.ToString())
+				.Replace("<month>", date.Month.ToString().PadLeft(2, '0'))
+				.Replace("<day>", date.Day.ToString().PadLeft(2, '0'))
+				.Replace("<hour>", date.Hour.ToString().PadLeft(2, '0'))
+				.Replace("<minute>", date.Minute.ToString().PadLeft(2, '0'))
+				.Replace("<second>", date.Second.ToString().PadLeft(2, '0'))
 				.Replace("<GMT>", " GMT")
 				.Replace("<video_title>", videoInfo.Title)
 				.Replace("<video_id>", videoInfo.Id);
