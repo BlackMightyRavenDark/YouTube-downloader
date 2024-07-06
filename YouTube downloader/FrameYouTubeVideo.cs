@@ -433,14 +433,21 @@ namespace YouTube_downloader
 			btnDownload.Enabled = true;
 		}
 
-		private async Task<DownloadResult> DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName)
+		/// <summary>
+		/// Downloads a DASH video. Warning! This method must be run in a separate thread!
+		/// </summary>
+		private DownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName)
 		{
-			progressBarDownload.Value = 0;
-			progressBarDownload.Maximum = mediaTrack.DashUrls.Count;
-			string mediaType = mediaTrack is YouTubeMediaTrackAudio ? "аудио" : "видео";
-			lblStatus.Text = $"Скачивание чанков {mediaType}:";
-			lblProgress.Left = lblStatus.Left + lblStatus.Width;
-			lblProgress.Text = $"0 / {mediaTrack.DashUrls.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
+			string mediaType = null;
+			Invoke(new MethodInvoker(() =>
+			{
+				progressBarDownload.Value = 0;
+				progressBarDownload.Maximum = mediaTrack.DashUrls.Count;
+				mediaType = mediaTrack is YouTubeMediaTrackAudio ? "аудио" : "видео";
+				lblStatus.Text = $"Скачивание чанков {mediaType}:";
+				lblProgress.Left = lblStatus.Left + lblStatus.Width;
+				lblProgress.Text = $"0 / {mediaTrack.DashUrls.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
+			}));
 
 			bool canMerge = config.MergeToContainer && IsFfmpegAvailable();
 			string fnDash = MultiThreadedDownloader.GetNumberedFileName(
@@ -449,101 +456,98 @@ namespace YouTube_downloader
 			string fnDashFinal = fnDash;
 			string fnDashTmp = fnDash + ".tmp";
 
-			Progress<int> progressDash = new Progress<int>();
-			progressDash.ProgressChanged += (s, n) =>
-			{
-				progressBarDownload.Value = n + 1;
-				double percent = 100.0 / progressBarDownload.Maximum * (n + 1);
-				lblStatus.Text = $"Скачивание чанков {mediaType}:";
-				lblProgress.Left = lblStatus.Left + lblStatus.Width;
-				lblProgress.Text = $"{n + 1} / {mediaTrack.DashUrls.Count}" +
-					$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
-			};
-
 			_dashCancelRequired = false;
 
-			return await Task.Run(() =>
+			if (File.Exists(fnDashTmp))
 			{
-				if (File.Exists(fnDashTmp))
+				File.Delete(fnDashTmp);
+			}
+
+			Stream fileStream = File.OpenWrite(fnDashTmp);
+			FileDownloader _singleThreadedDownloader = new FileDownloader();
+			int errorCode = 400;
+			for (int i = 0; i < mediaTrack.DashUrls.Count; ++i)
+			{
+				int errors = 0;
+				do
 				{
-					File.Delete(fnDashTmp);
-				}
-				IProgress<int> dashReporter = progressDash;
-				Stream fileStream = File.OpenWrite(fnDashTmp);
-				FileDownloader _singleThreadedDownloader = new FileDownloader();
-				int errorCode = 400;
-				for (int i = 0; i < mediaTrack.DashUrls.Count; ++i)
-				{
-					int errors = 0;
-					do
+					Stream memChunk = new MemoryStream();
+					_singleThreadedDownloader.Url = mediaTrack.DashUrls[i];
+					_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
 					{
-						Stream memChunk = new MemoryStream();
-						_singleThreadedDownloader.Url = mediaTrack.DashUrls[i];
-						_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
+						if (errCode == 200 || errCode == 206)
 						{
-							if (errCode == 200 || errCode == 206)
+							if (contentLength > 0L)
 							{
-								if (contentLength > 0L)
+								char driveLetter = fnDashTmp[0];
+								if (driveLetter != '\\')
 								{
-									char driveLetter = fnDashTmp[0];
-									if (driveLetter != '\\')
+									DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
+									if (!driveInfo.IsReady)
 									{
-										DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
-										if (!driveInfo.IsReady)
-										{
-											return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
-										}
-										long minimumFreeSpaceRequired = contentLength * 10;
-										if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
-										{
-											return FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
-										}
+										return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
+									}
+									long minimumFreeSpaceRequired = contentLength * 10;
+									if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
+									{
+										return FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
 									}
 								}
 							}
-
-							return errCode;
-						};
-						errorCode = _singleThreadedDownloader.Download(memChunk);
-						if (errorCode != 200)
-						{
-							memChunk.Dispose();
-							continue;
 						}
-						memChunk.Position = 0L;
-						bool appended = StreamAppender.Append(memChunk, fileStream);
-						memChunk.Dispose();
-						if (!appended)
-						{
-							fileStream.Dispose();
-							return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, null);
-						}
-					} while (errorCode != 200 && errors++ < 9 && !_dashCancelRequired);
 
-					if (_dashCancelRequired)
-					{
-						errorCode = FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER;
-					}
+						return errCode;
+					};
 
+					errorCode = _singleThreadedDownloader.Download(memChunk);
 					if (errorCode != 200)
 					{
-						break;
+						memChunk.Dispose();
+						continue;
 					}
+					memChunk.Position = 0L;
+					bool appended = StreamAppender.Append(memChunk, fileStream);
+					memChunk.Dispose();
+					if (!appended)
+					{
+						fileStream.Dispose();
+						return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, null);
+					}
+				} while (errorCode != 200 && errors++ < 9 && !_dashCancelRequired);
 
-					dashReporter.Report(i);
-				}
-				fileStream.Dispose();
-				if (errorCode == 200)
+				if (_dashCancelRequired)
 				{
-					fnDashFinal = MultiThreadedDownloader.GetNumberedFileName(fnDash);
-					File.Move(fnDashTmp, fnDashFinal);
+					errorCode = FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER;
 				}
-				DownloadResult downloadResult =
-					new DownloadResult(errorCode, _singleThreadedDownloader.LastErrorMessage, fnDashFinal);
-				_singleThreadedDownloader.Dispose();
-				_singleThreadedDownloader = null;
-				return downloadResult;
-			});
+
+				if (errorCode != 200)
+				{
+					break;
+				}
+
+				Invoke(new MethodInvoker(() =>
+				{
+					int chunkNumber = i + 1;
+					progressBarDownload.Value = chunkNumber;
+					double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
+					lblStatus.Text = $"Скачивание чанков {mediaType}:";
+					lblProgress.Left = lblStatus.Left + lblStatus.Width;
+					lblProgress.Text = $"{chunkNumber} / {mediaTrack.DashUrls.Count}" +
+						$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
+				}));
+			}
+			fileStream.Dispose();
+			if (errorCode == 200)
+			{
+				fnDashFinal = MultiThreadedDownloader.GetNumberedFileName(fnDash);
+				File.Move(fnDashTmp, fnDashFinal);
+			}
+
+			DownloadResult downloadResult =
+				new DownloadResult(errorCode, _singleThreadedDownloader.LastErrorMessage, fnDashFinal);
+			_singleThreadedDownloader.Dispose();
+			_singleThreadedDownloader = null;
+			return downloadResult;
 		}
 
 		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
@@ -551,7 +555,7 @@ namespace YouTube_downloader
 		{
 			if (mediaTrack.IsDashManifest)
 			{
-				return await DownloadDash(mediaTrack, formattedFileName);
+				return DownloadDash(mediaTrack, formattedFileName);
 			}
 			else
 			{
@@ -645,82 +649,98 @@ namespace YouTube_downloader
 
 					_multiThreadedDownloader.Connecting += (s, url) =>
 					{
-						string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-						lblStatus.Text = $"Состояние: Подключение... {shortInfo}";
-						lblProgress.Text = null;
-						Application.DoEvents();
-					};
-					_multiThreadedDownloader.Connected += (object s, string url, long contentLength, ref int errCode, ref string errorMessage) =>
-					{
-						if (errCode == 200 || errCode == 206)
+						Invoke(new MethodInvoker(() =>
 						{
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-							lblStatus.Text = $"Состояние: Подключено! {shortInfo}";
-							lblStatus.Refresh();
-
-							if (contentLength > 0L)
+							lblStatus.Text = $"Состояние: Подключение... {shortInfo}";
+							lblProgress.Text = null;
+						}));
+					};
+					_multiThreadedDownloader.Connected += (object s, string url, long contentLength, CustomError customError) =>
+					{
+						Invoke(new MethodInvoker(() =>
+						{
+							if (customError.ErrorCode == 200 || customError.ErrorCode == 206)
 							{
-								long minimumFreeSpaceRequired = (long)(contentLength * 1.1);
+								string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
+								lblStatus.Text = $"Состояние: Подключено! {shortInfo}";
 
-								MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
-
-								List<char> driveLetters = mtd.GetUsedDriveLetters();
-								if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
+								if (contentLength > 0L)
 								{
-									errorMessage = "Недостаточно места на диске!";
-									errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
-									return;
-								}
+									long minimumFreeSpaceRequired = (long)(contentLength * 1.1);
 
-								if (mtd.UseRamForTempFiles && MemoryWatcher.Update() &&
-									MemoryWatcher.RamFree < (ulong)minimumFreeSpaceRequired)
-								{
-									errorMessage = "Недостаточно памяти!";
-									errCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
-									return;
+									MultiThreadedDownloader mtd = s as MultiThreadedDownloader;
+
+									List<char> driveLetters = mtd.GetUsedDriveLetters();
+									if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
+									{
+										customError.ErrorMessage = "Недостаточно места на диске!";
+										customError.ErrorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
+										return;
+									}
+
+									if (mtd.UseRamForTempFiles && MemoryWatcher.Update() &&
+										MemoryWatcher.RamFree < (ulong)minimumFreeSpaceRequired)
+									{
+										customError.ErrorMessage = "Недостаточно памяти!";
+										customError.ErrorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
+										return;
+									}
 								}
 							}
-						}
+						}));
 					};
 					_multiThreadedDownloader.DownloadStarted += (s, size) =>
 					{
-						progressBarDownload.Value = 0;
-						progressBarDownload.Maximum = 100;
+						Invoke(new MethodInvoker(() =>
+						{
+							progressBarDownload.Value = 0;
+							progressBarDownload.Maximum = 100;
 
-						lblStatus.Text = $"Скачивание {mediaTypeString}:";
-						string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-						lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
-						lblProgress.Left = lblStatus.Left + lblStatus.Width;
+							lblStatus.Text = $"Скачивание {mediaTypeString}:";
+							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
+							lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
+							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+						}));
 					};
 					_multiThreadedDownloader.DownloadProgress += (object s, long bytesTransferred) =>
 					{
-						long fileSize = _multiThreadedDownloader.ContentLength != 0L ? _multiThreadedDownloader.ContentLength : videoTrack.ContentLength;
-						double percent = 100.0 / fileSize * bytesTransferred;
-						progressBarDownload.Value = (int)Math.Round(percent);
+						Invoke(new MethodInvoker(() =>
+						{
+							long fileSize = _multiThreadedDownloader.ContentLength != 0L ? _multiThreadedDownloader.ContentLength : videoTrack.ContentLength;
+							double percent = 100.0 / fileSize * bytesTransferred;
+							progressBarDownload.Value = (int)Math.Round(percent);
 
-						string percentString = string.Format("{0:F2}", percent);
-						string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-						lblProgress.Text = $"{FormatSize(bytesTransferred)} / {FormatSize(fileSize)}" +
-							$" ({percentString}%), {shortInfo}";
+							string percentString = string.Format("{0:F2}", percent);
+							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
+							lblProgress.Text = $"{FormatSize(bytesTransferred)} / {FormatSize(fileSize)}" +
+								$" ({percentString}%), {shortInfo}";
+						}));
 					};
 					_multiThreadedDownloader.ChunkMergingStarted += (s, chunkCount) =>
 					{
-						progressBarDownload.Value = 0;
-						progressBarDownload.Maximum = chunkCount;
+						Invoke(new MethodInvoker(() =>
+						{
+							progressBarDownload.Value = 0;
+							progressBarDownload.Maximum = chunkCount;
 
-						lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
-						lblProgress.Text = $"0 / {chunkCount}";
-						lblProgress.Left = lblStatus.Left + lblStatus.Width;
+							lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
+							lblProgress.Text = $"0 / {chunkCount}";
+							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+						}));
 					};
 					_multiThreadedDownloader.ChunkMergingProgress += (s, chunkId, chunkCount, chunkPosition, chunkSize) =>
 					{
-						double percent = 100.0 / chunkSize * chunkPosition;
-						string percentString = string.Format("{0:F2}", percent);
-						lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
-							$"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
-						progressBarDownload.Value = chunkId + 1;
+						Invoke(new MethodInvoker(() =>
+						{
+							double percent = 100.0 / chunkSize * chunkPosition;
+							string percentString = string.Format("{0:F2}", percent);
+							lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
+								$"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
+							progressBarDownload.Value = chunkId + 1;
+						}));
 					};
-					int res = await _multiThreadedDownloader.Download();
+					int res = await Task.Run(() => _multiThreadedDownloader.Download());
 					if (useRamToStoreTemporaryFiles)
 					{
 						GC.Collect();
@@ -989,12 +1009,11 @@ namespace YouTube_downloader
 			btnDownload.Enabled = true;
 
 			lblStatus.Text = "Скачивание...";
-			lblStatus.Refresh();
 
 			List<DownloadResult> downloadResults = new List<DownloadResult>();
 			bool audioOnly = IsAudioOnly(tracksToDownload);
-			DownloadResult downloadResult =
-				await DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults);
+			DownloadResult downloadResult = await Task.Run(() =>
+				DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults));
 			lblProgress.Text = null;
 			lblProgress.Refresh();
 
