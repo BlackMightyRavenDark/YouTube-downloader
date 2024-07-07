@@ -53,6 +53,7 @@ namespace YouTube_downloader
 				json["ifOnlySecondAudioTrackIsBetter"] = config.IfOnlySecondAudioTrackIsBetter;
 				json["downloadAllAudioTracksAutomatically"] = config.DownloadAllAudioTracks;
 				json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainer;
+				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["savePreviewImage"] = config.SavePreviewImage;
 				json["useHiddenApiForGettingInfo"] = config.UseHiddenApiForGettingInfo;
@@ -266,6 +267,20 @@ namespace YouTube_downloader
 					}
 				}
 				{
+					JToken jt = json.Value<JToken>("extraDelayAfterContainerWasBuilt");
+					if (jt != null)
+					{
+						config.ExtraDelayAfterContainerWasBuilt = jt.Value<int>();
+						if (config.ExtraDelayAfterContainerWasBuilt < 0)
+						{
+							config.ExtraDelayAfterContainerWasBuilt = 0;
+						} else if (config.ExtraDelayAfterContainerWasBuilt > 1000)
+						{
+							config.ExtraDelayAfterContainerWasBuilt = 1000;
+						}
+					}
+				}
+				{
 					JToken jt = json.Value<JToken>("useRamToStoreTemporaryFiles");
 					if (jt != null)
 					{
@@ -316,6 +331,7 @@ namespace YouTube_downloader
 				{
 					radioButtonContainerTypeMp4.Checked = true;
 				}
+				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				chkSaveImage.Checked = config.SavePreviewImage;
 				chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
 				numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
@@ -1565,6 +1581,11 @@ namespace YouTube_downloader
 			config.AlwaysUseMkvContainer = radioButtonContainerTypeMkv.Checked;
 		}
 
+		private void numericUpDownDelayAfterContainerCreated_ValueChanged(object sender, EventArgs e)
+		{
+			config.ExtraDelayAfterContainerWasBuilt = (int)numericUpDownDelayAfterContainerCreated.Value;
+		}
+		
 		private void chkSearchVideos_CheckedChanged(object sender, EventArgs e)
 		{
 			if (!chkSearchVideos.Checked && !chkSearchChannels.Checked)

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
+using System.Threading;
 
 namespace YouTube_downloader
 {
@@ -468,9 +469,9 @@ namespace YouTube_downloader
 		}
 
 		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
-			string destinationFileName, bool wait = true)
+			string destinationFileName, bool wait, int delayAfterCompletion)
 		{
-			return await Task.Run(() =>
+			bool success = await Task.Run(() =>
 			{
 				Process process = new Process();
 				process.StartInfo.UseShellExecute = true;
@@ -504,6 +505,25 @@ namespace YouTube_downloader
 				}
 				return res;
 			});
+
+			if (success && delayAfterCompletion > 0)
+			{
+				await Task.Run(() => Thread.Sleep(delayAfterCompletion));
+			}
+
+			return success;
+		}
+
+		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
+			string destinationFileName, int delayAfterCompletion)
+		{
+			return await MergeYouTubeMediaTracks(files, destinationFileName, true, delayAfterCompletion);
+		}
+
+		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
+			string destinationFileName)
+		{
+			return await MergeYouTubeMediaTracks(files, destinationFileName, true, 0);
 		}
 
 		public static bool GrabHls(string hlsUrl, string destinationFileName)

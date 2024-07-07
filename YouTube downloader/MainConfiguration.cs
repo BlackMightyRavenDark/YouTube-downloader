@@ -29,6 +29,7 @@ namespace YouTube_downloader
 		public bool UseRamToStoreTemporaryFiles { get; set; }
 		public bool MergeToContainer { get; set; }
 		public bool AlwaysUseMkvContainer { get; set; }
+		public int ExtraDelayAfterContainerWasBuilt { get; set; }
 		public bool DeleteSourceFiles { get; set; }
 		public string CipherDecryptionAlgo { get; set; }
 		public string YouTubeApiV3Key { get; set; }
@@ -89,6 +90,7 @@ namespace YouTube_downloader
 			ChunksMergingDirPath = null;
 			MergeToContainer = true;
 			AlwaysUseMkvContainer = false;
+			ExtraDelayAfterContainerWasBuilt = 300;
 			DeleteSourceFiles = true;
 			CipherDecryptionAlgo = null;
 			YouTubeApiV3Key = null;

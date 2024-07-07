@@ -1059,7 +1059,7 @@ namespace YouTube_downloader
 
 					string containerFilePath = MultiThreadedDownloader.GetNumberedFileName(
 						$"{config.DownloadingDirPath}{formattedFileName}.{ext}");
-					await MergeYouTubeMediaTracks(downloadResults, containerFilePath);
+					await MergeYouTubeMediaTracks(downloadResults, containerFilePath, config.ExtraDelayAfterContainerWasBuilt);
 
 					if (config.DeleteSourceFiles)
 					{
