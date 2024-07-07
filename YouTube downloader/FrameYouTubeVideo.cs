@@ -143,7 +143,7 @@ namespace YouTube_downloader
 		{
 			_isFavoriteVideo = fav;
 			if (_isFavoriteVideo)
-			{   
+			{
 				FavoriteItem favoriteItem = new FavoriteItem(
 					VideoInfo.Title, VideoInfo.Title, VideoInfo.Id,
 					VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId, favoritesRootNode);
@@ -551,7 +551,8 @@ namespace YouTube_downloader
 		}
 
 		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
-			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
+			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly,
+			int tryNumber, int maxTries)
 		{
 			if (mediaTrack.IsDashManifest)
 			{
@@ -697,10 +698,14 @@ namespace YouTube_downloader
 							progressBarDownload.Value = 0;
 							progressBarDownload.Maximum = 100;
 
-							lblStatus.Text = $"Скачивание {mediaTypeString}:";
+							lblStatus.Text = $"[{tryNumber}/{maxTries}] Скачивание {mediaTypeString}:";
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
 							lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
 							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+
+							string toolTipText = $"Попытка №{tryNumber} из {maxTries}";
+							toolTip1.SetToolTip(lblStatus, toolTipText);
+							toolTip1.SetToolTip(lblProgress, toolTipText);
 						}));
 					};
 					_multiThreadedDownloader.DownloadProgress += (object s, long bytesTransferred) =>
@@ -727,6 +732,9 @@ namespace YouTube_downloader
 							lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
 							lblProgress.Text = $"0 / {chunkCount}";
 							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+
+							toolTip1.SetToolTip(lblStatus, string.Empty);
+							toolTip1.SetToolTip(lblStatus, string.Empty);
 						}));
 					};
 					_multiThreadedDownloader.ChunkMergingProgress += (s, chunkId, chunkCount, chunkPosition, chunkSize) =>
@@ -745,8 +753,13 @@ namespace YouTube_downloader
 					{
 						GC.Collect();
 					}
+					Invoke(new MethodInvoker(() =>
+					{
+						toolTip1.SetToolTip(lblStatus, string.Empty);
+						toolTip1.SetToolTip(lblStatus, string.Empty);
+					}));
 					DownloadResult downloadResult =
-						new DownloadResult(res, _multiThreadedDownloader.LastErrorMessage,
+					new DownloadResult(res, _multiThreadedDownloader.LastErrorMessage,
 						_multiThreadedDownloader.OutputFileName);
 					_multiThreadedDownloader.Dispose();
 					_multiThreadedDownloader = null;
@@ -762,6 +775,12 @@ namespace YouTube_downloader
 					return downloadResult;
 				}
 			}
+		}
+
+		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
+			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
+		{
+			return await DownloadYouTubeMediaTrack(mediaTrack, formattedFileName, audioOnly, 1, 1);
 		}
 
 		private async void MenuItemDownloadClick(object sender, EventArgs e)
@@ -1188,13 +1207,23 @@ namespace YouTube_downloader
 			DownloadResult result = null;
 			foreach (YouTubeMediaTrack track in tracks)
 			{
-				result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly);
-				if (result.ErrorCode != 200)
+				int errors = 0;
+				while (errors++ <= config.DownloadRetryCount)
 				{
-					return result;
+					result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly, errors, config.DownloadRetryCount);
+
+					if (result.ErrorCode == FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER ||
+						result.ErrorCode <= -100000) //some error code from exception.
+					{
+						return result;
+					}
+
+					if (result.ErrorCode == 200) { break; }
 				}
 
+				if (result.ErrorCode != 200) { return result; }
 				results.Add(result);
+
 			}
 
 			return result == null ? new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,

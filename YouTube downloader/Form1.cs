@@ -37,6 +37,7 @@ namespace YouTube_downloader
 				json["downloadingDirPath"] = config.DownloadingDirPath;
 				json["tempDirPath"] = config.TempDirPath;
 				json["chunksMergingDirPath"] = config.ChunksMergingDirPath;
+				json["downloadRetryCount"] = config.DownloadRetryCount;
 				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgo;
 				json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
 				json["browserExeFilePath"] = config.BrowserExeFilePath;
@@ -78,6 +79,21 @@ namespace YouTube_downloader
 					if (jt != null)
 					{
 						config.TempDirPath = jt.Value<string>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("downloadRetryCount");
+					if (jt != null)
+					{
+						config.DownloadRetryCount = jt.Value<int>();
+						if (config.DownloadRetryCount < 1)
+						{
+							config.DownloadRetryCount = 1;
+						}
+						else if (config.DownloadRetryCount > (int)numericUpDownDownloadRetryCount.Maximum)
+						{
+							config.DownloadRetryCount = (int)numericUpDownDownloadRetryCount.Maximum;
+						}
 					}
 				}
 				{
@@ -320,6 +336,7 @@ namespace YouTube_downloader
 				editOutputFileNameFormatWithDate.Text = config.OutputFileNameFormatWithDate;
 				editOutputFileNameFormatWithoutDate.Text = config.OutputFileNameFormatWithoutDate;
 				numericUpDownSearchResult.Value = config.MaxSearch;
+				numericUpDownDownloadRetryCount.Value = config.DownloadRetryCount;
 				editFfmpeg.Text = config.FfmpegExeFilePath;
 				chkMergeAdaptive.Checked = config.MergeToContainer;
 				chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
@@ -1832,6 +1849,11 @@ namespace YouTube_downloader
 		private void checkBoxUseGmtTime_CheckedChanged(object sender, EventArgs e)
 		{
 			config.UseGmtTime = checkBoxUseGmtTime.Checked;
+		}
+
+		private void numericUpDownDownloadRetryCount_ValueChanged(object sender, EventArgs e)
+		{
+			config.DownloadRetryCount = (int)numericUpDownDownloadRetryCount.Value;
 		}
 	}
 }

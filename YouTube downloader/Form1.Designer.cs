@@ -70,6 +70,8 @@ namespace YouTube_downloader
             this.label15 = new System.Windows.Forms.Label();
             this.numericUpDownMenusFontSize = new System.Windows.Forms.NumericUpDown();
             this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
+            this.numericUpDownDownloadRetryCount = new System.Windows.Forms.NumericUpDown();
+            this.label21 = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.numericUpDownDelayAfterContainerCreated = new System.Windows.Forms.NumericUpDown();
             this.label20 = new System.Windows.Forms.Label();
@@ -171,6 +173,7 @@ namespace YouTube_downloader
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).BeginInit();
             this.tabPageDownloadingSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDownloadRetryCount)).BeginInit();
             this.groupBox10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelayAfterContainerCreated)).BeginInit();
             this.groupBox15.SuspendLayout();
@@ -667,6 +670,8 @@ namespace YouTube_downloader
             // tabPageDownloadingSettings
             // 
             this.tabPageDownloadingSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageDownloadingSettings.Controls.Add(this.numericUpDownDownloadRetryCount);
+            this.tabPageDownloadingSettings.Controls.Add(this.label21);
             this.tabPageDownloadingSettings.Controls.Add(this.groupBox10);
             this.tabPageDownloadingSettings.Controls.Add(this.chkSaveImage);
             this.tabPageDownloadingSettings.Location = new System.Drawing.Point(4, 22);
@@ -675,6 +680,38 @@ namespace YouTube_downloader
             this.tabPageDownloadingSettings.Size = new System.Drawing.Size(527, 357);
             this.tabPageDownloadingSettings.TabIndex = 2;
             this.tabPageDownloadingSettings.Text = "Скачивание";
+            // 
+            // numericUpDownDownloadRetryCount
+            // 
+            this.numericUpDownDownloadRetryCount.Location = new System.Drawing.Point(194, 292);
+            this.numericUpDownDownloadRetryCount.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDownDownloadRetryCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownDownloadRetryCount.Name = "numericUpDownDownloadRetryCount";
+            this.numericUpDownDownloadRetryCount.Size = new System.Drawing.Size(46, 20);
+            this.numericUpDownDownloadRetryCount.TabIndex = 19;
+            this.numericUpDownDownloadRetryCount.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numericUpDownDownloadRetryCount.ValueChanged += new System.EventHandler(this.numericUpDownDownloadRetryCount_ValueChanged);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(11, 294);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(183, 13);
+            this.label21.TabIndex = 18;
+            this.label21.Text = "Количество ппопыток скачивания:";
             // 
             // groupBox10
             // 
@@ -894,7 +931,7 @@ namespace YouTube_downloader
             // chkSaveImage
             // 
             this.chkSaveImage.AutoSize = true;
-            this.chkSaveImage.Location = new System.Drawing.Point(14, 292);
+            this.chkSaveImage.Location = new System.Drawing.Point(14, 316);
             this.chkSaveImage.Name = "chkSaveImage";
             this.chkSaveImage.Size = new System.Drawing.Size(175, 17);
             this.chkSaveImage.TabIndex = 15;
@@ -933,14 +970,12 @@ namespace YouTube_downloader
             // 
             // groupBox13
             // 
-            this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox13.Controls.Add(this.btnUseRamWhy);
             this.groupBox13.Controls.Add(this.panelRAM);
             this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
             this.groupBox13.Location = new System.Drawing.Point(12, 290);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(410, 66);
+            this.groupBox13.Size = new System.Drawing.Size(459, 66);
             this.groupBox13.TabIndex = 14;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Оперативная память (RAM)";
@@ -1727,6 +1762,7 @@ namespace YouTube_downloader
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).EndInit();
             this.tabPageDownloadingSettings.ResumeLayout(false);
             this.tabPageDownloadingSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDownloadRetryCount)).EndInit();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelayAfterContainerCreated)).EndInit();
@@ -1904,6 +1940,8 @@ namespace YouTube_downloader
         private System.Windows.Forms.NumericUpDown numericUpDownDelayAfterContainerCreated;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.NumericUpDown numericUpDownDownloadRetryCount;
+        private System.Windows.Forms.Label label21;
     }
 }
 

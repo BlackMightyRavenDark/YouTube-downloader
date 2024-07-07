@@ -14,6 +14,7 @@ namespace YouTube_downloader
 		public string TempDirPath { get; set; }
 		public string ChunksMergingDirPath { get; set; }
 		public string FavoritesFilePath { get; set; }
+		public int DownloadRetryCount { get; set; }
 		public string OutputFileNameFormatWithDate { get; set; }
 		public string OutputFileNameFormatWithoutDate { get; set; }
 		public bool UseGmtTime { get; set; }
@@ -88,6 +89,7 @@ namespace YouTube_downloader
 			DownloadingDirPath = null;
 			TempDirPath = null;
 			ChunksMergingDirPath = null;
+			DownloadRetryCount = 5;
 			MergeToContainer = true;
 			AlwaysUseMkvContainer = false;
 			ExtraDelayAfterContainerWasBuilt = 300;
