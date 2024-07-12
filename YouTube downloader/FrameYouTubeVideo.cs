@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using YouTubeApiLib;
 using MultiThreadedDownloaderLib;
 using static YouTube_downloader.Utils;
@@ -227,36 +228,17 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			if (VideoInfo.RawInfo.DataGettingMethod != YouTubeApiLib.Utils.VideoInfoGettingMethod.Manual)
+			if (VideoInfo.RawInfo.DataGettingMethod != YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual)
 			{
-				bool useHiddenApi = config.UseHiddenApiForGettingInfo;
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
+					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
 				await Task.Run(() =>
 				{
-					if (useHiddenApi)
+					YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, method);
+					if (streamingDataResult.ErrorCode == 200)
 					{
-						YouTubeApi api = new YouTubeApi();
-						RawVideoInfoResult rawVideoInfoResult =
-							api.GetRawVideoInfo(new VideoId(VideoInfo.Id),
-							YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls);
-						if (rawVideoInfoResult.ErrorCode == 200)
-						{
-							mediaTracks = rawVideoInfoResult.RawVideoInfo.StreamingData?.Parse();
-						}
-					}
-					else
-					{
-						YouTubeVideo video = GetSingleVideo(new VideoId(VideoInfo.Id));
-						if (video != null)
-						{
-							if (!YouTubeApi.getMediaTracksInfoImmediately)
-							{
-								YouTubeApiLib.Utils.VideoInfoGettingMethod method = useHiddenApi ?
-									YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-									YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-								video.UpdateMediaFormats(method);
-							}
-							mediaTracks = video.MediaTracks;
-						}
+						mediaTracks = streamingDataResult.Data.Parse();
 					}
 					//TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
 					//VideoInfo.UpdateMediaFormats());
@@ -1387,7 +1369,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new VideoId(VideoInfo.Id)));
+			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new YouTubeVideoId(VideoInfo.Id)));
 			if (webPageResult.ErrorCode == 200)
 			{
 				SetClipboardText(webPageResult.VideoWebPage.WebPageCode);
@@ -1416,7 +1398,7 @@ namespace YouTube_downloader
 				if (!string.IsNullOrEmpty(_webPage))
 				{
 					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
-					RawVideoInfoResult rawVideoInfoResult =
+					YouTubeRawVideoInfoResult rawVideoInfoResult =
 						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
 					if (rawVideoInfoResult.ErrorCode == 200)
 					{
@@ -1434,16 +1416,11 @@ namespace YouTube_downloader
 				}
 			}
 			{
-				RawVideoInfoResult rawVideoInfoResult = null;
-				await Task.Run(() =>
-				{
-					YouTubeApi api = new YouTubeApi();
-					YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-						YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiEncryptedUrls :
-						YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-					rawVideoInfoResult = api.GetRawVideoInfo(
-						new VideoId(VideoInfo.Id), method);
-				});
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiEncryptedUrls :
+					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
+				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(youTubeVideoId, method));
 				if (rawVideoInfoResult.ErrorCode == 200)
 				{
 					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
@@ -1467,20 +1444,21 @@ namespace YouTube_downloader
 				return;
 			}
 
-			StreamingData streamingData = await Task.Run(() =>
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() =>
 				!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage) ?
-				ExtractStreamingDataFromWebPageCode(_webPage) :
-				YouTubeApiLib.Utils.GetStreamingData(VideoInfo.Id, YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls));
+				ExtractStreamingDataFromVideoWebPage(_webPage) :
+				YouTubeStreamingData.Get(VideoInfo.Id, YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls));
 
-			if (streamingData == null || streamingData.RawData == null)
+			if (streamingDataResult.ErrorCode != 200 || streamingDataResult.Data == null ||
+				string.IsNullOrEmpty(streamingDataResult.Data.RawData) ||
+				string.IsNullOrWhiteSpace(streamingDataResult.Data.RawData))
 			{
 				MessageBox.Show("Не удалось получить ссылки для скачивания! ", "Ссылки для скачивания",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			string t = streamingData.RawData.ToString();
-			SetClipboardText(t);
+			SetClipboardText(streamingDataResult.Data.RawData);
 			MessageBox.Show("Скопировано в буфер обмена", "Ссылки для скачивания",
 				MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
@@ -1494,24 +1472,30 @@ namespace YouTube_downloader
 				return;
 			}
 
-			RawVideoInfoResult rawVideoInfoResult = null;
-			await Task.Run(() =>
+			YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
+			YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(youTubeVideoId, method));
+			if (streamingDataResult.ErrorCode == 200)
 			{
-				YouTubeApi api = new YouTubeApi();
-				YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-					YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-					YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-				rawVideoInfoResult = api.GetRawVideoInfo(new VideoId(VideoInfo.Id), method);
-			});
-			if (rawVideoInfoResult.ErrorCode == 200)
-			{
-				string dashManifestUrl = rawVideoInfoResult.RawVideoInfo.StreamingData?.RawData?.Value<string>("dashManifestUrl");
-				FileDownloader d = new FileDownloader() { Url = dashManifestUrl };
-				if (d.DownloadString(out string manifest) == 200)
+				try
 				{
-					SetClipboardText(manifest);
-					MessageBox.Show("Скопировано в буфер обмена", "DASH manifest",
-						MessageBoxButtons.OK, MessageBoxIcon.Information);
+					JObject json = JObject.Parse(streamingDataResult.Data.RawData);
+					string dashManifestUrl = json.Value<string>("dashManifestUrl");
+					FileDownloader d = new FileDownloader() { Url = dashManifestUrl };
+					if (d.DownloadString(out string manifest) == 200)
+					{
+						SetClipboardText(manifest);
+						MessageBox.Show("Скопировано в буфер обмена", "DASH manifest",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+						return;
+					}
+				} catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					MessageBox.Show($"DASH manifest не найден!\n{ex.Message}", "Ошибатор ошибок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 			}
@@ -1529,24 +1513,31 @@ namespace YouTube_downloader
 				return;
 			}
 
-			RawVideoInfoResult rawVideoInfoResult = null;
-			await Task.Run(() =>
+			YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
+			YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(youTubeVideoId, method));
+			if (streamingDataResult.ErrorCode == 200)
 			{
-				YouTubeApi api = new YouTubeApi();
-				YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-					YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-					YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-				rawVideoInfoResult = api.GetRawVideoInfo(new VideoId(VideoInfo.Id), method);
-			});
-			if (rawVideoInfoResult.ErrorCode == 200)
-			{
-				string dashManifestUrl = rawVideoInfoResult.RawVideoInfo.StreamingData?.RawData?.Value<string>("hlsManifestUrl");
-				FileDownloader d = new FileDownloader() { Url = dashManifestUrl };
-				if (d.DownloadString(out string manifest) == 200)
+				try
 				{
-					SetClipboardText(manifest);
-					MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
-						MessageBoxButtons.OK, MessageBoxIcon.Information);
+					JObject json = JObject.Parse(streamingDataResult.Data.RawData);
+					string hlsManifestUrl = json.Value<string>("hlsManifestUrl");
+					FileDownloader d = new FileDownloader() { Url = hlsManifestUrl };
+					if (d.DownloadString(out string manifest) == 200)
+					{
+						SetClipboardText(manifest);
+						MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+						return;
+					}
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					MessageBox.Show($"HLS manifest не найден!\n{ex.Message}", "Ошибатор ошибок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
 			}
@@ -1567,8 +1558,8 @@ namespace YouTube_downloader
 			string page = _webPage;
 			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
 			{
-				YouTubeVideoWebPageResult webPageResult = null;
-				await Task.Run(() => webPageResult = YouTubeVideoWebPage.Get(new VideoId(VideoInfo.Id)));
+				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
 				if (webPageResult.ErrorCode != 200)
 				{
 					MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",

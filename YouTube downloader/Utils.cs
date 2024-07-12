@@ -89,20 +89,19 @@ namespace YouTube_downloader
 				string res = t.Substring(0, t.IndexOf("\""));
 				if (!string.IsNullOrEmpty(res) && !string.IsNullOrWhiteSpace(res))
 				{
-					return "https://www.youtube.com" + res;
+					return YouTubeApiLib.Utils.YOUTUBE_URL + res;
 				}
 			}
 			return null;
 		}
 
-		public static YouTubeVideo GetSingleVideo(VideoId videoId)
+		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId)
 		{
 			YouTubeApi.getMediaTracksInfoImmediately = false;
 			YouTubeApi.decryptMediaTrackUrlsAutomaticallyIfPossible = false;
-			YouTubeApi api = new YouTubeApi();
 			if (config.UseHiddenApiForGettingInfo)
 			{
-				YouTubeVideo video = api.GetVideo(videoId);
+				YouTubeVideo video = YouTubeVideo.GetById(videoId);
 				return video;
 			}
 			else
@@ -110,7 +109,7 @@ namespace YouTube_downloader
 				YouTubeVideoWebPageResult youTubeVideoWebPageResult = YouTubeVideoWebPage.Get(videoId);
 				if (youTubeVideoWebPageResult.ErrorCode == 200)
 				{
-					return api.GetVideo(youTubeVideoWebPageResult.VideoWebPage);
+					return YouTubeVideo.GetByWebPage(youTubeVideoWebPageResult.VideoWebPage);
 				}
 			}
 			return null;
@@ -201,24 +200,25 @@ namespace YouTube_downloader
 
 		internal static DateTime GetVideoPublishedDate(string videoId)
 		{
-			YouTubeApi api = new YouTubeApi();
-			YouTubeVideo video = api.GetVideo(new VideoId(videoId));
+			YouTubeApi.getMediaTracksInfoImmediately = false;
+			YouTubeVideo video = YouTubeVideo.GetById(videoId);
 			return video != null ? video.DatePublished : DateTime.MaxValue;
 		}
 
-		internal static StreamingData ExtractStreamingDataFromWebPageCode(string webPageCode)
+		internal static YouTubeStreamingDataResult ExtractStreamingDataFromVideoWebPage(YouTubeVideoWebPage webPage)
+		{
+			YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(webPage);
+			return rawVideoInfoResult.ErrorCode == 200 ?
+				rawVideoInfoResult.RawVideoInfo.StreamingData :
+				new YouTubeStreamingDataResult(null, rawVideoInfoResult.ErrorCode);
+		}
+
+		internal static YouTubeStreamingDataResult ExtractStreamingDataFromVideoWebPage(string webPageCode)
 		{
 			YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
-			if (webPageResult.ErrorCode == 200)
-			{
-				RawVideoInfoResult rawVideoInfoResult = YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(webPageResult.VideoWebPage);
-				if (rawVideoInfoResult.ErrorCode == 200)
-				{
-					return rawVideoInfoResult.RawVideoInfo.StreamingData;
-				}
-			}
-
-			return null;
+			return webPageResult.ErrorCode == 200 ?
+				ExtractStreamingDataFromVideoWebPage(webPageResult.VideoWebPage) :
+				new YouTubeStreamingDataResult(null, webPageResult.ErrorCode);
 		}
 
 		private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)

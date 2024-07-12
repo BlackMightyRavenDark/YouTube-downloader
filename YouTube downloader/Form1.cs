@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
 using YouTube_downloader.Properties;
+using static YouTubeApiLib.Utils;
 using static YouTube_downloader.Utils;
 
 namespace YouTube_downloader
@@ -629,7 +630,7 @@ namespace YouTube_downloader
 					url += $"&pageToken={pageToken}";
 				}
 
-				errorCode = DownloadString(url, out string buf);
+				errorCode = Utils.DownloadString(url, out string buf);
 				if (errorCode == 200)
 				{
 					JObject json = JObject.Parse(buf);
@@ -644,11 +645,10 @@ namespace YouTube_downloader
 							string videoId = jObject.Value<JObject>("id")?.Value<string>("videoId");
 							if (!string.IsNullOrEmpty(videoId) && !string.IsNullOrWhiteSpace(videoId))
 							{
-								//TODO: Fix this shit!
-								YouTubeVideo video = GetSingleVideo(new VideoId(videoId));
-								if (video != null)
+								YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeRawVideoInfo.Get(videoId);
+								if (rawVideoInfoResult.ErrorCode == 200)
 								{
-									jaVideos.Add(video.RawInfo.RawData);
+									jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
 									if (sum++ + 1 >= maxVideos)
 									{
 										break;
@@ -715,7 +715,7 @@ namespace YouTube_downloader
 				url += $"&publishedBefore={dateBefore}";
 			}
 
-			int errorCode = DownloadString(url, out string buf);
+			int errorCode = Utils.DownloadString(url, out string buf);
 			if (errorCode == 200)
 			{
 				JObject json = JObject.Parse(buf);
@@ -736,10 +736,10 @@ namespace YouTube_downloader
 						if (kind.Equals("youtube#video"))
 						{
 							string id = j.Value<JObject>("id").Value<string>("videoId");
-							YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-								YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-								YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-							RawVideoInfoResult rawVideoInfoResult = YouTubeApiLib.Utils.GetRawVideoInfo(id, method);
+							YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+								YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
+								YouTubeVideoInfoGettingMethod.WebPage;
+							YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeRawVideoInfo.Get(id, method);
 							if (rawVideoInfoResult.ErrorCode == 200)
 							{
 								jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
@@ -794,11 +794,12 @@ namespace YouTube_downloader
 				for (int i = 0; i < jaVideos.Count; ++i)
 				{
 					//TODO: Fix this shit!
-					YouTubeApiLib.Utils.VideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-						YouTubeApiLib.Utils.VideoInfoGettingMethod.HiddenApiDecryptedUrls :
-						YouTubeApiLib.Utils.VideoInfoGettingMethod.WebPage;
-					RawVideoInfo rawVideoInfo = new RawVideoInfo(jaVideos[i].Value<JObject>(), method);
-					YouTubeVideo video = YouTubeApiLib.Utils.MakeYouTubeVideo(rawVideoInfo);
+					YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+						YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
+						YouTubeVideoInfoGettingMethod.WebPage;
+					string rawInfo = jaVideos[i].Value<string>();
+					YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo, method);
+					YouTubeVideo video = MakeYouTubeVideo(rawVideoInfo);
 					if (video != null)
 					{
 						videos.Add(video);
@@ -959,7 +960,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			VideoId videoId = YouTubeApiLib.Utils.ExtractVideoIdFromUrl(url);
+			YouTubeVideoId videoId = ExtractVideoIdFromUrl(url);
 			if (videoId == null || string.IsNullOrEmpty(videoId.Id) || string.IsNullOrWhiteSpace(videoId.Id))
 			{
 				MessageBox.Show("Не удалось распознать ID видео!", "Ошибатор ошибок",
@@ -1052,8 +1053,7 @@ namespace YouTube_downloader
 
 			try
 			{
-				YouTubeApi api = new YouTubeApi();
-				YouTubeVideo video = api.GetVideo(webPageCode);
+				YouTubeVideo video = YouTubeVideo.GetByWebPage(webPageCode);
 				if (video != null)
 				{
 					if (!YouTubeApi.getMediaTracksInfoImmediately)
@@ -1171,8 +1171,8 @@ namespace YouTube_downloader
 
 							try
 							{
-								VideoId videoId = new VideoId(item.ID);
-								YouTubeVideo video = GetSingleVideo(videoId);
+								YouTubeVideoId youTubeVideoId = new YouTubeVideoId(item.ID);
+								YouTubeVideo video = GetSingleVideo(youTubeVideoId);
 								if (video != null)
 								{
 									FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);

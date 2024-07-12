@@ -30,19 +30,28 @@ namespace YouTube_downloader
 
 		public static bool IsCiphered(this YouTubeVideo video)
 		{
-			StreamingData streamingData = video.RawInfo?.StreamingData;
-			if (streamingData != null)
+			try
 			{
-				JArray jaFormats = streamingData.RawData?.Value<JArray>("formats");
-				if (jaFormats != null && jaFormats.Count > 0)
+				YouTubeStreamingDataResult streamingDataResult = video.RawInfo?.StreamingData;
+				if (streamingDataResult.ErrorCode == 200)
 				{
-					return jaFormats[0].Value<JToken>("signatureCipher") != null;
+					JObject json = JObject.Parse(streamingDataResult.Data.RawData);
+					JArray jaFormats = json.Value<JArray>("formats");
+					if (jaFormats != null && jaFormats.Count > 0)
+					{
+						return jaFormats[0].Value<JToken>("signatureCipher") != null;
+					}
+					JArray jaAdaptiveFormats = json.Value<JArray>("adaptiveFormats");
+					if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
+					{
+						return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
+					}
 				}
-				JArray jaAdaptiveFormats = streamingData.RawData?.Value<JArray>("adaptiveFormats");
-				if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
-				{
-					return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
-				}
+
+				return true;
+			} catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
 
 			return false;
