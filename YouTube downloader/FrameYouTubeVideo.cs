@@ -228,9 +228,11 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			if (VideoInfo.RawInfo.DataGettingMethod != YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual)
-			{
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+            bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
+                VideoInfo.RawInfo.DataGettingMethod == YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual;
+            if (!isWebPage)
+            {
+                YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
 				await Task.Run(() =>

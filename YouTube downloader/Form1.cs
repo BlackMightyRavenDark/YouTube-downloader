@@ -1061,6 +1061,7 @@ namespace YouTube_downloader
 						video.UpdateMediaFormats(video.RawInfo);
 					}
 					FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
+					frame._webPage = webPageCode;
 					frame.SetMenusFontSize(config.MenusFontSize);
 					frame.FavoriteChannelChanged += (s, id, newState) =>
 					{
