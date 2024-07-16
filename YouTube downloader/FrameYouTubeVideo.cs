@@ -228,11 +228,11 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-            bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
-                VideoInfo.RawInfo.DataGettingMethod == YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual;
-            if (!isWebPage)
-            {
-                YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
+			bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
+				VideoInfo.RawInfo.DataGettingMethod == YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual;
+			if (!isWebPage)
+			{
+				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
 				await Task.Run(() =>
@@ -1757,7 +1757,28 @@ namespace YouTube_downloader
 			SetClipboardText($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
 		}
 
-		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
+		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            if (string.IsNullOrEmpty(_webPage) || string.IsNullOrWhiteSpace(_webPage))
+            {
+                MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
+                    "Ошибатор ошибок",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string url = ExtractPlayerUrlFromWebPage(_webPage);
+            if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+            {
+                MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            SetClipboardText(url);
+        }
+
+        private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!string.IsNullOrEmpty(VideoInfo.OwnerChannelTitle) && !string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
 			{
