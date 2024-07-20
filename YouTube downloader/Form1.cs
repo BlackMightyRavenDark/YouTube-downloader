@@ -54,6 +54,8 @@ namespace YouTube_downloader
 				json["downloadSecondAudioTrackAutomatically"] = config.DownloadSecondAudioTrack;
 				json["ifOnlySecondAudioTrackIsBetter"] = config.IfOnlySecondAudioTrackIsBetter;
 				json["downloadAllAudioTracksAutomatically"] = config.DownloadAllAudioTracks;
+				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
+				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
 				json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainer;
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
@@ -277,6 +279,20 @@ namespace YouTube_downloader
 					}
 				}
 				{
+					JToken jt = json.Value<JToken>("alwaysDownloadAsDash");
+					if (jt != null)
+					{
+						config.AlwaysDownloadAsDash = jt.Value<bool>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("dashManualFragmentationChunkSize");
+					if (jt != null)
+					{
+						config.DashManualFragmentationChunkSize = jt.Value<long>();
+					}
+				}
+				{
 					JToken jt = json.Value<JToken>("alwaysUseMkvContainer");
 					if (jt != null)
 					{
@@ -365,6 +381,8 @@ namespace YouTube_downloader
 				numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
+				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
+				numericUpDownDashChunkSize.Value = config.DashManualFragmentationChunkSize;
 				if (Is64BitProcess)
 				{
 					chkUseRamForTempFiles.Checked = config.UseRamToStoreTemporaryFiles;
@@ -1855,6 +1873,29 @@ namespace YouTube_downloader
 		private void numericUpDownDownloadRetryCount_ValueChanged(object sender, EventArgs e)
 		{
 			config.DownloadRetryCount = (int)numericUpDownDownloadRetryCount.Value;
+		}
+
+		private void checkBoxAlwaysDownloadAsDash_CheckedChanged(object sender, EventArgs e)
+		{
+			config.AlwaysDownloadAsDash = checkBoxAlwaysDownloadAsDash.Checked;
+		}
+
+		private void numericUpDownDashChunkSize_ValueChanged(object sender, EventArgs e)
+		{
+			config.DashManualFragmentationChunkSize = (long)numericUpDownDashChunkSize.Value;
+			lblActualDashChunkSize.Text = FormatSize(config.DashManualFragmentationChunkSize);
+		}
+
+		private void btnWhyDash_Click(object sender, EventArgs e)
+		{
+			btnWhyDash.Enabled = false;
+			string msg = "Бывают ситуации, когда обычным способом видео " +
+				"не качается из-за постоянных разрывов соединения с сервером. " +
+				"Эта опция может помочь обойти данную проблему. " +
+				"Однако, скорость скачивания может стать намного ниже обычного :'(";
+			MessageBox.Show(msg, "Зачематор зачемок",
+				MessageBoxButtons.OK, MessageBoxIcon.Information);
+			btnWhyDash.Enabled = true;
 		}
 	}
 }

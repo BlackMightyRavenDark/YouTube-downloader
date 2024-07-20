@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
 using static YouTube_downloader.Utils;
+using System.Collections.Generic;
 
 namespace YouTube_downloader
 {
@@ -176,6 +177,21 @@ namespace YouTube_downloader
 			}
 
 			return string.Empty;
+		}
+
+		public static YouTubeDashUrlList MakeDashUrlList(this YouTubeMediaTrack track, long chunkSize)
+		{
+			List<string> list = new List<string>();
+			for (long position = 0L; position < track.ContentLength; position += chunkSize)
+			{
+				long endPos = position + chunkSize - 1L;
+				long n = endPos < track.ContentLength ? endPos : track.ContentLength - 1L;
+				string rangeValue = $"{position}-{n}";
+				list.Add($"&range={rangeValue}");
+			}
+
+			YouTubeDashUrlList dashUrlList = new YouTubeDashUrlList(track.FileUrl, list);
+			return dashUrlList;
 		}
 
 		internal static TableRow ToTableRow(this YouTubeMediaTrack track)

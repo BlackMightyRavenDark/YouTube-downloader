@@ -10,6 +10,7 @@ using YouTubeApiLib;
 using MultiThreadedDownloaderLib;
 using static YouTube_downloader.Utils;
 using YouTube_downloader.Properties;
+using System.Collections.Specialized;
 
 namespace YouTube_downloader
 {
@@ -422,15 +423,22 @@ namespace YouTube_downloader
 		/// </summary>
 		private DownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName)
 		{
+			YouTubeDashUrlList dashUrlList = config.AlwaysDownloadAsDash ?
+				mediaTrack.MakeDashUrlList(config.DashManualFragmentationChunkSize) : mediaTrack.DashUrls;
+			if (dashUrlList == null || dashUrlList.Count == 0)
+			{
+				return new DownloadResult(404, "Ссылки DASH не найдены!", null);
+			}
+
 			string mediaType = null;
 			Invoke(new MethodInvoker(() =>
 			{
 				progressBarDownload.Value = 0;
-				progressBarDownload.Maximum = mediaTrack.DashUrls.Count;
+				progressBarDownload.Maximum = dashUrlList.Count;
 				mediaType = mediaTrack is YouTubeMediaTrackAudio ? "аудио" : "видео";
 				lblStatus.Text = $"Скачивание чанков {mediaType}:";
 				lblProgress.Left = lblStatus.Left + lblStatus.Width;
-				lblProgress.Text = $"0 / {mediaTrack.DashUrls.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
+				lblProgress.Text = $"0 / {dashUrlList.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
 			}));
 
 			bool canMerge = config.MergeToContainer && IsFfmpegAvailable();
@@ -449,14 +457,20 @@ namespace YouTube_downloader
 
 			Stream fileStream = File.OpenWrite(fnDashTmp);
 			FileDownloader _singleThreadedDownloader = new FileDownloader();
+			NameValueCollection headers = new NameValueCollection()
+			{
+				{ "Accept", "*/*" },
+				{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 OPR/111.0.0.0 (Edition Yx 05)" }
+			};
+			_singleThreadedDownloader.Headers = headers;
 			int errorCode = 400;
-			for (int i = 0; i < mediaTrack.DashUrls.Count; ++i)
+			for (int i = 0; i < dashUrlList.Count; ++i)
 			{
 				int errors = 0;
 				do
 				{
 					Stream memChunk = new MemoryStream();
-					_singleThreadedDownloader.Url = mediaTrack.DashUrls[i];
+					_singleThreadedDownloader.Url = dashUrlList[i];
 					_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
 					{
 						if (errCode == 200 || errCode == 206)
@@ -516,7 +530,7 @@ namespace YouTube_downloader
 					double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
 					lblStatus.Text = $"Скачивание чанков {mediaType}:";
 					lblProgress.Left = lblStatus.Left + lblStatus.Width;
-					lblProgress.Text = $"{chunkNumber} / {mediaTrack.DashUrls.Count}" +
+					lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
 						$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
 				}));
 			}
@@ -538,7 +552,7 @@ namespace YouTube_downloader
 			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly,
 			int tryNumber, int maxTries)
 		{
-			if (mediaTrack.IsDashManifest)
+			if (config.AlwaysDownloadAsDash || mediaTrack.IsDashManifest)
 			{
 				return DownloadDash(mediaTrack, formattedFileName);
 			}

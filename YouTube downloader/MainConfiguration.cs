@@ -27,6 +27,8 @@ namespace YouTube_downloader
 		public bool IfOnlySecondAudioTrackIsBetter { get; set; }
 		public bool DownloadAllAudioTracks { get; set; }
 		public bool DownloadAllAdaptiveVideoTracks { get; set; }
+		public bool AlwaysDownloadAsDash { get; set; }
+		public long DashManualFragmentationChunkSize { get; set; }
 		public bool UseRamToStoreTemporaryFiles { get; set; }
 		public bool MergeToContainer { get; set; }
 		public bool AlwaysUseMkvContainer { get; set; }
@@ -110,6 +112,8 @@ namespace YouTube_downloader
 			IfOnlySecondAudioTrackIsBetter = true;
 			DownloadAllAudioTracks = false;
 			DownloadAllAdaptiveVideoTracks = false;
+			AlwaysDownloadAsDash = false;
+			DashManualFragmentationChunkSize = 50000L;
 			SavePreviewImage = true;
 			UseHiddenApiForGettingInfo = true;
 			VideoTitleFontSize = 8;
