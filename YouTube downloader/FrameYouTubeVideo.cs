@@ -1759,26 +1759,26 @@ namespace YouTube_downloader
 
 		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            if (string.IsNullOrEmpty(_webPage) || string.IsNullOrWhiteSpace(_webPage))
-            {
-                MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
-                    "Ошибатор ошибок",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+			if (string.IsNullOrEmpty(_webPage) || string.IsNullOrWhiteSpace(_webPage))
+			{
+				MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
+					"Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 
-            string url = ExtractPlayerUrlFromWebPage(_webPage);
-            if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
-            {
-                MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+			string url = ExtractPlayerUrlFromWebPage(_webPage);
+			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+			{
+				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 
-            SetClipboardText(url);
-        }
+			SetClipboardText(url);
+		}
 
-        private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
+		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!string.IsNullOrEmpty(VideoInfo.OwnerChannelTitle) && !string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
 			{
