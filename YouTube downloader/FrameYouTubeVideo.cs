@@ -421,7 +421,7 @@ namespace YouTube_downloader
 		/// <summary>
 		/// Downloads a DASH video. Warning! This method must be run in a separate thread!
 		/// </summary>
-		private DownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName)
+		private DownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
 		{
 			YouTubeDashUrlList dashUrlList = config.AlwaysDownloadAsDash ?
 				mediaTrack.MakeDashUrlList(config.DashManualFragmentationChunkSize) : mediaTrack.DashUrls;
@@ -441,8 +441,8 @@ namespace YouTube_downloader
 				lblProgress.Text = $"0 / {dashUrlList.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
 			}));
 
-			bool canMerge = config.MergeToContainer && IsFfmpegAvailable();
-			string fnDash = MultiThreadedDownloader.GetNumberedFileName(
+			bool canMerge = !audioOnly && config.MergeToContainer && IsFfmpegAvailable();
+			string fnDash = fnDash = MultiThreadedDownloader.GetNumberedFileName(
 				(canMerge ? config.TempDirPath : config.DownloadingDirPath) +
 				$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
 			string fnDashFinal = fnDash;
@@ -554,7 +554,7 @@ namespace YouTube_downloader
 		{
 			if (config.AlwaysDownloadAsDash || mediaTrack.IsDashManifest)
 			{
-				return DownloadDash(mediaTrack, formattedFileName);
+				return DownloadDash(mediaTrack, formattedFileName, audioOnly);
 			}
 			else
 			{
