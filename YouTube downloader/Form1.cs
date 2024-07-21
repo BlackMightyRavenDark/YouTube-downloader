@@ -56,6 +56,7 @@ namespace YouTube_downloader
 				json["downloadAllAudioTracksAutomatically"] = config.DownloadAllAudioTracks;
 				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
 				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
+				json["dashDownloadRetryCountMax"] = config.DashDownloadRetryCountMax;
 				json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainer;
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
@@ -293,6 +294,13 @@ namespace YouTube_downloader
 					}
 				}
 				{
+					JToken jt = json.Value<JToken>("dashDownloadRetryCountMax");
+					if (jt != null)
+					{
+						config.DashDownloadRetryCountMax = jt.Value<int>();
+					}
+				}
+				{
 					JToken jt = json.Value<JToken>("alwaysUseMkvContainer");
 					if (jt != null)
 					{
@@ -382,6 +390,7 @@ namespace YouTube_downloader
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
 				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
+				numericUpDownDashChunkDownloadRetriesCountMax.Value = config.DashDownloadRetryCountMax;
 				numericUpDownDashChunkSize.Value = config.DashManualFragmentationChunkSize;
 				if (Is64BitProcess)
 				{
@@ -1878,6 +1887,11 @@ namespace YouTube_downloader
 		private void checkBoxAlwaysDownloadAsDash_CheckedChanged(object sender, EventArgs e)
 		{
 			config.AlwaysDownloadAsDash = checkBoxAlwaysDownloadAsDash.Checked;
+		}
+
+		private void numericUpDownDashChunkDownloadRetriesCountMax_ValueChanged(object sender, EventArgs e)
+		{
+			config.DashDownloadRetryCountMax = (int)numericUpDownDashChunkDownloadRetriesCountMax.Value;
 		}
 
 		private void numericUpDownDashChunkSize_ValueChanged(object sender, EventArgs e)

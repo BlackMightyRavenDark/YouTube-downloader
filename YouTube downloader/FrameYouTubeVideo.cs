@@ -463,10 +463,12 @@ namespace YouTube_downloader
 				{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 OPR/111.0.0.0 (Edition Yx 05)" }
 			};
 			_singleThreadedDownloader.Headers = headers;
+			int retryCountMax;
+			lock (config) { retryCountMax = config.DashDownloadRetryCountMax; }
 			int errorCode = 400;
 			for (int i = 0; i < dashUrlList.Count; ++i)
 			{
-				int errors = 0;
+				int tryNumber = 0;
 				do
 				{
 					Stream memChunk = new MemoryStream();
@@ -478,12 +480,12 @@ namespace YouTube_downloader
 							int chunkNumber = i + 1;
 							progressBarDownload.Value = chunkNumber;
 							double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
-							lblStatus.Text = $"[{errors + 1}/8] Скачивание чанков {mediaType}:";
+							lblStatus.Text = $"[{tryNumber + 1}/{retryCountMax}] Скачивание чанков {mediaType}:";
 							lblProgress.Left = lblStatus.Left + lblStatus.Width;
 							lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
 								$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
 
-							string toolTipText = $"Попытка №{errors + 1} из 8";
+							string toolTipText = $"Попытка №{tryNumber + 1} из 8";
 							toolTip1.SetToolTip(lblStatus, toolTipText);
 							toolTip1.SetToolTip(lblProgress, toolTipText);
 						}));
@@ -526,7 +528,7 @@ namespace YouTube_downloader
 						fileStream.Dispose();
 						return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, null);
 					}
-				} while (errorCode != 200 && errors++ < 9 && !_dashCancelRequired);
+				} while (errorCode != 200 && ++tryNumber < retryCountMax && !_dashCancelRequired);
 
 				if (_dashCancelRequired)
 				{

@@ -92,6 +92,8 @@ namespace YouTube_downloader
 			this.chkSaveImage = new System.Windows.Forms.CheckBox();
 			this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
 			this.groupBox17 = new System.Windows.Forms.GroupBox();
+			this.numericUpDownDashChunkDownloadRetriesCountMax = new System.Windows.Forms.NumericUpDown();
+			this.label23 = new System.Windows.Forms.Label();
 			this.btnWhyDash = new System.Windows.Forms.Button();
 			this.lblActualDashChunkSize = new System.Windows.Forms.Label();
 			this.numericUpDownDashChunkSize = new System.Windows.Forms.NumericUpDown();
@@ -187,6 +189,7 @@ namespace YouTube_downloader
 			this.groupBox14.SuspendLayout();
 			this.tabPageSystemSettings.SuspendLayout();
 			this.groupBox17.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).BeginInit();
 			this.groupBox13.SuspendLayout();
 			this.groupBox11.SuspendLayout();
@@ -965,6 +968,8 @@ namespace YouTube_downloader
 			// 
 			// groupBox17
 			// 
+			this.groupBox17.Controls.Add(this.numericUpDownDashChunkDownloadRetriesCountMax);
+			this.groupBox17.Controls.Add(this.label23);
 			this.groupBox17.Controls.Add(this.btnWhyDash);
 			this.groupBox17.Controls.Add(this.lblActualDashChunkSize);
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkSize);
@@ -972,10 +977,37 @@ namespace YouTube_downloader
 			this.groupBox17.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
 			this.groupBox17.Location = new System.Drawing.Point(12, 362);
 			this.groupBox17.Name = "groupBox17";
-			this.groupBox17.Size = new System.Drawing.Size(481, 75);
+			this.groupBox17.Size = new System.Drawing.Size(481, 102);
 			this.groupBox17.TabIndex = 16;
 			this.groupBox17.TabStop = false;
 			this.groupBox17.Text = "Скачивание файлов по частям";
+			// 
+			// numericUpDownDashChunkDownloadRetriesCountMax
+			// 
+			this.numericUpDownDashChunkDownloadRetriesCountMax.Location = new System.Drawing.Point(232, 68);
+			this.numericUpDownDashChunkDownloadRetriesCountMax.Minimum = new decimal(new int[] {
+			1,
+			0,
+			0,
+			0});
+			this.numericUpDownDashChunkDownloadRetriesCountMax.Name = "numericUpDownDashChunkDownloadRetriesCountMax";
+			this.numericUpDownDashChunkDownloadRetriesCountMax.Size = new System.Drawing.Size(48, 20);
+			this.numericUpDownDashChunkDownloadRetriesCountMax.TabIndex = 6;
+			this.numericUpDownDashChunkDownloadRetriesCountMax.Value = new decimal(new int[] {
+			8,
+			0,
+			0,
+			0});
+			this.numericUpDownDashChunkDownloadRetriesCountMax.ValueChanged += new System.EventHandler(this.numericUpDownDashChunkDownloadRetriesCountMax_ValueChanged);
+			// 
+			// label23
+			// 
+			this.label23.AutoSize = true;
+			this.label23.Location = new System.Drawing.Point(17, 70);
+			this.label23.Name = "label23";
+			this.label23.Size = new System.Drawing.Size(209, 13);
+			this.label23.TabIndex = 5;
+			this.label23.Text = "Количество попыток скачивания чанка:";
 			// 
 			// btnWhyDash
 			// 
@@ -991,7 +1023,7 @@ namespace YouTube_downloader
 			// lblActualDashChunkSize
 			// 
 			this.lblActualDashChunkSize.AutoSize = true;
-			this.lblActualDashChunkSize.Location = new System.Drawing.Point(324, 44);
+			this.lblActualDashChunkSize.Location = new System.Drawing.Point(330, 44);
 			this.lblActualDashChunkSize.Name = "lblActualDashChunkSize";
 			this.lblActualDashChunkSize.Size = new System.Drawing.Size(57, 13);
 			this.lblActualDashChunkSize.TabIndex = 3;
@@ -1004,7 +1036,7 @@ namespace YouTube_downloader
 			0,
 			0,
 			0});
-			this.numericUpDownDashChunkSize.Location = new System.Drawing.Point(226, 42);
+			this.numericUpDownDashChunkSize.Location = new System.Drawing.Point(232, 42);
 			this.numericUpDownDashChunkSize.Maximum = new decimal(new int[] {
 			1000000000,
 			0,
@@ -1052,7 +1084,7 @@ namespace YouTube_downloader
 			this.checkBoxUseGmtTime.AutoSize = true;
 			this.checkBoxUseGmtTime.Checked = true;
 			this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(12, 443);
+			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(12, 474);
 			this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
 			this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseGmtTime.TabIndex = 15;
@@ -1070,7 +1102,7 @@ namespace YouTube_downloader
 			this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
 			this.groupBox13.Location = new System.Drawing.Point(12, 290);
 			this.groupBox13.Name = "groupBox13";
-			this.groupBox13.Size = new System.Drawing.Size(413, 66);
+			this.groupBox13.Size = new System.Drawing.Size(483, 66);
 			this.groupBox13.TabIndex = 14;
 			this.groupBox13.TabStop = false;
 			this.groupBox13.Text = "Оперативная память (RAM)";
@@ -1871,6 +1903,7 @@ namespace YouTube_downloader
 			this.tabPageSystemSettings.PerformLayout();
 			this.groupBox17.ResumeLayout(false);
 			this.groupBox17.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).EndInit();
 			this.groupBox13.ResumeLayout(false);
 			this.groupBox11.ResumeLayout(false);
@@ -2046,6 +2079,8 @@ namespace YouTube_downloader
 		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkSize;
 		private System.Windows.Forms.Label label22;
 		private System.Windows.Forms.Button btnWhyDash;
+		private System.Windows.Forms.Label label23;
+		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkDownloadRetriesCountMax;
 	}
 }
 

@@ -29,6 +29,7 @@ namespace YouTube_downloader
 		public bool DownloadAllAdaptiveVideoTracks { get; set; }
 		public bool AlwaysDownloadAsDash { get; set; }
 		public long DashManualFragmentationChunkSize { get; set; }
+		public int DashDownloadRetryCountMax { get; set; }
 		public bool UseRamToStoreTemporaryFiles { get; set; }
 		public bool MergeToContainer { get; set; }
 		public bool AlwaysUseMkvContainer { get; set; }
@@ -114,6 +115,7 @@ namespace YouTube_downloader
 			DownloadAllAdaptiveVideoTracks = false;
 			AlwaysDownloadAsDash = false;
 			DashManualFragmentationChunkSize = 50000L;
+			DashDownloadRetryCountMax = 8;
 			SavePreviewImage = true;
 			UseHiddenApiForGettingInfo = true;
 			VideoTitleFontSize = 8;
