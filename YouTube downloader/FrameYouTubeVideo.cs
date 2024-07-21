@@ -473,46 +473,49 @@ namespace YouTube_downloader
 				{
 					Stream memChunk = new MemoryStream();
 					_singleThreadedDownloader.Url = dashUrlList[i];
-					_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
+					if (i == 0)
 					{
-						Invoke(new MethodInvoker(() =>
+						_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
 						{
-							int chunkNumber = i + 1;
-							progressBarDownload.Value = chunkNumber;
-							double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
-							lblStatus.Text = $"[{tryNumber + 1}/{retryCountMax}] Скачивание чанков {mediaType}:";
-							lblProgress.Left = lblStatus.Left + lblStatus.Width;
-							lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
-								$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
-
-							string toolTipText = $"Попытка №{tryNumber + 1} из 8";
-							toolTip1.SetToolTip(lblStatus, toolTipText);
-							toolTip1.SetToolTip(lblProgress, toolTipText);
-						}));
-
-						if (errCode == 200 || errCode == 206)
-						{
-							if (contentLength > 0L)
+							Invoke(new MethodInvoker(() =>
 							{
-								char driveLetter = fnDashTmp[0];
-								if (driveLetter != '\\')
+								int chunkNumber = i + 1;
+								progressBarDownload.Value = chunkNumber;
+								double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
+								lblStatus.Text = $"[{tryNumber + 1}/{retryCountMax}] Скачивание чанков {mediaType}:";
+								lblProgress.Left = lblStatus.Left + lblStatus.Width;
+								lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
+									$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
+
+								string toolTipText = $"Попытка №{tryNumber + 1} из 8";
+								toolTip1.SetToolTip(lblStatus, toolTipText);
+								toolTip1.SetToolTip(lblProgress, toolTipText);
+							}));
+
+							if (errCode == 200 || errCode == 206)
+							{
+								if (contentLength > 0L)
 								{
-									DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
-									if (!driveInfo.IsReady)
+									char driveLetter = fnDashTmp[0];
+									if (driveLetter != '\\')
 									{
-										return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
-									}
-									long minimumFreeSpaceRequired = contentLength * 10;
-									if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
-									{
-										return FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
+										DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
+										if (!driveInfo.IsReady)
+										{
+											return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
+										}
+										long minimumFreeSpaceRequired = contentLength * 10;
+										if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
+										{
+											return FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
+										}
 									}
 								}
 							}
-						}
 
-						return errCode;
-					};
+							return errCode;
+						};
+					}
 
 					errorCode = _singleThreadedDownloader.Download(memChunk);
 					if (errorCode != 200)
