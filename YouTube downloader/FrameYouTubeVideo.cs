@@ -473,6 +473,21 @@ namespace YouTube_downloader
 					_singleThreadedDownloader.Url = dashUrlList[i];
 					_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
 					{
+						Invoke(new MethodInvoker(() =>
+						{
+							int chunkNumber = i + 1;
+							progressBarDownload.Value = chunkNumber;
+							double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
+							lblStatus.Text = $"[{errors + 1}/8] Скачивание чанков {mediaType}:";
+							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+							lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
+								$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
+
+							string toolTipText = $"Попытка №{errors + 1} из 8";
+							toolTip1.SetToolTip(lblStatus, toolTipText);
+							toolTip1.SetToolTip(lblProgress, toolTipText);
+						}));
+
 						if (errCode == 200 || errCode == 206)
 						{
 							if (contentLength > 0L)
@@ -522,19 +537,15 @@ namespace YouTube_downloader
 				{
 					break;
 				}
-
-				Invoke(new MethodInvoker(() =>
-				{
-					int chunkNumber = i + 1;
-					progressBarDownload.Value = chunkNumber;
-					double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
-					lblStatus.Text = $"Скачивание чанков {mediaType}:";
-					lblProgress.Left = lblStatus.Left + lblStatus.Width;
-					lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
-						$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
-				}));
 			}
 			fileStream.Dispose();
+
+			Invoke(new MethodInvoker(() =>
+			{
+				toolTip1.SetToolTip(lblStatus, string.Empty);
+				toolTip1.SetToolTip(lblStatus, string.Empty);
+			}));
+
 			if (errorCode == 200)
 			{
 				fnDashFinal = MultiThreadedDownloader.GetNumberedFileName(fnDash);
