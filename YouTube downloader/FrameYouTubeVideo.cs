@@ -236,15 +236,35 @@ namespace YouTube_downloader
 				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
+				bool useAdultServer = config.UseVideoInfoServerForAdultVideos;
+				string adultServerUrl = config.VideoInfoServerUrl;
+				int adultServerPort = config.VideoInfoServerPort;
 				await Task.Run(() =>
 				{
-					YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, method);
-					if (streamingDataResult.ErrorCode == 200)
+					if (!VideoInfo.IsFamilySafe && useAdultServer)
 					{
-						mediaTracks = streamingDataResult.Data.Parse();
+						string url = $"{adultServerUrl}:{adultServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
+						HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null, null);
+						if (requestResult.ErrorCode == 200)
+						{
+							if (requestResult.WebContent.ContentToString(out string rawInfo) == 200)
+							{
+								YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo,
+									YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage);
+								mediaTracks = rawVideoInfo.StreamingData?.Data.Parse();
+							}
+						}
 					}
-					//TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
-					//VideoInfo.UpdateMediaFormats());
+					else
+					{
+						YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, method);
+						if (streamingDataResult.ErrorCode == 200)
+						{
+							mediaTracks = streamingDataResult.Data.Parse();
+						}
+						//TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
+						//VideoInfo.UpdateMediaFormats());
+					}
 				});
 			}
 			else
@@ -259,8 +279,10 @@ namespace YouTube_downloader
 				if (!VideoInfo.IsFamilySafe)
 				{
 					t += "\nДля этого видео установлено ограничение по возрасту. " +
-						"Чтобы его скачать, воспользуйтесь поиском по коду веб-страницы.\n" +
-						"Для этого вам понадобится браузер и аккаунт на ютубе.";
+						"Чтобы его скачать, вам необходимо запустить " +
+						"специальный веб-сервер на Python и включить его использование в настройках.\n" +
+						"Скачать код сервера можно здесь:\nhttps://github.com/BlackMightyRavenDark/youtube_video_info_server_python\n" +
+						"Если это не помогло, можно попробовать воспользоваться поиском по коду веб-страницы с видео.";
 				}
 				MessageBox.Show(t, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				btnDownload.Enabled = true;

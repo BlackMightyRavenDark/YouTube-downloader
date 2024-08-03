@@ -41,6 +41,9 @@ namespace YouTube_downloader
 		public string FfmpegExeFilePath { get; set; }
 		public bool SavePreviewImage { get; set; }
 		public bool UseHiddenApiForGettingInfo { get; set; }
+		public bool UseVideoInfoServerForAdultVideos { get; set; }
+		public string VideoInfoServerUrl { get; set; }
+		public int VideoInfoServerPort { get; set; }
 		public int VideoTitleFontSize { get; set; }
 		public int MenusFontSize { get; set; }
 		public int FavoritesListFontSize { get; set; }
@@ -118,6 +121,9 @@ namespace YouTube_downloader
 			DashDownloadRetryCountMax = 8;
 			SavePreviewImage = true;
 			UseHiddenApiForGettingInfo = true;
+			UseVideoInfoServerForAdultVideos = false;
+			VideoInfoServerUrl = "http://127.0.0.1";
+			VideoInfoServerPort = 12345;
 			VideoTitleFontSize = 8;
 			MenusFontSize = 9;
 			FavoritesListFontSize = 8;

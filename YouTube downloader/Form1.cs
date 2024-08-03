@@ -62,6 +62,9 @@ namespace YouTube_downloader
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["savePreviewImage"] = config.SavePreviewImage;
 				json["useHiddenApiForGettingInfo"] = config.UseHiddenApiForGettingInfo;
+				json["useVideoInfoServerForAdultVideos"] = config.UseVideoInfoServerForAdultVideos;
+				json["videoInfoServerUrl"] = config.VideoInfoServerUrl;
+				json["videoInfoServerPort"] = config.VideoInfoServerPort;
 				json["videoTitleFontSize"] = config.VideoTitleFontSize;
 				json["menusFontSize"] = config.MenusFontSize;
 				json["favoritesListFontSize"] = config.FavoritesListFontSize;
@@ -183,6 +186,27 @@ namespace YouTube_downloader
 					if (jt != null)
 					{
 						config.UseHiddenApiForGettingInfo = jt.Value<bool>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("useVideoInfoServerForAdultVideos");
+					if (jt != null)
+					{
+						config.UseVideoInfoServerForAdultVideos = jt.Value<bool>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("videoInfoServerUrl");
+					if (jt != null)
+					{
+						config.VideoInfoServerUrl = jt.Value<string>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("videoInfoServerPort");
+					if (jt != null)
+					{
+						config.VideoInfoServerPort = jt.Value<int>();
 					}
 				}
 				{
@@ -376,6 +400,9 @@ namespace YouTube_downloader
 				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				chkSaveImage.Checked = config.SavePreviewImage;
 				chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
+				checkBoxUseVideoInfoServer.Checked = config.UseVideoInfoServerForAdultVideos;
+				textBoxVideoInfoServerUrl.Text = config.VideoInfoServerUrl;
+				numericUpDownVideoInfoServerPort.Value = config.VideoInfoServerPort;
 				numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
 				numericUpDownMenusFontSize.Value = config.MenusFontSize;
 				numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
@@ -1131,7 +1158,7 @@ namespace YouTube_downloader
 			DisableControls();
 
 			string msg = "Это позволит скачать скрытое, заблокированное или 18+ видео, " +
-				"если у вас есть к нему доступ из браузера.";
+				"если у вас есть к нему доступ из браузера.\nНо это не точно!";
 			MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			EnableControls();
@@ -1910,6 +1937,24 @@ namespace YouTube_downloader
 			MessageBox.Show(msg, "Зачематор зачемок",
 				MessageBoxButtons.OK, MessageBoxIcon.Information);
 			btnWhyDash.Enabled = true;
+		}
+
+		private void checkBoxUseVideoInfoServer_CheckedChanged(object sender, EventArgs e)
+		{
+			config.UseVideoInfoServerForAdultVideos = checkBoxUseVideoInfoServer.Checked;
+		}
+		
+		private void btnVideoInfoServerWhy_Click(object sender, EventArgs e)
+		{
+			btnVideoInfoServerWhy.Enabled = false;
+			MessageBox.Show("Потому что по-другому пока что никак!", "Зачематор зачемок",
+				MessageBoxButtons.OK, MessageBoxIcon.Information);
+			btnVideoInfoServerWhy.Enabled = true;
+		}
+
+		private void numericUpDownVideoInfoServerPort_ValueChanged(object sender, EventArgs e)
+		{
+			config.VideoInfoServerPort = (int)numericUpDownVideoInfoServerPort.Value;
 		}
 	}
 }
