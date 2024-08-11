@@ -231,22 +231,22 @@ namespace YouTube_downloader
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
 			bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
 				VideoInfo.RawInfo.DataGettingMethod == YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual;
-			bool isVideoInfoServerNeeded = config.AlwaysUseVideoInfoServer || !VideoInfo.IsFamilySafe ||
+			bool isExternalVideoInfoServerNeeded = config.AlwaysUseExternalVideoInfoServer || !VideoInfo.IsFamilySafe ||
 				VideoInfo.IsPrivate || (isWebPage && VideoInfo.IsCiphered());
-			if (!isWebPage || isVideoInfoServerNeeded)
+			if (!isWebPage || isExternalVideoInfoServerNeeded)
 			{
 				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
-				string videoInfoServerUrl = config.VideoInfoServerUrl;
-				int videoInfoServerPort = config.VideoInfoServerPort;
+				string externalVideoInfoServerUrl = config.ExternalVideoInfoServerUrl;
+				int externalVideoInfoServerPort = config.ExternalVideoInfoServerPort;
 				await Task.Run(() =>
 				{
-					if (isVideoInfoServerNeeded)
+					if (isExternalVideoInfoServerNeeded)
 					{
 						if (isWebPage)
 						{
-							string url = $"{videoInfoServerUrl}:{videoInfoServerPort}/api/streamingdata";
+							string url = $"{externalVideoInfoServerUrl}:{externalVideoInfoServerPort}/api/streamingdata";
 							string player_url = ExtractPlayerUrlFromWebPage(_webPage);
 							YouTubeStreamingDataResult streamingDataResult = ExtractStreamingDataFromVideoWebPage(_webPage);
 							if (streamingDataResult.ErrorCode == 200)
@@ -258,21 +258,21 @@ namespace YouTube_downloader
 								{
 									{ "Content-Type", "application/json" }
 								};
-                                HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), headers);
+								HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), headers);
 								if (requestResult.ErrorCode == 200)
-                                {
-                                    if (requestResult.WebContent.ContentToString(out string rawStreamingData) == 200)
-                                    {
+								{
+									if (requestResult.WebContent.ContentToString(out string rawStreamingData) == 200)
+									{
 										YouTubeStreamingData streamingData = new YouTubeStreamingData(rawStreamingData,
 											YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual);
-                                        mediaTracks = streamingData.Parse();
-                                    }
-                                }
-                            }
-                        }
+										mediaTracks = streamingData.Parse();
+									}
+								}
+							}
+						}
 						else
 						{
-							string url = $"{videoInfoServerUrl}:{videoInfoServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
+							string url = $"{externalVideoInfoServerUrl}:{externalVideoInfoServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
 							HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null, null);
 							if (requestResult.ErrorCode == 200)
 							{

@@ -106,13 +106,13 @@ namespace YouTube_downloader
 			this.chkUseRamForTempFiles = new System.Windows.Forms.CheckBox();
 			this.groupBox11 = new System.Windows.Forms.GroupBox();
 			this.groupBox18 = new System.Windows.Forms.GroupBox();
-			this.checkBoxAlwaysUseVideoInfoServer = new System.Windows.Forms.CheckBox();
+			this.checkBoxAlwaysUseExternalVideoInfoServer = new System.Windows.Forms.CheckBox();
 			this.btnVideoInfoServerWhy = new System.Windows.Forms.Button();
 			this.label25 = new System.Windows.Forms.Label();
 			this.numericUpDownVideoInfoServerPort = new System.Windows.Forms.NumericUpDown();
 			this.textBoxVideoInfoServerUrl = new System.Windows.Forms.TextBox();
 			this.label24 = new System.Windows.Forms.Label();
-			this.checkBoxUseVideoInfoServerForAdultVideos = new System.Windows.Forms.CheckBox();
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos = new System.Windows.Forms.CheckBox();
 			this.btnApiWtf = new System.Windows.Forms.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.label5 = new System.Windows.Forms.Label();
@@ -1167,30 +1167,30 @@ namespace YouTube_downloader
 			// 
 			this.groupBox18.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox18.Controls.Add(this.checkBoxAlwaysUseVideoInfoServer);
+			this.groupBox18.Controls.Add(this.checkBoxAlwaysUseExternalVideoInfoServer);
 			this.groupBox18.Controls.Add(this.btnVideoInfoServerWhy);
 			this.groupBox18.Controls.Add(this.label25);
 			this.groupBox18.Controls.Add(this.numericUpDownVideoInfoServerPort);
 			this.groupBox18.Controls.Add(this.textBoxVideoInfoServerUrl);
 			this.groupBox18.Controls.Add(this.label24);
-			this.groupBox18.Controls.Add(this.checkBoxUseVideoInfoServerForAdultVideos);
+			this.groupBox18.Controls.Add(this.checkBoxUseExternalVideoInfoServerForAdultVideos);
 			this.groupBox18.Location = new System.Drawing.Point(11, 172);
 			this.groupBox18.Name = "groupBox18";
 			this.groupBox18.Size = new System.Drawing.Size(478, 115);
 			this.groupBox18.TabIndex = 17;
 			this.groupBox18.TabStop = false;
-			this.groupBox18.Text = "Сервер для получения информации о видео";
+			this.groupBox18.Text = "Внешний сервер для получения информации о видео";
 			// 
-			// checkBoxAlwaysUseVideoInfoServer
+			// checkBoxAlwaysUseExternalVideoInfoServer
 			// 
-			this.checkBoxAlwaysUseVideoInfoServer.AutoSize = true;
-			this.checkBoxAlwaysUseVideoInfoServer.Location = new System.Drawing.Point(13, 94);
-			this.checkBoxAlwaysUseVideoInfoServer.Name = "checkBoxAlwaysUseVideoInfoServer";
-			this.checkBoxAlwaysUseVideoInfoServer.Size = new System.Drawing.Size(352, 17);
-			this.checkBoxAlwaysUseVideoInfoServer.TabIndex = 6;
-			this.checkBoxAlwaysUseVideoInfoServer.Text = "Использовать только этот сервер (другое API не используется)";
-			this.checkBoxAlwaysUseVideoInfoServer.UseVisualStyleBackColor = true;
-			this.checkBoxAlwaysUseVideoInfoServer.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysUseVideoInfoServer_CheckedChanged);
+			this.checkBoxAlwaysUseExternalVideoInfoServer.AutoSize = true;
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Location = new System.Drawing.Point(13, 94);
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Name = "checkBoxAlwaysUseExternalVideoInfoServer";
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Size = new System.Drawing.Size(352, 17);
+			this.checkBoxAlwaysUseExternalVideoInfoServer.TabIndex = 6;
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Text = "Использовать только этот сервер (другое API не используется)";
+			this.checkBoxAlwaysUseExternalVideoInfoServer.UseVisualStyleBackColor = true;
+			this.checkBoxAlwaysUseExternalVideoInfoServer.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysUseExternalVideoInfoServer_CheckedChanged);
 			// 
 			// btnVideoInfoServerWhy
 			// 
@@ -1253,16 +1253,16 @@ namespace YouTube_downloader
 			this.label24.TabIndex = 1;
 			this.label24.Text = "Адрес сервера:";
 			// 
-			// checkBoxUseVideoInfoServerForAdultVideos
+			// checkBoxUseExternalVideoInfoServerForAdultVideos
 			// 
-			this.checkBoxUseVideoInfoServerForAdultVideos.AutoSize = true;
-			this.checkBoxUseVideoInfoServerForAdultVideos.Location = new System.Drawing.Point(13, 19);
-			this.checkBoxUseVideoInfoServerForAdultVideos.Name = "checkBoxUseVideoInfoServerForAdultVideos";
-			this.checkBoxUseVideoInfoServerForAdultVideos.Size = new System.Drawing.Size(238, 17);
-			this.checkBoxUseVideoInfoServerForAdultVideos.TabIndex = 0;
-			this.checkBoxUseVideoInfoServerForAdultVideos.Text = "Использовать этот сервер для видео 18+";
-			this.checkBoxUseVideoInfoServerForAdultVideos.UseVisualStyleBackColor = true;
-			this.checkBoxUseVideoInfoServerForAdultVideos.CheckedChanged += new System.EventHandler(this.checkBoxUseVideoInfoServer_CheckedChanged);
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.AutoSize = true;
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.Location = new System.Drawing.Point(13, 19);
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.Name = "checkBoxUseExternalVideoInfoServerForAdultVideos";
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.Size = new System.Drawing.Size(238, 17);
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.TabIndex = 0;
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.Text = "Использовать этот сервер для видео 18+";
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.UseVisualStyleBackColor = true;
+			this.checkBoxUseExternalVideoInfoServerForAdultVideos.CheckedChanged += new System.EventHandler(this.checkBoxUseExternalVideoInfoServerForAdultVideos_CheckedChanged);
 			// 
 			// btnApiWtf
 			// 
@@ -2196,13 +2196,13 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label23;
 		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkDownloadRetriesCountMax;
 		private System.Windows.Forms.GroupBox groupBox18;
-		private System.Windows.Forms.CheckBox checkBoxUseVideoInfoServerForAdultVideos;
+		private System.Windows.Forms.CheckBox checkBoxUseExternalVideoInfoServerForAdultVideos;
 		private System.Windows.Forms.NumericUpDown numericUpDownVideoInfoServerPort;
 		private System.Windows.Forms.TextBox textBoxVideoInfoServerUrl;
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.Label label25;
 		private System.Windows.Forms.Button btnVideoInfoServerWhy;
-		private System.Windows.Forms.CheckBox checkBoxAlwaysUseVideoInfoServer;
+		private System.Windows.Forms.CheckBox checkBoxAlwaysUseExternalVideoInfoServer;
 	}
 }
 

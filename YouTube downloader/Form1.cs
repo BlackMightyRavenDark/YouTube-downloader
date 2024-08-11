@@ -62,10 +62,10 @@ namespace YouTube_downloader
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["savePreviewImage"] = config.SavePreviewImage;
 				json["useHiddenApiForGettingInfo"] = config.UseHiddenApiForGettingInfo;
-				json["useVideoInfoServerForAdultVideos"] = config.UseVideoInfoServerForAdultVideos;
-				json["alwaysUseVideoInfoServer"] = config.AlwaysUseVideoInfoServer;
-				json["videoInfoServerUrl"] = config.VideoInfoServerUrl;
-				json["videoInfoServerPort"] = config.VideoInfoServerPort;
+				json["useExternalVideoInfoServerForAdultVideos"] = config.UseExternalVideoInfoServerForAdultVideos;
+				json["alwaysUseExternalVideoInfoServer"] = config.AlwaysUseExternalVideoInfoServer;
+				json["externalVideoInfoServerUrl"] = config.ExternalVideoInfoServerUrl;
+				json["externalVideoInfoServerPort"] = config.ExternalVideoInfoServerPort;
 				json["videoTitleFontSize"] = config.VideoTitleFontSize;
 				json["menusFontSize"] = config.MenusFontSize;
 				json["favoritesListFontSize"] = config.FavoritesListFontSize;
@@ -190,31 +190,31 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("useVideoInfoServerForAdultVideos");
+					JToken jt = json.Value<JToken>("useExternalVideoInfoServerForAdultVideos");
 					if (jt != null)
 					{
-						config.UseVideoInfoServerForAdultVideos = jt.Value<bool>();
+						config.UseExternalVideoInfoServerForAdultVideos = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("alwaysUseVideoInfoServer");
+					JToken jt = json.Value<JToken>("alwaysUseExternalVideoInfoServer");
 					if (jt != null)
 					{
-						config.AlwaysUseVideoInfoServer = jt.Value<bool>();
+						config.AlwaysUseExternalVideoInfoServer = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("videoInfoServerUrl");
+					JToken jt = json.Value<JToken>("externalVideoInfoServerUrl");
 					if (jt != null)
 					{
-						config.VideoInfoServerUrl = jt.Value<string>();
+						config.ExternalVideoInfoServerUrl = jt.Value<string>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("videoInfoServerPort");
+					JToken jt = json.Value<JToken>("externalVideoInfoServerPort");
 					if (jt != null)
 					{
-						config.VideoInfoServerPort = jt.Value<int>();
+						config.ExternalVideoInfoServerPort = jt.Value<int>();
 					}
 				}
 				{
@@ -408,10 +408,10 @@ namespace YouTube_downloader
 				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				chkSaveImage.Checked = config.SavePreviewImage;
 				chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
-				checkBoxUseVideoInfoServerForAdultVideos.Checked = config.UseVideoInfoServerForAdultVideos;
-				checkBoxAlwaysUseVideoInfoServer.Checked = config.AlwaysUseVideoInfoServer;
-				textBoxVideoInfoServerUrl.Text = config.VideoInfoServerUrl;
-				numericUpDownVideoInfoServerPort.Value = config.VideoInfoServerPort;
+				checkBoxUseExternalVideoInfoServerForAdultVideos.Checked = config.UseExternalVideoInfoServerForAdultVideos;
+				checkBoxAlwaysUseExternalVideoInfoServer.Checked = config.AlwaysUseExternalVideoInfoServer;
+				textBoxVideoInfoServerUrl.Text = config.ExternalVideoInfoServerUrl;
+				numericUpDownVideoInfoServerPort.Value = config.ExternalVideoInfoServerPort;
 				numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
 				numericUpDownMenusFontSize.Value = config.MenusFontSize;
 				numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
@@ -446,12 +446,12 @@ namespace YouTube_downloader
 					chkIfOnlyBiggerFileSize.Enabled = config.DownloadFirstAudioTrack && config.DownloadSecondAudioTrack;
 				}
 
-				if (config.AlwaysUseVideoInfoServer)
+				if (config.AlwaysUseExternalVideoInfoServer)
 				{
 					chkUseHiddenApiForGettingInfo.Enabled = false;
 					editCipherDecryptionAlgo.Enabled = false;
 					editYouTubeApiKey.Enabled = false;
-					checkBoxUseVideoInfoServerForAdultVideos.Enabled = false;
+					checkBoxUseExternalVideoInfoServerForAdultVideos.Enabled = false;
 				}
 
 				checkBoxUseGmtTime.Checked = config.UseGmtTime;
@@ -1956,19 +1956,19 @@ namespace YouTube_downloader
 			btnWhyDash.Enabled = true;
 		}
 
-		private void checkBoxUseVideoInfoServer_CheckedChanged(object sender, EventArgs e)
+		private void checkBoxUseExternalVideoInfoServerForAdultVideos_CheckedChanged(object sender, EventArgs e)
 		{
-			config.UseVideoInfoServerForAdultVideos = checkBoxUseVideoInfoServerForAdultVideos.Checked;
+			config.UseExternalVideoInfoServerForAdultVideos = checkBoxUseExternalVideoInfoServerForAdultVideos.Checked;
 		}
 
-		private void checkBoxAlwaysUseVideoInfoServer_CheckedChanged(object sender, EventArgs e)
+		private void checkBoxAlwaysUseExternalVideoInfoServer_CheckedChanged(object sender, EventArgs e)
 		{
-			bool flag = checkBoxAlwaysUseVideoInfoServer.Checked;
-			config.AlwaysUseVideoInfoServer = flag;
+			bool flag = checkBoxAlwaysUseExternalVideoInfoServer.Checked;
+			config.AlwaysUseExternalVideoInfoServer = flag;
 			chkUseHiddenApiForGettingInfo.Enabled = !flag;
 			editCipherDecryptionAlgo.Enabled = !flag;
 			editYouTubeApiKey.Enabled = !flag;
-			checkBoxUseVideoInfoServerForAdultVideos.Enabled = !flag;
+			checkBoxUseExternalVideoInfoServerForAdultVideos.Enabled = !flag;
 		}
 
 		private void btnVideoInfoServerWhy_Click(object sender, EventArgs e)
@@ -1983,7 +1983,7 @@ namespace YouTube_downloader
 
 		private void numericUpDownVideoInfoServerPort_ValueChanged(object sender, EventArgs e)
 		{
-			config.VideoInfoServerPort = (int)numericUpDownVideoInfoServerPort.Value;
+			config.ExternalVideoInfoServerPort = (int)numericUpDownVideoInfoServerPort.Value;
 		}
 	}
 }
