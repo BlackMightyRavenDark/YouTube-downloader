@@ -63,6 +63,7 @@ namespace YouTube_downloader
 				json["savePreviewImage"] = config.SavePreviewImage;
 				json["useHiddenApiForGettingInfo"] = config.UseHiddenApiForGettingInfo;
 				json["useVideoInfoServerForAdultVideos"] = config.UseVideoInfoServerForAdultVideos;
+				json["alwaysUseVideoInfoServer"] = config.AlwaysUseVideoInfoServer;
 				json["videoInfoServerUrl"] = config.VideoInfoServerUrl;
 				json["videoInfoServerPort"] = config.VideoInfoServerPort;
 				json["videoTitleFontSize"] = config.VideoTitleFontSize;
@@ -193,6 +194,13 @@ namespace YouTube_downloader
 					if (jt != null)
 					{
 						config.UseVideoInfoServerForAdultVideos = jt.Value<bool>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("alwaysUseVideoInfoServer");
+					if (jt != null)
+					{
+						config.AlwaysUseVideoInfoServer = jt.Value<bool>();
 					}
 				}
 				{
@@ -400,7 +408,8 @@ namespace YouTube_downloader
 				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				chkSaveImage.Checked = config.SavePreviewImage;
 				chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
-				checkBoxUseVideoInfoServer.Checked = config.UseVideoInfoServerForAdultVideos;
+				checkBoxUseVideoInfoServerForAdultVideos.Checked = config.UseVideoInfoServerForAdultVideos;
+				checkBoxAlwaysUseVideoInfoServer.Checked = config.AlwaysUseVideoInfoServer;
 				textBoxVideoInfoServerUrl.Text = config.VideoInfoServerUrl;
 				numericUpDownVideoInfoServerPort.Value = config.VideoInfoServerPort;
 				numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
@@ -435,6 +444,14 @@ namespace YouTube_downloader
 				{
 					chkDownloadFirstAudioTrack_CheckedChanged(null, null);
 					chkIfOnlyBiggerFileSize.Enabled = config.DownloadFirstAudioTrack && config.DownloadSecondAudioTrack;
+				}
+
+				if (config.AlwaysUseVideoInfoServer)
+				{
+					chkUseHiddenApiForGettingInfo.Enabled = false;
+					editCipherDecryptionAlgo.Enabled = false;
+					editYouTubeApiKey.Enabled = false;
+					checkBoxUseVideoInfoServerForAdultVideos.Enabled = false;
 				}
 
 				checkBoxUseGmtTime.Checked = config.UseGmtTime;
@@ -1941,13 +1958,25 @@ namespace YouTube_downloader
 
 		private void checkBoxUseVideoInfoServer_CheckedChanged(object sender, EventArgs e)
 		{
-			config.UseVideoInfoServerForAdultVideos = checkBoxUseVideoInfoServer.Checked;
+			config.UseVideoInfoServerForAdultVideos = checkBoxUseVideoInfoServerForAdultVideos.Checked;
 		}
-		
+
+		private void checkBoxAlwaysUseVideoInfoServer_CheckedChanged(object sender, EventArgs e)
+		{
+			bool flag = checkBoxAlwaysUseVideoInfoServer.Checked;
+			config.AlwaysUseVideoInfoServer = flag;
+			chkUseHiddenApiForGettingInfo.Enabled = !flag;
+			editCipherDecryptionAlgo.Enabled = !flag;
+			editYouTubeApiKey.Enabled = !flag;
+			checkBoxUseVideoInfoServerForAdultVideos.Enabled = !flag;
+		}
+
 		private void btnVideoInfoServerWhy_Click(object sender, EventArgs e)
 		{
 			btnVideoInfoServerWhy.Enabled = false;
-			MessageBox.Show("Потому что по-другому пока что никак!", "Зачематор зачемок",
+			string msg = "Этот сервер можно использовать в особых случаях. " +
+				"Например, для скачивания видео 18+ или когда другое API не работает.";
+			MessageBox.Show(msg, "Зачематор зачемок",
 				MessageBoxButtons.OK, MessageBoxIcon.Information);
 			btnVideoInfoServerWhy.Enabled = true;
 		}

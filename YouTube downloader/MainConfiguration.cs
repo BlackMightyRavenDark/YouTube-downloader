@@ -42,6 +42,7 @@ namespace YouTube_downloader
 		public bool SavePreviewImage { get; set; }
 		public bool UseHiddenApiForGettingInfo { get; set; }
 		public bool UseVideoInfoServerForAdultVideos { get; set; }
+		public bool AlwaysUseVideoInfoServer { get; set; }
 		public string VideoInfoServerUrl { get; set; }
 		public int VideoInfoServerPort { get; set; }
 		public int VideoTitleFontSize { get; set; }
@@ -122,6 +123,7 @@ namespace YouTube_downloader
 			SavePreviewImage = true;
 			UseHiddenApiForGettingInfo = true;
 			UseVideoInfoServerForAdultVideos = false;
+			AlwaysUseVideoInfoServer = false;
 			VideoInfoServerUrl = "http://127.0.0.1";
 			VideoInfoServerPort = 12345;
 			VideoTitleFontSize = 8;

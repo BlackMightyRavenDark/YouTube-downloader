@@ -231,27 +231,57 @@ namespace YouTube_downloader
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
 			bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
 				VideoInfo.RawInfo.DataGettingMethod == YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual;
-			if (!isWebPage)
+			bool isVideoInfoServerNeeded = config.AlwaysUseVideoInfoServer || !VideoInfo.IsFamilySafe ||
+				VideoInfo.IsPrivate || (isWebPage && VideoInfo.IsCiphered());
+			if (!isWebPage || isVideoInfoServerNeeded)
 			{
 				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
 					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
-				bool useAdultServer = config.UseVideoInfoServerForAdultVideos;
-				string adultServerUrl = config.VideoInfoServerUrl;
-				int adultServerPort = config.VideoInfoServerPort;
+				string videoInfoServerUrl = config.VideoInfoServerUrl;
+				int videoInfoServerPort = config.VideoInfoServerPort;
 				await Task.Run(() =>
 				{
-					if (!VideoInfo.IsFamilySafe && useAdultServer)
+					if (isVideoInfoServerNeeded)
 					{
-						string url = $"{adultServerUrl}:{adultServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
-						HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null, null);
-						if (requestResult.ErrorCode == 200)
+						if (isWebPage)
 						{
-							if (requestResult.WebContent.ContentToString(out string rawInfo) == 200)
+							string url = $"{videoInfoServerUrl}:{videoInfoServerPort}/api/streamingdata";
+							string player_url = ExtractPlayerUrlFromWebPage(_webPage);
+							YouTubeStreamingDataResult streamingDataResult = ExtractStreamingDataFromVideoWebPage(_webPage);
+							if (streamingDataResult.ErrorCode == 200)
 							{
-								YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo,
-									YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage);
-								mediaTracks = rawVideoInfo.StreamingData?.Data.Parse();
+								JObject j = new JObject();
+								j["playerUrl"] = player_url;
+								j["streamingData"] = streamingDataResult.Data.RawData;
+								NameValueCollection headers = new NameValueCollection()
+								{
+									{ "Content-Type", "application/json" }
+								};
+                                HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), headers);
+								if (requestResult.ErrorCode == 200)
+                                {
+                                    if (requestResult.WebContent.ContentToString(out string rawStreamingData) == 200)
+                                    {
+										YouTubeStreamingData streamingData = new YouTubeStreamingData(rawStreamingData,
+											YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual);
+                                        mediaTracks = streamingData.Parse();
+                                    }
+                                }
+                            }
+                        }
+						else
+						{
+							string url = $"{videoInfoServerUrl}:{videoInfoServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
+							HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null, null);
+							if (requestResult.ErrorCode == 200)
+							{
+								if (requestResult.WebContent.ContentToString(out string rawInfo) == 200)
+								{
+									YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo,
+										YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage);
+									mediaTracks = rawVideoInfo.StreamingData?.Data?.Parse();
+								}
 							}
 						}
 					}

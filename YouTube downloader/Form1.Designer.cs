@@ -91,13 +91,6 @@ namespace YouTube_downloader
 			this.chkDownloadAllAudioTracks = new System.Windows.Forms.CheckBox();
 			this.chkSaveImage = new System.Windows.Forms.CheckBox();
 			this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
-			this.groupBox18 = new System.Windows.Forms.GroupBox();
-			this.btnVideoInfoServerWhy = new System.Windows.Forms.Button();
-			this.label25 = new System.Windows.Forms.Label();
-			this.numericUpDownVideoInfoServerPort = new System.Windows.Forms.NumericUpDown();
-			this.textBoxVideoInfoServerUrl = new System.Windows.Forms.TextBox();
-			this.label24 = new System.Windows.Forms.Label();
-			this.checkBoxUseVideoInfoServer = new System.Windows.Forms.CheckBox();
 			this.groupBox17 = new System.Windows.Forms.GroupBox();
 			this.numericUpDownDashChunkDownloadRetriesCountMax = new System.Windows.Forms.NumericUpDown();
 			this.label23 = new System.Windows.Forms.Label();
@@ -112,6 +105,14 @@ namespace YouTube_downloader
 			this.panelRAM = new System.Windows.Forms.Panel();
 			this.chkUseRamForTempFiles = new System.Windows.Forms.CheckBox();
 			this.groupBox11 = new System.Windows.Forms.GroupBox();
+			this.groupBox18 = new System.Windows.Forms.GroupBox();
+			this.checkBoxAlwaysUseVideoInfoServer = new System.Windows.Forms.CheckBox();
+			this.btnVideoInfoServerWhy = new System.Windows.Forms.Button();
+			this.label25 = new System.Windows.Forms.Label();
+			this.numericUpDownVideoInfoServerPort = new System.Windows.Forms.NumericUpDown();
+			this.textBoxVideoInfoServerUrl = new System.Windows.Forms.TextBox();
+			this.label24 = new System.Windows.Forms.Label();
+			this.checkBoxUseVideoInfoServerForAdultVideos = new System.Windows.Forms.CheckBox();
 			this.btnApiWtf = new System.Windows.Forms.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.label5 = new System.Windows.Forms.Label();
@@ -195,13 +196,13 @@ namespace YouTube_downloader
 			this.groupBox16.SuspendLayout();
 			this.groupBox14.SuspendLayout();
 			this.tabPageSystemSettings.SuspendLayout();
-			this.groupBox18.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoInfoServerPort)).BeginInit();
 			this.groupBox17.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).BeginInit();
 			this.groupBox13.SuspendLayout();
 			this.groupBox11.SuspendLayout();
+			this.groupBox18.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoInfoServerPort)).BeginInit();
 			this.groupBox4.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox7.SuspendLayout();
@@ -963,7 +964,6 @@ namespace YouTube_downloader
 			// 
 			this.tabPageSystemSettings.AutoScroll = true;
 			this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.tabPageSystemSettings.Controls.Add(this.groupBox18);
 			this.tabPageSystemSettings.Controls.Add(this.groupBox17);
 			this.tabPageSystemSettings.Controls.Add(this.checkBoxUseGmtTime);
 			this.tabPageSystemSettings.Controls.Add(this.groupBox13);
@@ -976,95 +976,6 @@ namespace YouTube_downloader
 			this.tabPageSystemSettings.TabIndex = 1;
 			this.tabPageSystemSettings.Text = "Система";
 			// 
-			// groupBox18
-			// 
-			this.groupBox18.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox18.Controls.Add(this.btnVideoInfoServerWhy);
-			this.groupBox18.Controls.Add(this.label25);
-			this.groupBox18.Controls.Add(this.numericUpDownVideoInfoServerPort);
-			this.groupBox18.Controls.Add(this.textBoxVideoInfoServerUrl);
-			this.groupBox18.Controls.Add(this.label24);
-			this.groupBox18.Controls.Add(this.checkBoxUseVideoInfoServer);
-			this.groupBox18.Location = new System.Drawing.Point(12, 470);
-			this.groupBox18.Name = "groupBox18";
-			this.groupBox18.Size = new System.Drawing.Size(455, 100);
-			this.groupBox18.TabIndex = 17;
-			this.groupBox18.TabStop = false;
-			this.groupBox18.Text = "Видео 18+";
-			// 
-			// btnVideoInfoServerWhy
-			// 
-			this.btnVideoInfoServerWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnVideoInfoServerWhy.Location = new System.Drawing.Point(372, 15);
-			this.btnVideoInfoServerWhy.Name = "btnVideoInfoServerWhy";
-			this.btnVideoInfoServerWhy.Size = new System.Drawing.Size(75, 23);
-			this.btnVideoInfoServerWhy.TabIndex = 5;
-			this.btnVideoInfoServerWhy.Text = "Зачем?";
-			this.btnVideoInfoServerWhy.UseVisualStyleBackColor = true;
-			this.btnVideoInfoServerWhy.Click += new System.EventHandler(this.btnVideoInfoServerWhy_Click);
-			// 
-			// label25
-			// 
-			this.label25.AutoSize = true;
-			this.label25.Location = new System.Drawing.Point(13, 70);
-			this.label25.Name = "label25";
-			this.label25.Size = new System.Drawing.Size(80, 13);
-			this.label25.TabIndex = 4;
-			this.label25.Text = "Порт сервера:";
-			// 
-			// numericUpDownVideoInfoServerPort
-			// 
-			this.numericUpDownVideoInfoServerPort.Location = new System.Drawing.Point(105, 68);
-			this.numericUpDownVideoInfoServerPort.Maximum = new decimal(new int[] {
-			99999,
-			0,
-			0,
-			0});
-			this.numericUpDownVideoInfoServerPort.Minimum = new decimal(new int[] {
-			1025,
-			0,
-			0,
-			0});
-			this.numericUpDownVideoInfoServerPort.Name = "numericUpDownVideoInfoServerPort";
-			this.numericUpDownVideoInfoServerPort.Size = new System.Drawing.Size(79, 20);
-			this.numericUpDownVideoInfoServerPort.TabIndex = 3;
-			this.numericUpDownVideoInfoServerPort.Value = new decimal(new int[] {
-			1025,
-			0,
-			0,
-			0});
-			this.numericUpDownVideoInfoServerPort.ValueChanged += new System.EventHandler(this.numericUpDownVideoInfoServerPort_ValueChanged);
-			// 
-			// textBoxVideoInfoServerUrl
-			// 
-			this.textBoxVideoInfoServerUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxVideoInfoServerUrl.Location = new System.Drawing.Point(105, 42);
-			this.textBoxVideoInfoServerUrl.Name = "textBoxVideoInfoServerUrl";
-			this.textBoxVideoInfoServerUrl.Size = new System.Drawing.Size(344, 20);
-			this.textBoxVideoInfoServerUrl.TabIndex = 2;
-			// 
-			// label24
-			// 
-			this.label24.AutoSize = true;
-			this.label24.Location = new System.Drawing.Point(13, 45);
-			this.label24.Name = "label24";
-			this.label24.Size = new System.Drawing.Size(86, 13);
-			this.label24.TabIndex = 1;
-			this.label24.Text = "Адрес сервера:";
-			// 
-			// checkBoxUseVideoInfoServer
-			// 
-			this.checkBoxUseVideoInfoServer.AutoSize = true;
-			this.checkBoxUseVideoInfoServer.Location = new System.Drawing.Point(13, 19);
-			this.checkBoxUseVideoInfoServer.Name = "checkBoxUseVideoInfoServer";
-			this.checkBoxUseVideoInfoServer.Size = new System.Drawing.Size(275, 17);
-			this.checkBoxUseVideoInfoServer.TabIndex = 0;
-			this.checkBoxUseVideoInfoServer.Text = "Получать ссылки на видео 18+ через веб-сервер";
-			this.checkBoxUseVideoInfoServer.UseVisualStyleBackColor = true;
-			this.checkBoxUseVideoInfoServer.CheckedChanged += new System.EventHandler(this.checkBoxUseVideoInfoServer_CheckedChanged);
-			// 
 			// groupBox17
 			// 
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkDownloadRetriesCountMax);
@@ -1074,7 +985,7 @@ namespace YouTube_downloader
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkSize);
 			this.groupBox17.Controls.Add(this.label22);
 			this.groupBox17.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
-			this.groupBox17.Location = new System.Drawing.Point(12, 362);
+			this.groupBox17.Location = new System.Drawing.Point(6, 478);
 			this.groupBox17.Name = "groupBox17";
 			this.groupBox17.Size = new System.Drawing.Size(489, 102);
 			this.groupBox17.TabIndex = 16;
@@ -1183,7 +1094,7 @@ namespace YouTube_downloader
 			this.checkBoxUseGmtTime.AutoSize = true;
 			this.checkBoxUseGmtTime.Checked = true;
 			this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(12, 576);
+			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(12, 588);
 			this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
 			this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseGmtTime.TabIndex = 15;
@@ -1194,21 +1105,20 @@ namespace YouTube_downloader
 			// 
 			// groupBox13
 			// 
-			this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox13.Controls.Add(this.btnUseRamWhy);
 			this.groupBox13.Controls.Add(this.panelRAM);
 			this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
-			this.groupBox13.Location = new System.Drawing.Point(12, 290);
+			this.groupBox13.Location = new System.Drawing.Point(3, 406);
 			this.groupBox13.Name = "groupBox13";
-			this.groupBox13.Size = new System.Drawing.Size(415, 66);
+			this.groupBox13.Size = new System.Drawing.Size(494, 66);
 			this.groupBox13.TabIndex = 14;
 			this.groupBox13.TabStop = false;
 			this.groupBox13.Text = "Оперативная память (RAM)";
 			// 
 			// btnUseRamWhy
 			// 
-			this.btnUseRamWhy.Location = new System.Drawing.Point(371, 25);
+			this.btnUseRamWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnUseRamWhy.Location = new System.Drawing.Point(411, 28);
 			this.btnUseRamWhy.Name = "btnUseRamWhy";
 			this.btnUseRamWhy.Size = new System.Drawing.Size(75, 23);
 			this.btnUseRamWhy.TabIndex = 16;
@@ -1241,16 +1151,118 @@ namespace YouTube_downloader
 			// 
 			// groupBox11
 			// 
+			this.groupBox11.Controls.Add(this.groupBox18);
 			this.groupBox11.Controls.Add(this.btnApiWtf);
 			this.groupBox11.Controls.Add(this.groupBox4);
 			this.groupBox11.Controls.Add(this.groupBox5);
 			this.groupBox11.Controls.Add(this.chkUseHiddenApiForGettingInfo);
-			this.groupBox11.Location = new System.Drawing.Point(12, 6);
+			this.groupBox11.Location = new System.Drawing.Point(3, 6);
 			this.groupBox11.Name = "groupBox11";
-			this.groupBox11.Size = new System.Drawing.Size(495, 174);
+			this.groupBox11.Size = new System.Drawing.Size(495, 290);
 			this.groupBox11.TabIndex = 12;
 			this.groupBox11.TabStop = false;
 			this.groupBox11.Text = "API";
+			// 
+			// groupBox18
+			// 
+			this.groupBox18.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox18.Controls.Add(this.checkBoxAlwaysUseVideoInfoServer);
+			this.groupBox18.Controls.Add(this.btnVideoInfoServerWhy);
+			this.groupBox18.Controls.Add(this.label25);
+			this.groupBox18.Controls.Add(this.numericUpDownVideoInfoServerPort);
+			this.groupBox18.Controls.Add(this.textBoxVideoInfoServerUrl);
+			this.groupBox18.Controls.Add(this.label24);
+			this.groupBox18.Controls.Add(this.checkBoxUseVideoInfoServerForAdultVideos);
+			this.groupBox18.Location = new System.Drawing.Point(11, 172);
+			this.groupBox18.Name = "groupBox18";
+			this.groupBox18.Size = new System.Drawing.Size(478, 115);
+			this.groupBox18.TabIndex = 17;
+			this.groupBox18.TabStop = false;
+			this.groupBox18.Text = "Сервер для получения информации о видео";
+			// 
+			// checkBoxAlwaysUseVideoInfoServer
+			// 
+			this.checkBoxAlwaysUseVideoInfoServer.AutoSize = true;
+			this.checkBoxAlwaysUseVideoInfoServer.Location = new System.Drawing.Point(13, 94);
+			this.checkBoxAlwaysUseVideoInfoServer.Name = "checkBoxAlwaysUseVideoInfoServer";
+			this.checkBoxAlwaysUseVideoInfoServer.Size = new System.Drawing.Size(352, 17);
+			this.checkBoxAlwaysUseVideoInfoServer.TabIndex = 6;
+			this.checkBoxAlwaysUseVideoInfoServer.Text = "Использовать только этот сервер (другое API не используется)";
+			this.checkBoxAlwaysUseVideoInfoServer.UseVisualStyleBackColor = true;
+			this.checkBoxAlwaysUseVideoInfoServer.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysUseVideoInfoServer_CheckedChanged);
+			// 
+			// btnVideoInfoServerWhy
+			// 
+			this.btnVideoInfoServerWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnVideoInfoServerWhy.Location = new System.Drawing.Point(395, 15);
+			this.btnVideoInfoServerWhy.Name = "btnVideoInfoServerWhy";
+			this.btnVideoInfoServerWhy.Size = new System.Drawing.Size(75, 23);
+			this.btnVideoInfoServerWhy.TabIndex = 5;
+			this.btnVideoInfoServerWhy.Text = "Зачем?";
+			this.btnVideoInfoServerWhy.UseVisualStyleBackColor = true;
+			this.btnVideoInfoServerWhy.Click += new System.EventHandler(this.btnVideoInfoServerWhy_Click);
+			// 
+			// label25
+			// 
+			this.label25.AutoSize = true;
+			this.label25.Location = new System.Drawing.Point(13, 70);
+			this.label25.Name = "label25";
+			this.label25.Size = new System.Drawing.Size(80, 13);
+			this.label25.TabIndex = 4;
+			this.label25.Text = "Порт сервера:";
+			// 
+			// numericUpDownVideoInfoServerPort
+			// 
+			this.numericUpDownVideoInfoServerPort.Location = new System.Drawing.Point(105, 68);
+			this.numericUpDownVideoInfoServerPort.Maximum = new decimal(new int[] {
+			99999,
+			0,
+			0,
+			0});
+			this.numericUpDownVideoInfoServerPort.Minimum = new decimal(new int[] {
+			1025,
+			0,
+			0,
+			0});
+			this.numericUpDownVideoInfoServerPort.Name = "numericUpDownVideoInfoServerPort";
+			this.numericUpDownVideoInfoServerPort.Size = new System.Drawing.Size(79, 20);
+			this.numericUpDownVideoInfoServerPort.TabIndex = 3;
+			this.numericUpDownVideoInfoServerPort.Value = new decimal(new int[] {
+			1025,
+			0,
+			0,
+			0});
+			this.numericUpDownVideoInfoServerPort.ValueChanged += new System.EventHandler(this.numericUpDownVideoInfoServerPort_ValueChanged);
+			// 
+			// textBoxVideoInfoServerUrl
+			// 
+			this.textBoxVideoInfoServerUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxVideoInfoServerUrl.Location = new System.Drawing.Point(105, 42);
+			this.textBoxVideoInfoServerUrl.Name = "textBoxVideoInfoServerUrl";
+			this.textBoxVideoInfoServerUrl.Size = new System.Drawing.Size(367, 20);
+			this.textBoxVideoInfoServerUrl.TabIndex = 2;
+			// 
+			// label24
+			// 
+			this.label24.AutoSize = true;
+			this.label24.Location = new System.Drawing.Point(13, 45);
+			this.label24.Name = "label24";
+			this.label24.Size = new System.Drawing.Size(86, 13);
+			this.label24.TabIndex = 1;
+			this.label24.Text = "Адрес сервера:";
+			// 
+			// checkBoxUseVideoInfoServerForAdultVideos
+			// 
+			this.checkBoxUseVideoInfoServerForAdultVideos.AutoSize = true;
+			this.checkBoxUseVideoInfoServerForAdultVideos.Location = new System.Drawing.Point(13, 19);
+			this.checkBoxUseVideoInfoServerForAdultVideos.Name = "checkBoxUseVideoInfoServerForAdultVideos";
+			this.checkBoxUseVideoInfoServerForAdultVideos.Size = new System.Drawing.Size(238, 17);
+			this.checkBoxUseVideoInfoServerForAdultVideos.TabIndex = 0;
+			this.checkBoxUseVideoInfoServerForAdultVideos.Text = "Использовать этот сервер для видео 18+";
+			this.checkBoxUseVideoInfoServerForAdultVideos.UseVisualStyleBackColor = true;
+			this.checkBoxUseVideoInfoServerForAdultVideos.CheckedChanged += new System.EventHandler(this.checkBoxUseVideoInfoServer_CheckedChanged);
 			// 
 			// btnApiWtf
 			// 
@@ -1348,7 +1360,7 @@ namespace YouTube_downloader
 			this.groupBox7.Controls.Add(this.label9);
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsAudio);
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsVideo);
-			this.groupBox7.Location = new System.Drawing.Point(12, 186);
+			this.groupBox7.Location = new System.Drawing.Point(6, 302);
 			this.groupBox7.Name = "groupBox7";
 			this.groupBox7.Size = new System.Drawing.Size(318, 98);
 			this.groupBox7.TabIndex = 10;
@@ -2000,9 +2012,6 @@ namespace YouTube_downloader
 			this.groupBox14.PerformLayout();
 			this.tabPageSystemSettings.ResumeLayout(false);
 			this.tabPageSystemSettings.PerformLayout();
-			this.groupBox18.ResumeLayout(false);
-			this.groupBox18.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoInfoServerPort)).EndInit();
 			this.groupBox17.ResumeLayout(false);
 			this.groupBox17.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).EndInit();
@@ -2010,6 +2019,9 @@ namespace YouTube_downloader
 			this.groupBox13.ResumeLayout(false);
 			this.groupBox11.ResumeLayout(false);
 			this.groupBox11.PerformLayout();
+			this.groupBox18.ResumeLayout(false);
+			this.groupBox18.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoInfoServerPort)).EndInit();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
 			this.groupBox5.ResumeLayout(false);
@@ -2184,12 +2196,13 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label23;
 		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkDownloadRetriesCountMax;
 		private System.Windows.Forms.GroupBox groupBox18;
-		private System.Windows.Forms.CheckBox checkBoxUseVideoInfoServer;
+		private System.Windows.Forms.CheckBox checkBoxUseVideoInfoServerForAdultVideos;
 		private System.Windows.Forms.NumericUpDown numericUpDownVideoInfoServerPort;
 		private System.Windows.Forms.TextBox textBoxVideoInfoServerUrl;
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.Label label25;
 		private System.Windows.Forms.Button btnVideoInfoServerWhy;
+		private System.Windows.Forms.CheckBox checkBoxAlwaysUseVideoInfoServer;
 	}
 }
 
