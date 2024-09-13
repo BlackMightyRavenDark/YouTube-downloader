@@ -456,7 +456,7 @@ namespace YouTube_downloader
 
 				checkBoxUseGmtTime.Checked = config.UseGmtTime;
 
-				MultiThreadedDownloader.SetMaximumConnectionsLimit(config.GlobalThreadCountMaximum);
+				MultiThreadedDownloader.SetDefaultMaximumConnectionLimit(config.GlobalThreadCountMaximum);
 			};
 			config.Load();
 
@@ -1606,7 +1606,7 @@ namespace YouTube_downloader
 		private void numericUpDownGlobalThreadsMaximum_ValueChanged(object sender, EventArgs e)
 		{
 			config.GlobalThreadCountMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
-			MultiThreadedDownloader.SetMaximumConnectionsLimit(config.GlobalThreadCountMaximum);
+			MultiThreadedDownloader.SetDefaultMaximumConnectionLimit(config.GlobalThreadCountMaximum);
 		}
 
 		private void numericUpDownVideoTitleFontSize_ValueChanged(object sender, EventArgs e)

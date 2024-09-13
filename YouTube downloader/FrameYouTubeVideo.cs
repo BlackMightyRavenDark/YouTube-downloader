@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -273,7 +274,7 @@ namespace YouTube_downloader
 						else
 						{
 							string url = $"{externalVideoInfoServerUrl}:{externalVideoInfoServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
-							HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null, null);
+							HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null);
 							if (requestResult.ErrorCode == 200)
 							{
 								if (requestResult.WebContent.ContentToString(out string rawInfo) == 200)
@@ -714,6 +715,17 @@ namespace YouTube_downloader
 					}
 					_multiThreadedDownloader.OutputFileName = destFilePath;
 
+					_multiThreadedDownloader.Preparing += (s) =>
+					{
+						Invoke(new MethodInvoker(() =>
+						{
+							progressBarDownload.Minimum = 0;
+							progressBarDownload.Value = 0;
+
+							lblStatus.Text = "Состояние: Подготовка к скачиванию...";
+							lblProgress.Text = null;
+						}));
+					};
 					_multiThreadedDownloader.Connecting += (s, url) =>
 					{
 						Invoke(new MethodInvoker(() =>
@@ -743,7 +755,6 @@ namespace YouTube_downloader
 									{
 										customError.ErrorMessage = "Недостаточно места на диске!";
 										customError.ErrorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
-										return;
 									}
 
 									if (mtd.UseRamForTempFiles && MemoryWatcher.Update() &&
@@ -751,9 +762,12 @@ namespace YouTube_downloader
 									{
 										customError.ErrorMessage = "Недостаточно памяти!";
 										customError.ErrorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
-										return;
 									}
 								}
+							}
+							else
+							{
+								lblStatus.Text = $"Состояние: Ошибка! Код: {customError.ErrorCode}";
 							}
 						}));
 					};
@@ -774,17 +788,23 @@ namespace YouTube_downloader
 							toolTip1.SetToolTip(lblProgress, toolTipText);
 						}));
 					};
-					_multiThreadedDownloader.DownloadProgress += (object s, long bytesTransferred) =>
+					_multiThreadedDownloader.DownloadProgress += (object s, ConcurrentDictionary<int, DownloadableContentChunk> contentChunks) =>
 					{
 						Invoke(new MethodInvoker(() =>
 						{
 							long fileSize = _multiThreadedDownloader.ContentLength != 0L ? _multiThreadedDownloader.ContentLength : videoTrack.ContentLength;
-							double percent = 100.0 / fileSize * bytesTransferred;
+							if (fileSize <= 0L)
+							{
+								//Don't do it!
+								fileSize = contentChunks.Where(chunk => chunk.Value.TotalBytes > 0L).Sum(chunk => chunk.Value.TotalBytes);
+							}
+							long downloadedBytes = contentChunks.Where(chunk => chunk.Value.ProcessedBytes > 0L).Sum(chunk => chunk.Value.ProcessedBytes);
+							double percent = 100.0 / fileSize * downloadedBytes;
 							progressBarDownload.Value = (int)Math.Round(percent);
 
 							string percentString = string.Format("{0:F2}", percent);
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-							lblProgress.Text = $"{FormatSize(bytesTransferred)} / {FormatSize(fileSize)}" +
+							lblProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
 								$" ({percentString}%), {shortInfo}";
 						}));
 					};
