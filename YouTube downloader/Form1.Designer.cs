@@ -70,8 +70,11 @@ namespace YouTube_downloader
 			this.label15 = new System.Windows.Forms.Label();
 			this.numericUpDownMenusFontSize = new System.Windows.Forms.NumericUpDown();
 			this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
-			this.numericUpDownDownloadRetryCount = new System.Windows.Forms.NumericUpDown();
+			this.groupBox19 = new System.Windows.Forms.GroupBox();
+			this.numericUpDownChunkDownloadErrorCount = new System.Windows.Forms.NumericUpDown();
+			this.label26 = new System.Windows.Forms.Label();
 			this.label21 = new System.Windows.Forms.Label();
+			this.numericUpDownChunkDownloadRetryCount = new System.Windows.Forms.NumericUpDown();
 			this.groupBox10 = new System.Windows.Forms.GroupBox();
 			this.numericUpDownDelayAfterContainerCreated = new System.Windows.Forms.NumericUpDown();
 			this.label20 = new System.Windows.Forms.Label();
@@ -189,7 +192,9 @@ namespace YouTube_downloader
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).BeginInit();
 			this.tabPageDownloadingSettings.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDownloadRetryCount)).BeginInit();
+			this.groupBox19.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadErrorCount)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadRetryCount)).BeginInit();
 			this.groupBox10.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelayAfterContainerCreated)).BeginInit();
 			this.groupBox15.SuspendLayout();
@@ -690,9 +695,9 @@ namespace YouTube_downloader
 			// 
 			// tabPageDownloadingSettings
 			// 
+			this.tabPageDownloadingSettings.AutoScroll = true;
 			this.tabPageDownloadingSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.tabPageDownloadingSettings.Controls.Add(this.numericUpDownDownloadRetryCount);
-			this.tabPageDownloadingSettings.Controls.Add(this.label21);
+			this.tabPageDownloadingSettings.Controls.Add(this.groupBox19);
 			this.tabPageDownloadingSettings.Controls.Add(this.groupBox10);
 			this.tabPageDownloadingSettings.Controls.Add(this.chkSaveImage);
 			this.tabPageDownloadingSettings.Location = new System.Drawing.Point(4, 22);
@@ -702,37 +707,85 @@ namespace YouTube_downloader
 			this.tabPageDownloadingSettings.TabIndex = 2;
 			this.tabPageDownloadingSettings.Text = "Скачивание";
 			// 
-			// numericUpDownDownloadRetryCount
+			// groupBox19
 			// 
-			this.numericUpDownDownloadRetryCount.Location = new System.Drawing.Point(194, 292);
-			this.numericUpDownDownloadRetryCount.Maximum = new decimal(new int[] {
+			this.groupBox19.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadErrorCount);
+			this.groupBox19.Controls.Add(this.label26);
+			this.groupBox19.Controls.Add(this.label21);
+			this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadRetryCount);
+			this.groupBox19.Location = new System.Drawing.Point(14, 292);
+			this.groupBox19.Name = "groupBox19";
+			this.groupBox19.Size = new System.Drawing.Size(490, 72);
+			this.groupBox19.TabIndex = 20;
+			this.groupBox19.TabStop = false;
+			this.groupBox19.Text = "Попытки скачивания";
+			// 
+			// numericUpDownChunkDownloadErrorCount
+			// 
+			this.numericUpDownChunkDownloadErrorCount.Location = new System.Drawing.Point(237, 45);
+			this.numericUpDownChunkDownloadErrorCount.Maximum = new decimal(new int[] {
 			10,
 			0,
 			0,
 			0});
-			this.numericUpDownDownloadRetryCount.Minimum = new decimal(new int[] {
+			this.numericUpDownChunkDownloadErrorCount.Minimum = new decimal(new int[] {
 			1,
 			0,
 			0,
 			0});
-			this.numericUpDownDownloadRetryCount.Name = "numericUpDownDownloadRetryCount";
-			this.numericUpDownDownloadRetryCount.Size = new System.Drawing.Size(46, 20);
-			this.numericUpDownDownloadRetryCount.TabIndex = 19;
-			this.numericUpDownDownloadRetryCount.Value = new decimal(new int[] {
-			5,
+			this.numericUpDownChunkDownloadErrorCount.Name = "numericUpDownChunkDownloadErrorCount";
+			this.numericUpDownChunkDownloadErrorCount.Size = new System.Drawing.Size(46, 20);
+			this.numericUpDownChunkDownloadErrorCount.TabIndex = 21;
+			this.numericUpDownChunkDownloadErrorCount.Value = new decimal(new int[] {
+			3,
 			0,
 			0,
 			0});
-			this.numericUpDownDownloadRetryCount.ValueChanged += new System.EventHandler(this.numericUpDownDownloadRetryCount_ValueChanged);
+			this.numericUpDownChunkDownloadErrorCount.ValueChanged += new System.EventHandler(this.numericUpDownChunkDownloadErrorCount_ValueChanged);
+			// 
+			// label26
+			// 
+			this.label26.AutoSize = true;
+			this.label26.Location = new System.Drawing.Point(6, 47);
+			this.label26.Name = "label26";
+			this.label26.Size = new System.Drawing.Size(225, 13);
+			this.label26.TabIndex = 20;
+			this.label26.Text = "Количество ошибок при скачивании чанка:";
+			this.toolTip1.SetToolTip(this.label26, "При достижении этого значения, скачивание чанка перезапускается.");
 			// 
 			// label21
 			// 
 			this.label21.AutoSize = true;
-			this.label21.Location = new System.Drawing.Point(11, 294);
+			this.label21.Location = new System.Drawing.Point(6, 21);
 			this.label21.Name = "label21";
-			this.label21.Size = new System.Drawing.Size(183, 13);
+			this.label21.Size = new System.Drawing.Size(215, 13);
 			this.label21.TabIndex = 18;
-			this.label21.Text = "Количество ппопыток скачивания:";
+			this.label21.Text = "Количество попыток скачивания чанков:";
+			// 
+			// numericUpDownChunkDownloadRetryCount
+			// 
+			this.numericUpDownChunkDownloadRetryCount.Location = new System.Drawing.Point(237, 19);
+			this.numericUpDownChunkDownloadRetryCount.Maximum = new decimal(new int[] {
+			10,
+			0,
+			0,
+			0});
+			this.numericUpDownChunkDownloadRetryCount.Minimum = new decimal(new int[] {
+			1,
+			0,
+			0,
+			0});
+			this.numericUpDownChunkDownloadRetryCount.Name = "numericUpDownChunkDownloadRetryCount";
+			this.numericUpDownChunkDownloadRetryCount.Size = new System.Drawing.Size(46, 20);
+			this.numericUpDownChunkDownloadRetryCount.TabIndex = 19;
+			this.numericUpDownChunkDownloadRetryCount.Value = new decimal(new int[] {
+			5,
+			0,
+			0,
+			0});
+			this.numericUpDownChunkDownloadRetryCount.ValueChanged += new System.EventHandler(this.numericUpDownDownloadRetryCount_ValueChanged);
 			// 
 			// groupBox10
 			// 
@@ -747,7 +800,7 @@ namespace YouTube_downloader
 			this.groupBox10.Controls.Add(this.groupBox14);
 			this.groupBox10.Location = new System.Drawing.Point(14, 6);
 			this.groupBox10.Name = "groupBox10";
-			this.groupBox10.Size = new System.Drawing.Size(507, 280);
+			this.groupBox10.Size = new System.Drawing.Size(439, 280);
 			this.groupBox10.TabIndex = 17;
 			this.groupBox10.TabStop = false;
 			this.groupBox10.Text = "Адаптивные форматы";
@@ -824,7 +877,7 @@ namespace YouTube_downloader
 			this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
 			this.groupBox15.Location = new System.Drawing.Point(6, 160);
 			this.groupBox15.Name = "groupBox15";
-			this.groupBox15.Size = new System.Drawing.Size(495, 83);
+			this.groupBox15.Size = new System.Drawing.Size(427, 83);
 			this.groupBox15.TabIndex = 18;
 			this.groupBox15.TabStop = false;
 			this.groupBox15.Text = "Контейнер";
@@ -837,7 +890,7 @@ namespace YouTube_downloader
 			this.groupBox16.Controls.Add(this.radioButtonContainerTypeMp4);
 			this.groupBox16.Location = new System.Drawing.Point(295, 19);
 			this.groupBox16.Name = "groupBox16";
-			this.groupBox16.Size = new System.Drawing.Size(194, 60);
+			this.groupBox16.Size = new System.Drawing.Size(126, 60);
 			this.groupBox16.TabIndex = 17;
 			this.groupBox16.TabStop = false;
 			this.groupBox16.Text = "Тип контейнера";
@@ -900,7 +953,7 @@ namespace YouTube_downloader
 			this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
 			this.groupBox14.Location = new System.Drawing.Point(6, 42);
 			this.groupBox14.Name = "groupBox14";
-			this.groupBox14.Size = new System.Drawing.Size(495, 112);
+			this.groupBox14.Size = new System.Drawing.Size(427, 112);
 			this.groupBox14.TabIndex = 17;
 			this.groupBox14.TabStop = false;
 			this.groupBox14.Text = "Скачивание аудио-дорожек";
@@ -952,7 +1005,7 @@ namespace YouTube_downloader
 			// chkSaveImage
 			// 
 			this.chkSaveImage.AutoSize = true;
-			this.chkSaveImage.Location = new System.Drawing.Point(14, 316);
+			this.chkSaveImage.Location = new System.Drawing.Point(14, 370);
 			this.chkSaveImage.Name = "chkSaveImage";
 			this.chkSaveImage.Size = new System.Drawing.Size(175, 17);
 			this.chkSaveImage.TabIndex = 15;
@@ -2000,7 +2053,10 @@ namespace YouTube_downloader
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).EndInit();
 			this.tabPageDownloadingSettings.ResumeLayout(false);
 			this.tabPageDownloadingSettings.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDownloadRetryCount)).EndInit();
+			this.groupBox19.ResumeLayout(false);
+			this.groupBox19.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadErrorCount)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadRetryCount)).EndInit();
 			this.groupBox10.ResumeLayout(false);
 			this.groupBox10.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelayAfterContainerCreated)).EndInit();
@@ -2185,7 +2241,7 @@ namespace YouTube_downloader
 		private System.Windows.Forms.NumericUpDown numericUpDownDelayAfterContainerCreated;
 		private System.Windows.Forms.Label label20;
 		private System.Windows.Forms.Label label19;
-		private System.Windows.Forms.NumericUpDown numericUpDownDownloadRetryCount;
+		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadRetryCount;
 		private System.Windows.Forms.Label label21;
 		private System.Windows.Forms.GroupBox groupBox17;
 		private System.Windows.Forms.CheckBox checkBoxAlwaysDownloadAsDash;
@@ -2203,6 +2259,9 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label25;
 		private System.Windows.Forms.Button btnVideoInfoServerWhy;
 		private System.Windows.Forms.CheckBox checkBoxAlwaysUseExternalVideoInfoServer;
+		private System.Windows.Forms.GroupBox groupBox19;
+		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadErrorCount;
+		private System.Windows.Forms.Label label26;
 	}
 }
 

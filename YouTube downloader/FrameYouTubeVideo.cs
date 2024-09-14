@@ -539,10 +539,6 @@ namespace YouTube_downloader
 								lblProgress.Left = lblStatus.Left + lblStatus.Width;
 								lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
 									$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
-
-								string toolTipText = $"Попытка №{tryNumber + 1} из 8";
-								toolTip1.SetToolTip(lblStatus, toolTipText);
-								toolTip1.SetToolTip(lblProgress, toolTipText);
 							}));
 
 							if (errCode == 200 || errCode == 206)
@@ -598,12 +594,6 @@ namespace YouTube_downloader
 			}
 			fileStream.Dispose();
 
-			Invoke(new MethodInvoker(() =>
-			{
-				toolTip1.SetToolTip(lblStatus, string.Empty);
-				toolTip1.SetToolTip(lblStatus, string.Empty);
-			}));
-
 			if (errorCode == 200)
 			{
 				fnDashFinal = MultiThreadedDownloader.GetNumberedFileName(fnDash);
@@ -618,8 +608,7 @@ namespace YouTube_downloader
 		}
 
 		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
-			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly,
-			int tryNumber, int maxTries)
+			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
 		{
 			if (config.AlwaysDownloadAsDash || mediaTrack.IsDashManifest)
 			{
@@ -685,6 +674,8 @@ namespace YouTube_downloader
 				{
 					_multiThreadedDownloader = new MultiThreadedDownloader();
 					_multiThreadedDownloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
+					_multiThreadedDownloader.TryCountPerThread = config.ChunkDownloadRetryCountMax;
+					_multiThreadedDownloader.TryCountInsideThread = config.ChunkDownloadErrorCountMax;
 					_multiThreadedDownloader.Url = fileUrl;
 					if (!useRamToStoreTemporaryFiles)
 					{
@@ -778,14 +769,10 @@ namespace YouTube_downloader
 							progressBarDownload.Value = 0;
 							progressBarDownload.Maximum = 100;
 
-							lblStatus.Text = $"[{tryNumber}/{maxTries}] Скачивание {mediaTypeString}:";
+							lblStatus.Text = $"Скачивание {mediaTypeString}:";
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
 							lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
 							lblProgress.Left = lblStatus.Left + lblStatus.Width;
-
-							string toolTipText = $"Попытка №{tryNumber} из {maxTries}";
-							toolTip1.SetToolTip(lblStatus, toolTipText);
-							toolTip1.SetToolTip(lblProgress, toolTipText);
 						}));
 					};
 					_multiThreadedDownloader.DownloadProgress += (object s, ConcurrentDictionary<int, DownloadableContentChunk> contentChunks) =>
@@ -818,9 +805,6 @@ namespace YouTube_downloader
 							lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
 							lblProgress.Text = $"0 / {chunkCount}";
 							lblProgress.Left = lblStatus.Left + lblStatus.Width;
-
-							toolTip1.SetToolTip(lblStatus, string.Empty);
-							toolTip1.SetToolTip(lblStatus, string.Empty);
 						}));
 					};
 					_multiThreadedDownloader.ChunkMergingProgress += (s, chunkId, chunkCount, chunkPosition, chunkSize) =>
@@ -839,13 +823,9 @@ namespace YouTube_downloader
 					{
 						GC.Collect();
 					}
-					Invoke(new MethodInvoker(() =>
-					{
-						toolTip1.SetToolTip(lblStatus, string.Empty);
-						toolTip1.SetToolTip(lblStatus, string.Empty);
-					}));
-					DownloadResult downloadResult =
-					new DownloadResult(res, _multiThreadedDownloader.LastErrorMessage,
+
+					DownloadResult downloadResult = new DownloadResult(res,
+						_multiThreadedDownloader.LastErrorMessage,
 						_multiThreadedDownloader.OutputFileName);
 					_multiThreadedDownloader.Dispose();
 					_multiThreadedDownloader = null;
@@ -861,12 +841,6 @@ namespace YouTube_downloader
 					return downloadResult;
 				}
 			}
-		}
-
-		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
-			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
-		{
-			return await DownloadYouTubeMediaTrack(mediaTrack, formattedFileName, audioOnly, 1, 1);
 		}
 
 		private async void MenuItemDownloadClick(object sender, EventArgs e)
@@ -1293,20 +1267,7 @@ namespace YouTube_downloader
 			DownloadResult result = null;
 			foreach (YouTubeMediaTrack track in tracks)
 			{
-				int errors = 0;
-				while (errors++ <= config.DownloadRetryCount)
-				{
-					result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly, errors, config.DownloadRetryCount);
-
-					if (result.ErrorCode == FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER ||
-						result.ErrorCode <= -100000) //some error code from exception.
-					{
-						return result;
-					}
-
-					if (result.ErrorCode == 200) { break; }
-				}
-
+				result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly);
 				if (result.ErrorCode != 200) { return result; }
 				results.Add(result);
 

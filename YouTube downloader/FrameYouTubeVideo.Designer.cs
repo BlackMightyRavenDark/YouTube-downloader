@@ -45,11 +45,11 @@
 			this.contextMenuImage = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miOpenVideoInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyVideoUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miCopyPlayerUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.miOpenImageInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyImageUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miSaveImageAssToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.miCopyPlayerUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuChannelTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyChannelTitleToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +57,6 @@
 			this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miOpenChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnGetWebPage = new System.Windows.Forms.Button();
-			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.btnGetDashManifest = new System.Windows.Forms.Button();
 			this.btnGetHlsManifest = new System.Windows.Forms.Button();
 			this.btnGetPlayerCode = new System.Windows.Forms.Button();
@@ -134,7 +133,6 @@
 			this.imageFavorite.Size = new System.Drawing.Size(25, 25);
 			this.imageFavorite.TabIndex = 4;
 			this.imageFavorite.TabStop = false;
-			this.toolTip1.SetToolTip(this.imageFavorite, "Избранное видео");
 			this.imageFavorite.Paint += new System.Windows.Forms.PaintEventHandler(this.imageFavorite_Paint);
 			this.imageFavorite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageFavorite_MouseDown);
 			// 
@@ -191,7 +189,6 @@
 			this.imgScrollbar.Size = new System.Drawing.Size(484, 12);
 			this.imgScrollbar.TabIndex = 9;
 			this.imgScrollbar.TabStop = false;
-			this.toolTip1.SetToolTip(this.imgScrollbar, "Скроллбар");
 			this.imgScrollbar.Paint += new System.Windows.Forms.PaintEventHandler(this.imgScrollbar_Paint);
 			this.imgScrollbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseDown);
 			this.imgScrollbar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseMove);
@@ -216,7 +213,6 @@
 			this.imageFavoriteChannel.Size = new System.Drawing.Size(25, 25);
 			this.imageFavoriteChannel.TabIndex = 11;
 			this.imageFavoriteChannel.TabStop = false;
-			this.toolTip1.SetToolTip(this.imageFavoriteChannel, "Избранный канал");
 			this.imageFavoriteChannel.Paint += new System.Windows.Forms.PaintEventHandler(this.imgFavoriteChannel_Paint);
 			this.imageFavoriteChannel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageFavoriteChannel_MouseDown);
 			// 
@@ -231,7 +227,7 @@
 			this.miCopyImageUrlToolStripMenuItem,
 			this.miSaveImageAssToolStripMenuItem});
 			this.contextMenuImage.Name = "contextMenuImage";
-			this.contextMenuImage.Size = new System.Drawing.Size(283, 164);
+			this.contextMenuImage.Size = new System.Drawing.Size(283, 142);
 			// 
 			// miOpenVideoInBrowserToolStripMenuItem
 			// 
@@ -246,6 +242,13 @@
 			this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
 			this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
 			this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
+			// 
+			// miCopyPlayerUrlToolStripMenuItem
+			// 
+			this.miCopyPlayerUrlToolStripMenuItem.Name = "miCopyPlayerUrlToolStripMenuItem";
+			this.miCopyPlayerUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyPlayerUrlToolStripMenuItem.Text = "Скопировать URL плеера";
+			this.miCopyPlayerUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyPlayerUrlToolStripMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
@@ -272,13 +275,6 @@
 			this.miSaveImageAssToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
 			this.miSaveImageAssToolStripMenuItem.Text = "Сохранить изображение...";
 			this.miSaveImageAssToolStripMenuItem.Click += new System.EventHandler(this.miSaveImageAssToolStripMenuItem_Click);
-			// 
-			// miCopyPlayerUrlToolStripMenuItem
-			// 
-			this.miCopyPlayerUrlToolStripMenuItem.Name = "miCopyPlayerUrlToolStripMenuItem";
-			this.miCopyPlayerUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
-			this.miCopyPlayerUrlToolStripMenuItem.Text = "Скопировать URL плеера";
-			this.miCopyPlayerUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyPlayerUrlToolStripMenuItem_Click);
 			// 
 			// contextMenuChannelTitle
 			// 
@@ -502,7 +498,6 @@
 		private System.Windows.Forms.Button btnGetWebPage;
 		private System.Windows.Forms.ToolStripMenuItem miSaveImageAssToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyChannelNameWithIdToolStripMenuItem;
-		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Button btnGetDashManifest;
 		private System.Windows.Forms.Button btnGetHlsManifest;
 		private System.Windows.Forms.Button btnGetPlayerCode;

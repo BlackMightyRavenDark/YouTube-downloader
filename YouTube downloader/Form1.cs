@@ -38,7 +38,8 @@ namespace YouTube_downloader
 				json["downloadingDirPath"] = config.DownloadingDirPath;
 				json["tempDirPath"] = config.TempDirPath;
 				json["chunksMergingDirPath"] = config.ChunksMergingDirPath;
-				json["downloadRetryCount"] = config.DownloadRetryCount;
+				json["chunkDownloadRetryCountMax"] = config.ChunkDownloadRetryCountMax;
+				json["chunkDownloadErrorCountMax"] = config.ChunkDownloadErrorCountMax;
 				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgo;
 				json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
 				json["browserExeFilePath"] = config.BrowserExeFilePath;
@@ -90,18 +91,25 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("downloadRetryCount");
+					JToken jt = json.Value<JToken>("chunkDownloadRetryCountMax");
 					if (jt != null)
 					{
-						config.DownloadRetryCount = jt.Value<int>();
-						if (config.DownloadRetryCount < 1)
+						config.ChunkDownloadRetryCountMax = jt.Value<int>();
+						if (config.ChunkDownloadRetryCountMax < 1)
 						{
-							config.DownloadRetryCount = 1;
+							config.ChunkDownloadRetryCountMax = 1;
 						}
-						else if (config.DownloadRetryCount > (int)numericUpDownDownloadRetryCount.Maximum)
+						else if (config.ChunkDownloadRetryCountMax > (int)numericUpDownChunkDownloadRetryCount.Maximum)
 						{
-							config.DownloadRetryCount = (int)numericUpDownDownloadRetryCount.Maximum;
+							config.ChunkDownloadRetryCountMax = (int)numericUpDownChunkDownloadRetryCount.Maximum;
 						}
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("chunkDownloadErrorCountMax");
+					if (jt != null)
+					{
+						config.ChunkDownloadErrorCountMax = jt.Value<int>();
 					}
 				}
 				{
@@ -393,7 +401,8 @@ namespace YouTube_downloader
 				editOutputFileNameFormatWithDate.Text = config.OutputFileNameFormatWithDate;
 				editOutputFileNameFormatWithoutDate.Text = config.OutputFileNameFormatWithoutDate;
 				numericUpDownSearchResult.Value = config.MaxSearch;
-				numericUpDownDownloadRetryCount.Value = config.DownloadRetryCount;
+				numericUpDownChunkDownloadRetryCount.Value = config.ChunkDownloadRetryCountMax;
+				numericUpDownChunkDownloadErrorCount.Value = config.ChunkDownloadErrorCountMax;
 				editFfmpeg.Text = config.FfmpegExeFilePath;
 				chkMergeAdaptive.Checked = config.MergeToContainer;
 				chkDeleteSourceFiles.Checked = config.DeleteSourceFiles;
@@ -1674,7 +1683,7 @@ namespace YouTube_downloader
 		{
 			config.ExtraDelayAfterContainerWasBuilt = (int)numericUpDownDelayAfterContainerCreated.Value;
 		}
-		
+
 		private void chkSearchVideos_CheckedChanged(object sender, EventArgs e)
 		{
 			if (!chkSearchVideos.Checked && !chkSearchChannels.Checked)
@@ -1925,7 +1934,12 @@ namespace YouTube_downloader
 
 		private void numericUpDownDownloadRetryCount_ValueChanged(object sender, EventArgs e)
 		{
-			config.DownloadRetryCount = (int)numericUpDownDownloadRetryCount.Value;
+			config.ChunkDownloadRetryCountMax = (int)numericUpDownChunkDownloadRetryCount.Value;
+		}
+
+		private void numericUpDownChunkDownloadErrorCount_ValueChanged(object sender, EventArgs e)
+		{
+			config.ChunkDownloadErrorCountMax = (int)numericUpDownChunkDownloadErrorCount.Value;
 		}
 
 		private void checkBoxAlwaysDownloadAsDash_CheckedChanged(object sender, EventArgs e)
