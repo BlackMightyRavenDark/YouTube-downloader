@@ -1241,6 +1241,18 @@ namespace YouTube_downloader
 							MessageBoxButtons.OK, MessageBoxIcon.Error);
 						break;
 
+					case MultiThreadedDownloader.DOWNLOAD_ERROR_CHUNK_SEQUENCE:
+						lblStatus.Text = "Состояние: Ошибка последовательности чанков!";
+						MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\nНеправильная последовательность чанков!", "Ошибатор ошибок",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+						break;
+
+					case FileDownloader.DOWNLOAD_ERROR_OUT_OF_TRIES_LEFT:
+						lblStatus.Text = "Состояние: Скачивание прервано! Закончились попытки!";
+						MessageBox.Show($"{VideoInfo.Title}\nСкачивание прервано!\nЗакончились попытки!", "Ошибатор ошибок",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+						break;
+
 					default:
 						{
 							lblStatus.Text = $"Состояние: Ошибка {downloadResult.ErrorCode}";
