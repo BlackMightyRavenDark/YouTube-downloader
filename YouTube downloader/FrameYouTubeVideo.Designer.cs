@@ -36,7 +36,6 @@
 			this.imageFavorite = new System.Windows.Forms.PictureBox();
 			this.btnDownload = new System.Windows.Forms.Button();
 			this.contextMenuDownloads = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.progressBarDownload = new System.Windows.Forms.ProgressBar();
 			this.lblStatus = new System.Windows.Forms.Label();
 			this.lblProgress = new System.Windows.Forms.Label();
 			this.imgScrollbar = new System.Windows.Forms.PictureBox();
@@ -68,6 +67,7 @@
 			this.miCopyVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnGetVideoUrls = new System.Windows.Forms.Button();
 			this.groupBoxButtons = new System.Windows.Forms.GroupBox();
+			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -154,18 +154,10 @@
 			this.contextMenuDownloads.Name = "contextMenuDownloads";
 			this.contextMenuDownloads.Size = new System.Drawing.Size(61, 4);
 			// 
-			// progressBarDownload
-			// 
-			this.progressBarDownload.Location = new System.Drawing.Point(3, 142);
-			this.progressBarDownload.Name = "progressBarDownload";
-			this.progressBarDownload.Size = new System.Drawing.Size(416, 23);
-			this.progressBarDownload.TabIndex = 6;
-			this.progressBarDownload.MouseDown += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseDown);
-			// 
 			// lblStatus
 			// 
 			this.lblStatus.AutoSize = true;
-			this.lblStatus.Location = new System.Drawing.Point(3, 126);
+			this.lblStatus.Location = new System.Drawing.Point(0, 126);
 			this.lblStatus.Name = "lblStatus";
 			this.lblStatus.Size = new System.Drawing.Size(47, 13);
 			this.lblStatus.TabIndex = 7;
@@ -175,7 +167,7 @@
 			// lblProgress
 			// 
 			this.lblProgress.AutoSize = true;
-			this.lblProgress.Location = new System.Drawing.Point(58, 126);
+			this.lblProgress.Location = new System.Drawing.Point(55, 126);
 			this.lblProgress.Name = "lblProgress";
 			this.lblProgress.Size = new System.Drawing.Size(58, 13);
 			this.lblProgress.TabIndex = 8;
@@ -436,17 +428,25 @@
 			this.groupBoxButtons.TabStop = false;
 			this.groupBoxButtons.Text = "Кнопки";
 			// 
+			// progressBarDownload
+			// 
+			this.progressBarDownload.Location = new System.Drawing.Point(0, 142);
+			this.progressBarDownload.Name = "progressBarDownload";
+			this.progressBarDownload.Size = new System.Drawing.Size(419, 23);
+			this.progressBarDownload.TabIndex = 18;
+			this.progressBarDownload.Text = "multipleProgressBar1";
+			// 
 			// FrameYouTubeVideo
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ButtonFace;
+			this.Controls.Add(this.progressBarDownload);
 			this.Controls.Add(this.groupBoxButtons);
 			this.Controls.Add(this.imageFavoriteChannel);
 			this.Controls.Add(this.imgScrollbar);
 			this.Controls.Add(this.lblProgress);
 			this.Controls.Add(this.lblStatus);
-			this.Controls.Add(this.progressBarDownload);
 			this.Controls.Add(this.btnDownload);
 			this.Controls.Add(this.imageFavorite);
 			this.Controls.Add(this.lblDatePublished);
@@ -482,7 +482,6 @@
 		private System.Windows.Forms.Label lblDatePublished;
 		private System.Windows.Forms.PictureBox imageFavorite;
 		private System.Windows.Forms.ContextMenuStrip contextMenuDownloads;
-		private System.Windows.Forms.ProgressBar progressBarDownload;
 		private System.Windows.Forms.Label lblStatus;
 		private System.Windows.Forms.Label lblProgress;
 		private System.Windows.Forms.PictureBox imgScrollbar;
@@ -515,5 +514,6 @@
 		private System.Windows.Forms.Button btnGetVideoUrls;
 		private System.Windows.Forms.GroupBox groupBoxButtons;
 		private System.Windows.Forms.ToolStripMenuItem miCopyPlayerUrlToolStripMenuItem;
+		private MultipleProgressBar progressBarDownload;
 	}
 }

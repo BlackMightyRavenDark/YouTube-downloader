@@ -217,11 +217,6 @@ namespace YouTube_downloader
 			btnDownload.Enabled = false;
 			BtnDownloadClicked?.Invoke(this, e);
 
-			if (progressBarDownload.Value < progressBarDownload.Maximum)
-			{
-				progressBarDownload.Value = 0;
-			}
-
 			lblStatus.Text = "Состояние: Определение доступных форматов...";
 
 			videoFormats.Clear();
@@ -486,8 +481,7 @@ namespace YouTube_downloader
 			string mediaType = null;
 			Invoke(new MethodInvoker(() =>
 			{
-				progressBarDownload.Value = 0;
-				progressBarDownload.Maximum = dashUrlList.Count;
+				progressBarDownload.ClearItems();
 				mediaType = mediaTrack is YouTubeMediaTrackAudio ? "аудио" : "видео";
 				lblStatus.Text = $"Скачивание чанков {mediaType}:";
 				lblProgress.Left = lblStatus.Left + lblStatus.Width;
@@ -533,8 +527,8 @@ namespace YouTube_downloader
 							Invoke(new MethodInvoker(() =>
 							{
 								int chunkNumber = i + 1;
-								progressBarDownload.Value = chunkNumber;
-								double percent = 100.0 / progressBarDownload.Maximum * chunkNumber;
+								progressBarDownload.SetItem(chunkNumber);
+								double percent = 100.0 / dashUrlList.Count * chunkNumber;
 								lblStatus.Text = $"[{tryNumber + 1}/{retryCountMax}] Скачивание чанков {mediaType}:";
 								lblProgress.Left = lblStatus.Left + lblStatus.Width;
 								lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
@@ -710,8 +704,7 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
-							progressBarDownload.Minimum = 0;
-							progressBarDownload.Value = 0;
+							progressBarDownload.ClearItems();
 
 							lblStatus.Text = "Состояние: Подготовка к скачиванию...";
 							lblProgress.Text = null;
@@ -766,8 +759,7 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
-							progressBarDownload.Value = 0;
-							progressBarDownload.Maximum = 100;
+							progressBarDownload.ClearItems();
 
 							lblStatus.Text = $"Скачивание {mediaTypeString}:";
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
@@ -779,15 +771,18 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
+							IEnumerable<MultipleProgressBarItem> progressBarItems = ContentChunksToMultipleProgressBarItems(contentChunks);
+							progressBarDownload.SetItems(progressBarItems);
+
 							long fileSize = _multiThreadedDownloader.ContentLength != 0L ? _multiThreadedDownloader.ContentLength : videoTrack.ContentLength;
 							if (fileSize <= 0L)
 							{
 								//Don't do it!
 								fileSize = contentChunks.Where(chunk => chunk.Value.TotalBytes > 0L).Sum(chunk => chunk.Value.TotalBytes);
 							}
+
 							long downloadedBytes = contentChunks.Where(chunk => chunk.Value.ProcessedBytes > 0L).Sum(chunk => chunk.Value.ProcessedBytes);
 							double percent = 100.0 / fileSize * downloadedBytes;
-							progressBarDownload.Value = (int)Math.Round(percent);
 
 							string percentString = string.Format("{0:F2}", percent);
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
@@ -799,8 +794,7 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
-							progressBarDownload.Value = 0;
-							progressBarDownload.Maximum = chunkCount;
+							progressBarDownload.ClearItems();
 
 							lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
 							lblProgress.Text = $"0 / {chunkCount}";
@@ -815,7 +809,7 @@ namespace YouTube_downloader
 							string percentString = string.Format("{0:F2}", percent);
 							lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
 								$"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
-							progressBarDownload.Value = chunkId + 1;
+							progressBarDownload.SetItem(0, chunkCount, chunkId + 1);
 						}));
 					};
 					int res = await Task.Run(() => _multiThreadedDownloader.Download());
@@ -890,7 +884,7 @@ namespace YouTube_downloader
 
 			IsDownloadInProgress = true;
 
-			progressBarDownload.Value = 0;
+			progressBarDownload.ClearItems();
 			lblStatus.Text = null;
 			lblProgress.Text = null;
 

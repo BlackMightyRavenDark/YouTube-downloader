@@ -251,5 +251,10 @@ namespace YouTube_downloader
 			}
 			graphics.DrawLines(Pens.Black, vertices);
 		}
+
+		public static Rectangle Deflate(this Rectangle rectangle, int width, int height)
+		{
+			return new Rectangle(rectangle.X, rectangle.Y, rectangle.Width - width, rectangle.Height - height);
+		}
 	}
 }

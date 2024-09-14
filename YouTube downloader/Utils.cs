@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -425,6 +427,36 @@ namespace YouTube_downloader
 			return video.SimplifiedInfo != null &&
 				video.SimplifiedInfo.IsMicroformatInfoAvailable &&
 				video.DatePublished < DateTime.MaxValue;
+		}
+
+		public static IEnumerable<MultipleProgressBarItem> ContentChunksToMultipleProgressBarItems(
+			ConcurrentDictionary<int, DownloadableContentChunk> chunks)
+		{
+			foreach (var chunk in chunks)
+			{
+				double percent;
+				string itemText;
+				switch (chunk.Value.State)
+				{
+					case DownloadableContentChunkState.Connecting:
+						percent = 0.0;
+						itemText = "Подключение...";
+						break;
+
+					default:
+						{
+							percent = chunk.Value.TotalBytes > 0L && chunk.Value.ProcessedBytes > 0L ?
+								100.0 / chunk.Value.TotalBytes * chunk.Value.ProcessedBytes : 0L;
+							string percentFormatted = string.Format("{0:F2}", percent);
+							itemText = $"{percentFormatted}%";
+							break;
+						}
+				}
+
+				MultipleProgressBarItem mpi = new MultipleProgressBarItem(
+					0, 100, (int)percent, itemText, Color.Lime);
+				yield return mpi;
+			}
 		}
 
 		public static void SetClipboardText(string text)
