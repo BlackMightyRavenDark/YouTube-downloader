@@ -108,7 +108,7 @@
       <DependentUpon>FrameYouTubeVideo.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper.cs" />
-    <Compile Include="MainConfiguration.cs" />
+    <Compile Include="Configurator.cs" />
     <Compile Include="MultipleProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>

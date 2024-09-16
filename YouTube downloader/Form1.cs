@@ -32,7 +32,7 @@ namespace YouTube_downloader
 			favoritesRootNode = tvFavorites.Roots.Cast<FavoriteItem>().ToArray()[0];
 			treeFavorites = tvFavorites;
 
-			config = new MainConfiguration("config_ytdl.json");
+			config = new Configurator("config_ytdl.json");
 			config.Saving += (s, json) =>
 			{
 				json["downloadingDirPath"] = config.DownloadingDirPath;

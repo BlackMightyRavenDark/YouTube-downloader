@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace YouTube_downloader
 {
-	public sealed class MainConfiguration
+	public sealed class Configurator
 	{
 		public string FilePath { get; private set; }
 		public string SelfDirPath { get; set; }
@@ -61,7 +61,7 @@ namespace YouTube_downloader
 		public LoadingDelegate Loading;
 		public LoadedDelegate Loaded;
 
-		public MainConfiguration(string fileName)
+		public Configurator(string fileName)
 		{
 			SelfDirPath = Path.GetDirectoryName(Application.ExecutablePath);
 			bool useAppData = false;
