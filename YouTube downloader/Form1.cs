@@ -73,6 +73,7 @@ namespace YouTube_downloader
 				json["threadCountVideo"] = config.ThreadCountVideo;
 				json["threadCountAudio"] = config.ThreadCountAudio;
 				json["globalThreadCountMaximum"] = config.GlobalThreadCountMaximum;
+				json["accurateMultithreading"] = config.AccurateMultithreading;
 			};
 			config.Loading += (s, json) =>
 			{
@@ -389,6 +390,13 @@ namespace YouTube_downloader
 						config.GlobalThreadCountMaximum = jt.Value<int>();
 					}
 				}
+				{
+					JToken jt = json.Value<JToken>("accurateMultithreading");
+					if (jt != null)
+					{
+						config.AccurateMultithreading = jt.Value<bool>();
+					}
+				}
 			};
 			config.Loaded += (s) =>
 			{
@@ -434,6 +442,7 @@ namespace YouTube_downloader
 				numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
+				checkBoxAccurateMultithreading.Checked = config.AccurateMultithreading;
 				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
 				numericUpDownDashChunkDownloadRetriesCountMax.Value = config.DashDownloadRetryCountMax;
 				numericUpDownDashChunkSize.Value = config.DashManualFragmentationChunkSize;
@@ -1616,6 +1625,11 @@ namespace YouTube_downloader
 		{
 			config.GlobalThreadCountMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
 			MultiThreadedDownloader.SetDefaultMaximumConnectionLimit(config.GlobalThreadCountMaximum);
+		}
+
+		private void checkBoxAccurateMultithreading_CheckedChanged(object sender, EventArgs e)
+		{
+			config.AccurateMultithreading = checkBoxAccurateMultithreading.Checked;
 		}
 
 		private void numericUpDownVideoTitleFontSize_ValueChanged(object sender, EventArgs e)

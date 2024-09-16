@@ -125,6 +125,7 @@ namespace YouTube_downloader
 			this.editYouTubeApiKey = new System.Windows.Forms.TextBox();
 			this.chkUseHiddenApiForGettingInfo = new System.Windows.Forms.CheckBox();
 			this.groupBox7 = new System.Windows.Forms.GroupBox();
+			this.checkBoxAccurateMultithreading = new System.Windows.Forms.CheckBox();
 			this.label13 = new System.Windows.Forms.Label();
 			this.numericUpDownGlobalThreadsMaximum = new System.Windows.Forms.NumericUpDown();
 			this.panelWarningAudioThreads = new System.Windows.Forms.Panel();
@@ -717,7 +718,7 @@ namespace YouTube_downloader
 			this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadRetryCount);
 			this.groupBox19.Location = new System.Drawing.Point(14, 292);
 			this.groupBox19.Name = "groupBox19";
-			this.groupBox19.Size = new System.Drawing.Size(490, 72);
+			this.groupBox19.Size = new System.Drawing.Size(439, 72);
 			this.groupBox19.TabIndex = 20;
 			this.groupBox19.TabStop = false;
 			this.groupBox19.Text = "Попытки скачивания";
@@ -800,7 +801,7 @@ namespace YouTube_downloader
 			this.groupBox10.Controls.Add(this.groupBox14);
 			this.groupBox10.Location = new System.Drawing.Point(14, 6);
 			this.groupBox10.Name = "groupBox10";
-			this.groupBox10.Size = new System.Drawing.Size(439, 280);
+			this.groupBox10.Size = new System.Drawing.Size(388, 280);
 			this.groupBox10.TabIndex = 17;
 			this.groupBox10.TabStop = false;
 			this.groupBox10.Text = "Адаптивные форматы";
@@ -877,7 +878,7 @@ namespace YouTube_downloader
 			this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
 			this.groupBox15.Location = new System.Drawing.Point(6, 160);
 			this.groupBox15.Name = "groupBox15";
-			this.groupBox15.Size = new System.Drawing.Size(427, 83);
+			this.groupBox15.Size = new System.Drawing.Size(376, 83);
 			this.groupBox15.TabIndex = 18;
 			this.groupBox15.TabStop = false;
 			this.groupBox15.Text = "Контейнер";
@@ -890,7 +891,7 @@ namespace YouTube_downloader
 			this.groupBox16.Controls.Add(this.radioButtonContainerTypeMp4);
 			this.groupBox16.Location = new System.Drawing.Point(295, 19);
 			this.groupBox16.Name = "groupBox16";
-			this.groupBox16.Size = new System.Drawing.Size(126, 60);
+			this.groupBox16.Size = new System.Drawing.Size(75, 60);
 			this.groupBox16.TabIndex = 17;
 			this.groupBox16.TabStop = false;
 			this.groupBox16.Text = "Тип контейнера";
@@ -953,7 +954,7 @@ namespace YouTube_downloader
 			this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
 			this.groupBox14.Location = new System.Drawing.Point(6, 42);
 			this.groupBox14.Name = "groupBox14";
-			this.groupBox14.Size = new System.Drawing.Size(427, 112);
+			this.groupBox14.Size = new System.Drawing.Size(376, 112);
 			this.groupBox14.TabIndex = 17;
 			this.groupBox14.TabStop = false;
 			this.groupBox14.Text = "Скачивание аудио-дорожек";
@@ -1038,7 +1039,7 @@ namespace YouTube_downloader
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkSize);
 			this.groupBox17.Controls.Add(this.label22);
 			this.groupBox17.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
-			this.groupBox17.Location = new System.Drawing.Point(6, 478);
+			this.groupBox17.Location = new System.Drawing.Point(9, 493);
 			this.groupBox17.Name = "groupBox17";
 			this.groupBox17.Size = new System.Drawing.Size(489, 102);
 			this.groupBox17.TabIndex = 16;
@@ -1147,7 +1148,7 @@ namespace YouTube_downloader
 			this.checkBoxUseGmtTime.AutoSize = true;
 			this.checkBoxUseGmtTime.Checked = true;
 			this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(12, 588);
+			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(15, 603);
 			this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
 			this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseGmtTime.TabIndex = 15;
@@ -1161,7 +1162,7 @@ namespace YouTube_downloader
 			this.groupBox13.Controls.Add(this.btnUseRamWhy);
 			this.groupBox13.Controls.Add(this.panelRAM);
 			this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
-			this.groupBox13.Location = new System.Drawing.Point(3, 406);
+			this.groupBox13.Location = new System.Drawing.Point(6, 421);
 			this.groupBox13.Name = "groupBox13";
 			this.groupBox13.Size = new System.Drawing.Size(494, 66);
 			this.groupBox13.TabIndex = 14;
@@ -1405,6 +1406,7 @@ namespace YouTube_downloader
 			// 
 			// groupBox7
 			// 
+			this.groupBox7.Controls.Add(this.checkBoxAccurateMultithreading);
 			this.groupBox7.Controls.Add(this.label13);
 			this.groupBox7.Controls.Add(this.numericUpDownGlobalThreadsMaximum);
 			this.groupBox7.Controls.Add(this.panelWarningAudioThreads);
@@ -1415,10 +1417,22 @@ namespace YouTube_downloader
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsVideo);
 			this.groupBox7.Location = new System.Drawing.Point(6, 302);
 			this.groupBox7.Name = "groupBox7";
-			this.groupBox7.Size = new System.Drawing.Size(318, 98);
+			this.groupBox7.Size = new System.Drawing.Size(318, 113);
 			this.groupBox7.TabIndex = 10;
 			this.groupBox7.TabStop = false;
 			this.groupBox7.Text = "Потоки";
+			// 
+			// checkBoxAccurateMultithreading
+			// 
+			this.checkBoxAccurateMultithreading.AutoSize = true;
+			this.checkBoxAccurateMultithreading.Location = new System.Drawing.Point(11, 92);
+			this.checkBoxAccurateMultithreading.Name = "checkBoxAccurateMultithreading";
+			this.checkBoxAccurateMultithreading.Size = new System.Drawing.Size(124, 17);
+			this.checkBoxAccurateMultithreading.TabIndex = 8;
+			this.checkBoxAccurateMultithreading.Text = "Аккуратный режим";
+			this.toolTip1.SetToolTip(this.checkBoxAccurateMultithreading, "Не влияет на уже начатые загрузки");
+			this.checkBoxAccurateMultithreading.UseVisualStyleBackColor = true;
+			this.checkBoxAccurateMultithreading.CheckedChanged += new System.EventHandler(this.checkBoxAccurateMultithreading_CheckedChanged);
 			// 
 			// label13
 			// 
@@ -2262,6 +2276,7 @@ namespace YouTube_downloader
 		private System.Windows.Forms.GroupBox groupBox19;
 		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadErrorCount;
 		private System.Windows.Forms.Label label26;
+		private System.Windows.Forms.CheckBox checkBoxAccurateMultithreading;
 	}
 }
 

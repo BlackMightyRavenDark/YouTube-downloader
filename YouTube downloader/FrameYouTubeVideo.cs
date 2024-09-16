@@ -812,7 +812,7 @@ namespace YouTube_downloader
 							progressBarDownload.SetItem(0, chunkCount, chunkId + 1);
 						}));
 					};
-					int res = await Task.Run(() => _multiThreadedDownloader.Download());
+					int res = await Task.Run(() => _multiThreadedDownloader.Download(config.AccurateMultithreading));
 					if (useRamToStoreTemporaryFiles)
 					{
 						GC.Collect();

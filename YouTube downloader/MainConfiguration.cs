@@ -52,6 +52,7 @@ namespace YouTube_downloader
 		public int ThreadCountVideo { get; set; }
 		public int ThreadCountAudio { get; set; }
 		public int GlobalThreadCountMaximum { get; set; }
+		public bool AccurateMultithreading { get; set; }
 
 		public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
@@ -97,8 +98,8 @@ namespace YouTube_downloader
 			DownloadingDirPath = null;
 			TempDirPath = null;
 			ChunksMergingDirPath = null;
-            ChunkDownloadRetryCountMax = 5;
-            ChunkDownloadErrorCountMax = 3;
+			ChunkDownloadRetryCountMax = 5;
+			ChunkDownloadErrorCountMax = 3;
 			MergeToContainer = true;
 			AlwaysUseMkvContainer = false;
 			ExtraDelayAfterContainerWasBuilt = 300;
@@ -134,6 +135,7 @@ namespace YouTube_downloader
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;
 			GlobalThreadCountMaximum = 300;
+			AccurateMultithreading = true;
 		}
 
 		public void Load()
