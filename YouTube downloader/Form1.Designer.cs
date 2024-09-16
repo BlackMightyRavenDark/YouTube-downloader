@@ -49,7 +49,7 @@ namespace YouTube_downloader
 			this.editOutputFileNameFormatWithoutDate = new System.Windows.Forms.TextBox();
 			this.btnResetFileNameFormatWithoutDate = new System.Windows.Forms.Button();
 			this.label7 = new System.Windows.Forms.Label();
-			this.btnBrowseDowloadingPath = new System.Windows.Forms.Button();
+			this.btnBrowseDownloadingPath = new System.Windows.Forms.Button();
 			this.btnSelectBrowser = new System.Windows.Forms.Button();
 			this.editDownloadingDirPath = new System.Windows.Forms.TextBox();
 			this.editBrowser = new System.Windows.Forms.TextBox();
@@ -287,7 +287,7 @@ namespace YouTube_downloader
 			this.tabPageFilesAndFolders.Controls.Add(this.editOutputFileNameFormatWithoutDate);
 			this.tabPageFilesAndFolders.Controls.Add(this.btnResetFileNameFormatWithoutDate);
 			this.tabPageFilesAndFolders.Controls.Add(this.label7);
-			this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseDowloadingPath);
+			this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseDownloadingPath);
 			this.tabPageFilesAndFolders.Controls.Add(this.btnSelectBrowser);
 			this.tabPageFilesAndFolders.Controls.Add(this.editDownloadingDirPath);
 			this.tabPageFilesAndFolders.Controls.Add(this.editBrowser);
@@ -441,16 +441,16 @@ namespace YouTube_downloader
 			this.label7.TabIndex = 12;
 			this.label7.Text = "Веб-браузер:";
 			// 
-			// btnBrowseDowloadingPath
+			// btnBrowseDownloadingPath
 			// 
-			this.btnBrowseDowloadingPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnBrowseDowloadingPath.Location = new System.Drawing.Point(489, 23);
-			this.btnBrowseDowloadingPath.Name = "btnBrowseDowloadingPath";
-			this.btnBrowseDowloadingPath.Size = new System.Drawing.Size(32, 20);
-			this.btnBrowseDowloadingPath.TabIndex = 2;
-			this.btnBrowseDowloadingPath.Text = "...";
-			this.btnBrowseDowloadingPath.UseVisualStyleBackColor = true;
-			this.btnBrowseDowloadingPath.Click += new System.EventHandler(this.btnBrowseDownloadingDirPath_Click);
+			this.btnBrowseDownloadingPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnBrowseDownloadingPath.Location = new System.Drawing.Point(489, 23);
+			this.btnBrowseDownloadingPath.Name = "btnBrowseDownloadingPath";
+			this.btnBrowseDownloadingPath.Size = new System.Drawing.Size(32, 20);
+			this.btnBrowseDownloadingPath.TabIndex = 2;
+			this.btnBrowseDownloadingPath.Text = "...";
+			this.btnBrowseDownloadingPath.UseVisualStyleBackColor = true;
+			this.btnBrowseDownloadingPath.Click += new System.EventHandler(this.btnBrowseDownloadingDirPath_Click);
 			// 
 			// btnSelectBrowser
 			// 
@@ -878,7 +878,7 @@ namespace YouTube_downloader
 			this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
 			this.groupBox15.Location = new System.Drawing.Point(6, 160);
 			this.groupBox15.Name = "groupBox15";
-			this.groupBox15.Size = new System.Drawing.Size(376, 83);
+			this.groupBox15.Size = new System.Drawing.Size(359, 83);
 			this.groupBox15.TabIndex = 18;
 			this.groupBox15.TabStop = false;
 			this.groupBox15.Text = "Контейнер";
@@ -2137,7 +2137,7 @@ namespace YouTube_downloader
 		private BrightIdeasSoftware.TreeListView tvFavorites;
 		private BrightIdeasSoftware.OLVColumn olvColumn1;
 		private System.Windows.Forms.Button btnBrowseTempPath;
-		private System.Windows.Forms.Button btnBrowseDowloadingPath;
+		private System.Windows.Forms.Button btnBrowseDownloadingPath;
 		private System.Windows.Forms.TextBox editTempDirPath;
 		private System.Windows.Forms.TextBox editDownloadingDirPath;
 		private System.Windows.Forms.GroupBox groupBox2;
