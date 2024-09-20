@@ -1343,6 +1343,8 @@ namespace YouTube_downloader
 				Left = newX;
 				imgScrollbar.Left = -Left;
 				imgScrollbar.Invalidate();
+
+				progressBarDownload.Invalidate();
 			}
 		}
 
@@ -1799,6 +1801,8 @@ namespace YouTube_downloader
 				oldX = e.X;
 				imgScrollbar.Left = -Left;
 				imgScrollbar.Invalidate();
+
+				progressBarDownload.Invalidate();
 			}
 		}
 
