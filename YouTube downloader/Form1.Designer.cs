@@ -718,7 +718,7 @@ namespace YouTube_downloader
 			this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadRetryCount);
 			this.groupBox19.Location = new System.Drawing.Point(14, 292);
 			this.groupBox19.Name = "groupBox19";
-			this.groupBox19.Size = new System.Drawing.Size(439, 72);
+			this.groupBox19.Size = new System.Drawing.Size(484, 72);
 			this.groupBox19.TabIndex = 20;
 			this.groupBox19.TabStop = false;
 			this.groupBox19.Text = "Попытки скачивания";
@@ -801,7 +801,7 @@ namespace YouTube_downloader
 			this.groupBox10.Controls.Add(this.groupBox14);
 			this.groupBox10.Location = new System.Drawing.Point(14, 6);
 			this.groupBox10.Name = "groupBox10";
-			this.groupBox10.Size = new System.Drawing.Size(388, 280);
+			this.groupBox10.Size = new System.Drawing.Size(490, 280);
 			this.groupBox10.TabIndex = 17;
 			this.groupBox10.TabStop = false;
 			this.groupBox10.Text = "Адаптивные форматы";
@@ -878,7 +878,7 @@ namespace YouTube_downloader
 			this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
 			this.groupBox15.Location = new System.Drawing.Point(6, 160);
 			this.groupBox15.Name = "groupBox15";
-			this.groupBox15.Size = new System.Drawing.Size(359, 83);
+			this.groupBox15.Size = new System.Drawing.Size(478, 83);
 			this.groupBox15.TabIndex = 18;
 			this.groupBox15.TabStop = false;
 			this.groupBox15.Text = "Контейнер";
@@ -891,7 +891,7 @@ namespace YouTube_downloader
 			this.groupBox16.Controls.Add(this.radioButtonContainerTypeMp4);
 			this.groupBox16.Location = new System.Drawing.Point(295, 19);
 			this.groupBox16.Name = "groupBox16";
-			this.groupBox16.Size = new System.Drawing.Size(75, 60);
+			this.groupBox16.Size = new System.Drawing.Size(177, 60);
 			this.groupBox16.TabIndex = 17;
 			this.groupBox16.TabStop = false;
 			this.groupBox16.Text = "Тип контейнера";
@@ -954,7 +954,7 @@ namespace YouTube_downloader
 			this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
 			this.groupBox14.Location = new System.Drawing.Point(6, 42);
 			this.groupBox14.Name = "groupBox14";
-			this.groupBox14.Size = new System.Drawing.Size(376, 112);
+			this.groupBox14.Size = new System.Drawing.Size(478, 112);
 			this.groupBox14.TabIndex = 17;
 			this.groupBox14.TabStop = false;
 			this.groupBox14.Text = "Скачивание аудио-дорожек";
@@ -1032,6 +1032,8 @@ namespace YouTube_downloader
 			// 
 			// groupBox17
 			// 
+			this.groupBox17.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkDownloadRetriesCountMax);
 			this.groupBox17.Controls.Add(this.label23);
 			this.groupBox17.Controls.Add(this.btnWhyDash);
@@ -1159,6 +1161,8 @@ namespace YouTube_downloader
 			// 
 			// groupBox13
 			// 
+			this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox13.Controls.Add(this.btnUseRamWhy);
 			this.groupBox13.Controls.Add(this.panelRAM);
 			this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
@@ -1168,10 +1172,11 @@ namespace YouTube_downloader
 			this.groupBox13.TabIndex = 14;
 			this.groupBox13.TabStop = false;
 			this.groupBox13.Text = "Оперативная память (RAM)";
+			this.groupBox13.Resize += new System.EventHandler(this.groupBox13_Resize);
 			// 
 			// btnUseRamWhy
 			// 
-			this.btnUseRamWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnUseRamWhy.Anchor = System.Windows.Forms.AnchorStyles.Right;
 			this.btnUseRamWhy.Location = new System.Drawing.Point(411, 28);
 			this.btnUseRamWhy.Name = "btnUseRamWhy";
 			this.btnUseRamWhy.Size = new System.Drawing.Size(75, 23);
@@ -1205,6 +1210,8 @@ namespace YouTube_downloader
 			// 
 			// groupBox11
 			// 
+			this.groupBox11.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox11.Controls.Add(this.groupBox18);
 			this.groupBox11.Controls.Add(this.btnApiWtf);
 			this.groupBox11.Controls.Add(this.groupBox4);

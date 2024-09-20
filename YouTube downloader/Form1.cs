@@ -2013,5 +2013,10 @@ namespace YouTube_downloader
 		{
 			config.ExternalVideoInfoServerPort = (int)numericUpDownVideoInfoServerPort.Value;
 		}
+
+		private void groupBox13_Resize(object sender, EventArgs e)
+		{
+			btnUseRamWhy.Left = groupBox13.Width - btnUseRamWhy.Width - 4;
+		}
 	}
 }
