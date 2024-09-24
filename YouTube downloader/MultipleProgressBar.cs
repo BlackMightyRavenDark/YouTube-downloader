@@ -95,9 +95,19 @@ namespace YouTube_downloader
 			SetItem(min, max, value, null);
 		}
 
+		public void SetItem(int percentValue, string title, Color backgroundColor)
+		{
+			SetItem(0, 100, percentValue, title, backgroundColor);
+		}
+
 		public void SetItem(int percentValue, Color backgroundColor)
 		{
-			SetItem(0, 100, percentValue, null, backgroundColor);
+			SetItem(percentValue, null, backgroundColor);
+		}
+
+		public void SetItem(int percentValue, string title)
+		{
+			SetItem(percentValue, title, _defaultBackgroundColor);
 		}
 
 		public void SetItem(int percentValue)

@@ -18,12 +18,16 @@ namespace YouTube_downloader
 	public partial class FrameYouTubeVideo : UserControl
 	{
 		private MultiThreadedDownloader _multiThreadedDownloader;
+		private ConcurrentDictionary<int, DownloadableContentChunk> _contentChunks;
 		public YouTubeVideo VideoInfo { get; private set; }
 		private Stream _videoImageData = null;
 		private Image _videoImage = null;
 		private bool _ciphered;
 		private bool _isFavoriteVideo = false;
 		private bool _isFavoriteChannel = false;
+		private bool _isVideo = true;
+		private bool _isContainer = false;
+		private YouTubeMediaTrack _mediaTrack;
 		public string _webPage = null;
 		public bool IsFavoriteVideo { get { return _isFavoriteVideo; } set { SetFavoriteVideo(value); } }
 		public bool IsFavoriteChannel { get { return _isFavoriteChannel; } set { SetFavoriteChannel(value); } }
@@ -771,23 +775,12 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
-							IEnumerable<MultipleProgressBarItem> progressBarItems = ContentChunksToMultipleProgressBarItems(contentChunks);
-							progressBarDownload.SetItems(progressBarItems);
+							_contentChunks = contentChunks;
+							_isVideo = isVideo;
+							_isContainer = isContainer;
+							_mediaTrack = mediaTrack;
 
-							long fileSize = _multiThreadedDownloader.ContentLength != 0L ? _multiThreadedDownloader.ContentLength : videoTrack.ContentLength;
-							if (fileSize <= 0L)
-							{
-								//Don't do it!
-								fileSize = contentChunks.Where(chunk => chunk.Value.TotalBytes > 0L).Sum(chunk => chunk.Value.TotalBytes);
-							}
-
-							long downloadedBytes = contentChunks.Where(chunk => chunk.Value.ProcessedBytes > 0L).Sum(chunk => chunk.Value.ProcessedBytes);
-							double percent = 100.0 / fileSize * downloadedBytes;
-
-							string percentString = string.Format("{0:F2}", percent);
-							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-							lblProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
-								$" ({percentString}%), {shortInfo}";
+							UpdateDownloadProgress();
 						}));
 					};
 					_multiThreadedDownloader.ChunkMergingStarted += (s, chunkCount) =>
@@ -834,6 +827,36 @@ namespace YouTube_downloader
 					_multiThreadedDownloader = null;
 					return downloadResult;
 				}
+			}
+		}
+
+		private void UpdateDownloadProgress()
+		{
+			long fileSize = _multiThreadedDownloader.ContentLength != 0L ?
+				_multiThreadedDownloader.ContentLength : (_mediaTrack as YouTubeMediaTrackVideo).ContentLength;
+			if (fileSize <= 0L)
+			{
+				//Don't do it!
+				fileSize = _contentChunks.Where(chunk => chunk.Value.TotalBytes > 0L).Sum(chunk => chunk.Value.TotalBytes);
+			}
+
+			long downloadedBytes = _contentChunks.Where(chunk => chunk.Value.ProcessedBytes > 0L).Sum(chunk => chunk.Value.ProcessedBytes);
+			double percent = 100.0 / fileSize * downloadedBytes;
+			string percentString = string.Format("{0:F2}", percent);
+			string shortInfo = _isVideo || _isContainer ?
+				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackVideo) :
+				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackAudio);
+			lblProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
+				$" ({percentString}%), {shortInfo}";
+
+			if (miMultipleToolStripMenuItem.Checked)
+			{
+				IEnumerable<MultipleProgressBarItem> progressBarItems = ContentChunksToMultipleProgressBarItems(_contentChunks);
+				progressBarDownload.SetItems(progressBarItems);
+			}
+			else if (miSingleToolStripMenuItem.Checked)
+			{
+				progressBarDownload.SetItem((int)percent, $"{percentString}%");
 			}
 		}
 
@@ -1261,6 +1284,8 @@ namespace YouTube_downloader
 						break;
 				}
 			}
+
+			_contentChunks = null;
 
 			btnDownload.Text = "Скачать";
 			btnDownload.Enabled = true;
@@ -1769,6 +1794,14 @@ namespace YouTube_downloader
 			Activated?.Invoke(this);
 		}
 
+		private void progressBarDownload_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				contextMenuProgressBar.Show(Cursor.Position);
+			}
+		}
+
 		private void imgScrollbar_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
@@ -1992,6 +2025,26 @@ namespace YouTube_downloader
 			if (config.UseGmtTime) { datePublishedString += " GMT"; }
 
 			SetClipboardText(datePublishedString);
+		}
+
+		private void miSingleToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			miSingleToolStripMenuItem.Checked = true;
+			miMultipleToolStripMenuItem.Checked = false;
+			if (_contentChunks != null && _mediaTrack != null)
+			{
+				UpdateDownloadProgress();
+			}
+		}
+
+		private void miMultipleToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			miSingleToolStripMenuItem.Checked = false;
+			miMultipleToolStripMenuItem.Checked = true;
+			if (_contentChunks != null && _mediaTrack != null)
+			{
+				UpdateDownloadProgress();
+			}
 		}
 	}
 }

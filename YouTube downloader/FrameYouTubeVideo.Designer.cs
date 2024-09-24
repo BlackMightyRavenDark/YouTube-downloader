@@ -68,6 +68,9 @@
 			this.btnGetVideoUrls = new System.Windows.Forms.Button();
 			this.groupBoxButtons = new System.Windows.Forms.GroupBox();
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
+			this.contextMenuProgressBar = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.miSingleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miMultipleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -77,6 +80,7 @@
 			this.contextMenuVideoTitle.SuspendLayout();
 			this.contextMenuDate.SuspendLayout();
 			this.groupBoxButtons.SuspendLayout();
+			this.contextMenuProgressBar.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// lblVideoTitle
@@ -435,6 +439,31 @@
 			this.progressBarDownload.Size = new System.Drawing.Size(419, 23);
 			this.progressBarDownload.TabIndex = 18;
 			this.progressBarDownload.Text = "multipleProgressBar1";
+			this.progressBarDownload.MouseUp += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseUp);
+			// 
+			// contextMenuProgressBar
+			// 
+			this.contextMenuProgressBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.miSingleToolStripMenuItem,
+			this.miMultipleToolStripMenuItem});
+			this.contextMenuProgressBar.Name = "contextMenuProgressBar";
+			this.contextMenuProgressBar.Size = new System.Drawing.Size(218, 70);
+			// 
+			// miSingleToolStripMenuItem
+			// 
+			this.miSingleToolStripMenuItem.Name = "miSingleToolStripMenuItem";
+			this.miSingleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.miSingleToolStripMenuItem.Text = "Общий прогресс";
+			this.miSingleToolStripMenuItem.Click += new System.EventHandler(this.miSingleToolStripMenuItem_Click);
+			// 
+			// miMultipleToolStripMenuItem
+			// 
+			this.miMultipleToolStripMenuItem.Checked = true;
+			this.miMultipleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.miMultipleToolStripMenuItem.Name = "miMultipleToolStripMenuItem";
+			this.miMultipleToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
+			this.miMultipleToolStripMenuItem.Text = "Прогресс каждого потока";
+			this.miMultipleToolStripMenuItem.Click += new System.EventHandler(this.miMultipleToolStripMenuItem_Click);
 			// 
 			// FrameYouTubeVideo
 			// 
@@ -469,6 +498,7 @@
 			this.contextMenuVideoTitle.ResumeLayout(false);
 			this.contextMenuDate.ResumeLayout(false);
 			this.groupBoxButtons.ResumeLayout(false);
+			this.contextMenuProgressBar.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -515,5 +545,8 @@
 		private System.Windows.Forms.GroupBox groupBoxButtons;
 		private System.Windows.Forms.ToolStripMenuItem miCopyPlayerUrlToolStripMenuItem;
 		private MultipleProgressBar progressBarDownload;
+		private System.Windows.Forms.ContextMenuStrip contextMenuProgressBar;
+		private System.Windows.Forms.ToolStripMenuItem miSingleToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miMultipleToolStripMenuItem;
 	}
 }
