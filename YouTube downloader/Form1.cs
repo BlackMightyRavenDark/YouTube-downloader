@@ -96,9 +96,9 @@ namespace YouTube_downloader
 					if (jt != null)
 					{
 						config.ChunkDownloadRetryCountMax = jt.Value<int>();
-						if (config.ChunkDownloadRetryCountMax < 1)
+						if (config.ChunkDownloadRetryCountMax < 0)
 						{
-							config.ChunkDownloadRetryCountMax = 1;
+							config.ChunkDownloadRetryCountMax = 0;
 						}
 						else if (config.ChunkDownloadRetryCountMax > (int)numericUpDownChunkDownloadRetryCount.Maximum)
 						{
