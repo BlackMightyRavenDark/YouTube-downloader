@@ -387,10 +387,10 @@
 			// contextMenuDate
 			// 
 			this.contextMenuDate.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.miUpdateVideoPublishedDateToolStripMenuItem,
-			this.miCopyVideoPublishedDateToolStripMenuItem});
+			this.miCopyVideoPublishedDateToolStripMenuItem,
+			this.miUpdateVideoPublishedDateToolStripMenuItem});
 			this.contextMenuDate.Name = "contextMenuDate";
-			this.contextMenuDate.Size = new System.Drawing.Size(243, 48);
+			this.contextMenuDate.Size = new System.Drawing.Size(243, 70);
 			// 
 			// miUpdateVideoPublishedDateToolStripMenuItem
 			// 
@@ -447,12 +447,12 @@
 			this.miSingleToolStripMenuItem,
 			this.miMultipleToolStripMenuItem});
 			this.contextMenuProgressBar.Name = "contextMenuProgressBar";
-			this.contextMenuProgressBar.Size = new System.Drawing.Size(218, 70);
+			this.contextMenuProgressBar.Size = new System.Drawing.Size(218, 48);
 			// 
 			// miSingleToolStripMenuItem
 			// 
 			this.miSingleToolStripMenuItem.Name = "miSingleToolStripMenuItem";
-			this.miSingleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.miSingleToolStripMenuItem.Size = new System.Drawing.Size(217, 22);
 			this.miSingleToolStripMenuItem.Text = "Общий прогресс";
 			this.miSingleToolStripMenuItem.Click += new System.EventHandler(this.miSingleToolStripMenuItem_Click);
 			// 
