@@ -38,7 +38,7 @@ namespace YouTube_downloader
 				json["downloadingDirPath"] = config.DownloadingDirPath;
 				json["tempDirPath"] = config.TempDirPath;
 				json["chunksMergingDirPath"] = config.ChunksMergingDirPath;
-				json["chunkDownloadRetryCountMax"] = config.ChunkDownloadRetryCountMax;
+				json["chunkDownloadTryCountMax"] = config.ChunkDownloadRetryCountMax;
 				json["chunkDownloadErrorCountMax"] = config.ChunkDownloadErrorCountMax;
 				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgo;
 				json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
@@ -92,7 +92,7 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("chunkDownloadRetryCountMax");
+					JToken jt = json.Value<JToken>("chunkDownloadTryCountMax");
 					if (jt != null)
 					{
 						config.ChunkDownloadRetryCountMax = jt.Value<int>();
