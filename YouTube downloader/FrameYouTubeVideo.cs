@@ -531,7 +531,7 @@ namespace YouTube_downloader
 							Invoke(new MethodInvoker(() =>
 							{
 								int chunkNumber = i + 1;
-								progressBarDownload.SetItem(chunkNumber);
+								progressBarDownload.SetItem(0, dashUrlList.Count, chunkNumber);
 								double percent = 100.0 / dashUrlList.Count * chunkNumber;
 								lblStatus.Text = $"[{tryNumber + 1}/{retryCountMax}] Скачивание чанков {mediaType}:";
 								lblProgress.Left = lblStatus.Left + lblStatus.Width;
