@@ -62,6 +62,8 @@
 			this.contextMenuVideoTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyTitleAsIsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyFixedTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.miCopyFormattedFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuDate = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miUpdateVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,9 +72,8 @@
 			this.contextMenuProgressBar = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miSingleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miMultipleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-			this.miCopyFormattedFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
+			this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
@@ -219,13 +220,14 @@
 			this.contextMenuImage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.miOpenVideoInBrowserToolStripMenuItem,
 			this.miCopyVideoUrlToolStripMenuItem,
+			this.miCopyVideoIdToolStripMenuItem,
 			this.miCopyPlayerUrlToolStripMenuItem,
 			this.toolStripMenuItem2,
 			this.miOpenImageInBrowserToolStripMenuItem,
 			this.miCopyImageUrlToolStripMenuItem,
 			this.miSaveImageAssToolStripMenuItem});
 			this.contextMenuImage.Name = "contextMenuImage";
-			this.contextMenuImage.Size = new System.Drawing.Size(283, 142);
+			this.contextMenuImage.Size = new System.Drawing.Size(283, 186);
 			// 
 			// miOpenVideoInBrowserToolStripMenuItem
 			// 
@@ -372,7 +374,7 @@
 			this.toolStripMenuItem1,
 			this.miCopyFormattedFileNameToolStripMenuItem});
 			this.contextMenuVideoTitle.Name = "contextMenuVideoTitle";
-			this.contextMenuVideoTitle.Size = new System.Drawing.Size(317, 98);
+			this.contextMenuVideoTitle.Size = new System.Drawing.Size(317, 76);
 			// 
 			// miCopyTitleAsIsToolStripMenuItem
 			// 
@@ -387,6 +389,18 @@
 			this.miCopyFixedTitleToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
 			this.miCopyFixedTitleToolStripMenuItem.Text = "Скопировать название с заменой символов";
 			this.miCopyFixedTitleToolStripMenuItem.Click += new System.EventHandler(this.miCopyFixedTitleToolStripMenuItem_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(313, 6);
+			// 
+			// miCopyFormattedFileNameToolStripMenuItem
+			// 
+			this.miCopyFormattedFileNameToolStripMenuItem.Name = "miCopyFormattedFileNameToolStripMenuItem";
+			this.miCopyFormattedFileNameToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
+			this.miCopyFormattedFileNameToolStripMenuItem.Text = "Скопировать имя файла на выходе";
+			this.miCopyFormattedFileNameToolStripMenuItem.Click += new System.EventHandler(this.miCopyFormattedFileNameToolStripMenuItem_Click);
 			// 
 			// contextMenuDate
 			// 
@@ -460,18 +474,6 @@
 			this.miMultipleToolStripMenuItem.Text = "Прогресс каждого потока";
 			this.miMultipleToolStripMenuItem.Click += new System.EventHandler(this.miMultipleToolStripMenuItem_Click);
 			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(313, 6);
-			// 
-			// miCopyFormattedFileNameToolStripMenuItem
-			// 
-			this.miCopyFormattedFileNameToolStripMenuItem.Name = "miCopyFormattedFileNameToolStripMenuItem";
-			this.miCopyFormattedFileNameToolStripMenuItem.Size = new System.Drawing.Size(316, 22);
-			this.miCopyFormattedFileNameToolStripMenuItem.Text = "Скопировать имя файла на выходе";
-			this.miCopyFormattedFileNameToolStripMenuItem.Click += new System.EventHandler(this.miCopyFormattedFileNameToolStripMenuItem_Click);
-			// 
 			// progressBarDownload
 			// 
 			this.progressBarDownload.Location = new System.Drawing.Point(0, 142);
@@ -480,6 +482,13 @@
 			this.progressBarDownload.TabIndex = 18;
 			this.progressBarDownload.Text = "multipleProgressBar1";
 			this.progressBarDownload.MouseUp += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseUp);
+			// 
+			// miCopyVideoIdToolStripMenuItem
+			// 
+			this.miCopyVideoIdToolStripMenuItem.Name = "miCopyVideoIdToolStripMenuItem";
+			this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyVideoIdToolStripMenuItem.Text = "Скопировать ID видео";
+			this.miCopyVideoIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoIdToolStripMenuItem_Click);
 			// 
 			// FrameYouTubeVideo
 			// 
@@ -566,5 +575,6 @@
 		private System.Windows.Forms.ToolStripMenuItem miMultipleToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem miCopyFormattedFileNameToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miCopyVideoIdToolStripMenuItem;
 	}
 }

@@ -2002,6 +2002,14 @@ namespace YouTube_downloader
 			SetClipboardText(VideoInfo.ThumbnailUrls[0].Url);
 		}
 
+		private void miCopyVideoIdToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (VideoInfo != null && !string.IsNullOrEmpty(VideoInfo.Id))
+			{
+				SetClipboardText(VideoInfo.Id);
+			}
+		}
+
 		private void miUpdateVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DateTime dateTime = GetVideoPublishedDate(VideoInfo.Id);
