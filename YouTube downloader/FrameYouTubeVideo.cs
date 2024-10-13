@@ -1966,6 +1966,15 @@ namespace YouTube_downloader
 			SetClipboardText(t);
 		}
 
+		private void miCopyFormattedFileNameToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string formattedFileName = FixFileName(FormatFileName(
+				IsVideoDateAvailable(VideoInfo) ?
+				config.OutputFileNameFormatWithDate :
+				config.OutputFileNameFormatWithoutDate, VideoInfo));
+			SetClipboardText(formattedFileName);
+		}
+
 		private void miOpenImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (VideoInfo.ThumbnailUrls.Count > 0)
