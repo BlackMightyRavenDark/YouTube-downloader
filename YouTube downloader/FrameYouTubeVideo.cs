@@ -627,7 +627,7 @@ namespace YouTube_downloader
 
 				#region Расшифровка Cipher
 				//TODO: Вынести это в отдельный метод.
-				if (mediaTrack.IsCiphered)
+				if (mediaTrack.IsCiphered && !config.AlwaysUseExternalVideoInfoServer)
 				{
 					if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
 					{
