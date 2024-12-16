@@ -221,7 +221,7 @@ namespace YouTube_downloader
 			btnDownload.Enabled = false;
 			BtnDownloadClicked?.Invoke(this, e);
 
-			lblStatus.Text = "Состояние: Определение доступных форматов...";
+			lblStatus.Text = "Состояние: Поиск доступных форматов...";
 
 			videoFormats.Clear();
 			containerFormats.Clear();
