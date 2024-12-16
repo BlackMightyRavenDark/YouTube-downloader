@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -457,6 +458,18 @@ namespace YouTube_downloader
 					0, 100, (int)percent, itemText, Color.Lime);
 				yield return mpi;
 			}
+		}
+
+		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks)
+		{
+			int[] results = new int[tracks.Count()];
+			var testTasks = tracks.Select((track, taskId) => Task.Run(() =>
+			{
+				int errorCode = FileDownloader.GetUrlResponseHeaders(track.FileUrl, null, out _, out _);
+				lock (results) { results[taskId] = errorCode; }
+			}));
+			Task.WhenAll(testTasks).Wait();
+			return results;
 		}
 
 		public static void SetClipboardText(string text)

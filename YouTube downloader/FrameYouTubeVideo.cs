@@ -50,7 +50,7 @@ namespace YouTube_downloader
 		private int oldX;
 		private bool canDrag = false;
 		public const int EXTRA_WIDTH = 260;
-		private bool _dashCancelRequired;
+		private bool _cancelRequired;
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
 		{
@@ -499,7 +499,7 @@ namespace YouTube_downloader
 			string fnDashFinal = fnDash;
 			string fnDashTmp = fnDash + ".tmp";
 
-			_dashCancelRequired = false;
+			_cancelRequired = false;
 
 			if (File.Exists(fnDashTmp))
 			{
@@ -578,9 +578,9 @@ namespace YouTube_downloader
 						fileStream.Dispose();
 						return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, null);
 					}
-				} while (errorCode != 200 && ++tryNumber < retryCountMax && !_dashCancelRequired);
+				} while (errorCode != 200 && ++tryNumber < retryCountMax && !_cancelRequired);
 
-				if (_dashCancelRequired)
+				if (_cancelRequired)
 				{
 					errorCode = FileDownloader.DOWNLOAD_ERROR_CANCELED_BY_USER;
 				}
@@ -906,6 +906,7 @@ namespace YouTube_downloader
 			}
 
 			IsDownloadInProgress = true;
+			_cancelRequired = false;
 
 			progressBarDownload.ClearItems();
 			lblStatus.Text = null;
@@ -1103,6 +1104,36 @@ namespace YouTube_downloader
 
 			btnDownload.Text = "Отмена";
 			btnDownload.Enabled = true;
+
+			if (config.CheckUrlsAccessibilityBeforeDownloading)
+			{
+				lblStatus.Text = "Состояние: Проверка доступности ссылок...";
+				int[] statusCodes = await Task.Run(() => GetTrackAccessibilityHttpStatusCodes(tracksToDownload));
+				bool isAllUrlsAccessible = statusCodes.All(value => value == 200);
+				if (!isAllUrlsAccessible)
+				{
+					string msg = "Ошибка! Одна или несколько ссылок для скачивания недоступны!";
+					lblStatus.Text = $"Состояние: {msg}";
+					MessageBox.Show($"{msg}\nПовторите попытку позже (но не слишком, а то реал можно не успеть).", "Проверятор доступности ссылок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					btnDownload.Text = "Скачать";
+					btnDownload.Enabled = true;
+					IsDownloadInProgress = false;
+					return;
+				}
+			}
+
+			if (_cancelRequired)
+			{
+				string msg = "Скачивание отменено!";
+				lblStatus.Text = $"Состояние: {msg}";
+				MessageBox.Show(msg, "Отменятор отменения отмены",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				btnDownload.Text = "Скачать";
+				btnDownload.Enabled = true;
+				IsDownloadInProgress = false;
+				return;
+			}
 
 			lblStatus.Text = "Скачивание...";
 
@@ -1310,7 +1341,7 @@ namespace YouTube_downloader
 
 		public void StopDownload()
 		{
-			_dashCancelRequired = true;
+			_cancelRequired = true;
 			_multiThreadedDownloader?.Stop();
 		}
 

@@ -55,6 +55,7 @@ namespace YouTube_downloader
 				json["downloadSecondAudioTrackAutomatically"] = config.DownloadSecondAudioTrack;
 				json["ifOnlySecondAudioTrackIsBetter"] = config.IfOnlySecondAudioTrackIsBetter;
 				json["downloadAllAudioTracksAutomatically"] = config.DownloadAllAudioTracks;
+				json["checkUrlsAccessibilityBeforeDownloading"] = config.CheckUrlsAccessibilityBeforeDownloading;
 				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
 				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
 				json["dashDownloadRetryCountMax"] = config.DashDownloadRetryCountMax;
@@ -321,6 +322,13 @@ namespace YouTube_downloader
 					}
 				}
 				{
+					JToken jt = json.Value<JToken>("checkUrlsAccessibilityBeforeDownloading");
+					if (jt != null)
+					{
+						config.CheckUrlsAccessibilityBeforeDownloading = jt.Value<bool>();
+					}
+				}
+				{
 					JToken jt = json.Value<JToken>("alwaysDownloadAsDash");
 					if (jt != null)
 					{
@@ -439,6 +447,7 @@ namespace YouTube_downloader
 				chkDownloadSecondAudioTrack.Checked = config.DownloadSecondAudioTrack;
 				chkIfOnlyBiggerFileSize.Checked = config.IfOnlySecondAudioTrackIsBetter;
 				chkDownloadAllAudioTracks.Checked = config.DownloadAllAudioTracks;
+				checkBoxCheckUrlsAccessibilityBeforeDownloading.Checked = config.CheckUrlsAccessibilityBeforeDownloading;
 				numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
@@ -1696,6 +1705,11 @@ namespace YouTube_downloader
 		private void numericUpDownDelayAfterContainerCreated_ValueChanged(object sender, EventArgs e)
 		{
 			config.ExtraDelayAfterContainerWasBuilt = (int)numericUpDownDelayAfterContainerCreated.Value;
+		}
+
+		private void checkBoxCheckUrlsAccessibilityBeforeDownloading_CheckedChanged(object sender, EventArgs e)
+		{
+			config.CheckUrlsAccessibilityBeforeDownloading = checkBoxCheckUrlsAccessibilityBeforeDownloading.Checked;
 		}
 
 		private void chkSearchVideos_CheckedChanged(object sender, EventArgs e)
