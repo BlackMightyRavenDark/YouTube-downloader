@@ -63,7 +63,6 @@ namespace YouTube_downloader
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["savePreviewImage"] = config.SavePreviewImage;
-				json["useHiddenApiForGettingInfo"] = config.UseHiddenApiForGettingInfo;
 				json["useExternalVideoInfoServerForAdultVideos"] = config.UseExternalVideoInfoServerForAdultVideos;
 				json["alwaysUseExternalVideoInfoServer"] = config.AlwaysUseExternalVideoInfoServer;
 				json["externalVideoInfoServerUrl"] = config.ExternalVideoInfoServerUrl;
@@ -193,13 +192,6 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("useApiForGettingInfo");
-					if (jt != null)
-					{
-						config.UseHiddenApiForGettingInfo = jt.Value<bool>();
-					}
-				}
-				{
 					JToken jt = json.Value<JToken>("useExternalVideoInfoServerForAdultVideos");
 					if (jt != null)
 					{
@@ -224,7 +216,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("externalVideoInfoServerPort");
 					if (jt != null)
 					{
-						config.ExternalVideoInfoServerPort = jt.Value<int>();
+						config.ExternalVideoInfoServerPort = jt.Value<ushort>();
 					}
 				}
 				{
@@ -432,7 +424,6 @@ namespace YouTube_downloader
 				}
 				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				chkSaveImage.Checked = config.SavePreviewImage;
-				chkUseHiddenApiForGettingInfo.Checked = config.UseHiddenApiForGettingInfo;
 				checkBoxUseExternalVideoInfoServerForAdultVideos.Checked = config.UseExternalVideoInfoServerForAdultVideos;
 				checkBoxAlwaysUseExternalVideoInfoServer.Checked = config.AlwaysUseExternalVideoInfoServer;
 				textBoxVideoInfoServerUrl.Text = config.ExternalVideoInfoServerUrl;
@@ -475,7 +466,6 @@ namespace YouTube_downloader
 
 				if (config.AlwaysUseExternalVideoInfoServer)
 				{
-					chkUseHiddenApiForGettingInfo.Enabled = false;
 					editCipherDecryptionAlgo.Enabled = false;
 					editYouTubeApiKey.Enabled = false;
 					checkBoxUseExternalVideoInfoServerForAdultVideos.Enabled = false;
@@ -829,19 +819,13 @@ namespace YouTube_downloader
 					{
 						jaChannels.Add(j);
 					}
-					else
+					else if (kind.Equals("youtube#video"))
 					{
-						if (kind.Equals("youtube#video"))
+						string id = j.Value<JObject>("id").Value<string>("videoId");
+						YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeRawVideoInfo.Get(id);
+						if (rawVideoInfoResult.ErrorCode == 200)
 						{
-							string id = j.Value<JObject>("id").Value<string>("videoId");
-							YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-								YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
-								YouTubeVideoInfoGettingMethod.WebPage;
-							YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeRawVideoInfo.Get(id, method);
-							if (rawVideoInfoResult.ErrorCode == 200)
-							{
-								jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
-							}
+							jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
 						}
 					}
 				}
@@ -891,12 +875,8 @@ namespace YouTube_downloader
 			{
 				for (int i = 0; i < jaVideos.Count; ++i)
 				{
-					//TODO: Fix this shit!
-					YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-						YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
-						YouTubeVideoInfoGettingMethod.WebPage;
 					string rawInfo = jaVideos[i].Value<string>();
-					YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo, method);
+					YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo, null, null);
 					YouTubeVideo video = MakeYouTubeVideo(rawVideoInfo);
 					if (video != null)
 					{
@@ -1087,7 +1067,7 @@ namespace YouTube_downloader
 
 			try
 			{
-				YouTubeVideo video = GetSingleVideo(videoId);
+				YouTubeVideo video = GetSingleVideo(videoId, out _);
 				if (video != null)
 				{
 					FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
@@ -1271,7 +1251,7 @@ namespace YouTube_downloader
 							try
 							{
 								YouTubeVideoId youTubeVideoId = new YouTubeVideoId(item.ID);
-								YouTubeVideo video = GetSingleVideo(youTubeVideoId);
+								YouTubeVideo video = GetSingleVideo(youTubeVideoId, out _);
 								if (video != null)
 								{
 									FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
@@ -1672,11 +1652,6 @@ namespace YouTube_downloader
 			menuCopyPaste.SetFontSize(fontSize);
 		}
 
-		private void chkUseHiddenApiForGettingInfo_CheckedChanged(object sender, EventArgs e)
-		{
-			config.UseHiddenApiForGettingInfo = chkUseHiddenApiForGettingInfo.Checked;
-		}
-
 		private void editFfmpeg_Leave(object sender, EventArgs e)
 		{
 			config.FfmpegExeFilePath = editFfmpeg.Text;
@@ -1888,7 +1863,6 @@ namespace YouTube_downloader
 			editQuery.Enabled = false;
 			editSearchUrl.Enabled = false;
 			btnWhy.Enabled = false;
-			btnApiWtf.Enabled = true;
 		}
 
 		private void EnableControls()
@@ -1899,19 +1873,6 @@ namespace YouTube_downloader
 			editQuery.Enabled = true;
 			editSearchUrl.Enabled = true;
 			btnWhy.Enabled = true;
-			btnApiWtf.Enabled = true;
-		}
-
-		private void btnApiWtf_Click(object sender, EventArgs e)
-		{
-			btnApiWtf.Enabled = false;
-			string msg = "Снимает ограничение ютуба на скорость скачивания и позволяет немного оттянуть " +
-				"неизбежный момент возникновения ошибки \"HTTP 429: Too many requests\".\n" +
-				"Внимание! Это не повлияет на скорость скачивания видео с доступом только по ссылке!\n" +
-				"Если эта галочка включена, то не нужно вводить алгоритм для расшифровки \"Cipher\".";
-			MessageBox.Show(msg, "Подсказатор подсказок",
-				MessageBoxButtons.OK, MessageBoxIcon.Information);
-			btnApiWtf.Enabled = true;
 		}
 
 		private void btnUseRamWhy_Click(object sender, EventArgs e)
@@ -2007,7 +1968,6 @@ namespace YouTube_downloader
 		{
 			bool flag = checkBoxAlwaysUseExternalVideoInfoServer.Checked;
 			config.AlwaysUseExternalVideoInfoServer = flag;
-			chkUseHiddenApiForGettingInfo.Enabled = !flag;
 			editCipherDecryptionAlgo.Enabled = !flag;
 			editYouTubeApiKey.Enabled = !flag;
 			checkBoxUseExternalVideoInfoServerForAdultVideos.Enabled = !flag;
@@ -2025,7 +1985,7 @@ namespace YouTube_downloader
 
 		private void numericUpDownVideoInfoServerPort_ValueChanged(object sender, EventArgs e)
 		{
-			config.ExternalVideoInfoServerPort = (int)numericUpDownVideoInfoServerPort.Value;
+			config.ExternalVideoInfoServerPort = (ushort)numericUpDownVideoInfoServerPort.Value;
 		}
 
 		private void groupBox13_Resize(object sender, EventArgs e)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using YouTubeApiLib;
 
@@ -17,7 +18,7 @@ namespace YouTube_downloader
 			List<TrackItem> root = new List<TrackItem>();
 			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
 			{
-				if ((mediaTrack is YouTubeMediaTrackVideo) && !mediaTrack.IsHlsManifest)
+				if (mediaTrack.GetType() == typeof(YouTubeMediaTrackVideo))
 				{
 					YouTubeMediaTrackVideo videoFile = mediaTrack as YouTubeMediaTrackVideo;
 					string resolution = $"{videoFile.VideoWidth}x{videoFile.VideoHeight}";
@@ -30,7 +31,7 @@ namespace YouTube_downloader
 			}
 			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
 			{
-				if (mediaTrack is YouTubeMediaTrackAudio)
+				if (mediaTrack.GetType() == typeof(YouTubeMediaTrackAudio))
 				{
 					YouTubeMediaTrackAudio audioTrack = mediaTrack as YouTubeMediaTrackAudio;
 					int chunkCount = audioTrack.DashUrls != null ? audioTrack.DashUrls.Count : -1;

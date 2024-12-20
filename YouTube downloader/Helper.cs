@@ -60,10 +60,10 @@ namespace YouTube_downloader
 
 		public static Stream DownloadPreviewImage(this YouTubeVideo video)
 		{
-			if (video.ThumbnailUrls != null)
+			if (video.Thumbnails != null)
 			{
 				FileDownloader d = new FileDownloader();
-				foreach (YouTubeVideoThumbnail thumbnail in video.ThumbnailUrls)
+				foreach (YouTubeVideoThumbnail thumbnail in video.Thumbnails)
 				{
 					Stream mem = new MemoryStream();
 					d.Url = thumbnail.Url;
@@ -116,16 +116,17 @@ namespace YouTube_downloader
 
 		public static string GetTypeAsString(this YouTubeMediaTrack track)
 		{
-			if (track is YouTubeMediaTrackAudio)
+			Type trackType = track.GetType();
+			if (trackType == typeof(YouTubeMediaTrackAudio))
 			{
-				return track.IsDashManifest ? "DASH Audio" : "Audio";
+				return track.IsDashManifestPresent ? "DASH Audio" : "Audio";
 			}
-			else if (track is YouTubeMediaTrackVideo)
+			else if (trackType == typeof(YouTubeMediaTrackVideo))
 			{
-				return track.IsHlsManifest ? "HLS" :
-					track.IsDashManifest ? "DASH Video" : "Video";
+				return track.IsDashManifestPresent ? "DASH Video" : "Video";
 			}
-			else if (track is YouTubeMediaTrackContainer) { return "Container"; }
+			else if (trackType == typeof(YouTubeMediaTrackContainer)) { return "Container"; }
+			else if (trackType == typeof(YouTubeMediaTrackHlsStream)) { return "HLS"; }
 			else { return "Unknown"; }
 		}
 
@@ -165,12 +166,12 @@ namespace YouTube_downloader
 			}
 		}
 
-		public static string GetFormattedChunkCount(this YouTubeMediaTrack track)
+		public static string GetFormattedDashChunkCount(this YouTubeMediaTrack track)
 		{
-			if (track is YouTubeMediaTrackVideo)
+			if (track.GetType() == typeof(YouTubeMediaTrackVideo))
 			{
 				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
-				if (video.IsDashManifest)
+				if (video.IsDashManifestPresent)
 				{
 					return $"{(video.DashUrls != null ? video.DashUrls.Count : 0)} chunks";
 				}
@@ -190,7 +191,7 @@ namespace YouTube_downloader
 				list.Add($"&range={rangeValue}");
 			}
 
-			YouTubeDashUrlList dashUrlList = new YouTubeDashUrlList(track.FileUrl, list);
+			YouTubeDashUrlList dashUrlList = new YouTubeDashUrlList(track.FileUrl.Url, list);
 			return dashUrlList;
 		}
 
@@ -202,7 +203,7 @@ namespace YouTube_downloader
 			string fps = track.GetFormattedFrameRate();
 			string bitrate = track.AverageBitrate > 0 ? $"~{track.AverageBitrate / 1024} kbps" : string.Empty;
 			string formattedFileSize = track.ContentLength > 0 ? FormatSize(track.ContentLength) : string.Empty;
-			string chunkCount = track.GetFormattedChunkCount();
+			string chunkCount = track.GetFormattedDashChunkCount();
 
 			string[] data = new string[]
 			{

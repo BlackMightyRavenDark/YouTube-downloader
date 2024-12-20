@@ -230,67 +230,31 @@ namespace YouTube_downloader
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
 			bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
-				VideoInfo.RawInfo.DataGettingMethod == YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual;
+				VideoInfo.RawInfo.Client.DisplayName == "Web page";
 			bool isExternalVideoInfoServerNeeded = config.AlwaysUseExternalVideoInfoServer || !VideoInfo.IsFamilySafe ||
 				VideoInfo.IsPrivate || (isWebPage && VideoInfo.IsCiphered());
 			if (!isWebPage || isExternalVideoInfoServerNeeded)
 			{
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
-					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
 				string externalVideoInfoServerUrl = config.ExternalVideoInfoServerUrl;
-				int externalVideoInfoServerPort = config.ExternalVideoInfoServerPort;
+				ushort externalVideoInfoServerPort = config.ExternalVideoInfoServerPort;
 				await Task.Run(() =>
 				{
 					if (isExternalVideoInfoServerNeeded)
 					{
-						if (isWebPage)
-						{
-							string url = $"{externalVideoInfoServerUrl}:{externalVideoInfoServerPort}/api/streamingdata";
-							string player_url = ExtractPlayerUrlFromWebPage(_webPage);
-							YouTubeStreamingDataResult streamingDataResult = ExtractStreamingDataFromVideoWebPage(_webPage);
-							if (streamingDataResult.ErrorCode == 200)
-							{
-								JObject j = new JObject();
-								j["playerUrl"] = player_url;
-								j["streamingData"] = streamingDataResult.Data.RawData;
-								NameValueCollection headers = new NameValueCollection()
-								{
-									{ "Content-Type", "application/json" }
-								};
-								HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), headers);
-								if (requestResult.ErrorCode == 200)
-								{
-									if (requestResult.WebContent.ContentToString(out string rawStreamingData) == 200)
-									{
-										YouTubeStreamingData streamingData = new YouTubeStreamingData(rawStreamingData,
-											YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.Manual);
-										mediaTracks = streamingData.Parse();
-									}
-								}
-							}
-						}
-						else
-						{
-							string url = $"{externalVideoInfoServerUrl}:{externalVideoInfoServerPort}/api/videoinfo?video_id={VideoInfo.Id}";
-							HttpRequestResult requestResult = HttpRequestSender.Send("GET", url, null);
-							if (requestResult.ErrorCode == 200)
-							{
-								if (requestResult.WebContent.ContentToString(out string rawInfo) == 200)
-								{
-									YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo,
-										YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage);
-									mediaTracks = rawVideoInfo.StreamingData?.Data?.Parse();
-								}
-							}
-						}
+						YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
+						IYouTubeClient client = new ExternalServerClient(externalVideoInfoServerUrl,
+							externalVideoInfoServerPort, videoWebPageResult.VideoWebPage);
 					}
 					else
 					{
-						YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, method);
+						YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id);
 						if (streamingDataResult.ErrorCode == 200)
 						{
-							mediaTracks = streamingDataResult.Data.Parse();
+							mediaTracks = new LinkedList<YouTubeMediaTrack>();
+							foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+							{
+								mediaTracks.AddLast(track);
+							}
 						}
 						//TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
 						//VideoInfo.UpdateMediaFormats());
@@ -299,7 +263,12 @@ namespace YouTube_downloader
 			}
 			else
 			{
-				mediaTracks = VideoInfo.MediaTracks;
+				IEnumerable<YouTubeMediaTrack> tracks = MediaTracksToEnumerable(VideoInfo.MediaTracks);
+				mediaTracks = new LinkedList<YouTubeMediaTrack>();
+				foreach (YouTubeMediaTrack track in tracks)
+				{
+					mediaTracks.AddLast(track);
+				}
 			}
 
 			if (mediaTracks == null || mediaTracks.Count == 0)
@@ -325,10 +294,12 @@ namespace YouTube_downloader
 			{
 				if (config.SortDashFormatsByBitrate)
 				{
+					Type typeHls = typeof(YouTubeMediaTrackHlsStream);
+
 					int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
 					{
-						if (x == null || x.IsHlsManifest || x.AverageBitrate <= 0 ||
-							y == null || y.IsHlsManifest || y.AverageBitrate <= 0)
+						if (x == null || x.GetType() == typeHls || x.AverageBitrate <= 0 ||
+							y == null || y.GetType() == typeHls || y.AverageBitrate <= 0)
 						{
 							return 0;
 						}
@@ -343,10 +314,12 @@ namespace YouTube_downloader
 			{
 				if (config.SortFormatsByFileSize)
 				{
+					Type typeHls = typeof(YouTubeMediaTrackHlsStream);
+
 					int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
 					{
-						if (x == null || x.IsHlsManifest || x.ContentLength <= 0L ||
-							y == null || y.IsHlsManifest || y.ContentLength <= 0L ||
+						if (x == null || x.GetType() == typeHls || x.ContentLength <= 0L ||
+							y == null || y.GetType() == typeHls || y.ContentLength <= 0L ||
 							x.ContentLength == y.ContentLength)
 						{
 							return 0;
@@ -526,7 +499,8 @@ namespace YouTube_downloader
 					_singleThreadedDownloader.Url = dashUrlList[i];
 					if (i == 0)
 					{
-						_singleThreadedDownloader.Connected += (object s, string url, long contentLength, int errCode) =>
+						_singleThreadedDownloader.Connected += (object s, string url, long contentLength,
+							NameValueCollection _headers, int _tryNumber, int tryCountLimit, int errCode) =>
 						{
 							Invoke(new MethodInvoker(() =>
 							{
@@ -608,7 +582,7 @@ namespace YouTube_downloader
 		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
 			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
 		{
-			if (config.AlwaysDownloadAsDash || mediaTrack.IsDashManifest)
+			if (config.AlwaysDownloadAsDash || mediaTrack.IsDashManifestPresent)
 			{
 				return DownloadDash(mediaTrack, formattedFileName, audioOnly);
 			}
@@ -623,7 +597,7 @@ namespace YouTube_downloader
 				bool isContainer = mediaTrack is YouTubeMediaTrackContainer;
 				string mediaTypeString = isVideo || isContainer ? "видео" : "аудио";
 
-				string fileUrl = mediaTrack.FileUrl;
+				string fileUrl = mediaTrack.FileUrl.Url;
 
 				#region Расшифровка Cipher
 				//TODO: Вынести это в отдельный метод.
@@ -634,33 +608,32 @@ namespace YouTube_downloader
 						return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null, null);
 					}
 
-					#region Расшифровка ссылки на видео-дорожку
-					string cipherDecrypted = DecryptCipherSignature(mediaTrack.CipherSignatureEncrypted, config.CipherDecryptionAlgo);
-
-					if (string.IsNullOrEmpty(cipherDecrypted))
+					#region Внимание! Непротестированный код!
+					IYouTubeMediaTrackUrlDecryptor decryptor = new TrackUrlDecryptor(config.CipherDecryptionAlgo);
+					decryptor.Decrypt(mediaTrack.FileUrl);
+					if (audioFormats.Count > 0)
 					{
-						return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
-					}
-
-					fileUrl = $"{mediaTrack.CipherEncryptedFileUrl}&sig={cipherDecrypted}";
-
-					if (FileDownloader.GetUrlResponseHeaders(fileUrl, null, out _, out _) != 200)
-					{
-						return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
-					}
-					#endregion
-
-					#region Расшифровка ссылки на аудио-дорожку
-					if ((mediaTrack is YouTubeMediaTrackAudio) && audioFormats.Count > 0)
-					{
-						YouTubeMediaTrackAudio audioFile = audioFormats[0];
-						string audioCipherDecrypted = DecryptCipherSignature(
-							audioFile.CipherSignatureEncrypted, config.CipherDecryptionAlgo);
-						string urlAudio = $"{audioFile.CipherEncryptedFileUrl}&sig={audioCipherDecrypted}";
-						if (FileDownloader.GetUrlResponseHeaders(urlAudio, null, out _, out _) != 200)
+						foreach (YouTubeMediaTrack track in audioFormats)
 						{
-							return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+							decryptor.Decrypt(audioFormats[0].FileUrl);
 						}
+					}
+
+					bool allOk = await Task.Run(() =>
+					{
+						bool ok = FileDownloader.GetUrlResponseHeaders(mediaTrack.FileUrl.Url, null, 5000, out _, out _) == 200;
+						if (ok && audioFormats.Count > 0)
+						{
+							int[] errorCodes = GetTrackAccessibilityHttpStatusCodes(audioFormats);
+							ok &= errorCodes.All(code => code == 200);
+						}
+
+						return ok;
+					});
+
+					if (!allOk)
+					{
+						return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
 					}
 					#endregion
 				}
@@ -672,8 +645,8 @@ namespace YouTube_downloader
 				{
 					_multiThreadedDownloader = new MultiThreadedDownloader();
 					_multiThreadedDownloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
-					_multiThreadedDownloader.TryCountPerThread = config.ChunkDownloadRetryCountMax;
-					_multiThreadedDownloader.TryCountInsideThread = config.ChunkDownloadErrorCountMax;
+					_multiThreadedDownloader.TryCountLimitPerThread = config.ChunkDownloadRetryCountMax;
+					_multiThreadedDownloader.TryCountLimitInsideThread = config.ChunkDownloadErrorCountMax;
 					_multiThreadedDownloader.Url = fileUrl;
 					if (!useRamToStoreTemporaryFiles)
 					{
@@ -714,7 +687,7 @@ namespace YouTube_downloader
 							lblProgress.Text = null;
 						}));
 					};
-					_multiThreadedDownloader.Connecting += (s, url) =>
+					_multiThreadedDownloader.Connecting += (s, url, tryNumber, tryCountLimit) =>
 					{
 						Invoke(new MethodInvoker(() =>
 						{
@@ -723,7 +696,8 @@ namespace YouTube_downloader
 							lblProgress.Text = null;
 						}));
 					};
-					_multiThreadedDownloader.Connected += (object s, string url, long contentLength, CustomError customError) =>
+					_multiThreadedDownloader.Connected += (object s, string url, long contentLength,
+						NameValueCollection headers, int tryNumber, int tryCountLimit, CustomError customError) =>
 					{
 						Invoke(new MethodInvoker(() =>
 						{
@@ -920,7 +894,8 @@ namespace YouTube_downloader
 			List<YouTubeMediaTrack> tracksToDownload = new List<YouTubeMediaTrack>();
 
 			ToolStripMenuItem mi = sender as ToolStripMenuItem;
-			if (mi.Tag == null)
+			Type typeOfTag = mi.Tag?.GetType();
+			if (typeOfTag == null)
 			{
 				lblStatus.Text = "Состояние: Выбор форматов...";
 				List<YouTubeMediaTrack> formats = new List<YouTubeMediaTrack>();
@@ -945,39 +920,38 @@ namespace YouTube_downloader
 					return;
 				}
 			}
-			else if (mi.Tag is YouTubeMediaTrackVideo)
+			else if (typeOfTag == typeof(YouTubeMediaTrackHlsStream))
 			{
-				YouTubeMediaTrackVideo videoTrack = mi.Tag as YouTubeMediaTrackVideo;
-				if (videoTrack.IsHlsManifest)
+				if (IsFfmpegAvailable())
 				{
-					if (IsFfmpegAvailable())
-					{
-						lblStatus.Text = "Состояние: Запуск FFMPEG...";
-						lblStatus.Refresh();
+					lblStatus.Text = "Состояние: Запуск FFMPEG...";
+					lblStatus.Refresh();
 
-						string filePath = MultiThreadedDownloader.GetNumberedFileName(
-							$"{config.DownloadingDirPath}{formattedFileName}.ts");
-						GrabHls(videoTrack.FileUrl, filePath);
-						lblStatus.Text = null;
-					}
-					else
-					{
-						lblStatus.Text = "Состояние: Не удалось запустить FFMPEG!";
-						string ffmpegMsg = "Не удалось запустить FFMPEG!";
-						MessageBox.Show(ffmpegMsg, "Ошибка!",
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-
-					IsDownloadInProgress = false;
-					btnDownload.Enabled = true;
-					return;
+					string filePath = MultiThreadedDownloader.GetNumberedFileName(
+						$"{config.DownloadingDirPath}{formattedFileName}.ts");
+					YouTubeMediaTrackHlsStream stream = mi.Tag as YouTubeMediaTrackHlsStream;
+					GrabHls(stream.FileUrl.Url, filePath);
+					lblStatus.Text = null;
+				}
+				else
+				{
+					lblStatus.Text = "Состояние: Не удалось запустить FFMPEG!";
+					string ffmpegMsg = "Не удалось запустить FFMPEG!";
+					MessageBox.Show(ffmpegMsg, "Ошибка!",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 
+				IsDownloadInProgress = false;
+				btnDownload.Enabled = true;
+				return;
+			}
+			else if (typeOfTag == typeof(YouTubeMediaTrackVideo))
+			{
 				if (config.DownloadAllAdaptiveVideoTracks)
 				{
 					foreach (YouTubeMediaTrack videoFormat in videoFormats)
 					{
-						if (videoFormat is YouTubeMediaTrackVideo && !videoFormat.IsHlsManifest)
+						if (videoFormat.GetType() == typeof(YouTubeMediaTrackVideo))
 						{
 							tracksToDownload.Add(videoFormat);
 						}
@@ -985,7 +959,7 @@ namespace YouTube_downloader
 				}
 				else
 				{
-					tracksToDownload.Add(videoTrack);
+					tracksToDownload.Add(mi.Tag as YouTubeMediaTrackVideo);
 				}
 
 				if (audioFormats.Count > 0)
@@ -994,7 +968,7 @@ namespace YouTube_downloader
 					{
 						foreach (YouTubeMediaTrack audioFormat in audioFormats)
 						{
-							if (audioFormat is YouTubeMediaTrackAudio)
+							if (audioFormat.GetType() == typeof(YouTubeMediaTrackAudio))
 							{
 								tracksToDownload.Add(audioFormat);
 							}
@@ -1027,11 +1001,11 @@ namespace YouTube_downloader
 					}
 				}
 			}
-			else if (mi.Tag is YouTubeMediaTrackContainer)
+			else if (typeOfTag == typeof(YouTubeMediaTrackContainer))
 			{
 				tracksToDownload.Add(mi.Tag as YouTubeMediaTrackContainer);
 			}
-			else if (mi.Tag is YouTubeMediaTrackAudio)
+			else if (typeOfTag == typeof(YouTubeMediaTrackAudio))
 			{
 				tracksToDownload.Add(mi.Tag as YouTubeMediaTrackAudio);
 			}
@@ -1545,11 +1519,7 @@ namespace YouTube_downloader
 				}
 			}
 			{
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiEncryptedUrls :
-					YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
-				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
-				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(youTubeVideoId, method));
+				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(VideoInfo.Id));
 				if (rawVideoInfoResult.ErrorCode == 200)
 				{
 					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
@@ -1575,9 +1545,9 @@ namespace YouTube_downloader
 
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() =>
 				!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage) ?
-				ExtractStreamingDataFromVideoWebPage(_webPage) :
-				YouTubeStreamingData.Get(VideoInfo.Id, YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls));
-
+					ExtractStreamingDataFromVideoWebPage(_webPage) :
+					YouTubeStreamingData.Get(VideoInfo.Id)
+			);
 			if (streamingDataResult.ErrorCode != 200 || streamingDataResult.Data == null ||
 				string.IsNullOrEmpty(streamingDataResult.Data.RawData) ||
 				string.IsNullOrWhiteSpace(streamingDataResult.Data.RawData))
@@ -1600,12 +1570,7 @@ namespace YouTube_downloader
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-
-			YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
-			YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(youTubeVideoId, method));
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id));
 			if (streamingDataResult.ErrorCode == 200)
 			{
 				try
@@ -1642,11 +1607,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod method = config.UseHiddenApiForGettingInfo ?
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.HiddenApiDecryptedUrls :
-				YouTubeApiLib.Utils.YouTubeVideoInfoGettingMethod.WebPage;
-			YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(youTubeVideoId, method));
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id));
 			if (streamingDataResult.ErrorCode == 200)
 			{
 				try
@@ -1699,7 +1660,7 @@ namespace YouTube_downloader
 				page = webPageResult.VideoWebPage.WebPageCode;
 			}
 
-			string url = ExtractPlayerUrlFromWebPage(page);
+			string url = ExtractPlayerUrlFromWebPageCode(page);
 			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
 			{
 				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок!",
@@ -1904,7 +1865,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			string url = ExtractPlayerUrlFromWebPage(_webPage);
+			string url = ExtractPlayerUrlFromWebPageCode(_webPage);
 			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
 			{
 				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
@@ -2008,9 +1969,9 @@ namespace YouTube_downloader
 
 		private void miOpenImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (VideoInfo.ThumbnailUrls.Count > 0)
+			if (VideoInfo.Thumbnails?.Count > 0)
 			{
-				string url = VideoInfo.ThumbnailUrls[0].Url;
+				string url = VideoInfo.Thumbnails[0].Url;
 				OpenUrlInBrowser(url);
 			}
 		}
@@ -2023,14 +1984,14 @@ namespace YouTube_downloader
 
 		private void miCopyImageUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (VideoInfo.ThumbnailUrls == null || VideoInfo.ThumbnailUrls.Count == 0 ||
-				string.IsNullOrEmpty(VideoInfo.ThumbnailUrls[0].Url) || string.IsNullOrWhiteSpace(VideoInfo.ThumbnailUrls[0].Url))
+			if (VideoInfo.Thumbnails?.Count == 0 ||
+				string.IsNullOrEmpty(VideoInfo.Thumbnails[0].Url) || string.IsNullOrWhiteSpace(VideoInfo.Thumbnails[0].Url))
 			{
 				MessageBox.Show("Ссылка на изображение отсутствует!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			SetClipboardText(VideoInfo.ThumbnailUrls[0].Url);
+			SetClipboardText(VideoInfo.Thumbnails[0].Url);
 		}
 
 		private void miCopyVideoIdToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2054,9 +2015,9 @@ namespace YouTube_downloader
 			VideoInfo = new YouTubeVideo(VideoInfo.Title, VideoInfo.Id,
 				VideoInfo.Length, VideoInfo.DateUploaded, dateTime,
 				VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
-				VideoInfo.Description, VideoInfo.ViewCount, VideoInfo.Category,
+				VideoInfo.Description, VideoInfo.ViewCount, VideoInfo.Category, VideoInfo.IsShortFormat,
 				VideoInfo.IsPrivate, VideoInfo.IsUnlisted, VideoInfo.IsFamilySafe,
-				VideoInfo.IsLiveContent, VideoInfo.ThumbnailUrls, VideoInfo.MediaTracks,
+				VideoInfo.IsLiveContent, VideoInfo.Details, VideoInfo.Thumbnails,
 				VideoInfo.RawInfo, VideoInfo.SimplifiedInfo, VideoInfo.Status);
 
 			DateTime date = config.UseGmtTime ? dateTime.ToGmt() : dateTime;

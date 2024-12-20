@@ -83,39 +83,33 @@ namespace YouTube_downloader
 			return url;
 		}
 
-		public static string ExtractPlayerUrlFromWebPage(string webPage)
-		{
-			int n = webPage.IndexOf("\"jsUrl\":\"");
-			if (n > 0)
-			{
-				string t = webPage.Substring(n + 9);
-				string res = t.Substring(0, t.IndexOf("\""));
-				if (!string.IsNullOrEmpty(res) && !string.IsNullOrWhiteSpace(res))
-				{
-					return YouTubeApiLib.Utils.YOUTUBE_URL + res;
-				}
-			}
-			return null;
-		}
-
-		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId)
+		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out string errorMessage)
 		{
 			YouTubeApi.getMediaTracksInfoImmediately = false;
-			YouTubeApi.decryptMediaTrackUrlsAutomaticallyIfPossible = false;
-			if (config.UseHiddenApiForGettingInfo)
+			YouTubeVideo video = YouTubeVideo.GetById(videoId, null);
+			if (video == null)
 			{
-				YouTubeVideo video = YouTubeVideo.GetById(videoId);
-				return video;
+				const string clientId = "web_page";
+				IYouTubeClient client = YouTubeApi.GetYouTubeClient(clientId);
+				if (client != null)
+				{
+					YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(videoId, out errorMessage);
+					if (rawVideoInfoResult.ErrorCode == 200)
+					{
+						video = rawVideoInfoResult.RawVideoInfo.ToVideo();
+					}
+				}
+				else
+				{
+					errorMessage = $"The client with ID '{clientId}' is not found! The default client was also failed! Let's cry, baby :'(";
+				}
 			}
 			else
 			{
-				YouTubeVideoWebPageResult youTubeVideoWebPageResult = YouTubeVideoWebPage.Get(videoId);
-				if (youTubeVideoWebPageResult.ErrorCode == 200)
-				{
-					return YouTubeVideo.GetByWebPage(youTubeVideoWebPageResult.VideoWebPage);
-				}
+				errorMessage = null;
 			}
-			return null;
+
+			return video;
 		}
 
 		public static List<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
@@ -435,12 +429,15 @@ namespace YouTube_downloader
 		{
 			foreach (var chunk in chunks)
 			{
-				double percent;
+				double percent = 0.0;
 				string itemText;
 				switch (chunk.Value.State)
 				{
+					case DownloadableContentChunkState.Preparing:
+						itemText = "Подготовка...";
+						break;
+
 					case DownloadableContentChunkState.Connecting:
-						percent = 0.0;
 						itemText = "Подключение...";
 						break;
 
@@ -465,11 +462,38 @@ namespace YouTube_downloader
 			int[] results = new int[tracks.Count()];
 			var testTasks = tracks.Select((track, taskId) => Task.Run(() =>
 			{
-				int errorCode = FileDownloader.GetUrlResponseHeaders(track.FileUrl, null, out _, out _);
-				lock (results) { results[taskId] = errorCode; }
+				int errorCode = FileDownloader.GetUrlResponseHeaders(track.FileUrl.Url, null, out _, out _);
+				results[taskId] = errorCode;
 			}));
 			Task.WhenAll(testTasks).Wait();
 			return results;
+		}
+
+		public static string ExtractPlayerUrlFromWebPageCode(string webPageCode)
+		{
+			int n = webPageCode.IndexOf("\"jsUrl\":\"");
+			if (n > 0)
+			{
+				string t = webPageCode.Substring(n + 9);
+				string res = t.Substring(0, t.IndexOf("\""));
+				if (!string.IsNullOrEmpty(res) && !string.IsNullOrWhiteSpace(res))
+				{
+					return YouTubeApiLib.Utils.YOUTUBE_URL + res;
+				}
+			}
+			return null;
+		}
+
+		public static IEnumerable<YouTubeMediaTrack> MediaTracksToEnumerable(Dictionary<string, YouTubeMediaFormatList> formatLists)
+		{
+			IEnumerable<YouTubeMediaFormatList> lists = formatLists.Values;
+			foreach (YouTubeMediaFormatList list in lists)
+			{
+				foreach (YouTubeMediaTrack track in list.Tracks)
+				{
+					yield return track;
+				}
+			}
 		}
 
 		public static void SetClipboardText(string text)
