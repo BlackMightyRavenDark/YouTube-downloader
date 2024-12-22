@@ -97,6 +97,7 @@ namespace YouTube_downloader
 			this.chkDownloadAllAudioTracks = new System.Windows.Forms.CheckBox();
 			this.chkSaveImage = new System.Windows.Forms.CheckBox();
 			this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
+			this.checkBoxAlwaysUseExternalVideoInfoServer = new System.Windows.Forms.CheckBox();
 			this.groupBox17 = new System.Windows.Forms.GroupBox();
 			this.numericUpDownDashChunkDownloadRetriesCountMax = new System.Windows.Forms.NumericUpDown();
 			this.label23 = new System.Windows.Forms.Label();
@@ -112,7 +113,8 @@ namespace YouTube_downloader
 			this.chkUseRamForTempFiles = new System.Windows.Forms.CheckBox();
 			this.groupBox11 = new System.Windows.Forms.GroupBox();
 			this.groupBox18 = new System.Windows.Forms.GroupBox();
-			this.checkBoxAlwaysUseExternalVideoInfoServer = new System.Windows.Forms.CheckBox();
+			this.numericUpDownConnectionTimeoutServer = new System.Windows.Forms.NumericUpDown();
+			this.label30 = new System.Windows.Forms.Label();
 			this.btnVideoInfoServerWhy = new System.Windows.Forms.Button();
 			this.label25 = new System.Windows.Forms.Label();
 			this.numericUpDownVideoInfoServerPort = new System.Windows.Forms.NumericUpDown();
@@ -126,6 +128,8 @@ namespace YouTube_downloader
 			this.label6 = new System.Windows.Forms.Label();
 			this.editYouTubeApiKey = new System.Windows.Forms.TextBox();
 			this.groupBox7 = new System.Windows.Forms.GroupBox();
+			this.numericUpDownConnectionTimeout = new System.Windows.Forms.NumericUpDown();
+			this.label29 = new System.Windows.Forms.Label();
 			this.checkBoxAccurateMultithreading = new System.Windows.Forms.CheckBox();
 			this.label13 = new System.Windows.Forms.Label();
 			this.numericUpDownGlobalThreadsMaximum = new System.Windows.Forms.NumericUpDown();
@@ -209,10 +213,12 @@ namespace YouTube_downloader
 			this.groupBox13.SuspendLayout();
 			this.groupBox11.SuspendLayout();
 			this.groupBox18.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeoutServer)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoInfoServerPort)).BeginInit();
 			this.groupBox4.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox7.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeout)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadsMaximum)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsAudio)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsVideo)).BeginInit();
@@ -735,7 +741,7 @@ namespace YouTube_downloader
 			this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadRetryCount);
 			this.groupBox19.Location = new System.Drawing.Point(14, 315);
 			this.groupBox19.Name = "groupBox19";
-			this.groupBox19.Size = new System.Drawing.Size(382, 72);
+			this.groupBox19.Size = new System.Drawing.Size(490, 72);
 			this.groupBox19.TabIndex = 20;
 			this.groupBox19.TabStop = false;
 			this.groupBox19.Text = "Попытки скачивания";
@@ -826,7 +832,7 @@ namespace YouTube_downloader
 			this.groupBox10.Controls.Add(this.groupBox14);
 			this.groupBox10.Location = new System.Drawing.Point(14, 6);
 			this.groupBox10.Name = "groupBox10";
-			this.groupBox10.Size = new System.Drawing.Size(473, 280);
+			this.groupBox10.Size = new System.Drawing.Size(490, 280);
 			this.groupBox10.TabIndex = 17;
 			this.groupBox10.TabStop = false;
 			this.groupBox10.Text = "Адаптивные форматы";
@@ -903,7 +909,7 @@ namespace YouTube_downloader
 			this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
 			this.groupBox15.Location = new System.Drawing.Point(6, 160);
 			this.groupBox15.Name = "groupBox15";
-			this.groupBox15.Size = new System.Drawing.Size(461, 83);
+			this.groupBox15.Size = new System.Drawing.Size(478, 83);
 			this.groupBox15.TabIndex = 18;
 			this.groupBox15.TabStop = false;
 			this.groupBox15.Text = "Контейнер";
@@ -916,7 +922,7 @@ namespace YouTube_downloader
 			this.groupBox16.Controls.Add(this.radioButtonContainerTypeMp4);
 			this.groupBox16.Location = new System.Drawing.Point(295, 19);
 			this.groupBox16.Name = "groupBox16";
-			this.groupBox16.Size = new System.Drawing.Size(160, 60);
+			this.groupBox16.Size = new System.Drawing.Size(177, 60);
 			this.groupBox16.TabIndex = 17;
 			this.groupBox16.TabStop = false;
 			this.groupBox16.Text = "Тип контейнера";
@@ -979,7 +985,7 @@ namespace YouTube_downloader
 			this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
 			this.groupBox14.Location = new System.Drawing.Point(6, 42);
 			this.groupBox14.Name = "groupBox14";
-			this.groupBox14.Size = new System.Drawing.Size(461, 112);
+			this.groupBox14.Size = new System.Drawing.Size(478, 112);
 			this.groupBox14.TabIndex = 17;
 			this.groupBox14.TabStop = false;
 			this.groupBox14.Text = "Скачивание аудио-дорожек";
@@ -1043,6 +1049,7 @@ namespace YouTube_downloader
 			// 
 			this.tabPageSystemSettings.AutoScroll = true;
 			this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+			this.tabPageSystemSettings.Controls.Add(this.checkBoxAlwaysUseExternalVideoInfoServer);
 			this.tabPageSystemSettings.Controls.Add(this.groupBox17);
 			this.tabPageSystemSettings.Controls.Add(this.checkBoxUseGmtTime);
 			this.tabPageSystemSettings.Controls.Add(this.groupBox13);
@@ -1055,6 +1062,17 @@ namespace YouTube_downloader
 			this.tabPageSystemSettings.TabIndex = 1;
 			this.tabPageSystemSettings.Text = "Система";
 			// 
+			// checkBoxAlwaysUseExternalVideoInfoServer
+			// 
+			this.checkBoxAlwaysUseExternalVideoInfoServer.AutoSize = true;
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Location = new System.Drawing.Point(27, 269);
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Name = "checkBoxAlwaysUseExternalVideoInfoServer";
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Size = new System.Drawing.Size(352, 17);
+			this.checkBoxAlwaysUseExternalVideoInfoServer.TabIndex = 6;
+			this.checkBoxAlwaysUseExternalVideoInfoServer.Text = "Использовать только этот сервер (другое API не используется)";
+			this.checkBoxAlwaysUseExternalVideoInfoServer.UseVisualStyleBackColor = true;
+			this.checkBoxAlwaysUseExternalVideoInfoServer.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysUseExternalVideoInfoServer_CheckedChanged);
+			// 
 			// groupBox17
 			// 
 			this.groupBox17.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -1066,9 +1084,9 @@ namespace YouTube_downloader
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkSize);
 			this.groupBox17.Controls.Add(this.label22);
 			this.groupBox17.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
-			this.groupBox17.Location = new System.Drawing.Point(9, 474);
+			this.groupBox17.Location = new System.Drawing.Point(10, 526);
 			this.groupBox17.Name = "groupBox17";
-			this.groupBox17.Size = new System.Drawing.Size(472, 102);
+			this.groupBox17.Size = new System.Drawing.Size(494, 102);
 			this.groupBox17.TabIndex = 16;
 			this.groupBox17.TabStop = false;
 			this.groupBox17.Text = "Скачивание файлов по частям";
@@ -1103,7 +1121,7 @@ namespace YouTube_downloader
 			// btnWhyDash
 			// 
 			this.btnWhyDash.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnWhyDash.Location = new System.Drawing.Point(391, 13);
+			this.btnWhyDash.Location = new System.Drawing.Point(413, 13);
 			this.btnWhyDash.Name = "btnWhyDash";
 			this.btnWhyDash.Size = new System.Drawing.Size(75, 23);
 			this.btnWhyDash.TabIndex = 4;
@@ -1175,7 +1193,7 @@ namespace YouTube_downloader
 			this.checkBoxUseGmtTime.AutoSize = true;
 			this.checkBoxUseGmtTime.Checked = true;
 			this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(15, 584);
+			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(16, 636);
 			this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
 			this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseGmtTime.TabIndex = 15;
@@ -1191,9 +1209,9 @@ namespace YouTube_downloader
 			this.groupBox13.Controls.Add(this.btnUseRamWhy);
 			this.groupBox13.Controls.Add(this.panelRAM);
 			this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
-			this.groupBox13.Location = new System.Drawing.Point(6, 402);
+			this.groupBox13.Location = new System.Drawing.Point(7, 454);
 			this.groupBox13.Name = "groupBox13";
-			this.groupBox13.Size = new System.Drawing.Size(475, 66);
+			this.groupBox13.Size = new System.Drawing.Size(497, 66);
 			this.groupBox13.TabIndex = 14;
 			this.groupBox13.TabStop = false;
 			this.groupBox13.Text = "Оперативная память (RAM)";
@@ -1202,7 +1220,7 @@ namespace YouTube_downloader
 			// btnUseRamWhy
 			// 
 			this.btnUseRamWhy.Anchor = System.Windows.Forms.AnchorStyles.Right;
-			this.btnUseRamWhy.Location = new System.Drawing.Point(392, 28);
+			this.btnUseRamWhy.Location = new System.Drawing.Point(414, 28);
 			this.btnUseRamWhy.Name = "btnUseRamWhy";
 			this.btnUseRamWhy.Size = new System.Drawing.Size(75, 23);
 			this.btnUseRamWhy.TabIndex = 16;
@@ -1242,7 +1260,7 @@ namespace YouTube_downloader
 			this.groupBox11.Controls.Add(this.groupBox5);
 			this.groupBox11.Location = new System.Drawing.Point(3, 6);
 			this.groupBox11.Name = "groupBox11";
-			this.groupBox11.Size = new System.Drawing.Size(484, 271);
+			this.groupBox11.Size = new System.Drawing.Size(501, 294);
 			this.groupBox11.TabIndex = 12;
 			this.groupBox11.TabStop = false;
 			this.groupBox11.Text = "API";
@@ -1251,7 +1269,8 @@ namespace YouTube_downloader
 			// 
 			this.groupBox18.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox18.Controls.Add(this.checkBoxAlwaysUseExternalVideoInfoServer);
+			this.groupBox18.Controls.Add(this.numericUpDownConnectionTimeoutServer);
+			this.groupBox18.Controls.Add(this.label30);
 			this.groupBox18.Controls.Add(this.btnVideoInfoServerWhy);
 			this.groupBox18.Controls.Add(this.label25);
 			this.groupBox18.Controls.Add(this.numericUpDownVideoInfoServerPort);
@@ -1260,26 +1279,52 @@ namespace YouTube_downloader
 			this.groupBox18.Controls.Add(this.checkBoxUseExternalVideoInfoServerForAdultVideos);
 			this.groupBox18.Location = new System.Drawing.Point(11, 147);
 			this.groupBox18.Name = "groupBox18";
-			this.groupBox18.Size = new System.Drawing.Size(467, 115);
+			this.groupBox18.Size = new System.Drawing.Size(484, 141);
 			this.groupBox18.TabIndex = 17;
 			this.groupBox18.TabStop = false;
 			this.groupBox18.Text = "Внешний сервер для получения информации о видео";
 			// 
-			// checkBoxAlwaysUseExternalVideoInfoServer
+			// numericUpDownConnectionTimeoutServer
 			// 
-			this.checkBoxAlwaysUseExternalVideoInfoServer.AutoSize = true;
-			this.checkBoxAlwaysUseExternalVideoInfoServer.Location = new System.Drawing.Point(13, 94);
-			this.checkBoxAlwaysUseExternalVideoInfoServer.Name = "checkBoxAlwaysUseExternalVideoInfoServer";
-			this.checkBoxAlwaysUseExternalVideoInfoServer.Size = new System.Drawing.Size(352, 17);
-			this.checkBoxAlwaysUseExternalVideoInfoServer.TabIndex = 6;
-			this.checkBoxAlwaysUseExternalVideoInfoServer.Text = "Использовать только этот сервер (другое API не используется)";
-			this.checkBoxAlwaysUseExternalVideoInfoServer.UseVisualStyleBackColor = true;
-			this.checkBoxAlwaysUseExternalVideoInfoServer.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysUseExternalVideoInfoServer_CheckedChanged);
+			this.numericUpDownConnectionTimeoutServer.Increment = new decimal(new int[] {
+			100,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeoutServer.Location = new System.Drawing.Point(262, 90);
+			this.numericUpDownConnectionTimeoutServer.Maximum = new decimal(new int[] {
+			120000,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeoutServer.Minimum = new decimal(new int[] {
+			5000,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeoutServer.Name = "numericUpDownConnectionTimeoutServer";
+			this.numericUpDownConnectionTimeoutServer.Size = new System.Drawing.Size(82, 20);
+			this.numericUpDownConnectionTimeoutServer.TabIndex = 7;
+			this.numericUpDownConnectionTimeoutServer.Value = new decimal(new int[] {
+			15000,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeoutServer.ValueChanged += new System.EventHandler(this.numericUpDownConnectionTimeoutServer_ValueChanged);
+			// 
+			// label30
+			// 
+			this.label30.AutoSize = true;
+			this.label30.Location = new System.Drawing.Point(13, 92);
+			this.label30.Name = "label30";
+			this.label30.Size = new System.Drawing.Size(243, 13);
+			this.label30.TabIndex = 6;
+			this.label30.Text = "Время ожидания соединения (миллисекунды):";
 			// 
 			// btnVideoInfoServerWhy
 			// 
 			this.btnVideoInfoServerWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnVideoInfoServerWhy.Location = new System.Drawing.Point(384, 15);
+			this.btnVideoInfoServerWhy.Location = new System.Drawing.Point(401, 15);
 			this.btnVideoInfoServerWhy.Name = "btnVideoInfoServerWhy";
 			this.btnVideoInfoServerWhy.Size = new System.Drawing.Size(75, 23);
 			this.btnVideoInfoServerWhy.TabIndex = 5;
@@ -1325,7 +1370,7 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxVideoInfoServerUrl.Location = new System.Drawing.Point(105, 42);
 			this.textBoxVideoInfoServerUrl.Name = "textBoxVideoInfoServerUrl";
-			this.textBoxVideoInfoServerUrl.Size = new System.Drawing.Size(356, 20);
+			this.textBoxVideoInfoServerUrl.Size = new System.Drawing.Size(373, 20);
 			this.textBoxVideoInfoServerUrl.TabIndex = 2;
 			// 
 			// label24
@@ -1356,7 +1401,7 @@ namespace YouTube_downloader
 			this.groupBox4.Controls.Add(this.editCipherDecryptionAlgo);
 			this.groupBox4.Location = new System.Drawing.Point(11, 19);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(467, 58);
+			this.groupBox4.Size = new System.Drawing.Size(484, 58);
 			this.groupBox4.TabIndex = 4;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Алгоритм для расшифровки Cipher";
@@ -1376,7 +1421,7 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.editCipherDecryptionAlgo.Location = new System.Drawing.Point(8, 32);
 			this.editCipherDecryptionAlgo.Name = "editCipherDecryptionAlgo";
-			this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(451, 20);
+			this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(468, 20);
 			this.editCipherDecryptionAlgo.TabIndex = 0;
 			this.editCipherDecryptionAlgo.Leave += new System.EventHandler(this.editCipherDecryptionAlgo_Leave);
 			// 
@@ -1388,7 +1433,7 @@ namespace YouTube_downloader
 			this.groupBox5.Controls.Add(this.editYouTubeApiKey);
 			this.groupBox5.Location = new System.Drawing.Point(11, 82);
 			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(467, 61);
+			this.groupBox5.Size = new System.Drawing.Size(484, 61);
 			this.groupBox5.TabIndex = 8;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "Ключ от YouTube API V3";
@@ -1408,12 +1453,14 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.editYouTubeApiKey.Location = new System.Drawing.Point(6, 35);
 			this.editYouTubeApiKey.Name = "editYouTubeApiKey";
-			this.editYouTubeApiKey.Size = new System.Drawing.Size(455, 20);
+			this.editYouTubeApiKey.Size = new System.Drawing.Size(472, 20);
 			this.editYouTubeApiKey.TabIndex = 0;
 			this.editYouTubeApiKey.Leave += new System.EventHandler(this.editYouTubeApiKey_Leave);
 			// 
 			// groupBox7
 			// 
+			this.groupBox7.Controls.Add(this.numericUpDownConnectionTimeout);
+			this.groupBox7.Controls.Add(this.label29);
 			this.groupBox7.Controls.Add(this.checkBoxAccurateMultithreading);
 			this.groupBox7.Controls.Add(this.label13);
 			this.groupBox7.Controls.Add(this.numericUpDownGlobalThreadsMaximum);
@@ -1423,12 +1470,49 @@ namespace YouTube_downloader
 			this.groupBox7.Controls.Add(this.label9);
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsAudio);
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsVideo);
-			this.groupBox7.Location = new System.Drawing.Point(6, 283);
+			this.groupBox7.Location = new System.Drawing.Point(7, 306);
 			this.groupBox7.Name = "groupBox7";
-			this.groupBox7.Size = new System.Drawing.Size(318, 113);
+			this.groupBox7.Size = new System.Drawing.Size(345, 142);
 			this.groupBox7.TabIndex = 10;
 			this.groupBox7.TabStop = false;
 			this.groupBox7.Text = "Потоки";
+			// 
+			// numericUpDownConnectionTimeout
+			// 
+			this.numericUpDownConnectionTimeout.Increment = new decimal(new int[] {
+			100,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeout.Location = new System.Drawing.Point(264, 113);
+			this.numericUpDownConnectionTimeout.Maximum = new decimal(new int[] {
+			120000,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeout.Minimum = new decimal(new int[] {
+			1000,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeout.Name = "numericUpDownConnectionTimeout";
+			this.numericUpDownConnectionTimeout.Size = new System.Drawing.Size(64, 20);
+			this.numericUpDownConnectionTimeout.TabIndex = 10;
+			this.numericUpDownConnectionTimeout.Value = new decimal(new int[] {
+			5000,
+			0,
+			0,
+			0});
+			this.numericUpDownConnectionTimeout.ValueChanged += new System.EventHandler(this.numericUpDownConnectionTimeout_ValueChanged);
+			// 
+			// label29
+			// 
+			this.label29.AutoSize = true;
+			this.label29.Location = new System.Drawing.Point(5, 115);
+			this.label29.Name = "label29";
+			this.label29.Size = new System.Drawing.Size(243, 13);
+			this.label29.TabIndex = 9;
+			this.label29.Text = "Время ожидания соединения (миллисекунды):";
 			// 
 			// checkBoxAccurateMultithreading
 			// 
@@ -1480,7 +1564,7 @@ namespace YouTube_downloader
 			// 
 			this.panelWarningAudioThreads.BackgroundImage = global::YouTube_downloader.Properties.Resources.warning;
 			this.panelWarningAudioThreads.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-			this.panelWarningAudioThreads.Location = new System.Drawing.Point(289, 39);
+			this.panelWarningAudioThreads.Location = new System.Drawing.Point(310, 39);
 			this.panelWarningAudioThreads.Name = "panelWarningAudioThreads";
 			this.panelWarningAudioThreads.Size = new System.Drawing.Size(25, 25);
 			this.panelWarningAudioThreads.TabIndex = 5;
@@ -1491,7 +1575,7 @@ namespace YouTube_downloader
 			// 
 			this.panelWarningVideoThreads.BackgroundImage = global::YouTube_downloader.Properties.Resources.warning;
 			this.panelWarningVideoThreads.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-			this.panelWarningVideoThreads.Location = new System.Drawing.Point(289, 11);
+			this.panelWarningVideoThreads.Location = new System.Drawing.Point(310, 11);
 			this.panelWarningVideoThreads.Name = "panelWarningVideoThreads";
 			this.panelWarningVideoThreads.Size = new System.Drawing.Size(25, 25);
 			this.panelWarningVideoThreads.TabIndex = 4;
@@ -1518,7 +1602,7 @@ namespace YouTube_downloader
 			// 
 			// numericUpDownThreadsAudio
 			// 
-			this.numericUpDownThreadsAudio.Location = new System.Drawing.Point(242, 41);
+			this.numericUpDownThreadsAudio.Location = new System.Drawing.Point(263, 41);
 			this.numericUpDownThreadsAudio.Maximum = new decimal(new int[] {
 			60,
 			0,
@@ -1541,7 +1625,7 @@ namespace YouTube_downloader
 			// 
 			// numericUpDownThreadsVideo
 			// 
-			this.numericUpDownThreadsVideo.Location = new System.Drawing.Point(243, 14);
+			this.numericUpDownThreadsVideo.Location = new System.Drawing.Point(264, 14);
 			this.numericUpDownThreadsVideo.Minimum = new decimal(new int[] {
 			2,
 			0,
@@ -2098,6 +2182,7 @@ namespace YouTube_downloader
 			this.groupBox11.ResumeLayout(false);
 			this.groupBox18.ResumeLayout(false);
 			this.groupBox18.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeoutServer)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoInfoServerPort)).EndInit();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
@@ -2105,6 +2190,7 @@ namespace YouTube_downloader
 			this.groupBox5.PerformLayout();
 			this.groupBox7.ResumeLayout(false);
 			this.groupBox7.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeout)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadsMaximum)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsAudio)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsVideo)).EndInit();
@@ -2285,6 +2371,10 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label28;
 		private System.Windows.Forms.Label label27;
 		private System.Windows.Forms.CheckBox checkBoxCheckUrlsAccessibilityBeforeDownloading;
+		private System.Windows.Forms.NumericUpDown numericUpDownConnectionTimeout;
+		private System.Windows.Forms.Label label29;
+		private System.Windows.Forms.NumericUpDown numericUpDownConnectionTimeoutServer;
+		private System.Windows.Forms.Label label30;
 	}
 }
 

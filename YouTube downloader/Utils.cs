@@ -457,12 +457,12 @@ namespace YouTube_downloader
 			}
 		}
 
-		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks)
+		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks, int connectionTimeout)
 		{
 			int[] results = new int[tracks.Count()];
 			var testTasks = tracks.Select((track, taskId) => Task.Run(() =>
 			{
-				int errorCode = FileDownloader.GetUrlResponseHeaders(track.FileUrl.Url, null, out _, out _);
+				int errorCode = FileDownloader.GetUrlResponseHeaders(track.FileUrl.Url, null, connectionTimeout, out _, out _);
 				results[taskId] = errorCode;
 			}));
 			Task.WhenAll(testTasks).Wait();

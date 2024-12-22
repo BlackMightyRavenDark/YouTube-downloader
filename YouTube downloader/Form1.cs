@@ -74,6 +74,8 @@ namespace YouTube_downloader
 				json["threadCountAudio"] = config.ThreadCountAudio;
 				json["globalThreadCountMaximum"] = config.GlobalThreadCountMaximum;
 				json["accurateMultithreading"] = config.AccurateMultithreading;
+				json["connectionTimeout"] = config.ConnectionTimeout;
+				json["connectionTimeoutServer"] = config.ConnectionTimeoutServer;
 			};
 			config.Loading += (s, json) =>
 			{
@@ -397,6 +399,36 @@ namespace YouTube_downloader
 						config.AccurateMultithreading = jt.Value<bool>();
 					}
 				}
+				{
+					JToken jt = json.Value<JToken>("connectionTimeout");
+					if (jt != null)
+					{
+						config.ConnectionTimeout = jt.Value<int>();
+						if (config.ConnectionTimeout > (int)numericUpDownConnectionTimeout.Maximum)
+						{
+							config.ConnectionTimeout = (int)numericUpDownConnectionTimeout.Maximum;
+						}
+						else if (config.ConnectionTimeout < (int)numericUpDownConnectionTimeout.Minimum)
+						{
+							config.ConnectionTimeout = (int)numericUpDownConnectionTimeout.Minimum;
+						}
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("connectionTimeoutServer");
+					if (jt != null)
+					{
+						config.ConnectionTimeoutServer = jt.Value<int>();
+						if (config.ConnectionTimeoutServer > (int)numericUpDownConnectionTimeoutServer.Maximum)
+						{
+							config.ConnectionTimeoutServer = (int)numericUpDownConnectionTimeoutServer.Maximum;
+						}
+						else if (config.ConnectionTimeoutServer < (int)numericUpDownConnectionTimeoutServer.Minimum)
+						{
+							config.ConnectionTimeoutServer = (int)numericUpDownConnectionTimeoutServer.Minimum;
+						}
+					}
+				}
 			};
 			config.Loaded += (s) =>
 			{
@@ -442,6 +474,8 @@ namespace YouTube_downloader
 				numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
+				numericUpDownConnectionTimeout.Value = config.ConnectionTimeout;
+				numericUpDownConnectionTimeoutServer.Value = config.ConnectionTimeoutServer;
 				checkBoxAccurateMultithreading.Checked = config.AccurateMultithreading;
 				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
 				numericUpDownDashChunkDownloadRetriesCountMax.Value = config.DashDownloadRetryCountMax;
@@ -1986,6 +2020,16 @@ namespace YouTube_downloader
 		private void numericUpDownVideoInfoServerPort_ValueChanged(object sender, EventArgs e)
 		{
 			config.ExternalVideoInfoServerPort = (ushort)numericUpDownVideoInfoServerPort.Value;
+		}
+
+		private void numericUpDownConnectionTimeout_ValueChanged(object sender, EventArgs e)
+		{
+			config.ConnectionTimeout = (int)numericUpDownConnectionTimeout.Value;
+		}
+
+		private void numericUpDownConnectionTimeoutServer_ValueChanged(object sender, EventArgs e)
+		{
+			config.ConnectionTimeoutServer = (int)numericUpDownConnectionTimeoutServer.Value;
 		}
 
 		private void groupBox13_Resize(object sender, EventArgs e)

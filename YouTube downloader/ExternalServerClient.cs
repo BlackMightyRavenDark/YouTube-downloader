@@ -12,13 +12,16 @@ namespace YouTube_downloader
 		public string DisplayName => "External server client";
 		public string ServerAddress { get; }
 		public ushort ServerPort { get; }
+		public int ConnectionTimeout { get; }
 		public YouTubeVideoWebPage WebPage { get; }
 
 		public ExternalServerClient(string serverAddress, ushort serverPort,
+			int connectionTimeout,
 			YouTubeVideoWebPage videoWebPage = null)
 		{
 			ServerAddress = serverAddress;
 			ServerPort = serverPort;
+			ConnectionTimeout = connectionTimeout;
 			WebPage = videoWebPage;
 		}
 
@@ -54,7 +57,7 @@ namespace YouTube_downloader
 					{
 						{ "Content-Type", "application/json" }
 					};
-					HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), headers);
+					HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), ConnectionTimeout, headers);
 					if (requestResult.ErrorCode == 200)
 					{
 						if (requestResult.WebContent.ContentToString(out string rawStreamingData) == 200)
@@ -76,7 +79,7 @@ namespace YouTube_downloader
 				try
 				{
 					string url = $"{ServerAddress}:{ServerPort}/api/videoinfo?video_id={videoId}";
-					using (HttpRequestResult requestResult = HttpRequestSender.Send(url))
+					using (HttpRequestResult requestResult = HttpRequestSender.Send(url, ConnectionTimeout))
 					{
 						if (requestResult.ErrorCode == 200)
 						{

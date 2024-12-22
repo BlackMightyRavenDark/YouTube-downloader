@@ -53,6 +53,8 @@ namespace YouTube_downloader
 		public int ThreadCountAudio { get; set; }
 		public int GlobalThreadCountMaximum { get; set; }
 		public bool AccurateMultithreading { get; set; }
+		public int ConnectionTimeout { get; set; }
+		public int ConnectionTimeoutServer { get; set; }
 
 		public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
@@ -136,6 +138,8 @@ namespace YouTube_downloader
 			ThreadCountAudio = 4;
 			GlobalThreadCountMaximum = 300;
 			AccurateMultithreading = true;
+			ConnectionTimeout = 5000;
+			ConnectionTimeoutServer = 15000;
 		}
 
 		public void Load()

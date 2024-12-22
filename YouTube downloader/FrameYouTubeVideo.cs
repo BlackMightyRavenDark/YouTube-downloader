@@ -237,13 +237,15 @@ namespace YouTube_downloader
 			{
 				string externalVideoInfoServerUrl = config.ExternalVideoInfoServerUrl;
 				ushort externalVideoInfoServerPort = config.ExternalVideoInfoServerPort;
+				int timeout = config.ConnectionTimeoutServer;
 				await Task.Run(() =>
 				{
 					if (isExternalVideoInfoServerNeeded)
 					{
 						YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
-						IYouTubeClient client = new ExternalServerClient(externalVideoInfoServerUrl,
-							externalVideoInfoServerPort, videoWebPageResult.VideoWebPage);
+						IYouTubeClient client = new ExternalServerClient(
+							externalVideoInfoServerUrl, externalVideoInfoServerPort,
+							timeout, videoWebPageResult.VideoWebPage);
 					}
 					else
 					{
@@ -619,12 +621,13 @@ namespace YouTube_downloader
 						}
 					}
 
+					int timeout = config.ConnectionTimeout;
 					bool allOk = await Task.Run(() =>
 					{
-						bool ok = FileDownloader.GetUrlResponseHeaders(mediaTrack.FileUrl.Url, null, 5000, out _, out _) == 200;
+						bool ok = FileDownloader.GetUrlResponseHeaders(mediaTrack.FileUrl.Url, null, timeout, out _, out _) == 200;
 						if (ok && audioFormats.Count > 0)
 						{
-							int[] errorCodes = GetTrackAccessibilityHttpStatusCodes(audioFormats);
+							int[] errorCodes = GetTrackAccessibilityHttpStatusCodes(audioFormats, timeout);
 							ok &= errorCodes.All(code => code == 200);
 						}
 
@@ -1082,7 +1085,7 @@ namespace YouTube_downloader
 			if (config.CheckUrlsAccessibilityBeforeDownloading)
 			{
 				lblStatus.Text = "Состояние: Проверка доступности ссылок...";
-				int[] statusCodes = await Task.Run(() => GetTrackAccessibilityHttpStatusCodes(tracksToDownload));
+				int[] statusCodes = await Task.Run(() => GetTrackAccessibilityHttpStatusCodes(tracksToDownload, config.ConnectionTimeout));
 				bool isAllUrlsAccessible = statusCodes.All(value => value == 200);
 				if (!isAllUrlsAccessible)
 				{
