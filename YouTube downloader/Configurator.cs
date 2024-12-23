@@ -14,6 +14,7 @@ namespace YouTube_downloader
 		public string TempDirPath { get; set; }
 		public string ChunksMergingDirPath { get; set; }
 		public string FavoritesFilePath { get; set; }
+		public string UserAgent { get; set; }
 		public int ChunkDownloadRetryCountMax { get; set; }
 		public int ChunkDownloadErrorCountMax { get; set; }
 		public string OutputFileNameFormatWithDate { get; set; }
@@ -56,7 +57,10 @@ namespace YouTube_downloader
 		public int ConnectionTimeout { get; set; }
 		public int ConnectionTimeoutServer { get; set; }
 
-		public delegate void SavingDelegate(object sender, JObject root);
+		public const string DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0";
+
+
+        public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
 		public delegate void LoadedDelegate(object sender);
 		public SavingDelegate Saving;

@@ -486,7 +486,7 @@ namespace YouTube_downloader
 			NameValueCollection headers = new NameValueCollection()
 			{
 				{ "Accept", "*/*" },
-				{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 OPR/111.0.0.0 (Edition Yx 05)" }
+				{ "User-Agent", config.UserAgent }
 			};
 			_singleThreadedDownloader.Headers = headers;
 			int retryCountMax;
@@ -646,7 +646,13 @@ namespace YouTube_downloader
 
 				try
 				{
+					NameValueCollection requestHeaders = new NameValueCollection()
+					{
+						{ "Accept", "*/*" },
+						{ "User-Agent", config.UserAgent }
+					};
 					_multiThreadedDownloader = new MultiThreadedDownloader();
+					_multiThreadedDownloader.Headers = requestHeaders;
 					_multiThreadedDownloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
 					_multiThreadedDownloader.TryCountLimitPerThread = config.ChunkDownloadRetryCountMax;
 					_multiThreadedDownloader.TryCountLimitInsideThread = config.ChunkDownloadErrorCountMax;

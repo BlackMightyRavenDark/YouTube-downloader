@@ -38,6 +38,7 @@ namespace YouTube_downloader
 				json["downloadingDirPath"] = config.DownloadingDirPath;
 				json["tempDirPath"] = config.TempDirPath;
 				json["chunksMergingDirPath"] = config.ChunksMergingDirPath;
+				json["userAgent"] = config.UserAgent;
 				json["chunkDownloadTryCountMax"] = config.ChunkDownloadRetryCountMax;
 				json["chunkDownloadErrorCountMax"] = config.ChunkDownloadErrorCountMax;
 				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgo;
@@ -121,6 +122,10 @@ namespace YouTube_downloader
 					{
 						config.ChunksMergingDirPath = jt.Value<string>();
 					}
+				}
+				{
+					JToken jt = json.Value<JToken>("userAgent");
+					config.UserAgent = jt != null ? jt.Value<string>()?.Trim() : Configurator.DEFAULT_USER_AGENT;
 				}
 				{
 					JToken jt = json.Value<JToken>("cipherDecryptionAlgo");
@@ -435,6 +440,7 @@ namespace YouTube_downloader
 				editDownloadingDirPath.Text = config.DownloadingDirPath;
 				editTempDirPath.Text = config.TempDirPath;
 				editMergingDirPath.Text = config.ChunksMergingDirPath;
+				textBoxUserAgent.Text = config.UserAgent;
 				editCipherDecryptionAlgo.Text = config.CipherDecryptionAlgo;
 				editYouTubeApiKey.Text = config.YouTubeApiV3Key;
 				editBrowser.Text = config.BrowserExeFilePath;
@@ -1460,6 +1466,12 @@ namespace YouTube_downloader
 			ofd.Dispose();
 		}
 
+		private void btnSetDefaultUserAgent_Click(object sender, EventArgs e)
+		{
+			config.UserAgent = Configurator.DEFAULT_USER_AGENT;
+			textBoxUserAgent.Text = Configurator.DEFAULT_USER_AGENT;
+		}
+
 		private void event_FrameActivated(object sender)
 		{
 			foreach (FrameYouTubeChannel frame in framesChannel)
@@ -1527,6 +1539,11 @@ namespace YouTube_downloader
 		private void editYouTubeApiKey_Leave(object sender, EventArgs e)
 		{
 			config.YouTubeApiV3Key = editYouTubeApiKey.Text;
+		}
+
+		private void textBoxUserAgent_Leave(object sender, EventArgs e)
+		{
+			config.UserAgent = textBoxUserAgent.Text.Trim();
 		}
 
 		private void rbSearchResultsMax_Click(object sender, EventArgs e)
@@ -1979,6 +1996,16 @@ namespace YouTube_downloader
 		{
 			config.DashManualFragmentationChunkSize = (long)numericUpDownDashChunkSize.Value;
 			lblActualDashChunkSize.Text = FormatSize(config.DashManualFragmentationChunkSize);
+		}
+
+		private void btnUserAgentWhy_Click(object sender, EventArgs e)
+		{
+			const string msg = "\"User-Agent\" это специальный идентификатор, отправляемый серверам ютуба. " +
+				"При пустом или неподходящем значении, скачивание может не работать или чаще выдавать ошибки.\n" +
+				"Внимание! Этот параметр используется при скачивании видео / аудио! " +
+				"При обращении к API ютуба (например, при поиске видео) значение этого параметра может быть другим!";
+			MessageBox.Show(msg, "Зачематор зачемок",
+				MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void btnWhyDash_Click(object sender, EventArgs e)

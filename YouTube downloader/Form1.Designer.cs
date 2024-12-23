@@ -97,6 +97,10 @@ namespace YouTube_downloader
 			this.chkDownloadAllAudioTracks = new System.Windows.Forms.CheckBox();
 			this.chkSaveImage = new System.Windows.Forms.CheckBox();
 			this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
+			this.groupBox20 = new System.Windows.Forms.GroupBox();
+			this.btnUserAgentWhy = new System.Windows.Forms.Button();
+			this.btnSetDefaultUserAgent = new System.Windows.Forms.Button();
+			this.textBoxUserAgent = new System.Windows.Forms.TextBox();
 			this.checkBoxAlwaysUseExternalVideoInfoServer = new System.Windows.Forms.CheckBox();
 			this.groupBox17 = new System.Windows.Forms.GroupBox();
 			this.numericUpDownDashChunkDownloadRetriesCountMax = new System.Windows.Forms.NumericUpDown();
@@ -106,6 +110,7 @@ namespace YouTube_downloader
 			this.numericUpDownDashChunkSize = new System.Windows.Forms.NumericUpDown();
 			this.label22 = new System.Windows.Forms.Label();
 			this.checkBoxAlwaysDownloadAsDash = new System.Windows.Forms.CheckBox();
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.checkBoxUseGmtTime = new System.Windows.Forms.CheckBox();
 			this.groupBox13 = new System.Windows.Forms.GroupBox();
 			this.btnUseRamWhy = new System.Windows.Forms.Button();
@@ -207,6 +212,7 @@ namespace YouTube_downloader
 			this.groupBox16.SuspendLayout();
 			this.groupBox14.SuspendLayout();
 			this.tabPageSystemSettings.SuspendLayout();
+			this.groupBox20.SuspendLayout();
 			this.groupBox17.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).BeginInit();
@@ -1049,6 +1055,7 @@ namespace YouTube_downloader
 			// 
 			this.tabPageSystemSettings.AutoScroll = true;
 			this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+			this.tabPageSystemSettings.Controls.Add(this.groupBox20);
 			this.tabPageSystemSettings.Controls.Add(this.checkBoxAlwaysUseExternalVideoInfoServer);
 			this.tabPageSystemSettings.Controls.Add(this.groupBox17);
 			this.tabPageSystemSettings.Controls.Add(this.checkBoxUseGmtTime);
@@ -1061,6 +1068,50 @@ namespace YouTube_downloader
 			this.tabPageSystemSettings.Size = new System.Drawing.Size(527, 357);
 			this.tabPageSystemSettings.TabIndex = 1;
 			this.tabPageSystemSettings.Text = "Система";
+			// 
+			// groupBox20
+			// 
+			this.groupBox20.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox20.Controls.Add(this.btnUserAgentWhy);
+			this.groupBox20.Controls.Add(this.btnSetDefaultUserAgent);
+			this.groupBox20.Controls.Add(this.textBoxUserAgent);
+			this.groupBox20.Location = new System.Drawing.Point(7, 306);
+			this.groupBox20.Name = "groupBox20";
+			this.groupBox20.Size = new System.Drawing.Size(497, 77);
+			this.groupBox20.TabIndex = 17;
+			this.groupBox20.TabStop = false;
+			this.groupBox20.Text = "User agent";
+			// 
+			// btnUserAgentWhy
+			// 
+			this.btnUserAgentWhy.Location = new System.Drawing.Point(391, 48);
+			this.btnUserAgentWhy.Name = "btnUserAgentWhy";
+			this.btnUserAgentWhy.Size = new System.Drawing.Size(75, 23);
+			this.btnUserAgentWhy.TabIndex = 2;
+			this.btnUserAgentWhy.Text = "Зачем?";
+			this.btnUserAgentWhy.UseVisualStyleBackColor = true;
+			this.btnUserAgentWhy.Click += new System.EventHandler(this.btnUserAgentWhy_Click);
+			// 
+			// btnSetDefaultUserAgent
+			// 
+			this.btnSetDefaultUserAgent.Location = new System.Drawing.Point(7, 48);
+			this.btnSetDefaultUserAgent.Name = "btnSetDefaultUserAgent";
+			this.btnSetDefaultUserAgent.Size = new System.Drawing.Size(99, 23);
+			this.btnSetDefaultUserAgent.TabIndex = 1;
+			this.btnSetDefaultUserAgent.Text = "По-умолчанию";
+			this.btnSetDefaultUserAgent.UseVisualStyleBackColor = true;
+			this.btnSetDefaultUserAgent.Click += new System.EventHandler(this.btnSetDefaultUserAgent_Click);
+			// 
+			// textBoxUserAgent
+			// 
+			this.textBoxUserAgent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxUserAgent.Location = new System.Drawing.Point(8, 19);
+			this.textBoxUserAgent.Name = "textBoxUserAgent";
+			this.textBoxUserAgent.Size = new System.Drawing.Size(475, 20);
+			this.textBoxUserAgent.TabIndex = 0;
+			this.textBoxUserAgent.Leave += new System.EventHandler(this.textBoxUserAgent_Leave);
 			// 
 			// checkBoxAlwaysUseExternalVideoInfoServer
 			// 
@@ -1084,7 +1135,8 @@ namespace YouTube_downloader
 			this.groupBox17.Controls.Add(this.numericUpDownDashChunkSize);
 			this.groupBox17.Controls.Add(this.label22);
 			this.groupBox17.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
-			this.groupBox17.Location = new System.Drawing.Point(10, 526);
+			this.groupBox17.Controls.Add(this.menuStrip1);
+			this.groupBox17.Location = new System.Drawing.Point(10, 609);
 			this.groupBox17.Name = "groupBox17";
 			this.groupBox17.Size = new System.Drawing.Size(494, 102);
 			this.groupBox17.TabIndex = 16;
@@ -1188,12 +1240,20 @@ namespace YouTube_downloader
 			this.checkBoxAlwaysDownloadAsDash.UseVisualStyleBackColor = true;
 			this.checkBoxAlwaysDownloadAsDash.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysDownloadAsDash_CheckedChanged);
 			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.Location = new System.Drawing.Point(3, 16);
+			this.menuStrip1.Name = "menuStrip1";
+			this.menuStrip1.Size = new System.Drawing.Size(488, 24);
+			this.menuStrip1.TabIndex = 7;
+			this.menuStrip1.Text = "menuStrip1";
+			// 
 			// checkBoxUseGmtTime
 			// 
 			this.checkBoxUseGmtTime.AutoSize = true;
 			this.checkBoxUseGmtTime.Checked = true;
 			this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(16, 636);
+			this.checkBoxUseGmtTime.Location = new System.Drawing.Point(16, 719);
 			this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
 			this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseGmtTime.TabIndex = 15;
@@ -1209,7 +1269,7 @@ namespace YouTube_downloader
 			this.groupBox13.Controls.Add(this.btnUseRamWhy);
 			this.groupBox13.Controls.Add(this.panelRAM);
 			this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
-			this.groupBox13.Location = new System.Drawing.Point(7, 454);
+			this.groupBox13.Location = new System.Drawing.Point(7, 537);
 			this.groupBox13.Name = "groupBox13";
 			this.groupBox13.Size = new System.Drawing.Size(497, 66);
 			this.groupBox13.TabIndex = 14;
@@ -1470,7 +1530,7 @@ namespace YouTube_downloader
 			this.groupBox7.Controls.Add(this.label9);
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsAudio);
 			this.groupBox7.Controls.Add(this.numericUpDownThreadsVideo);
-			this.groupBox7.Location = new System.Drawing.Point(7, 306);
+			this.groupBox7.Location = new System.Drawing.Point(7, 389);
 			this.groupBox7.Name = "groupBox7";
 			this.groupBox7.Size = new System.Drawing.Size(345, 142);
 			this.groupBox7.TabIndex = 10;
@@ -2139,6 +2199,7 @@ namespace YouTube_downloader
 			this.Controls.Add(this.tvFavorites);
 			this.Controls.Add(this.tabControlMain);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.MainMenuStrip = this.menuStrip1;
 			this.MinimumSize = new System.Drawing.Size(830, 440);
 			this.Name = "Form1";
 			this.Text = "Скачивалка с ютуба";
@@ -2174,6 +2235,8 @@ namespace YouTube_downloader
 			this.groupBox14.PerformLayout();
 			this.tabPageSystemSettings.ResumeLayout(false);
 			this.tabPageSystemSettings.PerformLayout();
+			this.groupBox20.ResumeLayout(false);
+			this.groupBox20.PerformLayout();
 			this.groupBox17.ResumeLayout(false);
 			this.groupBox17.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).EndInit();
@@ -2375,6 +2438,11 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label29;
 		private System.Windows.Forms.NumericUpDown numericUpDownConnectionTimeoutServer;
 		private System.Windows.Forms.Label label30;
+		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.GroupBox groupBox20;
+		private System.Windows.Forms.TextBox textBoxUserAgent;
+		private System.Windows.Forms.Button btnUserAgentWhy;
+		private System.Windows.Forms.Button btnSetDefaultUserAgent;
 	}
 }
 
