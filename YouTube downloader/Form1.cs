@@ -949,7 +949,7 @@ namespace YouTube_downloader
 			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out _));
 			if (video != null)
 			{
-				if (!video.IsSuccessed())
+				if (!video.IsSucceed())
 				{
 					MessageBox.Show("Ошибка поиска видео! Что-то где-то пошло не так!", "Ошибатор ошибок",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
