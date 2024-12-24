@@ -1435,7 +1435,9 @@ namespace YouTube_downloader
 					e.Graphics.FillRectangle(Brushes.Black, rect);
 					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
 				}
-				if (!VideoInfo.IsFamilySafe)
+
+				bool isAdultVideo = VideoInfo.Status != null ? VideoInfo.Status.IsAdult : !VideoInfo.IsFamilySafe;
+				if (isAdultVideo)
 				{
 					e.Graphics.DrawImage(Resources.age18plus, imagePreview.Width - 40, 0, 40, 40);
 				}
