@@ -29,6 +29,11 @@ namespace YouTube_downloader
 			}
 		}
 
+		public static bool IsSuccessed(this YouTubeVideo video)
+		{
+			return !string.IsNullOrEmpty(video.Id);
+		}
+
 		public static bool IsCiphered(this YouTubeVideo video)
 		{
 			try

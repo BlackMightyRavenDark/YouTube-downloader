@@ -11,6 +11,7 @@ using YouTubeApiLib;
 using YouTube_downloader.Properties;
 using static YouTubeApiLib.Utils;
 using static YouTube_downloader.Utils;
+using System.Threading.Tasks;
 
 namespace YouTube_downloader
 {
@@ -943,6 +944,55 @@ namespace YouTube_downloader
 			return framesChannel.Count + framesVideo.Count;
 		}
 
+		private async Task<bool> FindVideoById(YouTubeVideoId videoId)
+		{
+			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out _));
+			if (video != null)
+			{
+				if (!video.IsSuccessed())
+				{
+					MessageBox.Show("Ошибка поиска видео! Что-то где-то пошло не так!", "Ошибатор ошибок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+
+				CreateAndAddNewFrame(video);
+				StackFrames();
+
+				tabPageSearchResults.Text = $"Результаты поиска: {framesVideo.Count + framesChannel.Count}";
+				tabControlMain.SelectedTab = tabPageSearchResults;
+				editSearchUrl.Text = null;
+
+				return true;
+			}
+			else
+			{
+				MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			return false;
+		}
+
+		private void CreateAndAddNewFrame(YouTubeVideo video)
+		{
+			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
+			frame.SetMenusFontSize(config.MenusFontSize);
+			frame.FavoriteChannelChanged += (s, id, newState) =>
+			{
+				for (int j = 0; j < framesVideo.Count; ++j)
+				{
+					if (framesVideo[j].VideoInfo.OwnerChannelId == id)
+					{
+						framesVideo[j].IsFavoriteChannel = newState;
+					}
+				}
+			};
+			frame.Activated += event_FrameActivated;
+			frame.OpenChannel += event_OpenChannel;
+			framesVideo.Add(frame);
+		}
+
 		private void ClearChannels()
 		{
 			foreach (YouTubeChannel channel in channels)
@@ -1066,7 +1116,7 @@ namespace YouTube_downloader
 			EnableControls();
 		}
 
-		private void btnSearchByUrl_Click(object sender, EventArgs e)
+		private async void btnSearchByUrl_Click(object sender, EventArgs e)
 		{
 			DisableControls();
 
@@ -1102,47 +1152,9 @@ namespace YouTube_downloader
 			ClearFramesVideo();
 
 			tabPageSearchResults.Text = "Результаты поиска";
-			Application.DoEvents();
 			scrollBarSearchResults.Value = 0;
 
-			try
-			{
-				YouTubeVideo video = GetSingleVideo(videoId, out _);
-				if (video != null)
-				{
-					FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
-					frame.SetMenusFontSize(config.MenusFontSize);
-					frame.FavoriteChannelChanged += (s, id, newState) =>
-					{
-						for (int j = 0; j < framesVideo.Count; ++j)
-						{
-							if (framesVideo[j].VideoInfo.OwnerChannelId == id)
-							{
-								framesVideo[j].IsFavoriteChannel = newState;
-							}
-						}
-					};
-					frame.Activated += event_FrameActivated;
-					frame.OpenChannel += event_OpenChannel;
-					framesVideo.Add(frame);
-					StackFrames();
-
-					tabPageSearchResults.Text = "Результаты поиска: 1";
-					tabControlMain.SelectedTab = tabPageSearchResults;
-					editSearchUrl.Text = null;
-				}
-				else
-				{
-					MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-				MessageBox.Show(ex.Message, "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
+			await FindVideoById(videoId);
 
 			EnableControls();
 		}
@@ -1260,7 +1272,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void tvFavorites_MouseDoubleClick(object sender, MouseEventArgs e)
+		private async void tvFavorites_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left && tvFavorites.SelectedObject != null)
 			{
@@ -1285,48 +1297,10 @@ namespace YouTube_downloader
 							ClearFramesVideo();
 
 							tabPageSearchResults.Text = "Результаты поиска";
-							Application.DoEvents();
 							scrollBarSearchResults.Value = 0;
 
-							try
-							{
-								YouTubeVideoId youTubeVideoId = new YouTubeVideoId(item.ID);
-								YouTubeVideo video = GetSingleVideo(youTubeVideoId, out _);
-								if (video != null)
-								{
-									FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
-									frame.SetMenusFontSize(config.MenusFontSize);
-									frame.FavoriteChannelChanged += (s, id, newState) =>
-									{
-										for (int j = 0; j < framesVideo.Count; ++j)
-										{
-											if (framesVideo[j].VideoInfo.OwnerChannelId == id)
-											{
-												framesVideo[j].IsFavoriteChannel = newState;
-											}
-										}
-									};
-									frame.Activated += event_FrameActivated;
-									frame.OpenChannel += event_OpenChannel;
-									framesVideo.Add(frame);
-									StackFrames();
-
-									tabPageSearchResults.Text = "Результаты поиска: 1";
-									tabControlMain.SelectedTab = tabPageSearchResults;
-									editSearchUrl.Text = null;
-								}
-								else
-								{
-									MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
-										MessageBoxButtons.OK, MessageBoxIcon.Error);
-								}
-							}
-							catch (Exception ex)
-							{
-								System.Diagnostics.Debug.WriteLine(ex.Message);
-								MessageBox.Show(ex.Message, "Ошибатор ошибок",
-									MessageBoxButtons.OK, MessageBoxIcon.Error);
-							}
+							YouTubeVideoId youTubeVideo = new YouTubeVideoId(item.ID);
+							await FindVideoById(youTubeVideo);
 						}
 					}
 					else if (item.ItemType == FavoriteItemType.Channel)
