@@ -32,7 +32,8 @@ namespace YouTube_downloader
 		public static bool IsSucceed(this YouTubeVideo video)
 		{
 			return video.Status != null &&
-				(!string.IsNullOrEmpty(video.Status.Reason) ||
+				((bool)video.Status.Status?.Equals("OK", StringComparison.OrdinalIgnoreCase) ||
+				!string.IsNullOrEmpty(video.Status.Reason) ||
 				!string.IsNullOrEmpty(video.Status.ReasonDetails));
 		}
 
