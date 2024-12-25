@@ -71,10 +71,6 @@ namespace YouTube_downloader
 			if (video.Thumbnails != null)
 			{
 				FileDownloader d = new FileDownloader();
-
-				//Bugfix for "MultiThreadedDownloaderLib" version 1.6.0 / 1.6.1
-				d.HeadersReceiving += (sender, url, downloadingTask, tryNumber, tryCountLimit) => { };
-
 				foreach (YouTubeVideoThumbnail thumbnail in video.Thumbnails)
 				{
 					Stream mem = new MemoryStream();
