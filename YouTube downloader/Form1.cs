@@ -2012,7 +2012,7 @@ namespace YouTube_downloader
 		{
 			btnVideoInfoServerWhy.Enabled = false;
 			string msg = "Этот сервер можно использовать в особых случаях. " +
-				"Например, для скачивания видео 18+ или когда другое API не работает.";
+				"Например, для скачивания видео 18+ (уже нет, сорян) или когда другое API не работает.";
 			MessageBox.Show(msg, "Зачематор зачемок",
 				MessageBoxButtons.OK, MessageBoxIcon.Information);
 			btnVideoInfoServerWhy.Enabled = true;
