@@ -91,7 +91,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void SetVideoInfo(YouTubeVideo videoInfo)
+		private async void SetVideoInfo(YouTubeVideo videoInfo)
 		{
 			VideoInfo = videoInfo;
 
@@ -141,7 +141,7 @@ namespace YouTube_downloader
 			favoriteItem.ID = VideoInfo.OwnerChannelId;
 			_isFavoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 			_ciphered = VideoInfo.IsCiphered();
-			_videoImageData = videoInfo.DownloadPreviewImage();
+			_videoImageData = await Task.Run(() => videoInfo.DownloadPreviewImage());
 			_videoImage = _videoImageData != null && _videoImageData.Length > 0L ? Image.FromStream(_videoImageData) : null;
 			imagePreview.Refresh();
 		}
