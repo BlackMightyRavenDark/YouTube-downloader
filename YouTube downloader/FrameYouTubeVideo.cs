@@ -36,6 +36,7 @@ namespace YouTube_downloader
 
 		private List<YouTubeMediaTrackAudio> audioFormats = new List<YouTubeMediaTrackAudio>();
 		private List<YouTubeMediaTrackVideo> videoFormats = new List<YouTubeMediaTrackVideo>();
+		private List<YouTubeMediaTrackHlsStream> hlsFormats = new List<YouTubeMediaTrackHlsStream>();
 		private List<YouTubeMediaTrackContainer> containerFormats = new List<YouTubeMediaTrackContainer>();
 
 		public delegate void BtnDownloadClickedDelegate(object sender, EventArgs e);
@@ -224,6 +225,7 @@ namespace YouTube_downloader
 			lblStatus.Text = "Состояние: Поиск доступных форматов...";
 
 			videoFormats.Clear();
+			hlsFormats.Clear();
 			containerFormats.Clear();
 			audioFormats.Clear();
 			contextMenuDownloads.Items.Clear();
@@ -290,21 +292,15 @@ namespace YouTube_downloader
 				return;
 			}
 
-			videoFormats = FilterVideoTracks(mediaTracks);
-			audioFormats = FilterAudioTracks(mediaTracks);
+			videoFormats = FilterVideoTracks(mediaTracks).ToList();
+			audioFormats = FilterAudioTracks(mediaTracks).ToList();
 			if (VideoInfo.IsDashed)
 			{
 				if (config.SortDashFormatsByBitrate)
 				{
-					Type typeHls = typeof(YouTubeMediaTrackHlsStream);
-
 					int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
 					{
-						if (x == null || x.GetType() == typeHls || x.AverageBitrate <= 0 ||
-							y == null || y.GetType() == typeHls || y.AverageBitrate <= 0)
-						{
-							return 0;
-						}
+						if (x.AverageBitrate <= 0 || y.AverageBitrate <= 0) { return 0; }
 						return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
 					}
 
@@ -312,26 +308,40 @@ namespace YouTube_downloader
 					audioFormats.Sort(SorterFunc);
 				}
 			}
-			else
+			else if (config.SortFormatsByFileSize)
 			{
-				if (config.SortFormatsByFileSize)
+				int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
 				{
-					Type typeHls = typeof(YouTubeMediaTrackHlsStream);
-
-					int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
+					if (x.ContentLength <= 0L || y.ContentLength <= 0L ||
+						x.ContentLength == y.ContentLength)
 					{
-						if (x == null || x.GetType() == typeHls || x.ContentLength <= 0L ||
-							y == null || y.GetType() == typeHls || y.ContentLength <= 0L ||
-							x.ContentLength == y.ContentLength)
-						{
-							return 0;
-						}
-						return x.ContentLength < y.ContentLength ? 1 : -1;
+						return 0;
+					}
+					return x.ContentLength < y.ContentLength ? 1 : -1;
+				}
+
+				videoFormats.Sort(SorterFunc);
+				audioFormats.Sort(SorterFunc);
+			}
+
+			hlsFormats = FilterHlsTracks(mediaTracks).ToList();
+			if (hlsFormats.Count > 0)
+			{
+				hlsFormats.Sort((x, y) =>
+				{
+					if (x.VideoHeight <= 0 || y.VideoHeight <= 0 ||
+						(x.AverageBitrate == 0 && y.AverageBitrate == 0))
+					{
+						return 0;
 					}
 
-					videoFormats.Sort(SorterFunc);
-					audioFormats.Sort(SorterFunc);
-				}
+					if (x.VideoHeight == y.VideoHeight)
+					{
+						return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
+					}
+
+					return x.VideoHeight < y.VideoHeight ? 1 : -1;
+				});
 			}
 
 			if (config.MoveAudioId140First)
@@ -364,12 +374,17 @@ namespace YouTube_downloader
 				new TableColumn(TableColumnAlignment.Right)
 			};
 
+			foreach (YouTubeMediaTrackHlsStream trackHls in hlsFormats)
+			{
+				tableRows.Add(trackHls.ToTableRow());
+			}
+
 			foreach (YouTubeMediaTrackVideo trackVideo in videoFormats)
 			{
 				tableRows.Add(trackVideo.ToTableRow());
 			}
 
-			containerFormats = FilterContainerTracks(mediaTracks);
+			containerFormats = FilterContainerTracks(mediaTracks).ToList();
 			foreach (YouTubeMediaTrackContainer trackContainer in containerFormats)
 			{
 				tableRows.Add(trackContainer.ToTableRow());
@@ -384,26 +399,52 @@ namespace YouTube_downloader
 			table.Format();
 
 			List<YouTubeMediaTrackVideo> videos = table.Rows.Where(
-				o => o.Tag is YouTubeMediaTrackVideo).Select(o => o.Tag as YouTubeMediaTrackVideo).ToList();
+				o => o.Tag.GetType() == typeof(YouTubeMediaTrackVideo)).Select(o => o.Tag as YouTubeMediaTrackVideo).ToList();
+			List<YouTubeMediaTrackHlsStream> hlsStreams = table.Rows.Where(
+				o => o.Tag.GetType() == typeof(YouTubeMediaTrackHlsStream)).Select(o => o.Tag as YouTubeMediaTrackHlsStream).ToList();
 			List<YouTubeMediaTrackContainer> containers = table.Rows.Where(
-				o => o.Tag is YouTubeMediaTrackContainer).Select(o => o.Tag as YouTubeMediaTrackContainer).ToList();
+				o => o.Tag.GetType() == typeof(YouTubeMediaTrackContainer)).Select(o => o.Tag as YouTubeMediaTrackContainer).ToList();
 			List<YouTubeMediaTrackAudio> audios = table.Rows.Where(
-				o => o.Tag is YouTubeMediaTrackAudio).Select(o => o.Tag as YouTubeMediaTrackAudio).ToList();
+				o => o.Tag.GetType() == typeof(YouTubeMediaTrackAudio)).Select(o => o.Tag as YouTubeMediaTrackAudio).ToList();
 
 			const string columnSeparator = " | ";
 			int tableRowId = 0;
-			foreach (YouTubeMediaTrackVideo trackVideo in videos)
+
+			foreach (YouTubeMediaTrackHlsStream trackHls in hlsStreams)
 			{
 				string title = table.Rows[tableRowId].Join(columnSeparator);
 				ToolStripMenuItem mi = new ToolStripMenuItem(title);
-				mi.Tag = trackVideo;
+				mi.Tag = trackHls;
 				mi.Click += MenuItemDownloadClick;
 				contextMenuDownloads.Items.Add(mi);
 				tableRowId++;
 			}
+
+			if (videos.Count > 0)
+			{
+				if (hlsStreams.Count > 0)
+				{
+					contextMenuDownloads.Items.Add("-");
+				}
+
+				foreach (YouTubeMediaTrackVideo trackVideo in videos)
+				{
+					string title = table.Rows[tableRowId].Join(columnSeparator);
+					ToolStripMenuItem mi = new ToolStripMenuItem(title);
+					mi.Tag = trackVideo;
+					mi.Click += MenuItemDownloadClick;
+					contextMenuDownloads.Items.Add(mi);
+					tableRowId++;
+				}
+			}
+
 			if (containers.Count > 0)
 			{
-				contextMenuDownloads.Items.Add("-");
+				if (hlsStreams.Count + videos.Count > 0)
+				{
+					contextMenuDownloads.Items.Add("-");
+				}
+
 				foreach (YouTubeMediaTrackContainer trackContainer in containers)
 				{
 					string title = table.Rows[tableRowId].Join(columnSeparator);
@@ -414,9 +455,14 @@ namespace YouTube_downloader
 					tableRowId++;
 				}
 			}
+
 			if (audios.Count > 0)
 			{
-				contextMenuDownloads.Items.Add("-");
+				if (hlsStreams.Count + videos.Count + containers.Count > 0)
+				{
+					contextMenuDownloads.Items.Add("-");
+				}
+
 				foreach (YouTubeMediaTrackAudio trackAudio in audios)
 				{
 					string title = table.Rows[tableRowId].Join(columnSeparator);
@@ -428,7 +474,7 @@ namespace YouTube_downloader
 				}
 			}
 
-			if (videoFormats.Count + audioFormats.Count > 0)
+			if (hlsStreams.Count + videos.Count + containers.Count + audios.Count > 0)
 			{
 				contextMenuDownloads.Items.Add("-");
 				ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...");

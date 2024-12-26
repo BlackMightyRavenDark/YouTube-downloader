@@ -112,43 +112,52 @@ namespace YouTube_downloader
 			return video;
 		}
 
-		public static List<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+		public static IEnumerable<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
-			List<YouTubeMediaTrackVideo> list = new List<YouTubeMediaTrackVideo>();
+			Type typeOfTrack = typeof(YouTubeMediaTrackVideo);
 			foreach (YouTubeMediaTrack track in mediaTracks)
 			{
-				if (track is YouTubeMediaTrackVideo)
+				if (track.GetType() == typeof(YouTubeMediaTrackVideo))
 				{
-					list.Add(track as YouTubeMediaTrackVideo);
+					yield return track as YouTubeMediaTrackVideo;
 				}
 			}
-			return list;
 		}
 
-		public static List<YouTubeMediaTrackContainer> FilterContainerTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+		public static IEnumerable<YouTubeMediaTrackHlsStream> FilterHlsTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
-			List<YouTubeMediaTrackContainer> list = new List<YouTubeMediaTrackContainer>();
+			Type typeOfTrack = typeof(YouTubeMediaTrackHlsStream);
 			foreach (YouTubeMediaTrack track in mediaTracks)
 			{
-				if (track is YouTubeMediaTrackContainer)
+				if (track.GetType() == typeOfTrack)
 				{
-					list.Add(track as YouTubeMediaTrackContainer);
+					yield return track as YouTubeMediaTrackHlsStream;
 				}
 			}
-			return list;
 		}
 
-		public static List<YouTubeMediaTrackAudio> FilterAudioTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+		public static IEnumerable<YouTubeMediaTrackContainer> FilterContainerTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
-			List<YouTubeMediaTrackAudio> list = new List<YouTubeMediaTrackAudio>();
+			Type typeOfTrack = typeof(YouTubeMediaTrackContainer);
 			foreach (YouTubeMediaTrack track in mediaTracks)
 			{
-				if (track is YouTubeMediaTrackAudio)
+				if (track.GetType() == typeOfTrack)
 				{
-					list.Add(track as YouTubeMediaTrackAudio);
+					yield return track as YouTubeMediaTrackContainer;
 				}
 			}
-			return list;
+		}
+
+		public static IEnumerable<YouTubeMediaTrackAudio> FilterAudioTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
+		{
+			Type typeOfTrack = typeof(YouTubeMediaTrackAudio);
+			foreach (YouTubeMediaTrack track in mediaTracks)
+			{
+				if (track.GetType() == typeOfTrack)
+				{
+					yield return track as YouTubeMediaTrackAudio;
+				}
+			}
 		}
 
 		public static string GetTrackShortInfo(YouTubeMediaTrack track)
