@@ -397,96 +397,47 @@ namespace YouTube_downloader
 
 			Table table = new Table(tableRows, tableColumns);
 			table.Format();
-
-			List<YouTubeMediaTrackVideo> videos = table.Rows.Where(
-				o => o.Tag.GetType() == typeof(YouTubeMediaTrackVideo)).Select(o => o.Tag as YouTubeMediaTrackVideo).ToList();
-			List<YouTubeMediaTrackHlsStream> hlsStreams = table.Rows.Where(
-				o => o.Tag.GetType() == typeof(YouTubeMediaTrackHlsStream)).Select(o => o.Tag as YouTubeMediaTrackHlsStream).ToList();
-			List<YouTubeMediaTrackContainer> containers = table.Rows.Where(
-				o => o.Tag.GetType() == typeof(YouTubeMediaTrackContainer)).Select(o => o.Tag as YouTubeMediaTrackContainer).ToList();
-			List<YouTubeMediaTrackAudio> audios = table.Rows.Where(
-				o => o.Tag.GetType() == typeof(YouTubeMediaTrackAudio)).Select(o => o.Tag as YouTubeMediaTrackAudio).ToList();
-
 			const string columnSeparator = " | ";
-			int tableRowId = 0;
 
-			foreach (YouTubeMediaTrackHlsStream trackHls in hlsStreams)
+			if (table.Rows.Count > 0)
 			{
-				string title = table.Rows[tableRowId].Join(columnSeparator);
-				ToolStripMenuItem mi = new ToolStripMenuItem(title);
-				mi.Tag = trackHls;
-				mi.Click += MenuItemDownloadClick;
-				contextMenuDownloads.Items.Add(mi);
-				tableRowId++;
-			}
+				Type previousObjectType = table.Rows[0].Tag.GetType();
 
-			if (videos.Count > 0)
-			{
-				if (hlsStreams.Count > 0)
+				foreach (TableRow row in table.Rows)
 				{
-					contextMenuDownloads.Items.Add("-");
-				}
+					Type objectType = row.Tag.GetType();
+					if (objectType != previousObjectType)
+					{
+						contextMenuDownloads.Items.Add("-");
+						previousObjectType = objectType;
+					}
 
-				foreach (YouTubeMediaTrackVideo trackVideo in videos)
-				{
-					string title = table.Rows[tableRowId].Join(columnSeparator);
-					ToolStripMenuItem mi = new ToolStripMenuItem(title);
-					mi.Tag = trackVideo;
+					string title = row.Join(columnSeparator);
+					ToolStripMenuItem mi = new ToolStripMenuItem(title) { Tag = row.Tag };
 					mi.Click += MenuItemDownloadClick;
 					contextMenuDownloads.Items.Add(mi);
-					tableRowId++;
 				}
-			}
 
-			if (containers.Count > 0)
-			{
-				if (hlsStreams.Count + videos.Count > 0)
+				if (contextMenuDownloads.Items.Count > 0)
 				{
 					contextMenuDownloads.Items.Add("-");
-				}
-
-				foreach (YouTubeMediaTrackContainer trackContainer in containers)
-				{
-					string title = table.Rows[tableRowId].Join(columnSeparator);
-					ToolStripMenuItem mi = new ToolStripMenuItem(title);
-					mi.Tag = trackContainer;
+					ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...") { Tag = null };
 					mi.Click += MenuItemDownloadClick;
 					contextMenuDownloads.Items.Add(mi);
-					tableRowId++;
 				}
-			}
 
-			if (audios.Count > 0)
+				lblStatus.Text = null;
+
+				Point pt = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
+				contextMenuDownloads.Show(pt.X, pt.Y);
+			}
+			else
 			{
-				if (hlsStreams.Count + videos.Count + containers.Count > 0)
-				{
-					contextMenuDownloads.Items.Add("-");
-				}
-
-				foreach (YouTubeMediaTrackAudio trackAudio in audios)
-				{
-					string title = table.Rows[tableRowId].Join(columnSeparator);
-					ToolStripMenuItem mi = new ToolStripMenuItem(title);
-					mi.Tag = trackAudio;
-					mi.Click += MenuItemDownloadClick;
-					contextMenuDownloads.Items.Add(mi);
-					tableRowId++;
-				}
+				const string msg = "Ошибка построения списка форматов для скачивания!";
+				lblStatus.Text = $"Состояние: {msg}";
+				MessageBox.Show(msg, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-
-			if (hlsStreams.Count + videos.Count + containers.Count + audios.Count > 0)
-			{
-				contextMenuDownloads.Items.Add("-");
-				ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...");
-				mi.Tag = null;
-				mi.Click += MenuItemDownloadClick;
-				contextMenuDownloads.Items.Add(mi);
-			}
-
-			lblStatus.Text = null;
-
-			Point pt = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
-			contextMenuDownloads.Show(pt.X, pt.Y);
 
 			btnDownload.Enabled = true;
 		}
