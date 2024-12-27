@@ -374,9 +374,16 @@ namespace YouTube_downloader
 				new TableColumn(TableColumnAlignment.Right)
 			};
 
-			foreach (YouTubeMediaTrackHlsStream trackHls in hlsFormats)
+			bool showHls = hlsFormats.Count > 0 &&
+				((!config.ShowHlsTracksOnlyForStreams ||
+				(config.ShowHlsTracksOnlyForStreams && VideoInfo.IsLiveNow)) ||
+				(videoFormats.Count + containerFormats.Count == 0));
+			if (showHls)
 			{
-				tableRows.Add(trackHls.ToTableRow());
+				foreach (YouTubeMediaTrackHlsStream trackHls in hlsFormats)
+				{
+					tableRows.Add(trackHls.ToTableRow());
+				}
 			}
 
 			foreach (YouTubeMediaTrackVideo trackVideo in videoFormats)

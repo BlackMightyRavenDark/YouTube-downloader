@@ -57,6 +57,7 @@ namespace YouTube_downloader
 				json["downloadSecondAudioTrackAutomatically"] = config.DownloadSecondAudioTrack;
 				json["ifOnlySecondAudioTrackIsBetter"] = config.IfOnlySecondAudioTrackIsBetter;
 				json["downloadAllAudioTracksAutomatically"] = config.DownloadAllAudioTracks;
+				json["showHlsTracksOnlyForStreams"] = config.ShowHlsTracksOnlyForStreams;
 				json["checkUrlsAccessibilityBeforeDownloading"] = config.CheckUrlsAccessibilityBeforeDownloading;
 				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
 				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
@@ -322,6 +323,13 @@ namespace YouTube_downloader
 					}
 				}
 				{
+					JToken jt = json.Value<JToken>("showHlsTracksOnlyForStreams");
+					if (jt != null)
+					{
+						config.ShowHlsTracksOnlyForStreams = jt.Value<bool>();
+					}
+				}
+				{
 					JToken jt = json.Value<JToken>("checkUrlsAccessibilityBeforeDownloading");
 					if (jt != null)
 					{
@@ -477,6 +485,7 @@ namespace YouTube_downloader
 				chkDownloadSecondAudioTrack.Checked = config.DownloadSecondAudioTrack;
 				chkIfOnlyBiggerFileSize.Checked = config.IfOnlySecondAudioTrackIsBetter;
 				chkDownloadAllAudioTracks.Checked = config.DownloadAllAudioTracks;
+				checkBoxShowHlsTracksOnlyForStreams.Checked = config.ShowHlsTracksOnlyForStreams;
 				checkBoxCheckUrlsAccessibilityBeforeDownloading.Checked = config.CheckUrlsAccessibilityBeforeDownloading;
 				numericUpDownThreadsVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
@@ -1705,6 +1714,11 @@ namespace YouTube_downloader
 		private void numericUpDownDelayAfterContainerCreated_ValueChanged(object sender, EventArgs e)
 		{
 			config.ExtraDelayAfterContainerWasBuilt = (int)numericUpDownDelayAfterContainerCreated.Value;
+		}
+
+		private void checkBoxShowHlsTracksOnlyForStreams_CheckedChanged(object sender, EventArgs e)
+		{
+			config.ShowHlsTracksOnlyForStreams = checkBoxShowHlsTracksOnlyForStreams.Checked;
 		}
 
 		private void checkBoxCheckUrlsAccessibilityBeforeDownloading_CheckedChanged(object sender, EventArgs e)

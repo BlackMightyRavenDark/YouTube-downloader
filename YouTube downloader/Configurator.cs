@@ -29,6 +29,7 @@ namespace YouTube_downloader
 		public bool IfOnlySecondAudioTrackIsBetter { get; set; }
 		public bool DownloadAllAudioTracks { get; set; }
 		public bool DownloadAllAdaptiveVideoTracks { get; set; }
+		public bool ShowHlsTracksOnlyForStreams { get; set; }
 		public bool CheckUrlsAccessibilityBeforeDownloading { get; set; }
 		public bool AlwaysDownloadAsDash { get; set; }
 		public long DashManualFragmentationChunkSize { get; set; }
@@ -125,6 +126,7 @@ namespace YouTube_downloader
 			IfOnlySecondAudioTrackIsBetter = true;
 			DownloadAllAudioTracks = false;
 			DownloadAllAdaptiveVideoTracks = false;
+			ShowHlsTracksOnlyForStreams = true;
 			CheckUrlsAccessibilityBeforeDownloading = true;
 			AlwaysDownloadAsDash = false;
 			DashManualFragmentationChunkSize = 50000L;

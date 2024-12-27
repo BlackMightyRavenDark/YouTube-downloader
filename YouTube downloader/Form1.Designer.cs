@@ -58,6 +58,7 @@ namespace YouTube_downloader
             this.btnBrowseTempPath = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPageGUI = new System.Windows.Forms.TabPage();
+            this.checkBoxShowHlsTracksOnlyForStreams = new System.Windows.Forms.CheckBox();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
             this.chkSortDashFormatsByBitrate = new System.Windows.Forms.CheckBox();
             this.chkMoveAudioId140First = new System.Windows.Forms.CheckBox();
@@ -536,6 +537,7 @@ namespace YouTube_downloader
             // tabPageGUI
             // 
             this.tabPageGUI.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPageGUI.Controls.Add(this.checkBoxShowHlsTracksOnlyForStreams);
             this.tabPageGUI.Controls.Add(this.groupBox12);
             this.tabPageGUI.Controls.Add(this.groupBoxFonts);
             this.tabPageGUI.Location = new System.Drawing.Point(4, 22);
@@ -543,6 +545,17 @@ namespace YouTube_downloader
             this.tabPageGUI.Size = new System.Drawing.Size(527, 357);
             this.tabPageGUI.TabIndex = 3;
             this.tabPageGUI.Text = "Интерфейс";
+            // 
+            // checkBoxShowHlsTracksOnlyForStreams
+            // 
+            this.checkBoxShowHlsTracksOnlyForStreams.AutoSize = true;
+            this.checkBoxShowHlsTracksOnlyForStreams.Location = new System.Drawing.Point(3, 217);
+            this.checkBoxShowHlsTracksOnlyForStreams.Name = "checkBoxShowHlsTracksOnlyForStreams";
+            this.checkBoxShowHlsTracksOnlyForStreams.Size = new System.Drawing.Size(378, 17);
+            this.checkBoxShowHlsTracksOnlyForStreams.TabIndex = 2;
+            this.checkBoxShowHlsTracksOnlyForStreams.Text = "Показывать форматы HLS только для прямых трансляций (стримов)";
+            this.checkBoxShowHlsTracksOnlyForStreams.UseVisualStyleBackColor = true;
+            this.checkBoxShowHlsTracksOnlyForStreams.CheckedChanged += new System.EventHandler(this.checkBoxShowHlsTracksOnlyForStreams_CheckedChanged);
             // 
             // groupBox12
             // 
@@ -2201,6 +2214,7 @@ namespace YouTube_downloader
             this.tabPageFilesAndFolders.ResumeLayout(false);
             this.tabPageFilesAndFolders.PerformLayout();
             this.tabPageGUI.ResumeLayout(false);
+            this.tabPageGUI.PerformLayout();
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
             this.groupBoxFonts.ResumeLayout(false);
@@ -2432,6 +2446,7 @@ namespace YouTube_downloader
 		private System.Windows.Forms.TextBox textBoxUserAgent;
 		private System.Windows.Forms.Button btnUserAgentWhy;
 		private System.Windows.Forms.Button btnSetDefaultUserAgent;
-	}
+        private System.Windows.Forms.CheckBox checkBoxShowHlsTracksOnlyForStreams;
+    }
 }
 
