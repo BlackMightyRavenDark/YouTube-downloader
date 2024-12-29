@@ -260,8 +260,6 @@ namespace YouTube_downloader
 								mediaTracks.AddLast(track);
 							}
 						}
-						//TODO: Исправить ошибку, которая возникает если текущее видео было найдено поиском.
-						//VideoInfo.UpdateMediaFormats());
 					}
 				});
 			}

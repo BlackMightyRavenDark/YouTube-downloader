@@ -812,96 +812,17 @@ namespace YouTube_downloader
 			return jaVideos.Count;
 		}
 
-		public int SearchYouTube(string searchingPhrase, int maxResults, out string resList)
+		private async Task<int> ParseList(JObject json)
 		{
-			if (chkPublishedAfter.Checked && chkPublishedBefore.Checked &&
-				dateTimePickerAfter.Value > dateTimePickerBefore.Value)
+			JArray jaChannels = json.Value<JArray>("channels");
+			if (jaChannels != null)
 			{
-				MessageBox.Show("Ошибка диапазона дат!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				resList = null;
-				return 0;
-			}
-
-			if (maxResults <= 0 || maxResults > 50)
-			{
-				maxResults = 50;
-			}
-
-			JArray jaChannels = new JArray();
-			JArray jaVideos = new JArray();
-
-			string resultTypes = "video,channel";
-			if (!chkSearchChannels.Checked)
-			{
-				resultTypes = resultTypes.Replace(",channel", string.Empty);
-			}
-			if (!chkSearchVideos.Checked)
-			{
-				resultTypes = resultTypes.Replace("video,", string.Empty);
-			}
-
-			string url = GetYouTubeSearchQueryRequestUrl(searchingPhrase, resultTypes, maxResults);
-			if (chkPublishedAfter.Checked)
-			{
-				string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-				url += $"&publishedAfter={dateAfter}";
-			}
-
-			if (chkPublishedBefore.Checked)
-			{
-				string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-				url += $"&publishedBefore={dateBefore}";
-			}
-
-			int errorCode = Utils.DownloadString(url, out string buf);
-			if (errorCode == 200)
-			{
-				JObject json = JObject.Parse(buf);
-
-				JArray jsonArr = json.Value<JArray>("items");
-
-				for (int i = 0; i < jsonArr.Count(); ++i)
+				foreach (JObject jChannel in jaChannels.Cast<JObject>())
 				{
-					JObject j = JObject.Parse(jsonArr[i].ToString());
-					string kind = j.Value<JObject>("id").Value<string>("kind");
-
-					if (kind.Equals("youtube#channel"))
+					YouTubeChannel youTubeChannel = new YouTubeChannel();
+					JObject jSnippet = jChannel.Value<JObject>("snippet");
+					if (jSnippet != null)
 					{
-						jaChannels.Add(j);
-					}
-					else if (kind.Equals("youtube#video"))
-					{
-						string id = j.Value<JObject>("id").Value<string>("videoId");
-						YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeRawVideoInfo.Get(id);
-						if (rawVideoInfoResult.ErrorCode == 200)
-						{
-							jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
-						}
-					}
-				}
-			}
-
-			JObject j3 = new JObject();
-			j3.Add(new JProperty("channels", jaChannels));
-			j3.Add(new JProperty("videos", jaVideos));
-			resList = j3.ToString();
-			int count = jaChannels.Count() + jaVideos.Count();
-			return count;
-		}
-
-		private int ParseList(string jsonString)
-		{
-			JObject json = JObject.Parse(jsonString);
-			JToken jt = json.Value<JToken>("channels");
-			if (jt != null)
-			{
-				JArray ja = jt.Value<JArray>();
-				if (ja != null)
-				{
-					for (int i = 0; i < ja.Count(); ++i)
-					{
-						YouTubeChannel youTubeChannel = new YouTubeChannel();
-						JObject jSnippet = ja[i].Value<JObject>("snippet");
 						youTubeChannel.Title = jSnippet.Value<string>("title");
 						youTubeChannel.Id = jSnippet.Value<string>("channelId");
 						youTubeChannel.ImageUrl =
@@ -909,7 +830,7 @@ namespace YouTube_downloader
 						if (!string.IsNullOrEmpty(youTubeChannel.ImageUrl) && !string.IsNullOrWhiteSpace(youTubeChannel.ImageUrl))
 						{
 							youTubeChannel.ImageData = new MemoryStream();
-							DownloadData(youTubeChannel.ImageUrl, youTubeChannel.ImageData);
+							await Task.Run(() => DownloadData(youTubeChannel.ImageUrl, youTubeChannel.ImageData));
 						}
 
 						FrameYouTubeChannel frame = new FrameYouTubeChannel();
@@ -920,36 +841,48 @@ namespace YouTube_downloader
 				}
 			}
 
+			IYouTubeClient client = YouTubeApi.GetYouTubeClient("video_info");
+			if (client == null) { return framesChannel.Count; }
+
 			JArray jaVideos = json.Value<JArray>("videos");
 			if (jaVideos != null)
 			{
-				for (int i = 0; i < jaVideos.Count; ++i)
+				foreach (JObject jVideo in jaVideos.Cast<JObject>())
 				{
-					string rawInfo = jaVideos[i].Value<string>();
-					YouTubeRawVideoInfo rawVideoInfo = new YouTubeRawVideoInfo(rawInfo, null, null);
-					YouTubeVideo video = MakeYouTubeVideo(rawVideoInfo);
-					if (video != null)
-					{
-						videos.Add(video);
+					string id = jVideo.Value<JObject>("id")?.Value<string>("videoId");
 
-						FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(video, panelSearchResults);
-						frameVideo.SetMenusFontSize(config.MenusFontSize);
-						frameVideo.FavoriteChannelChanged += (s, id, newState) =>
+					if (!string.IsNullOrEmpty(id))
+					{
+						YouTubeVideo video = await Task.Run(() =>
 						{
-							for (int j = 0; j < framesVideo.Count; ++j)
+							int errorCode = client.GetRawVideoInfo(id, out YouTubeRawVideoInfo rawVideoInfo, out _);
+							return errorCode == 200 ? rawVideoInfo.ToVideo() : null;
+						});
+
+						if (video != null)
+						{
+							videos.Add(video);
+
+							FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(video, panelSearchResults);
+							frameVideo.SetMenusFontSize(config.MenusFontSize);
+							frameVideo.FavoriteChannelChanged += (s, vidId, newState) =>
 							{
-								if (framesVideo[j].VideoInfo.OwnerChannelId == id)
+								for (int j = 0; j < framesVideo.Count; ++j)
 								{
-									framesVideo[j].IsFavoriteChannel = newState;
+									if (framesVideo[j].VideoInfo.OwnerChannelId == vidId)
+									{
+										framesVideo[j].IsFavoriteChannel = newState;
+									}
 								}
-							}
-						};
-						frameVideo.Activated += event_FrameActivated;
-						frameVideo.OpenChannel += event_OpenChannel;
-						framesVideo.Add(frameVideo);
+							};
+							frameVideo.Activated += event_FrameActivated;
+							frameVideo.OpenChannel += event_OpenChannel;
+							framesVideo.Add(frameVideo);
+						}
 					}
 				}
 			}
+
 			return framesChannel.Count + framesVideo.Count;
 		}
 
@@ -1072,7 +1005,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void BtnSearchByQuery_Click(object sender, EventArgs e)
+		private async void BtnSearchByQuery_Click(object sender, EventArgs e)
 		{
 			DisableControls();
 
@@ -1106,20 +1039,25 @@ namespace YouTube_downloader
 			ClearFramesVideo();
 
 			tabPageSearchResults.Text = "Результаты поиска";
-			Application.DoEvents();
 			scrollBarSearchResults.Value = 0;
 
-			int maxResultsCount = rbSearchResultsUserDefined.Checked ? (int)numericUpDownSearchResult.Value : 500;
+			ushort maxResultsCount = (ushort)(rbSearchResultsUserDefined.Checked ? numericUpDownSearchResult.Value : 500);
 
-			int count = SearchYouTube(Uri.EscapeDataString(editQuery.Text), maxResultsCount, out string list);
-			if (count > 0)
+			IYouTubeSearcher searcher = new YouTubeQuerySearcher(
+				editQuery.Text, maxResultsCount, dateTimePickerAfter.Value, dateTimePickerBefore.Value,
+				chkSearchVideos.Checked, chkSearchChannels.Checked, config.YouTubeApiV3Key);
+			JObject json = await Task.Run(() => (JObject)searcher.Search());
+			if (json == null)
 			{
-				if (ParseList(list) > 0)
-				{
-					StackFrames();
-				}
-				tabControlMain.SelectedTab = tabPageSearchResults;
+				tabPageSearchResults.Text = "Результаты поиска: 0";
+				MessageBox.Show("Ничего не найдено!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
+
+			int count = await ParseList(json);
+			if (count > 0) { StackFrames(); }
+			tabControlMain.SelectedTab = tabPageSearchResults;
 			tabPageSearchResults.Text = $"Результаты поиска: {count}";
 
 			EnableControls();
@@ -1343,7 +1281,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void OpenChannel(string channelId)
+		private async void OpenChannel(string channelId)
 		{
 			ClearChannels();
 			ClearFramesChannel();
@@ -1359,10 +1297,8 @@ namespace YouTube_downloader
 			tabPageSearchResults.Text = $"Результаты поиска: {count}";
 			if (count > 0)
 			{
-				if (ParseList(list) > 0)
-				{
-					StackFrames();
-				}
+				JObject j = JObject.Parse(list);
+				if (await ParseList(j) > 0) { StackFrames(); }
 				tabControlMain.SelectedTab = tabPageSearchResults;
 			}
 			else

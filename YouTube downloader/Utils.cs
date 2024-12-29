@@ -39,8 +39,29 @@ namespace YouTube_downloader
 		public const int ERROR_CIPHER_DECRYPTION = -100;
 		public const int ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM = -101;
 
-		public static int DownloadString(string url, out string responseString)
+		public static int DownloadString(string url, out string responseString, bool useRequestSender = false)
 		{
+			if (useRequestSender)
+			{
+				try
+				{
+					using (HttpRequestResult requestResult = HttpRequestSender.Send(url))
+					{
+						if (requestResult.ErrorCode == 200)
+						{
+							return requestResult.WebContent.ContentToString(out responseString);
+						}
+
+						responseString = requestResult.ErrorMessage;
+						return requestResult.ErrorCode;
+					}
+				} catch (Exception ex)
+				{
+					responseString = ex.Message;
+					return ex.HResult;
+				}
+			}
+
 			FileDownloader d = new FileDownloader() { Url = url };
 			return d.DownloadString(out responseString);
 		}
@@ -66,7 +87,8 @@ namespace YouTube_downloader
 		}
 
 		public static string GetYouTubeSearchQueryRequestUrl(
-			string searchingPhrase, string resultTypes, int maxResults)
+			string searchingPhrase, string resultTypes, int maxResults,
+			DateTime publishedAfter, DateTime publishedBefore)
 		{
 			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
 			query.Add("part", "snippet");
@@ -78,9 +100,26 @@ namespace YouTube_downloader
 			{
 				query.Add("type", resultTypes);
 			}
+			if (publishedAfter < DateTime.MaxValue)
+			{
+				string dateAfter = publishedAfter.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+				query.Add("publishedAfter", dateAfter);
+			}
+			if (publishedBefore < DateTime.MaxValue)
+			{
+				string dateBefore = publishedBefore.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+				query.Add("publishedBefore", dateBefore);
+			}
 
 			string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
 			return url;
+		}
+
+		public static string GetYouTubeSearchQueryRequestUrl(
+			string searchingPhrase, string resultTypes, int maxResults)
+		{
+			DateTime maxDate = DateTime.MaxValue;
+			return GetYouTubeSearchQueryRequestUrl(searchingPhrase, resultTypes, maxResults, maxDate, maxDate);
 		}
 
 		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out string errorMessage)
