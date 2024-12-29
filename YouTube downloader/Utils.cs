@@ -156,7 +156,7 @@ namespace YouTube_downloader
 			Type typeOfTrack = typeof(YouTubeMediaTrackVideo);
 			foreach (YouTubeMediaTrack track in mediaTracks)
 			{
-				if (track.GetType() == typeof(YouTubeMediaTrackVideo))
+				if (track.GetType() == typeOfTrack)
 				{
 					yield return track as YouTubeMediaTrackVideo;
 				}
