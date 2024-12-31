@@ -7,7 +7,7 @@ namespace YouTube_downloader
 	//TODO: Complete writing this class
 	public partial class FrameYouTubeChannel : UserControl
 	{
-		public YouTubeChannel ChannelInfo { get; private set; } = null;
+		public YouTubeChannelInfo ChannelInfo { get; private set; } = null;
 		public delegate void ActivatedDelegate(object sender);
 		public delegate void OpenChannelDelegate(object sender, string channelName, string channelId);
 		public ActivatedDelegate Activated;
@@ -18,7 +18,7 @@ namespace YouTube_downloader
 			InitializeComponent();
 		}
 
-		public void SetChannelInfo(YouTubeChannel channelInfo)
+		public void SetChannelInfo(YouTubeChannelInfo channelInfo)
 		{
 			ChannelInfo = channelInfo;
 			lblChannelTitle.Text = channelInfo.Title;

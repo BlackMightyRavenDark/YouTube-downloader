@@ -538,7 +538,7 @@ namespace YouTube_downloader
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			ClearChannels();
+			ClearChannelInfos();
 			ClearFramesChannel();
 			ClearVideos();
 			ClearFramesVideo();
@@ -740,23 +740,23 @@ namespace YouTube_downloader
 			{
 				foreach (JObject jChannel in jaChannels.Cast<JObject>())
 				{
-					YouTubeChannel youTubeChannel = new YouTubeChannel();
+					YouTubeChannelInfo channelInfo = new YouTubeChannelInfo();
 					JObject jSnippet = jChannel.Value<JObject>("snippet");
 					if (jSnippet != null)
 					{
-						youTubeChannel.Title = jSnippet.Value<string>("title");
-						youTubeChannel.Id = jSnippet.Value<string>("channelId");
-						youTubeChannel.ImageUrl =
+						channelInfo.Title = jSnippet.Value<string>("title");
+						channelInfo.Id = jSnippet.Value<string>("channelId");
+						channelInfo.ImageUrl =
 							jSnippet.Value<JObject>("thumbnails")?.Value<JObject>("high")?.Value<string>("url");
-						if (!string.IsNullOrEmpty(youTubeChannel.ImageUrl) && !string.IsNullOrWhiteSpace(youTubeChannel.ImageUrl))
+						if (!string.IsNullOrEmpty(channelInfo.ImageUrl) && !string.IsNullOrWhiteSpace(channelInfo.ImageUrl))
 						{
-							youTubeChannel.ImageData = new MemoryStream();
-							await Task.Run(() => DownloadData(youTubeChannel.ImageUrl, youTubeChannel.ImageData));
+							channelInfo.ImageData = new MemoryStream();
+							await Task.Run(() => DownloadData(channelInfo.ImageUrl, channelInfo.ImageData));
 						}
 
 						FrameYouTubeChannel frame = new FrameYouTubeChannel();
 						frame.Parent = panelSearchResults;
-						frame.SetChannelInfo(youTubeChannel);
+						frame.SetChannelInfo(channelInfo);
 						framesChannel.Add(frame);
 					}
 				}
@@ -856,13 +856,13 @@ namespace YouTube_downloader
 			framesVideo.Add(frame);
 		}
 
-		private void ClearChannels()
+		private void ClearChannelInfos()
 		{
-			foreach (YouTubeChannel channel in channels)
+			foreach (YouTubeChannelInfo channelInfo in channelInfos)
 			{
-				channel.ImageData?.Dispose();
+				channelInfo.ImageData?.Dispose();
 			}
-			channels.Clear();
+			channelInfos.Clear();
 		}
 
 		private void ClearVideos()
@@ -954,7 +954,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			ClearChannels();
+			ClearChannelInfos();
 			ClearFramesChannel();
 			ClearVideos();
 			ClearFramesVideo();
@@ -1014,7 +1014,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			ClearChannels();
+			ClearChannelInfos();
 			ClearFramesChannel();
 			ClearVideos();
 			ClearFramesVideo();
@@ -1042,7 +1042,7 @@ namespace YouTube_downloader
 
 			ClearFramesChannel();
 			ClearFramesVideo();
-			ClearChannels();
+			ClearChannelInfos();
 			ClearVideos();
 
 			tabPageSearchResults.Text = "Результаты поиска";
@@ -1158,7 +1158,7 @@ namespace YouTube_downloader
 						if (MessageBox.Show($"Перейти к видео {item.DisplayName}?", "Переход к видео",
 							MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 						{
-							ClearChannels();
+							ClearChannelInfos();
 							ClearFramesChannel();
 							ClearVideos();
 							ClearFramesVideo();
@@ -1192,7 +1192,7 @@ namespace YouTube_downloader
 								return;
 							}
 
-							YouTubeApiLib.YouTubeChannel channel = new YouTubeApiLib.YouTubeChannel(item.ID, item.Title);
+							YouTubeChannel channel = new YouTubeChannel(item.ID, item.Title);
 							OpenChannel(channel);
 						}
 					}
@@ -1202,9 +1202,9 @@ namespace YouTube_downloader
 			}
 		}
 
-		private async void OpenChannel(YouTubeApiLib.YouTubeChannel channel)
+		private async void OpenChannel(YouTubeChannel channel)
 		{
-			ClearChannels();
+			ClearChannelInfos();
 			ClearFramesChannel();
 			ClearVideos();
 			ClearFramesVideo();
@@ -1357,7 +1357,7 @@ namespace YouTube_downloader
 					return;
 				}
 
-				YouTubeApiLib.YouTubeChannel channel = new YouTubeApiLib.YouTubeChannel(channelId, channelName);
+				YouTubeChannel channel = new YouTubeChannel(channelId, channelName);
 				OpenChannel(channel);
 			}
 		}

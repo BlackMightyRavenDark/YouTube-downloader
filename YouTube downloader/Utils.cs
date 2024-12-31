@@ -25,7 +25,7 @@ namespace YouTube_downloader
 			"[<year>-<month>-<day> <hour>-<minute>-<second><GMT>] <video_title> (id_<video_id>)";
 		public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
 
-		public static List<YouTubeChannel> channels = new List<YouTubeChannel>();
+		public static List<YouTubeChannelInfo> channelInfos = new List<YouTubeChannelInfo>();
 		public static List<YouTubeVideo> videos = new List<YouTubeVideo>();
 		public static List<FrameYouTubeChannel> framesChannel = new List<FrameYouTubeChannel>();
 		public static List<FrameYouTubeVideo> framesVideo = new List<FrameYouTubeVideo>();
@@ -747,15 +747,6 @@ namespace YouTube_downloader
 			ErrorMessage = errorMessage;
 			FileName = fileName;
 		}
-	}
-
-	public sealed class YouTubeChannel
-	{
-		public string Title { get; set; }
-		public string Id { get; set; }
-		public string ImageUrl { get; set; }
-		public List<string> ImageUrls { get; set; } = new List<string>();
-		public Stream ImageData { get; set; } = null;
 	}
 
 	public static class MemoryWatcher
