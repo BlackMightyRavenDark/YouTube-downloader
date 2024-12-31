@@ -733,85 +733,6 @@ namespace YouTube_downloader
 			}
 		}
 
-		private int GetChannelVideosList(string channelId, int maxVideos, out string resJsonList)
-		{
-			if (maxVideos <= 0)
-			{
-				maxVideos = 50;
-			}
-			else if (maxVideos > 500)
-			{
-				maxVideos = 500;
-			}
-
-			int sum = 0;
-			JArray jaVideos = new JArray();
-			string pageToken = null;
-			int errorCode;
-			do
-			{
-				string url = GetYouTubeChannelVideosRequestUrl(channelId, maxVideos);
-				if (chkPublishedAfter.Checked)
-				{
-					string dateAfter = dateTimePickerAfter.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-					url += $"&publishedAfter={dateAfter}";
-				}
-
-				if (chkPublishedBefore.Checked)
-				{
-					string dateBefore = dateTimePickerBefore.Value.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-					url += $"&publishedBefore={dateBefore}";
-				}
-
-				if (!string.IsNullOrEmpty(pageToken))
-				{
-					url += $"&pageToken={pageToken}";
-				}
-
-				errorCode = Utils.DownloadString(url, out string buf);
-				if (errorCode == 200)
-				{
-					JObject json = JObject.Parse(buf);
-					JToken jt = json.Value<JToken>("nextPageToken");
-					pageToken = jt == null ? null : jt.Value<string>();
-					JArray jsonArr = json.Value<JArray>("items");
-					if (jsonArr != null && jsonArr.Count > 0)
-					{
-						for (int i = 0; i < jsonArr.Count; ++i)
-						{
-							JObject jObject = JObject.Parse(jsonArr[i].Value<JObject>().ToString());
-							string videoId = jObject.Value<JObject>("id")?.Value<string>("videoId");
-							if (!string.IsNullOrEmpty(videoId) && !string.IsNullOrWhiteSpace(videoId))
-							{
-								YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeRawVideoInfo.Get(videoId);
-								if (rawVideoInfoResult.ErrorCode == 200)
-								{
-									jaVideos.Add(rawVideoInfoResult.RawVideoInfo.RawData);
-									if (sum++ + 1 >= maxVideos)
-									{
-										break;
-									}
-								}
-							}
-
-							Application.DoEvents();
-						}
-					}
-				}
-
-				if (sum >= maxVideos)
-				{
-					break;
-				}
-				Application.DoEvents();
-			} while (errorCode == 200 && sum < maxVideos && !string.IsNullOrEmpty(pageToken));
-
-			JObject jsonRes = new JObject();
-			jsonRes["videos"] = jaVideos;
-			resJsonList = jsonRes.ToString();
-			return jaVideos.Count;
-		}
-
 		private async Task<int> ParseList(JObject json)
 		{
 			JArray jaChannels = json.Value<JArray>("channels");
@@ -1125,7 +1046,6 @@ namespace YouTube_downloader
 			ClearVideos();
 
 			tabPageSearchResults.Text = "Результаты поиска";
-			Application.DoEvents();
 			scrollBarSearchResults.Value = 0;
 
 			try
@@ -1272,7 +1192,8 @@ namespace YouTube_downloader
 								return;
 							}
 
-							OpenChannel(item.ID);
+							YouTubeApiLib.YouTubeChannel channel = new YouTubeApiLib.YouTubeChannel(item.ID, item.Title);
+							OpenChannel(channel);
 						}
 					}
 
@@ -1281,7 +1202,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private async void OpenChannel(string channelId)
+		private async void OpenChannel(YouTubeApiLib.YouTubeChannel channel)
 		{
 			ClearChannels();
 			ClearFramesChannel();
@@ -1289,16 +1210,21 @@ namespace YouTube_downloader
 			ClearFramesVideo();
 
 			tabPageSearchResults.Text = "Результаты поиска";
-			Application.DoEvents();
 			scrollBarSearchResults.Value = 0;
 
-			int maxResultsCount = rbSearchResultsUserDefined.Checked ? (int)numericUpDownSearchResult.Value : 500;
-			int count = GetChannelVideosList(channelId, maxResultsCount, out string list);
+			ushort maxResultsCount = (ushort)(rbSearchResultsUserDefined.Checked ? numericUpDownSearchResult.Value : 500);
+			IYouTubeSearcher searcher = new YouTubeChannelSearcher(channel, dateTimePickerAfter.Value, dateTimePickerBefore.Value,
+				maxResultsCount, config.YouTubeApiV3Key);
+			List<YouTubeVideo> list = await Task.Run(() => (List<YouTubeVideo>)searcher.Search());
+			int count = list != null ? list.Count : 0;
 			tabPageSearchResults.Text = $"Результаты поиска: {count}";
 			if (count > 0)
 			{
-				JObject j = JObject.Parse(list);
-				if (await ParseList(j) > 0) { StackFrames(); }
+				foreach (YouTubeVideo video in list)
+				{
+					CreateAndAddNewFrame(video);
+				}
+				StackFrames();
 				tabControlMain.SelectedTab = tabPageSearchResults;
 			}
 			else
@@ -1430,7 +1356,9 @@ namespace YouTube_downloader
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
-				OpenChannel(channelId);
+
+				YouTubeApiLib.YouTubeChannel channel = new YouTubeApiLib.YouTubeChannel(channelId, channelName);
+				OpenChannel(channel);
 			}
 		}
 

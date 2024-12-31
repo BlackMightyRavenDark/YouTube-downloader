@@ -72,7 +72,8 @@ namespace YouTube_downloader
 			return d.Download(stream);
 		}
 
-		public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos)
+		public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos,
+			DateTime publishedAfter, DateTime publishedBefore)
 		{
 			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
 			query.Add("part", "snippet");
@@ -81,9 +82,25 @@ namespace YouTube_downloader
 			query.Add("key", config.YouTubeApiV3Key);
 			query.Add("channelId", channelId);
 			query.Add("maxResults", maxVideos.ToString());
+			if (publishedAfter < DateTime.MaxValue)
+			{
+				string dateAfter = publishedAfter.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+				query.Add("publishedAfter", dateAfter);
+			}
+			if (publishedBefore < DateTime.MaxValue)
+			{
+				string dateBefore = publishedBefore.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
+				query.Add("publishedBefore", dateBefore);
+			}
 
 			string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
 			return url;
+		}
+
+		public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos)
+		{
+			DateTime maxDate = DateTime.MaxValue;
+			return GetYouTubeChannelVideosRequestUrl(channelId, maxVideos, maxDate, maxDate);
 		}
 
 		public static string GetYouTubeSearchQueryRequestUrl(
