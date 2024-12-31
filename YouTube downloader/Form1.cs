@@ -100,15 +100,8 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("chunkDownloadTryCountMax");
 					if (jt != null)
 					{
-						config.ChunkDownloadRetryCountMax = jt.Value<int>();
-						if (config.ChunkDownloadRetryCountMax < 0)
-						{
-							config.ChunkDownloadRetryCountMax = 0;
-						}
-						else if (config.ChunkDownloadRetryCountMax > (int)numericUpDownChunkDownloadRetryCount.Maximum)
-						{
-							config.ChunkDownloadRetryCountMax = (int)numericUpDownChunkDownloadRetryCount.Maximum;
-						}
+						int n = jt.Value<int>();
+						config.ChunkDownloadRetryCountMax = ClampValue(n, 0, (int)numericUpDownChunkDownloadRetryCount.Maximum);
 					}
 				}
 				{
@@ -182,15 +175,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("maxSearch");
 					if (jt != null)
 					{
-						config.MaxSearch = jt.Value<int>();
-						if (config.MaxSearch < 1)
-						{
-							config.MaxSearch = 1;
-						}
-						else if (config.MaxSearch > 500)
-						{
-							config.MaxSearch = 500;
-						}
+						config.MaxSearch = ClampValue(jt.Value<int>(), 1, 500);
 					}
 				}
 				{
@@ -232,45 +217,21 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("menusFontSize");
 					if (jt != null)
 					{
-						config.MenusFontSize = jt.Value<int>();
-						if (config.MenusFontSize < 9)
-						{
-							config.MenusFontSize = 9;
-						}
-						else if (config.MenusFontSize > 16)
-						{
-							config.MenusFontSize = 16;
-						}
+						config.MenusFontSize = ClampValue(jt.Value<int>(), 9, 16);
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("favoritesListFontSize");
 					if (jt != null)
 					{
-						config.FavoritesListFontSize = jt.Value<int>();
-						if (config.FavoritesListFontSize < 8)
-						{
-							config.FavoritesListFontSize = 8;
-						}
-						else if (config.FavoritesListFontSize > 16)
-						{
-							config.FavoritesListFontSize = 16;
-						}
+						config.FavoritesListFontSize = ClampValue(jt.Value<int>(), 8, 16);
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("videoTitleFontSize");
 					if (jt != null)
 					{
-						config.VideoTitleFontSize = jt.Value<int>();
-						if (config.VideoTitleFontSize < 8)
-						{
-							config.VideoTitleFontSize = 8;
-						}
-						else if (config.VideoTitleFontSize > 16)
-						{
-							config.VideoTitleFontSize = 16;
-						}
+						config.VideoTitleFontSize = ClampValue(jt.Value<int>(), 8, 16);
 					}
 				}
 				{
@@ -368,14 +329,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("extraDelayAfterContainerWasBuilt");
 					if (jt != null)
 					{
-						config.ExtraDelayAfterContainerWasBuilt = jt.Value<int>();
-						if (config.ExtraDelayAfterContainerWasBuilt < 0)
-						{
-							config.ExtraDelayAfterContainerWasBuilt = 0;
-						} else if (config.ExtraDelayAfterContainerWasBuilt > 1000)
-						{
-							config.ExtraDelayAfterContainerWasBuilt = 1000;
-						}
+						config.ExtraDelayAfterContainerWasBuilt = ClampValue(jt.Value<int>(), 0, 1000);
 					}
 				}
 				{
@@ -417,30 +371,18 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("connectionTimeout");
 					if (jt != null)
 					{
-						config.ConnectionTimeout = jt.Value<int>();
-						if (config.ConnectionTimeout > (int)numericUpDownConnectionTimeout.Maximum)
-						{
-							config.ConnectionTimeout = (int)numericUpDownConnectionTimeout.Maximum;
-						}
-						else if (config.ConnectionTimeout < (int)numericUpDownConnectionTimeout.Minimum)
-						{
-							config.ConnectionTimeout = (int)numericUpDownConnectionTimeout.Minimum;
-						}
+						int min = (int)numericUpDownConnectionTimeout.Minimum;
+						int max = (int)numericUpDownConnectionTimeout.Maximum;
+						config.ConnectionTimeout = ClampValue(jt.Value<int>(), min, max);
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("connectionTimeoutServer");
 					if (jt != null)
 					{
-						config.ConnectionTimeoutServer = jt.Value<int>();
-						if (config.ConnectionTimeoutServer > (int)numericUpDownConnectionTimeoutServer.Maximum)
-						{
-							config.ConnectionTimeoutServer = (int)numericUpDownConnectionTimeoutServer.Maximum;
-						}
-						else if (config.ConnectionTimeoutServer < (int)numericUpDownConnectionTimeoutServer.Minimum)
-						{
-							config.ConnectionTimeoutServer = (int)numericUpDownConnectionTimeoutServer.Minimum;
-						}
+						int min = (int)numericUpDownConnectionTimeoutServer.Minimum;
+						int max = (int)numericUpDownConnectionTimeoutServer.Maximum;
+						config.ConnectionTimeoutServer = ClampValue(jt.Value<int>(), min, max);
 					}
 				}
 			};

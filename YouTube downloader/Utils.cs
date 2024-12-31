@@ -683,6 +683,12 @@ namespace YouTube_downloader
 			return process.Start();
 		}
 
+		public static int ClampValue(int value, int min, int max)
+		{
+			if (value <= min) { return min; }
+			return value >= max ? max : value;
+		}
+
 		public static void OpenUrlInBrowser(string url)
 		{
 			if (!string.IsNullOrEmpty(config.BrowserExeFilePath) &&
