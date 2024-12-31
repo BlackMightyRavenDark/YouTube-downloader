@@ -44,20 +44,21 @@ namespace YouTube_downloader
 				YouTubeStreamingDataResult streamingDataResult = video.RawInfo?.StreamingData;
 				if (streamingDataResult.ErrorCode == 200)
 				{
-					JObject json = JObject.Parse(streamingDataResult.Data.RawData);
-					JArray jaFormats = json.Value<JArray>("formats");
-					if (jaFormats != null && jaFormats.Count > 0)
+					JObject json = TryParseJson(streamingDataResult.Data.RawData);
+					if (json != null)
 					{
-						return jaFormats[0].Value<JToken>("signatureCipher") != null;
-					}
-					JArray jaAdaptiveFormats = json.Value<JArray>("adaptiveFormats");
-					if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
-					{
-						return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
+						JArray jaFormats = json.Value<JArray>("formats");
+						if (jaFormats != null && jaFormats.Count > 0)
+						{
+							return jaFormats[0].Value<JToken>("signatureCipher") != null;
+						}
+						JArray jaAdaptiveFormats = json.Value<JArray>("adaptiveFormats");
+						if (jaAdaptiveFormats != null && jaAdaptiveFormats.Count > 0)
+						{
+							return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
+						}
 					}
 				}
-
-				return true;
 			} catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);

@@ -621,7 +621,7 @@ namespace YouTube_downloader
 					favoriteItem.ItemType = FavoriteItemType.Directory;
 					for (int i = 0; i < ja.Count; ++i)
 					{
-						JObject j = JObject.Parse(ja[i].Value<JObject>().ToString());
+						JObject j = TryParseJson(ja[i].Value<JObject>().ToString());
 						ParseDataItem(j, favoriteItem);
 					}
 				}
@@ -666,12 +666,28 @@ namespace YouTube_downloader
 
 		private void LoadFavorites(string fileName)
 		{
-			JObject json = JObject.Parse(File.ReadAllText(fileName));
-			JArray jItems = json.Value<JArray>("items");
-			for (int i = 0; i < jItems.Count; ++i)
+			JObject json = TryParseJson(File.ReadAllText(fileName));
+			if (json != null)
 			{
-				JObject j = JObject.Parse(jItems[i].Value<JObject>().ToString());
-				ParseDataItem(j, favoritesRootNode);
+				JArray jItems = json.Value<JArray>("items");
+				for (int i = 0; i < jItems.Count; ++i)
+				{
+					JObject j = TryParseJson(jItems[i].Value<JObject>().ToString());
+					if (j != null)
+					{
+						ParseDataItem(j, favoritesRootNode);
+					}
+                    else
+                    {
+                        MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+			else
+			{
+				MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 using BrightIdeasSoftware;
 using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
@@ -707,6 +708,25 @@ namespace YouTube_downloader
 			return !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
 				!string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
 				File.Exists(config.FfmpegExeFilePath);
+		}
+
+		internal static JObject TryParseJson(string jsonString, out string errorText)
+		{
+			try
+			{
+				errorText = null;
+				return JObject.Parse(jsonString);
+			}
+			catch (Exception ex)
+			{
+				errorText = ex.Message;
+				return null;
+			}
+		}
+
+		internal static JObject TryParseJson(string jsonString)
+		{
+			return TryParseJson(jsonString, out _);
 		}
 	}
 

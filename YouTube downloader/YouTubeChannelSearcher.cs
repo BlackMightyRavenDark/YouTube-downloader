@@ -51,7 +51,9 @@ namespace YouTube_downloader
 				int errorCode = Utils.DownloadString(url, out string response, true);
 				if (errorCode == 200)
 				{
-					JObject json = JObject.Parse(response);
+					JObject json = Utils.TryParseJson(response);
+					if (json == null) { break; }
+
 					JToken jt = json.Value<JToken>("nextPageToken");
 					pageToken = jt?.Value<string>();
 					JArray jsonArr = json.Value<JArray>("items");
@@ -71,6 +73,8 @@ namespace YouTube_downloader
 
 				if (errorCode != 200 || sum >= MaxVideos) { break; }
 			} while (sum < MaxVideos && !string.IsNullOrEmpty(pageToken));
+
+			if (sum <= 0) { return null; }
 
 			ConcurrentBag<YouTubeVideo> videoBag = new ConcurrentBag<YouTubeVideo>();
 			const int MAX_SIMULANEOUS = 10;

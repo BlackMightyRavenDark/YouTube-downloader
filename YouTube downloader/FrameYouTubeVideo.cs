@@ -1581,12 +1581,13 @@ namespace YouTube_downloader
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
+
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id));
 			if (streamingDataResult.ErrorCode == 200)
 			{
-				try
+				JObject json = TryParseJson(streamingDataResult.Data.RawData);
+				if (json != null)
 				{
-					JObject json = JObject.Parse(streamingDataResult.Data.RawData);
 					string dashManifestUrl = json.Value<string>("dashManifestUrl");
 					FileDownloader d = new FileDownloader() { Url = dashManifestUrl };
 					if (d.DownloadString(out string manifest) == 200)
@@ -1596,12 +1597,6 @@ namespace YouTube_downloader
 							MessageBoxButtons.OK, MessageBoxIcon.Information);
 						return;
 					}
-				} catch (Exception ex)
-				{
-					System.Diagnostics.Debug.WriteLine(ex.Message);
-					MessageBox.Show($"DASH manifest не найден!\n{ex.Message}", "Ошибатор ошибок",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
 				}
 			}
 
@@ -1621,9 +1616,9 @@ namespace YouTube_downloader
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id));
 			if (streamingDataResult.ErrorCode == 200)
 			{
-				try
+				JObject json = TryParseJson(streamingDataResult.Data.RawData);
+				if (json != null)
 				{
-					JObject json = JObject.Parse(streamingDataResult.Data.RawData);
 					string hlsManifestUrl = json.Value<string>("hlsManifestUrl");
 					FileDownloader d = new FileDownloader() { Url = hlsManifestUrl };
 					if (d.DownloadString(out string manifest) == 200)
@@ -1633,13 +1628,6 @@ namespace YouTube_downloader
 							MessageBoxButtons.OK, MessageBoxIcon.Information);
 						return;
 					}
-				}
-				catch (Exception ex)
-				{
-					System.Diagnostics.Debug.WriteLine(ex.Message);
-					MessageBox.Show($"HLS manifest не найден!\n{ex.Message}", "Ошибатор ошибок",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
 				}
 			}
 

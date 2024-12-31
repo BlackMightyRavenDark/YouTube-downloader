@@ -55,9 +55,10 @@ namespace YouTube_downloader
 			int errorCode = Utils.DownloadString(url, out string response, true);
 			if (errorCode == 200)
 			{
-				JObject json = JObject.Parse(response);
+				JObject json = Utils.TryParseJson(response);
+				if (json == null) { return null; }
 
-				JArray jsonArr = json.Value<JArray>("items");
+					JArray jsonArr = json.Value<JArray>("items");
 
 				if (jsonArr.Count > 0)
 				{

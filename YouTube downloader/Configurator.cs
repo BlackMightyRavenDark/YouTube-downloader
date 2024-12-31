@@ -152,7 +152,7 @@ namespace YouTube_downloader
 			LoadDefaults();
 			if (File.Exists(FilePath))
 			{
-				JObject json = JObject.Parse(File.ReadAllText(FilePath));
+				JObject json = Utils.TryParseJson(File.ReadAllText(FilePath));
 				if (json != null)
 				{
 					Loading?.Invoke(this, json);
