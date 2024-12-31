@@ -1316,11 +1316,10 @@ namespace YouTube_downloader
 				result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly);
 				if (result.ErrorCode != 200) { return result; }
 				results.Add(result);
-
 			}
 
-			return result == null ? new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
-				"Список ссылок для скачивания пуст!", null) : result;
+			return result ?? new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
+				"Список ссылок для скачивания пуст!", null);
 		}
 
 		public void StopDownload()
