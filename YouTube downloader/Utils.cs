@@ -37,7 +37,7 @@ namespace YouTube_downloader
 		public static readonly bool Is64BitProcess = Environment.Is64BitProcess;
 
 		public const int ERROR_CIPHER_DECRYPTION = -100;
-		public const int ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM = -101;
+		public const int ERROR_NO_CIPHER_DECRYPTION_ALGORITHM = -101;
 
 		public static int DownloadString(string url, out string responseString, bool useRequestSender = false)
 		{

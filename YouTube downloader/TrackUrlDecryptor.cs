@@ -4,11 +4,11 @@ namespace YouTube_downloader
 {
 	internal class TrackUrlDecryptor : IYouTubeMediaTrackUrlDecryptor
 	{
-		public string CipherDecryptionAlgorythm { get; }
+		public string CipherDecryptionAlgorithm { get; }
 
-		public TrackUrlDecryptor(string cipherDecryptionAlgorythm)
+		public TrackUrlDecryptor(string cipherDecryptionAlgorithm)
 		{
-			CipherDecryptionAlgorythm = cipherDecryptionAlgorythm;
+			CipherDecryptionAlgorithm = cipherDecryptionAlgorithm;
 		}
 
 		public (bool, bool) Decrypt(YouTubeMediaTrackUrl mediaTrackUrl)
@@ -28,7 +28,7 @@ namespace YouTube_downloader
 
 		public bool DecryptCipherSignature(string encryptedCipherSignature, out string decryptionResult)
 		{
-			decryptionResult = Utils.DecryptCipherSignature(encryptedCipherSignature, CipherDecryptionAlgorythm);
+			decryptionResult = Utils.DecryptCipherSignature(encryptedCipherSignature, CipherDecryptionAlgorithm);
 			return !string.IsNullOrEmpty(decryptionResult) && !string.IsNullOrWhiteSpace(decryptionResult);
 		}
 

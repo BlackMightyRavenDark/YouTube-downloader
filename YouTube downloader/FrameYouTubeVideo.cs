@@ -609,7 +609,7 @@ namespace YouTube_downloader
 				{
 					if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
 					{
-						return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM, null, null);
+						return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
 					}
 
 					#region Внимание! Непротестированный код!
@@ -1218,14 +1218,14 @@ namespace YouTube_downloader
 							MessageBoxButtons.OK, MessageBoxIcon.Error);
 						break;
 
-					case ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM:
+					case ERROR_NO_CIPHER_DECRYPTION_ALGORITHM:
 						{
 							lblStatus.Text = "Состояние: Ошибка! Не указан алгоритм для расшифровки Cipher!";
 							string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
 								"для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
 								"известную одному лишь дьяволу.\n" +
 								"Или включите галочку \"Использовать скрытое API для получения информации о видео\".";
-							MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORYTHM\n{t}", "Ошибка!",
+							MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORITHM\n{t}", "Ошибка!",
 							   MessageBoxButtons.OK, MessageBoxIcon.Error);
 							break;
 						}
