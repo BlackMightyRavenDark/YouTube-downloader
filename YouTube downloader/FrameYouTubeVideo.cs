@@ -1223,9 +1223,8 @@ namespace YouTube_downloader
 							lblStatus.Text = "Состояние: Ошибка! Не указан алгоритм для расшифровки Cipher!";
 							string t = "Ссылка на это видео, зачем-то, зашифрована алгоритмом \"Cipher\", " +
 								"для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
-								"известную одному лишь дьяволу.\n" +
-								"Или включите галочку \"Использовать скрытое API для получения информации о видео\".";
-							MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORITHM\n{t}", "Ошибка!",
+								"известную одному лишь дьяволу.";
+							MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORITHM!\n{t}", "Ошибка!",
 							   MessageBoxButtons.OK, MessageBoxIcon.Error);
 							break;
 						}
