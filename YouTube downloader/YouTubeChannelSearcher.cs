@@ -10,13 +10,13 @@ namespace YouTube_downloader
 {
 	internal class YouTubeChannelSearcher : IYouTubeSearcher
 	{
-		public YouTubeApiLib.YouTubeChannel Channel { get; }
+		public YouTubeChannel Channel { get; }
 		public DateTime DateFrom { get; }
 		public DateTime DateTo { get; }
 		public ushort MaxVideos { get; }
 		public string ApiV3Key { get; }
 
-		public YouTubeChannelSearcher(YouTubeApiLib.YouTubeChannel channel,
+		public YouTubeChannelSearcher(YouTubeChannel channel,
 			DateTime dateFrom, DateTime dateTo,
 			ushort maxVideos, string apiV3Key)
 		{
