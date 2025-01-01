@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
@@ -11,7 +12,6 @@ using YouTubeApiLib;
 using YouTube_downloader.Properties;
 using static YouTubeApiLib.Utils;
 using static YouTube_downloader.Utils;
-using System.Threading.Tasks;
 
 namespace YouTube_downloader
 {
