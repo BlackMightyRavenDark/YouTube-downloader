@@ -286,19 +286,16 @@ namespace YouTube_downloader
 
 		private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)
 		{
-			if (root.ID != null && root.ID.Equals(item.ID))
-			{
-				return root;
-			}
+			if (string.IsNullOrEmpty(item.ID) || string.IsNullOrEmpty(root.ID)) { return null; }
+
+			if (string.CompareOrdinal(root.ID, item.ID) == 0) { return root; }
 
 			for (int i = 0; i < root.Children.Count; ++i)
 			{
 				FavoriteItem favoriteItem = FindFavoriteItem(item, root.Children[i]);
-				if (favoriteItem != null)
-				{
-					return favoriteItem;
-				}
+				if (favoriteItem != null) { return favoriteItem; }
 			}
+
 			return null;
 		}
 
