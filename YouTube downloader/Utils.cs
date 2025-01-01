@@ -284,15 +284,15 @@ namespace YouTube_downloader
 				new YouTubeStreamingDataResult(null, webPageResult.ErrorCode);
 		}
 
-		private static FavoriteItem FindItemWithId(FavoriteItem item, FavoriteItem root)
+		private static FavoriteItem FindItemWithId(string itemId, FavoriteItem root)
 		{
-			if (string.IsNullOrEmpty(item.ID) || string.IsNullOrEmpty(root.ID)) { return null; }
+			if (string.IsNullOrEmpty(itemId) || string.IsNullOrEmpty(itemId)) { return null; }
 
-			if (string.CompareOrdinal(root.ID, item.ID) == 0) { return root; }
+			if (string.CompareOrdinal(root.ID, itemId) == 0) { return root; }
 
 			for (int i = 0; i < root.Children.Count; ++i)
 			{
-				FavoriteItem favoriteItem = FindItemWithId(item, root.Children[i]);
+				FavoriteItem favoriteItem = FindItemWithId(itemId, root.Children[i]);
 				if (favoriteItem != null) { return favoriteItem; }
 			}
 
@@ -301,11 +301,11 @@ namespace YouTube_downloader
 
 		public static FavoriteItem FindInFavorites(FavoriteItem itemToFind, FavoriteItem root)
 		{
-			if (itemToFind != null && root != null)
+			if (root != null && !string.IsNullOrEmpty(itemToFind?.ID))
 			{
 				for (int i = 0; i < root.Children.Count; ++i)
 				{
-					FavoriteItem item = FindItemWithId(itemToFind, root.Children[i]);
+					FavoriteItem item = FindItemWithId(itemToFind.ID, root.Children[i]);
 					if (item != null) { return item; }
 				}
 			}
@@ -315,8 +315,7 @@ namespace YouTube_downloader
 
 		public static FavoriteItem FindInFavorites(string itemId)
 		{
-			FavoriteItem item = new FavoriteItem(null, null, itemId, null, null, null);
-			return FindInFavorites(item, favoritesRootNode);
+			return FindItemWithId(itemId, favoritesRootNode);
 		}
 
 		public static string DecideMergingDirectory()
