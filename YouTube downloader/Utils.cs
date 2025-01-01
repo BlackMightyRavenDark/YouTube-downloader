@@ -299,16 +299,17 @@ namespace YouTube_downloader
 			return null;
 		}
 
-		public static FavoriteItem FindInFavorites(FavoriteItem find, FavoriteItem root)
+		public static FavoriteItem FindInFavorites(FavoriteItem itemToFind, FavoriteItem root)
 		{
-			for (int i = 0; i < root.Children.Count; ++i)
+			if (itemToFind != null && root != null)
 			{
-				FavoriteItem item = FindFavoriteItem(find, root.Children[i]);
-				if (item != null)
+				for (int i = 0; i < root.Children.Count; ++i)
 				{
-					return item;
+					FavoriteItem item = FindFavoriteItem(itemToFind, root.Children[i]);
+					if (item != null) { return item; }
 				}
 			}
+
 			return null;
 		}
 
