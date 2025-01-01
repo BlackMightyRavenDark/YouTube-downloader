@@ -677,13 +677,13 @@ namespace YouTube_downloader
 					{
 						ParseDataItem(j, favoritesRootNode);
 					}
-                    else
-                    {
-                        MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
+					else
+					{
+						MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+				}
+			}
 			else
 			{
 				MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
