@@ -284,7 +284,7 @@ namespace YouTube_downloader
 				new YouTubeStreamingDataResult(null, webPageResult.ErrorCode);
 		}
 
-		private static FavoriteItem FindFavoriteItem(FavoriteItem item, FavoriteItem root)
+		private static FavoriteItem FindItemWithId(FavoriteItem item, FavoriteItem root)
 		{
 			if (string.IsNullOrEmpty(item.ID) || string.IsNullOrEmpty(root.ID)) { return null; }
 
@@ -292,7 +292,7 @@ namespace YouTube_downloader
 
 			for (int i = 0; i < root.Children.Count; ++i)
 			{
-				FavoriteItem favoriteItem = FindFavoriteItem(item, root.Children[i]);
+				FavoriteItem favoriteItem = FindItemWithId(item, root.Children[i]);
 				if (favoriteItem != null) { return favoriteItem; }
 			}
 
@@ -305,7 +305,7 @@ namespace YouTube_downloader
 			{
 				for (int i = 0; i < root.Children.Count; ++i)
 				{
-					FavoriteItem item = FindFavoriteItem(itemToFind, root.Children[i]);
+					FavoriteItem item = FindItemWithId(itemToFind, root.Children[i]);
 					if (item != null) { return item; }
 				}
 			}
