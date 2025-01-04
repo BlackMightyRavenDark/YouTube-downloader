@@ -56,28 +56,24 @@ namespace YouTube_downloader
 			if (errorCode == 200)
 			{
 				JObject json = Utils.TryParseJson(response);
-				if (json == null) { return null; }
+				JArray jsonArr = json?.Value<JArray>("items");
+				if (jsonArr == null || jsonArr.Count <= 0) { return null; }
 
-				JArray jsonArr = json.Value<JArray>("items");
-
-				if (jsonArr.Count > 0)
+				var tasks = jsonArr.Select(item => Task.Run(() =>
 				{
-					var tasks = jsonArr.Select(item => Task.Run(() =>
-					{
-						string kind = item.Value<JObject>("id")?.Value<string>("kind");
-						if (string.IsNullOrEmpty(kind) || string.IsNullOrWhiteSpace(kind)) { return; }
+					string kind = item.Value<JObject>("id")?.Value<string>("kind");
+					if (string.IsNullOrEmpty(kind) || string.IsNullOrWhiteSpace(kind)) { return; }
 
-						if (kind.Equals("youtube#channel"))
-						{
-							channelJsonBag.Add(item as JObject);
-						}
-						else if (kind.Equals("youtube#video"))
-						{
-							videoJsonBag.Add(item as JObject);
-						}
-					}));
-					Task.WhenAll(tasks).Wait();
-				}
+					if (kind.Equals("youtube#channel"))
+					{
+						channelJsonBag.Add(item as JObject);
+					}
+					else if (kind.Equals("youtube#video"))
+					{
+						videoJsonBag.Add(item as JObject);
+					}
+				}));
+				Task.WhenAll(tasks).Wait();
 			}
 
 			JArray jaChannels = new JArray();
