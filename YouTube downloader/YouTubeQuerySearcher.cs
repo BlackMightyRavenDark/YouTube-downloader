@@ -41,9 +41,6 @@ namespace YouTube_downloader
 
 		public object Search()
 		{
-			ConcurrentBag<JObject> channelJsonBag = new ConcurrentBag<JObject>();
-			ConcurrentBag<JObject> videoJsonBag = new ConcurrentBag<JObject>();
-
 			List<string> resultTypeList = new List<string>();
 			if (SearchChannels) { resultTypeList.Add("channel"); }
 			if (SearchVideos) { resultTypeList.Add("video"); }
@@ -59,6 +56,8 @@ namespace YouTube_downloader
 				JArray jsonArr = json?.Value<JArray>("items");
 				if (jsonArr == null || jsonArr.Count <= 0) { return null; }
 
+				ConcurrentBag<JObject> channelJsonBag = new ConcurrentBag<JObject>();
+				ConcurrentBag<JObject> videoJsonBag = new ConcurrentBag<JObject>();
 				var tasks = jsonArr.Select(item => Task.Run(() =>
 				{
 					string kind = item.Value<JObject>("id")?.Value<string>("kind");
@@ -74,26 +73,28 @@ namespace YouTube_downloader
 					}
 				}));
 				Task.WhenAll(tasks).Wait();
+
+				JArray jaChannels = new JArray();
+				foreach (JObject item in channelJsonBag)
+				{
+					jaChannels.Add(item);
+				}
+				JArray jaVideos = new JArray();
+				foreach (JObject item in videoJsonBag)
+				{
+					jaVideos.Add(item);
+				}
+
+				JObject jsonResult = new JObject()
+				{
+					["channels"] = jaChannels,
+					["videos"] = jaVideos
+				};
+
+				return jsonResult;
 			}
 
-			JArray jaChannels = new JArray();
-			foreach (JObject item in channelJsonBag)
-			{
-				jaChannels.Add(item);
-			}
-			JArray jaVideos = new JArray();
-			foreach (JObject item in videoJsonBag)
-			{
-				jaVideos.Add(item);
-			}
-
-			JObject jsonResult = new JObject()
-			{
-				["channels"] = jaChannels,
-				["videos"] = jaVideos
-			};
-
-			return jsonResult;
+			return null;
 		}
 	}
 }
