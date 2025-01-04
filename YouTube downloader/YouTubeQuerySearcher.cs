@@ -58,7 +58,7 @@ namespace YouTube_downloader
 				JObject json = Utils.TryParseJson(response);
 				if (json == null) { return null; }
 
-					JArray jsonArr = json.Value<JArray>("items");
+				JArray jsonArr = json.Value<JArray>("items");
 
 				if (jsonArr.Count > 0)
 				{
