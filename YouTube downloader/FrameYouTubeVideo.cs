@@ -912,12 +912,12 @@ namespace YouTube_downloader
 				List<YouTubeMediaTrack> formats = new List<YouTubeMediaTrack>();
 				formats.AddRange(videoFormats);
 				formats.AddRange(audioFormats);
-				FormTracksSelector tracksSelector = new FormTracksSelector(formats);
-				DialogResult dialogResult = tracksSelector.ShowDialog();
+				FormTrackSelector trackSelector = new FormTrackSelector(formats);
+				DialogResult dialogResult = trackSelector.ShowDialog();
 				lblStatus.Text = null;
 				if (dialogResult == DialogResult.OK)
 				{
-					foreach (YouTubeMediaTrack mediaTrack in tracksSelector.SelectedTracks)
+					foreach (YouTubeMediaTrack mediaTrack in trackSelector.SelectedTracks)
 					{
 						tracksToDownload.Add(mediaTrack);
 					}

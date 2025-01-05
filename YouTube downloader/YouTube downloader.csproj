@@ -91,11 +91,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormTracksSelector.cs">
+    <Compile Include="FormTrackSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormTracksSelector.Designer.cs">
-      <DependentUpon>FormTracksSelector.cs</DependentUpon>
+    <Compile Include="FormTrackSelector.Designer.cs">
+      <DependentUpon>FormTrackSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="FrameYouTubeChannel.cs">
       <SubType>UserControl</SubType>
@@ -124,8 +124,8 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormTracksSelector.resx">
-      <DependentUpon>FormTracksSelector.cs</DependentUpon>
+    <EmbeddedResource Include="FormTrackSelector.resx">
+      <DependentUpon>FormTrackSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrameYouTubeChannel.resx">
       <DependentUpon>FrameYouTubeChannel.cs</DependentUpon>

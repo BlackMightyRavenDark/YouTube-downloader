@@ -5,11 +5,11 @@ using YouTubeApiLib;
 
 namespace YouTube_downloader
 {
-	public partial class FormTracksSelector : Form
+	public partial class FormTrackSelector : Form
 	{
 		public List<YouTubeMediaTrack> SelectedTracks { get; private set; } = new List<YouTubeMediaTrack>();
 
-		public FormTracksSelector(List<YouTubeMediaTrack> mediaTracks)
+		public FormTrackSelector(List<YouTubeMediaTrack> mediaTracks)
 		{
 			InitializeComponent();
 
