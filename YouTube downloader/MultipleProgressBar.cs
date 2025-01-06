@@ -143,5 +143,8 @@ namespace YouTube_downloader
 			Title = title;
 			BackgroundColor = backgroundColor;
 		}
+
+		public MultipleProgressBarItem(int value, string title)
+			: this(0, 100, value, title, Color.Lime) { }
 	}
 }

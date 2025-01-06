@@ -787,7 +787,9 @@ namespace YouTube_downloader
 							string percentString = string.Format("{0:F2}", percent);
 							lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
 								$"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
-							progressBarDownload.SetItem(0, chunkCount, chunkId + 1);
+
+							MultipleProgressBarItem[] items = GenerateChunkMergingProgressVisualizationItems(chunkCount, chunkId, percent);
+							progressBarDownload.SetItems(items);
 						}));
 					};
 					int res = await Task.Run(() => _multiThreadedDownloader.Download(config.AccurateMultithreading));

@@ -520,6 +520,23 @@ namespace YouTube_downloader
 			}
 		}
 
+		public static MultipleProgressBarItem[] GenerateChunkMergingProgressVisualizationItems(
+			int chunkCount, int currentChunkId, double currentChunkProgressPercent)
+		{
+			MultipleProgressBarItem[] items = new MultipleProgressBarItem[chunkCount];
+			for (int i = 0; i < chunkCount; ++i)
+			{
+				if (i < currentChunkId) { items[i] = new MultipleProgressBarItem(100, "100,00%"); }
+				else if (i > currentChunkId) { items[i] = new MultipleProgressBarItem(0, "0,00%"); }
+				else
+				{
+					string percentFormatted = string.Format("{0:F2}", currentChunkProgressPercent);
+					items[i] = new MultipleProgressBarItem((int)currentChunkProgressPercent, $"{percentFormatted}%");
+				}
+			}
+			return items;
+		}
+
 		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks, int connectionTimeout)
 		{
 			NameValueCollection headers = new NameValueCollection()
