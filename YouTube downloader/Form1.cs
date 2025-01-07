@@ -481,6 +481,10 @@ namespace YouTube_downloader
 						tvFavorites.Expand(favoritesRootNode);
 					}
 				}
+				else
+				{
+					isFavoritesLoaded = true;
+				}
 			} catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
@@ -498,7 +502,7 @@ namespace YouTube_downloader
 			ClearVideos();
 			ClearFramesVideo();
 
-			if (e.CloseReason != CloseReason.ApplicationExitCall && isFavoritesLoaded)
+			if (e.CloseReason != CloseReason.ApplicationExitCall)
 			{
 				try
 				{
@@ -509,7 +513,7 @@ namespace YouTube_downloader
 					if (Directory.Exists(config.HomeDirPath))
 					{
 						config.Save();
-						if (isFavoritesChanged)
+						if (isFavoritesLoaded && isFavoritesChanged)
 						{
 							SaveFavorites(config.FavoritesFilePath);
 						}
