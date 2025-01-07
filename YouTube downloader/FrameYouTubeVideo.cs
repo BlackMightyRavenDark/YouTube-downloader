@@ -1741,7 +1741,7 @@ namespace YouTube_downloader
 		private void imageFavorite_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
 			{
 				SetFavoriteVideo(!IsFavoriteVideo);
 			}
@@ -1750,7 +1750,7 @@ namespace YouTube_downloader
 		private void imageFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (VideoInfo.IsInfoAvailable)
+			if (isFavoritesLoaded && VideoInfo.IsInfoAvailable)
 			{
 				if (FavoriteChannelChanged != null)
 				{

@@ -33,6 +33,8 @@ namespace YouTube_downloader
 			favoritesRootNode = tvFavorites.Roots.Cast<FavoriteItem>().ToArray()[0];
 			treeFavorites = tvFavorites;
 
+			dateTimePickerAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
+
 			config = new Configurator("config_ytdl.json");
 			config.Saving += (s, json) =>
 			{
@@ -469,13 +471,24 @@ namespace YouTube_downloader
 			};
 			config.Load();
 
-			if (File.Exists(config.FavoritesFilePath))
+			try
 			{
-				LoadFavorites(config.FavoritesFilePath);
-				tvFavorites.Expand(favoritesRootNode);
+				if (File.Exists(config.FavoritesFilePath))
+				{
+					isFavoritesLoaded = LoadFavorites(config.FavoritesFilePath);
+					if (isFavoritesLoaded)
+					{
+						tvFavorites.Expand(favoritesRootNode);
+					}
+				}
+			} catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				tvFavorites.Enabled = false;
+				string msg = $"Ошибка загрузки избранного! Список избранного недоступен до перезапуска программы!\n{ex.Message}";
+				MessageBox.Show(msg, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-
-			dateTimePickerAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
 		}
 
 		private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -485,14 +498,23 @@ namespace YouTube_downloader
 			ClearVideos();
 			ClearFramesVideo();
 
-			if (!Directory.Exists(config.HomeDirPath))
+			if (e.CloseReason != CloseReason.ApplicationExitCall && isFavoritesLoaded)
 			{
-				Directory.CreateDirectory(config.HomeDirPath);
-			}
-			if (Directory.Exists(config.HomeDirPath))
-			{
-				config.Save();
-				SaveFavorites(config.FavoritesFilePath);
+				try
+				{
+					if (!Directory.Exists(config.HomeDirPath))
+					{
+						Directory.CreateDirectory(config.HomeDirPath);
+					}
+					if (Directory.Exists(config.HomeDirPath))
+					{
+						config.Save();
+						SaveFavorites(config.FavoritesFilePath);
+					}
+				} catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+				}
 			}
 		}
 
@@ -664,31 +686,21 @@ namespace YouTube_downloader
 			root.Children.Add(favoriteItem);
 		}
 
-		private void LoadFavorites(string fileName)
+		private bool LoadFavorites(string fileName)
 		{
-			JObject json = TryParseJson(File.ReadAllText(fileName));
-			if (json != null)
+			JObject json = JObject.Parse(File.ReadAllText(fileName));
+			JArray jItems = json.Value<JArray>("items");
+			for (int i = 0; i < jItems.Count; ++i)
 			{
-				JArray jItems = json.Value<JArray>("items");
-				for (int i = 0; i < jItems.Count; ++i)
+				JObject j = TryParseJson(jItems[i].Value<JObject>().ToString());
+				if (j != null)
 				{
-					JObject j = TryParseJson(jItems[i].Value<JObject>().ToString());
-					if (j != null)
-					{
-						ParseDataItem(j, favoritesRootNode);
-					}
-					else
-					{
-						MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
+					ParseDataItem(j, favoritesRootNode);
 				}
+				else { return false; }
 			}
-			else
-			{
-				MessageBox.Show("Ошибка загрузки избранного!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
+
+			return true;
 		}
 
 		private async Task<int> ParseList(JObject json)
