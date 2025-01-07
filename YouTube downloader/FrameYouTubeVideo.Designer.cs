@@ -141,7 +141,7 @@
 			this.imageFavorite.TabIndex = 4;
 			this.imageFavorite.TabStop = false;
 			this.imageFavorite.Paint += new System.Windows.Forms.PaintEventHandler(this.imageFavorite_Paint);
-			this.imageFavorite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageFavorite_MouseDown);
+			this.imageFavorite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageFavoriteVideo_MouseDown);
 			// 
 			// btnDownload
 			// 

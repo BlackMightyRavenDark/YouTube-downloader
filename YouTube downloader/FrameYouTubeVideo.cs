@@ -1738,7 +1738,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void imageFavorite_MouseDown(object sender, MouseEventArgs e)
+		private void imageFavoriteVideo_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
 			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
