@@ -137,7 +137,7 @@ namespace YouTube_downloader
 			ExternalVideoInfoServerUrl = "http://127.0.0.1";
 			ExternalVideoInfoServerPort = 12345;
 			VideoTitleFontSize = 8;
-			MenusFontSize = 9;
+			MenusFontSize = 10;
 			FavoritesListFontSize = 8;
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;
