@@ -160,6 +160,8 @@ namespace YouTube_downloader
 				{
 					favoritesRootNode.Children.Add(favoriteItem);
 					treeFavorites.RefreshObject(favoritesRootNode);
+
+					isFavoritesChanged = true;
 				}
 			}
 			else
@@ -170,6 +172,8 @@ namespace YouTube_downloader
 					treeFavorites.RemoveObject(favoriteItem);
 					favoriteItem.Parent.Children.Remove(favoriteItem);
 					treeFavorites.RefreshObject(favoriteItem.Parent);
+
+					isFavoritesChanged = true;
 				}
 			}
 			imageFavorite.Invalidate();
@@ -188,6 +192,8 @@ namespace YouTube_downloader
 					favoriteItem.ItemType = FavoriteItemType.Channel;
 					favoritesRootNode.Children.Add(favoriteItem);
 					treeFavorites.RefreshObject(favoriteItem.Parent);
+
+					isFavoritesChanged = true;
 				}
 			}
 			else
@@ -198,6 +204,8 @@ namespace YouTube_downloader
 					treeFavorites.RemoveObject(favoriteItem);
 					favoriteItem.Parent.Children.Remove(favoriteItem);
 					treeFavorites.RefreshObject(favoriteItem.Parent);
+
+					isFavoritesChanged = true;
 				}
 			}
 			imageFavoriteChannel.Invalidate();
@@ -1760,6 +1768,8 @@ namespace YouTube_downloader
 				{
 					IsFavoriteChannel = !IsFavoriteChannel;
 				}
+
+				isFavoritesChanged = true;
 			}
 		}
 

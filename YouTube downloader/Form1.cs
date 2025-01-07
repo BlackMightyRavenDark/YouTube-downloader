@@ -509,7 +509,10 @@ namespace YouTube_downloader
 					if (Directory.Exists(config.HomeDirPath))
 					{
 						config.Save();
-						SaveFavorites(config.FavoritesFilePath);
+						if (isFavoritesChanged)
+						{
+							SaveFavorites(config.FavoritesFilePath);
+						}
 					}
 				} catch (Exception ex)
 				{

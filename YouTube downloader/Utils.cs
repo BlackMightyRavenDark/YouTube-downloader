@@ -41,6 +41,7 @@ namespace YouTube_downloader
 		public const int ERROR_NO_CIPHER_DECRYPTION_ALGORITHM = -101;
 
 		internal static bool isFavoritesLoaded = false;
+		internal static bool isFavoritesChanged = false;
 
 		public static int DownloadString(string url, out string responseString, bool useRequestSender = false)
 		{
