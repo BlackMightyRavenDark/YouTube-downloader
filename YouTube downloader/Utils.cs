@@ -145,31 +145,22 @@ namespace YouTube_downloader
 
 		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out string errorMessage)
 		{
-			YouTubeApi.getMediaTracksInfoImmediately = false;
-			YouTubeVideo video = YouTubeVideo.GetById(videoId, null);
-			if (video == null)
+			const string clientId = "web_page";
+			IYouTubeClient client = YouTubeApi.GetYouTubeClient(clientId);
+			if (client != null)
 			{
-				const string clientId = "web_page";
-				IYouTubeClient client = YouTubeApi.GetYouTubeClient(clientId);
-				if (client != null)
+				YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(videoId, out errorMessage);
+				if (rawVideoInfoResult.ErrorCode == 200)
 				{
-					YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(videoId, out errorMessage);
-					if (rawVideoInfoResult.ErrorCode == 200)
-					{
-						video = rawVideoInfoResult.RawVideoInfo.ToVideo();
-					}
-				}
-				else
-				{
-					errorMessage = $"The client with ID '{clientId}' is not found! The default client was also failed! Let's cry, baby :'(";
+					return rawVideoInfoResult.RawVideoInfo.ToVideo();
 				}
 			}
 			else
 			{
-				errorMessage = null;
+				errorMessage = $"The client with ID '{clientId}' is not found! The default client was also failed! Let's cry, baby :'(";
 			}
 
-			return video;
+			return null;
 		}
 
 		public static IEnumerable<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
