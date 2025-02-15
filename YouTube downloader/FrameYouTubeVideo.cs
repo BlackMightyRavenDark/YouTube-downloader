@@ -258,13 +258,17 @@ namespace YouTube_downloader
 					}
 					else
 					{
-						YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id);
-						if (streamingDataResult.ErrorCode == 200)
+						IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
+						if (client != null)
 						{
-							mediaTracks = new LinkedList<YouTubeMediaTrack>();
-							foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+							YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
+							if (streamingDataResult.ErrorCode == 200)
 							{
-								mediaTracks.AddLast(track);
+								mediaTracks = new LinkedList<YouTubeMediaTrack>();
+								foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+								{
+									mediaTracks.AddLast(track);
+								}
 							}
 						}
 					}
@@ -1563,10 +1567,18 @@ namespace YouTube_downloader
 				return;
 			}
 
+			IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
+			if (client == null)
+			{
+				MessageBox.Show("Клиент 'ios' недоступен!", "Ошибатор ошибок!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() =>
 				WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode) ?
 					ExtractStreamingDataFromVideoWebPage(WebPage.WebPageCode) :
-					YouTubeStreamingData.Get(VideoInfo.Id)
+					YouTubeStreamingData.Get(VideoInfo.Id, client)
 			);
 			if (streamingDataResult.ErrorCode != 200 || streamingDataResult.Data == null ||
 				string.IsNullOrEmpty(streamingDataResult.Data.RawData) ||
@@ -1591,7 +1603,15 @@ namespace YouTube_downloader
 				return;
 			}
 
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id));
+			IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
+			if (client == null)
+			{
+				MessageBox.Show("Клиент 'ios' недоступен!", "Ошибатор ошибок!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
 			if (streamingDataResult.ErrorCode == 200)
 			{
 				JObject json = TryParseJson(streamingDataResult.Data.RawData);
@@ -1622,7 +1642,15 @@ namespace YouTube_downloader
 				return;
 			}
 
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id));
+			IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
+			if (client == null)
+			{
+				MessageBox.Show("Клиент 'ios' недоступен!", "Ошибатор ошибок!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
 			if (streamingDataResult.ErrorCode == 200)
 			{
 				JObject json = TryParseJson(streamingDataResult.Data.RawData);
