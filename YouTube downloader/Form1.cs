@@ -814,9 +814,9 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		private void CreateAndAddNewFrame(YouTubeVideo video)
+		private void CreateAndAddNewFrame(YouTubeVideo video, YouTubeVideoWebPage webPage = null)
 		{
-			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
+			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, panelSearchResults);
 			frame.SetMenusFontSize(config.MenusFontSize);
 			frame.FavoriteChannelChanged += (s, id, newState) =>
 			{
@@ -1034,8 +1034,10 @@ namespace YouTube_downloader
 					{
 						video.UpdateMediaFormats(video.RawInfo);
 					}
-					FrameYouTubeVideo frame = new FrameYouTubeVideo(video, panelSearchResults);
-					frame._webPage = webPageCode;
+
+					YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
+					FrameYouTubeVideo frame = new FrameYouTubeVideo(
+						video, webPageResult.VideoWebPage, panelSearchResults);
 					frame.SetMenusFontSize(config.MenusFontSize);
 					frame.FavoriteChannelChanged += (s, id, newState) =>
 					{

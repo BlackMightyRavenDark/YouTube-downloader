@@ -28,9 +28,9 @@ namespace YouTube_downloader
 		private bool _isVideo = true;
 		private bool _isContainer = false;
 		private YouTubeMediaTrack _mediaTrack;
-		public string _webPage = null;
-		public bool IsFavoriteVideo { get { return _isFavoriteVideo; } set { SetFavoriteVideo(value); } }
-		public bool IsFavoriteChannel { get { return _isFavoriteChannel; } set { SetFavoriteChannel(value); } }
+		public YouTubeVideoWebPage WebPage { get; }
+		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
+		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
 
 		public bool IsDownloadInProgress { get; private set; }
 
@@ -53,20 +53,21 @@ namespace YouTube_downloader
 		public const int EXTRA_WIDTH = 260;
 		private bool _cancelRequired;
 
-		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
+		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage, Control parent)
 		{
 			InitializeComponent();
 
-			if (parent != null)
-			{
-				Parent = parent;
-			}
+			if (parent != null) { Parent = parent; }
+			WebPage = webPage;
 
 			SetVideoTitleFontSize(config.VideoTitleFontSize);
 			imgScrollbar.SetDoubleBuffered(true);
 
 			SetVideoInfo(videoInfo);
 		}
+
+		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
+			: this(videoInfo, null, parent) { }
 
 		private void FrameYouTubeVideo_Load(object sender, EventArgs e)
 		{
@@ -239,10 +240,9 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			bool isWebPage = (!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage)) ||
-				VideoInfo.RawInfo.Client.DisplayName == "Web page";
-			bool isExternalVideoInfoServerNeeded = config.AlwaysUseExternalVideoInfoServer || !VideoInfo.IsFamilySafe ||
-				VideoInfo.IsPrivate || (isWebPage && VideoInfo.IsCiphered());
+			bool isWebPage = WebPage != null || VideoInfo.RawInfo.Client.DisplayName == "Web page";
+			bool isExternalVideoInfoServerNeeded = isWebPage || config.AlwaysUseExternalVideoInfoServer ||
+				!VideoInfo.IsFamilySafe || VideoInfo.IsPrivate;
 			if (!isWebPage || isExternalVideoInfoServerNeeded)
 			{
 				string externalVideoInfoServerUrl = config.ExternalVideoInfoServerUrl;
@@ -252,10 +252,9 @@ namespace YouTube_downloader
 				{
 					if (isExternalVideoInfoServerNeeded)
 					{
-						YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
 						IYouTubeClient client = new ExternalServerClient(
 							externalVideoInfoServerUrl, externalVideoInfoServerPort,
-							timeout, videoWebPageResult.VideoWebPage);
+							timeout, WebPage);
 					}
 					else
 					{
@@ -1484,9 +1483,9 @@ namespace YouTube_downloader
 				return;
 			}
 
-			if (!string.IsNullOrEmpty(_webPage))
+			if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
 			{
-				SetClipboardText(_webPage);
+				SetClipboardText(WebPage.WebPageCode);
 				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
 					MessageBoxButtons.OK, MessageBoxIcon.Information);
 				btnGetWebPage.Enabled = true;
@@ -1519,9 +1518,9 @@ namespace YouTube_downloader
 			}
 
 			{
-				if (!string.IsNullOrEmpty(_webPage))
+				if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
 				{
-					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(_webPage);
+					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(WebPage.WebPageCode);
 					YouTubeRawVideoInfoResult rawVideoInfoResult =
 						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
 					if (rawVideoInfoResult.ErrorCode == 200)
@@ -1565,8 +1564,8 @@ namespace YouTube_downloader
 			}
 
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() =>
-				!string.IsNullOrEmpty(_webPage) && !string.IsNullOrWhiteSpace(_webPage) ?
-					ExtractStreamingDataFromVideoWebPage(_webPage) :
+				WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode) ?
+					ExtractStreamingDataFromVideoWebPage(WebPage.WebPageCode) :
 					YouTubeStreamingData.Get(VideoInfo.Id)
 			);
 			if (streamingDataResult.ErrorCode != 200 || streamingDataResult.Data == null ||
@@ -1654,7 +1653,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			string page = _webPage;
+			string page = WebPage?.WebPageCode;
 			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
 			{
 				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
@@ -1868,7 +1867,9 @@ namespace YouTube_downloader
 
 		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (string.IsNullOrEmpty(_webPage) || string.IsNullOrWhiteSpace(_webPage))
+			if (WebPage == null ||
+				string.IsNullOrEmpty(WebPage.WebPageCode) ||
+				string.IsNullOrWhiteSpace(WebPage.WebPageCode))
 			{
 				MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
 					"Ошибатор ошибок",
@@ -1876,15 +1877,15 @@ namespace YouTube_downloader
 				return;
 			}
 
-			string url = ExtractPlayerUrlFromWebPageCode(_webPage);
-			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+			string playerUrl = WebPage.ExtractYouTubeConfig()?.PlayerUrl;
+			if (string.IsNullOrEmpty(playerUrl) || string.IsNullOrWhiteSpace(playerUrl))
 			{
 				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			SetClipboardText(url);
+			SetClipboardText(playerUrl);
 		}
 
 		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
