@@ -240,7 +240,7 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			bool isWebPage = WebPage != null || VideoInfo.RawInfo.Client.DisplayName == "Web page";
+			bool isWebPage = WebPage != null;
 			bool isExternalVideoInfoServerNeeded = isWebPage || config.AlwaysUseExternalVideoInfoServer ||
 				!VideoInfo.IsFamilySafe || VideoInfo.IsPrivate;
 			if (!isWebPage || isExternalVideoInfoServerNeeded)
