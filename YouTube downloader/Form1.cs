@@ -1036,22 +1036,7 @@ namespace YouTube_downloader
 					}
 
 					YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
-					FrameYouTubeVideo frame = new FrameYouTubeVideo(
-						video, webPageResult.VideoWebPage, panelSearchResults);
-					frame.SetMenusFontSize(config.MenusFontSize);
-					frame.FavoriteChannelChanged += (s, id, newState) =>
-					{
-						for (int j = 0; j < framesVideo.Count; ++j)
-						{
-							if (framesVideo[j].VideoInfo.OwnerChannelId == id)
-							{
-								framesVideo[j].IsFavoriteChannel = newState;
-							}
-						}
-					};
-					frame.Activated += event_FrameActivated;
-					frame.OpenChannel += event_OpenChannel;
-					framesVideo.Add(frame);
+					CreateAndAddNewFrame(video, webPageResult.VideoWebPage);
 					StackFrames();
 
 					tabPageSearchResults.Text = "Результаты поиска: 1";
