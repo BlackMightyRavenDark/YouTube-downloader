@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Net;
+using System.Text;
 using Newtonsoft.Json.Linq;
 using YouTubeApiLib;
 using MultiThreadedDownloaderLib;
@@ -14,6 +15,7 @@ namespace YouTube_downloader
 		public ushort ServerPort { get; }
 		public int ConnectionTimeout { get; }
 		public YouTubeVideoWebPage WebPage { get; }
+		public FileDownloader Downloader { get; set; }
 
 		public ExternalServerClient(string serverAddress, ushort serverPort,
 			int connectionTimeout,
@@ -30,7 +32,7 @@ namespace YouTube_downloader
 			throw new NotImplementedException();
 		}
 
-		public NameValueCollection GenerateRequestHeaders(string videoId, YouTubeConfig youTubeConfig = null)
+		public WebHeaderCollection GenerateRequestHeaders(string videoId, YouTubeConfig youTubeConfig = null)
 		{
 			throw new NotImplementedException();
 		}
@@ -53,11 +55,11 @@ namespace YouTube_downloader
 					JObject j = new JObject();
 					j["playerUrl"] = player_url;
 					j["streamingData"] = streamingDataResult.Data.RawData;
-					NameValueCollection headers = new NameValueCollection()
+					WebHeaderCollection headers = new WebHeaderCollection()
 					{
 						{ "Content-Type", "application/json" }
 					};
-					HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), ConnectionTimeout, headers);
+					HttpRequestResult requestResult = HttpRequestSender.Send("POST", url, j.ToString(), Encoding.UTF8, headers, ConnectionTimeout);
 					if (requestResult.ErrorCode == 200)
 					{
 						if (requestResult.WebContent.ContentToString(out string rawStreamingData) == 200)
@@ -67,7 +69,7 @@ namespace YouTube_downloader
 								["streamingData"] = rawStreamingData
 							};
 
-							rawVideoInfo = new YouTubeRawVideoInfo(rawData.ToString(), this, null);
+							rawVideoInfo = new YouTubeRawVideoInfo(rawData.ToString(), this, null, DateTime.UtcNow);
 							errorMessage = null;
 							return 200;
 						}
@@ -86,7 +88,7 @@ namespace YouTube_downloader
 							int errorCode = requestResult.WebContent.ContentToString(out string rawInfo);
 							if (errorCode == 200)
 							{
-								rawVideoInfo = new YouTubeRawVideoInfo(rawInfo, this, null);
+								rawVideoInfo = new YouTubeRawVideoInfo(rawInfo, this, null, DateTime.UtcNow);
 								errorMessage = null;
 								return 200;
 							}
@@ -116,6 +118,11 @@ namespace YouTube_downloader
 			rawVideoInfo = null;
 			errorMessage = null;
 			return 400;
+		}
+
+		public void SetWebPage(YouTubeVideoWebPage webPage)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

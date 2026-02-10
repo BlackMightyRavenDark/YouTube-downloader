@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
-using MultiThreadedDownloaderLib;
 using YouTubeApiLib;
 using YouTube_downloader.Properties;
 using static YouTubeApiLib.Utils;
@@ -467,7 +466,7 @@ namespace YouTube_downloader
 
 				checkBoxUseGmtTime.Checked = config.UseGmtTime;
 
-				MultiThreadedDownloader.SetDefaultMaximumConnectionLimit(config.GlobalThreadCountMaximum);
+				MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountMaximum;
 			};
 			config.Load();
 
@@ -1030,11 +1029,6 @@ namespace YouTube_downloader
 				YouTubeVideo video = YouTubeVideo.GetByWebPage(webPageCode);
 				if (video != null)
 				{
-					if (!YouTubeApi.getMediaTracksInfoImmediately)
-					{
-						video.UpdateMediaFormats(video.RawInfo);
-					}
-
 					YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
 					CreateAndAddNewFrame(video, webPageResult.VideoWebPage);
 					StackFrames();
@@ -1475,7 +1469,7 @@ namespace YouTube_downloader
 		private void numericUpDownGlobalThreadsMaximum_ValueChanged(object sender, EventArgs e)
 		{
 			config.GlobalThreadCountMaximum = (int)numericUpDownGlobalThreadsMaximum.Value;
-			MultiThreadedDownloader.SetDefaultMaximumConnectionLimit(config.GlobalThreadCountMaximum);
+			MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountMaximum;
 		}
 
 		private void checkBoxAccurateMultithreading_CheckedChanged(object sender, EventArgs e)
@@ -1786,6 +1780,10 @@ namespace YouTube_downloader
 		private void checkBoxUseGmtTime_CheckedChanged(object sender, EventArgs e)
 		{
 			config.UseGmtTime = checkBoxUseGmtTime.Checked;
+			foreach (FrameYouTubeVideo frame in framesVideo)
+			{
+				frame.UpdateVideoDateTimeIndicator();
+			}
 		}
 
 		private void numericUpDownDownloadRetryCount_ValueChanged(object sender, EventArgs e)

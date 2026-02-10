@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -257,7 +258,6 @@ namespace YouTube_downloader
 
 		internal static DateTime GetVideoPublishedDate(string videoId)
 		{
-			YouTubeApi.getMediaTracksInfoImmediately = false;
 			YouTubeVideo video = YouTubeVideo.GetById(videoId);
 			return video != null ? video.DatePublished : DateTime.MaxValue;
 		}
@@ -476,13 +476,13 @@ namespace YouTube_downloader
 
 		public static bool IsVideoDateAvailable(YouTubeVideo video)
 		{
-			return video.SimplifiedInfo != null &&
-				video.SimplifiedInfo.IsMicroformatInfoAvailable &&
+			return video.InitialSimplifiedInfo != null &&
+				video.InitialSimplifiedInfo.IsMicroformatInfoAvailable &&
 				video.DatePublished < DateTime.MaxValue;
 		}
 
 		public static IEnumerable<MultipleProgressBarItem> ContentChunksToMultipleProgressBarItems(
-			ConcurrentDictionary<int, DownloadableContentChunk> chunks)
+			ConcurrentDictionary<int, DownloadableTask> chunks)
 		{
 			foreach (var chunk in chunks)
 			{
@@ -490,18 +490,18 @@ namespace YouTube_downloader
 				string itemText;
 				switch (chunk.Value.State)
 				{
-					case DownloadableContentChunkState.Preparing:
+					case DownloadableTaskState.Preparing:
 						itemText = "Подготовка...";
 						break;
 
-					case DownloadableContentChunkState.Connecting:
+					case DownloadableTaskState.Connecting:
 						itemText = "Подключение...";
 						break;
 
 					default:
 						{
-							percent = chunk.Value.TotalBytes > 0L && chunk.Value.ProcessedBytes > 0L ?
-								100.0 / chunk.Value.TotalBytes * chunk.Value.ProcessedBytes : 0L;
+							percent = chunk.Value.ChunkFileSize > 0L && chunk.Value.ProcessedBytes > 0L ?
+								100.0 / chunk.Value.ChunkFileSize * chunk.Value.ProcessedBytes : 0L;
 							string percentFormatted = string.Format("{0:F2}", percent);
 							itemText = $"{percentFormatted}%";
 							break;
@@ -533,7 +533,7 @@ namespace YouTube_downloader
 
 		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks, int connectionTimeout)
 		{
-			NameValueCollection headers = new NameValueCollection()
+			WebHeaderCollection headers = new WebHeaderCollection()
 			{
 				{ "Accept", "*/*" },
 				{ "User-Agent", config.UserAgent }
@@ -541,7 +541,8 @@ namespace YouTube_downloader
 			int[] results = new int[tracks.Count()];
 			var testTasks = tracks.Select((track, taskId) => Task.Run(() =>
 			{
-				int errorCode = FileDownloader.GetUrlResponseHeaders(track.FileUrl.Url, headers, connectionTimeout, out _, out _);
+				int errorCode = MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders("HEAD",
+					track.FileUrl.Url, headers, null, null, connectionTimeout, out _, out _);
 				results[taskId] = errorCode;
 			}));
 			Task.WhenAll(testTasks).Wait();
@@ -614,6 +615,13 @@ namespace YouTube_downloader
 				return string.Format("{0},{1:D3} GB", gb, mb);
 
 			return string.Format("{0} {1:D3} {2:D3} {3:D3} bytes", gb, mb, kb, b);
+		}
+
+		public static string FormatDateTine(DateTime dateTime)
+		{
+			DateTime dt = config.UseGmtTime ? dateTime : dateTime.ToLocalTime();
+			string t = dt.ToString("yyyy-MM-dd, hh:mm:ss");
+			return config.UseGmtTime ? $"{t} GMT" : t;
 		}
 
 		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
