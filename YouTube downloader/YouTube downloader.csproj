@@ -98,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TrackUrlDecryptor.cs" />
-    <Compile Include="ExternalServerClient.cs" />
+    <Compile Include="YouTubeClientRestApi.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

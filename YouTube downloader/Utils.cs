@@ -147,7 +147,10 @@ namespace YouTube_downloader
 		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out string errorMessage)
 		{
 			const string clientId = "web_page";
-			IYouTubeClient client = YouTubeApi.GetYouTubeClient(clientId);
+			IYouTubeClient client = config.UseExternalRestApiServerToGetBasicVideoInfo ?
+				new YouTubeClientRestApi(config.ExternalRestApiServerUrl, config.ExternalRestApiServerPort,
+					config.ConnectionTimeoutExternalRestApiServer, false) :
+				YouTubeApi.GetYouTubeClient(clientId);
 			if (client != null)
 			{
 				YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(videoId, out errorMessage);
@@ -708,13 +711,19 @@ namespace YouTube_downloader
 
 		public static void OpenUrlInBrowser(string url)
 		{
-			if (!string.IsNullOrEmpty(config.BrowserExeFilePath) &&
-				!string.IsNullOrWhiteSpace(config.BrowserExeFilePath) &&
-				!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
+			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
 			{
 				Process process = new Process();
-				process.StartInfo.FileName = config.BrowserExeFilePath;
-				process.StartInfo.Arguments = url;
+				if (!string.IsNullOrEmpty(config.BrowserExeFilePath) &&
+					!string.IsNullOrWhiteSpace(config.BrowserExeFilePath))
+				{
+					process.StartInfo.FileName = config.BrowserExeFilePath;
+					process.StartInfo.Arguments = url;
+				}
+				else
+				{
+					process.StartInfo.FileName = url;
+				}
 				process.Start();
 			}
 		}

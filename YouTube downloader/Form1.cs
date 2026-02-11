@@ -67,10 +67,11 @@ namespace YouTube_downloader
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["savePreviewImage"] = config.SavePreviewImage;
-				json["useExternalVideoInfoServerForAdultVideos"] = config.UseExternalVideoInfoServerForAdultVideos;
-				json["alwaysUseExternalVideoInfoServer"] = config.AlwaysUseExternalVideoInfoServer;
-				json["externalVideoInfoServerUrl"] = config.ExternalVideoInfoServerUrl;
-				json["externalVideoInfoServerPort"] = config.ExternalVideoInfoServerPort;
+				json["externalRestApiServerUrl"] = config.ExternalRestApiServerUrl;
+				json["externalRestApiServerPort"] = config.ExternalRestApiServerPort;
+				json["useExternalRestApiServerToGetBasicVideoInfo"] = config.UseExternalRestApiServerToGetBasicVideoInfo;
+				json["useExternalRestApiServerToGetDownloadUrls"] = config.UseExternalRestApiServerToGetDownloadUrls;
+				json["useExternalRestApiServerToGetAdultVideos"] = config.UseExternalRestApiServerToGetAdultVideos;
 				json["videoTitleFontSize"] = config.VideoTitleFontSize;
 				json["menusFontSize"] = config.MenusFontSize;
 				json["favoritesListFontSize"] = config.FavoritesListFontSize;
@@ -79,7 +80,7 @@ namespace YouTube_downloader
 				json["globalThreadCountMaximum"] = config.GlobalThreadCountMaximum;
 				json["accurateMultithreading"] = config.AccurateMultithreading;
 				json["connectionTimeout"] = config.ConnectionTimeout;
-				json["connectionTimeoutServer"] = config.ConnectionTimeoutServer;
+				json["connectionTimeoutExternalRestApiServer"] = config.ConnectionTimeoutExternalRestApiServer;
 			};
 			config.Loading += (s, json) =>
 			{
@@ -187,31 +188,38 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("useExternalVideoInfoServerForAdultVideos");
+					JToken jt = json.Value<JToken>("externalRestApiServerUrl");
 					if (jt != null)
 					{
-						config.UseExternalVideoInfoServerForAdultVideos = jt.Value<bool>();
+						config.ExternalRestApiServerUrl = jt.Value<string>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("alwaysUseExternalVideoInfoServer");
+					JToken jt = json.Value<JToken>("externalRestApiServerPort");
 					if (jt != null)
 					{
-						config.AlwaysUseExternalVideoInfoServer = jt.Value<bool>();
+						config.ExternalRestApiServerPort = jt.Value<ushort>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("externalVideoInfoServerUrl");
+					JToken jt = json.Value<JToken>("useExternalRestApiServerToGetBasicVideoInfo");
 					if (jt != null)
 					{
-						config.ExternalVideoInfoServerUrl = jt.Value<string>();
+						config.UseExternalRestApiServerToGetBasicVideoInfo = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("externalVideoInfoServerPort");
+					JToken jt = json.Value<JToken>("useExternalRestApiServerToGetDownloadUrls");
 					if (jt != null)
 					{
-						config.ExternalVideoInfoServerPort = jt.Value<ushort>();
+						config.UseExternalRestApiServerToGetDownloadUrls = jt.Value<bool>();
+					}
+				}
+				{
+				JToken jt = json.Value<JToken>("useExternalRestApiServerToGetAdultVideos");
+					if (jt != null)
+					{
+						config.UseExternalRestApiServerToGetAdultVideos = jt.Value<bool>();
 					}
 				}
 				{
@@ -378,12 +386,12 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("connectionTimeoutServer");
+					JToken jt = json.Value<JToken>("connectionTimeoutExternalRestApiServer");
 					if (jt != null)
 					{
-						int min = (int)numericUpDownConnectionTimeoutServer.Minimum;
-						int max = (int)numericUpDownConnectionTimeoutServer.Maximum;
-						config.ConnectionTimeoutServer = ClampValue(jt.Value<int>(), min, max);
+						int min = (int)numericUpDownConnectionTimeoutExternalRestApiServer.Minimum;
+						int max = (int)numericUpDownConnectionTimeoutExternalRestApiServer.Maximum;
+						config.ConnectionTimeoutExternalRestApiServer = ClampValue(jt.Value<int>(), min, max);
 					}
 				}
 			};
@@ -414,10 +422,11 @@ namespace YouTube_downloader
 				}
 				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				chkSaveImage.Checked = config.SavePreviewImage;
-				checkBoxUseExternalVideoInfoServerForAdultVideos.Checked = config.UseExternalVideoInfoServerForAdultVideos;
-				checkBoxAlwaysUseExternalVideoInfoServer.Checked = config.AlwaysUseExternalVideoInfoServer;
-				textBoxVideoInfoServerUrl.Text = config.ExternalVideoInfoServerUrl;
-				numericUpDownVideoInfoServerPort.Value = config.ExternalVideoInfoServerPort;
+				textBoxExternalRestApiServerUrl.Text = config.ExternalRestApiServerUrl;
+				numericUpDownExternalRestApiServerPort.Value = config.ExternalRestApiServerPort;
+				checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Checked = config.UseExternalRestApiServerToGetBasicVideoInfo;
+				checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked = config.UseExternalRestApiServerToGetDownloadUrls;
+				checkBoxUseExternalRestApiServerToGetAdultVideos.Checked = config.UseExternalRestApiServerToGetAdultVideos;
 				numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
 				numericUpDownMenusFontSize.Value = config.MenusFontSize;
 				numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
@@ -434,7 +443,7 @@ namespace YouTube_downloader
 				numericUpDownThreadsAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadsMaximum.Value = config.GlobalThreadCountMaximum;
 				numericUpDownConnectionTimeout.Value = config.ConnectionTimeout;
-				numericUpDownConnectionTimeoutServer.Value = config.ConnectionTimeoutServer;
+				numericUpDownConnectionTimeoutExternalRestApiServer.Value = config.ConnectionTimeoutExternalRestApiServer;
 				checkBoxAccurateMultithreading.Checked = config.AccurateMultithreading;
 				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
 				numericUpDownDashChunkDownloadRetriesCountMax.Value = config.DashDownloadRetryCountMax;
@@ -457,11 +466,10 @@ namespace YouTube_downloader
 					chkIfOnlyBiggerFileSize.Enabled = config.DownloadFirstAudioTrack && config.DownloadSecondAudioTrack;
 				}
 
-				if (config.AlwaysUseExternalVideoInfoServer)
+				if (config.UseExternalRestApiServerToGetDownloadUrls)
 				{
 					editCipherDecryptionAlgo.Enabled = false;
 					editYouTubeApiKey.Enabled = false;
-					checkBoxUseExternalVideoInfoServerForAdultVideos.Enabled = false;
 				}
 
 				checkBoxUseGmtTime.Checked = config.UseGmtTime;
@@ -1834,33 +1842,43 @@ namespace YouTube_downloader
 			btnWhyDash.Enabled = true;
 		}
 
-		private void checkBoxUseExternalVideoInfoServerForAdultVideos_CheckedChanged(object sender, EventArgs e)
+		private void checkBoxUseExternalRestApiServerToGetBasicVideoInfo_CheckedChanged(object sender, EventArgs e)
 		{
-			config.UseExternalVideoInfoServerForAdultVideos = checkBoxUseExternalVideoInfoServerForAdultVideos.Checked;
+			config.UseExternalRestApiServerToGetBasicVideoInfo = checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Checked;
 		}
 
-		private void checkBoxAlwaysUseExternalVideoInfoServer_CheckedChanged(object sender, EventArgs e)
+		private void checkBoxUseExternalRestApiServerToGetDownloadUrls_CheckedChanged(object sender, EventArgs e)
 		{
-			bool flag = checkBoxAlwaysUseExternalVideoInfoServer.Checked;
-			config.AlwaysUseExternalVideoInfoServer = flag;
-			editCipherDecryptionAlgo.Enabled = !flag;
-			editYouTubeApiKey.Enabled = !flag;
-			checkBoxUseExternalVideoInfoServerForAdultVideos.Enabled = !flag;
+			config.UseExternalRestApiServerToGetDownloadUrls = checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked;
+			editYouTubeApiKey.Enabled = editCipherDecryptionAlgo.Enabled = !config.UseExternalRestApiServerToGetDownloadUrls;
 		}
 
-		private void btnVideoInfoServerWhy_Click(object sender, EventArgs e)
+		private void checkBoxUseExternalRestApiServerToGetAdultVideos_CheckedChanged(object sender, EventArgs e)
 		{
-			btnVideoInfoServerWhy.Enabled = false;
+			config.UseExternalRestApiServerToGetAdultVideos = checkBoxUseExternalRestApiServerToGetAdultVideos.Checked;
+		}
+
+		private void btnExternalRestApiServerWhy_Click(object sender, EventArgs e)
+		{
+			btnExternalRestApiServerWhy.Enabled = false;
+
+			const string serverSourceCodeUrl = "https://github.com/BlackMightyRavenDark/youtube_rest_api_server_node_js";
 			string msg = "Этот сервер можно использовать в особых случаях. " +
-				"Например, для скачивания видео 18+ (уже нет, сорян) или когда другое API не работает.";
-			MessageBox.Show(msg, "Зачематор зачемок",
-				MessageBoxButtons.OK, MessageBoxIcon.Information);
-			btnVideoInfoServerWhy.Enabled = true;
+				"Например, когда другое API не работает.\n" +
+				$"Скачать исходный код сервера (на JavaScript) можно здесь: {serverSourceCodeUrl}\n" +
+				"Открыть ссылку в браузере?";
+			if (MessageBox.Show(msg, "Зачематор зачемок",
+				MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+			{
+				OpenUrlInBrowser(serverSourceCodeUrl);
+			}
+
+			btnExternalRestApiServerWhy.Enabled = true;
 		}
 
-		private void numericUpDownVideoInfoServerPort_ValueChanged(object sender, EventArgs e)
+		private void numericUpDownExternalRestApiServerPort_ValueChanged(object sender, EventArgs e)
 		{
-			config.ExternalVideoInfoServerPort = (ushort)numericUpDownVideoInfoServerPort.Value;
+			config.ExternalRestApiServerPort = (ushort)numericUpDownExternalRestApiServerPort.Value;
 		}
 
 		private void numericUpDownConnectionTimeout_ValueChanged(object sender, EventArgs e)
@@ -1868,9 +1886,9 @@ namespace YouTube_downloader
 			config.ConnectionTimeout = (int)numericUpDownConnectionTimeout.Value;
 		}
 
-		private void numericUpDownConnectionTimeoutServer_ValueChanged(object sender, EventArgs e)
+		private void numericUpDownConnectionTimeoutExternalRestApiServer_ValueChanged(object sender, EventArgs e)
 		{
-			config.ConnectionTimeoutServer = (int)numericUpDownConnectionTimeoutServer.Value;
+			config.ConnectionTimeoutExternalRestApiServer = (int)numericUpDownConnectionTimeoutExternalRestApiServer.Value;
 		}
 
 		private void groupBox13_Resize(object sender, EventArgs e)

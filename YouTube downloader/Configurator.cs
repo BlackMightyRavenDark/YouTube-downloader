@@ -44,10 +44,11 @@ namespace YouTube_downloader
 		public string BrowserExeFilePath { get; set; }
 		public string FfmpegExeFilePath { get; set; }
 		public bool SavePreviewImage { get; set; }
-		public bool UseExternalVideoInfoServerForAdultVideos { get; set; }
-		public bool AlwaysUseExternalVideoInfoServer { get; set; }
-		public string ExternalVideoInfoServerUrl { get; set; }
-		public ushort ExternalVideoInfoServerPort { get; set; }
+		public string ExternalRestApiServerUrl { get; set; }
+		public ushort ExternalRestApiServerPort { get; set; }
+		public bool UseExternalRestApiServerToGetBasicVideoInfo { get; set; }
+		public bool UseExternalRestApiServerToGetDownloadUrls { get; set; }
+		public bool UseExternalRestApiServerToGetAdultVideos { get; set; }
 		public int VideoTitleFontSize { get; set; }
 		public int MenusFontSize { get; set; }
 		public int FavoritesListFontSize { get; set; }
@@ -56,7 +57,7 @@ namespace YouTube_downloader
 		public int GlobalThreadCountMaximum { get; set; }
 		public bool AccurateMultithreading { get; set; }
 		public int ConnectionTimeout { get; set; }
-		public int ConnectionTimeoutServer { get; set; }
+		public int ConnectionTimeoutExternalRestApiServer { get; set; }
 
 		public const string DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0";
 
@@ -132,10 +133,11 @@ namespace YouTube_downloader
 			DashManualFragmentationChunkSize = 50000L;
 			DashDownloadRetryCountMax = 8;
 			SavePreviewImage = true;
-			UseExternalVideoInfoServerForAdultVideos = false;
-			AlwaysUseExternalVideoInfoServer = false;
-			ExternalVideoInfoServerUrl = "http://127.0.0.1";
-			ExternalVideoInfoServerPort = 12345;
+			ExternalRestApiServerUrl = "http://127.0.0.1";
+			ExternalRestApiServerPort = 12345;
+			UseExternalRestApiServerToGetBasicVideoInfo = false;
+			UseExternalRestApiServerToGetDownloadUrls = false;
+			UseExternalRestApiServerToGetAdultVideos = false;
 			VideoTitleFontSize = 8;
 			MenusFontSize = 10;
 			FavoritesListFontSize = 8;
@@ -144,7 +146,7 @@ namespace YouTube_downloader
 			GlobalThreadCountMaximum = 300;
 			AccurateMultithreading = true;
 			ConnectionTimeout = 5000;
-			ConnectionTimeoutServer = 15000;
+			ConnectionTimeoutExternalRestApiServer = 15000;
 		}
 
 		public void Load()

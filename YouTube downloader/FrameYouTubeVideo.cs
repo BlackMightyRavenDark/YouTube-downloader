@@ -239,46 +239,29 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			bool isWebPage = WebPage != null;
-			bool isExternalVideoInfoServerNeeded = isWebPage || config.AlwaysUseExternalVideoInfoServer ||
-				!VideoInfo.IsFamilySafe || VideoInfo.IsPrivate;
-			if (!isWebPage || isExternalVideoInfoServerNeeded)
+			bool isExternalVideoInfoServerNeeded = config.UseExternalRestApiServerToGetDownloadUrls ||
+				(config.UseExternalRestApiServerToGetAdultVideos && !VideoInfo.IsFamilySafe) ||
+				VideoInfo.IsPrivate;
+			string externalVideoInfoServerUrl = config.ExternalRestApiServerUrl;
+			ushort externalVideoInfoServerPort = config.ExternalRestApiServerPort;
+			int serverTimeout = config.ConnectionTimeoutExternalRestApiServer;
+			await Task.Run(() =>
 			{
-				string externalVideoInfoServerUrl = config.ExternalVideoInfoServerUrl;
-				ushort externalVideoInfoServerPort = config.ExternalVideoInfoServerPort;
-				int timeout = config.ConnectionTimeoutServer;
-				await Task.Run(() =>
+				IYouTubeClient client = isExternalVideoInfoServerNeeded ?
+					new YouTubeClientRestApi(
+						externalVideoInfoServerUrl, externalVideoInfoServerPort,
+						serverTimeout, true, WebPage) :
+					(IYouTubeClient)new YouTubeClientAndroidVr();
+				YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
+				if (streamingDataResult.ErrorCode == 200)
 				{
-					if (isExternalVideoInfoServerNeeded)
+					mediaTracks = new LinkedList<YouTubeMediaTrack>();
+					foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
 					{
-						IYouTubeClient client = new ExternalServerClient(
-							externalVideoInfoServerUrl, externalVideoInfoServerPort,
-							timeout, WebPage);
+						mediaTracks.AddLast(track);
 					}
-					else
-					{
-						IYouTubeClient client = new YouTubeClientAndroidVr();
-						YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
-						if (streamingDataResult.ErrorCode == 200)
-						{
-							mediaTracks = new LinkedList<YouTubeMediaTrack>();
-							foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
-							{
-								mediaTracks.AddLast(track);
-							}
-						}
-					}
-				});
-			}
-			else
-			{
-				IEnumerable<YouTubeMediaTrack> tracks = MediaTracksToEnumerable(VideoInfo.MediaTracks);
-				mediaTracks = new LinkedList<YouTubeMediaTrack>();
-				foreach (YouTubeMediaTrack track in tracks)
-				{
-					mediaTracks.AddLast(track);
 				}
-			}
+			});
 
 			if (mediaTracks == null || mediaTracks.Count == 0)
 			{
@@ -612,7 +595,7 @@ namespace YouTube_downloader
 
 				#region Расшифровка Cipher
 				//TODO: Вынести это в отдельный метод.
-				if (mediaTrack.IsCiphered && !config.AlwaysUseExternalVideoInfoServer)
+				if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadUrls)
 				{
 					if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
 					{
