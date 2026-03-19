@@ -207,7 +207,7 @@ namespace YouTube_downloader
 		public void UpdateVideoDateTimeIndicator()
 		{
 			string datePublishedString = VideoInfo != null && IsVideoDateAvailable(VideoInfo) ?
-				FormatDateTine(VideoInfo.DatePublished) : "Недоступно";
+				FormatDateTime(VideoInfo.DatePublished) : "Недоступно";
 			lblDatePublished.Text = $"Дата публикации: {datePublishedString}";
 		}
 

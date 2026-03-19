@@ -620,10 +620,10 @@ namespace YouTube_downloader
 			return string.Format("{0} {1:D3} {2:D3} {3:D3} bytes", gb, mb, kb, b);
 		}
 
-		public static string FormatDateTine(DateTime dateTime)
+		public static string FormatDateTime(DateTime dateTime)
 		{
 			DateTime dt = config.UseGmtTime ? dateTime : dateTime.ToLocalTime();
-			string t = dt.ToString("yyyy-MM-dd, hh:mm:ss");
+			string t = dt.ToString("yyyy.MM.dd, HH:mm:ss");
 			return config.UseGmtTime ? $"{t} GMT" : t;
 		}
 
