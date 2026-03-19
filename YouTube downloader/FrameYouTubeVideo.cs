@@ -135,9 +135,47 @@ namespace YouTube_downloader
 			favoriteItem.ID = VideoInfo.OwnerChannelId;
 			_isFavoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 			_ciphered = VideoInfo.IsCiphered();
-			_videoImageData = await Task.Run(() => videoInfo.DownloadPreviewImage());
-			_videoImage = _videoImageData != null && _videoImageData.Length > 0L ? Image.FromStream(_videoImageData) : null;
-			imagePreview.Refresh();
+			_videoImageData = await Task.Run(() => DownloadVideoThumbnail());
+			try
+			{
+				_videoImage = _videoImageData != null ? Image.FromStream(_videoImageData) : GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
+				imagePreview.Refresh();
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				_videoImage = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
+				_videoImageData = null;
+				imagePreview.Refresh();
+			}
+		}
+
+		private Stream DownloadVideoThumbnail()
+		{
+			FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
+			d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, tryCountLimit) =>
+			{
+				System.Diagnostics.Debug.WriteLine($"Video thumbnail loading error: {errorCode} | {tryNumber} / {tryCountLimit} | {errorMessage}");
+			};
+
+			const int maxTries = 5;
+			for (int i = 0; i < maxTries; ++i)
+			{
+				Invoke(new MethodInvoker(() =>
+				{
+					_videoImage = GenerateVideoThumbnailLoadingIndicator(imagePreview.Width, imagePreview.Height, i + 1, maxTries);
+					_videoImageData = null;
+					imagePreview.Refresh();
+				}));
+
+				Stream stream = VideoInfo.DownloadPreviewImage(d);
+				if (stream != null && stream.Length > 0L)
+				{
+					stream.Position = 0L;
+					return stream;
+				}
+			}
+			return null;
 		}
 
 		public void SetFavoriteVideo(bool fav)

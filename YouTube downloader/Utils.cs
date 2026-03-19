@@ -450,6 +450,58 @@ namespace YouTube_downloader
 				.Replace("\"", "\u201C").Replace("*", "\uFE61").Replace("^", "\u2303").Replace("\n", " ");
 		}
 
+		public static Bitmap GenerateVideoThumbnailLoadingIndicator(int width, int height, int tryNumber, int maxTries)
+		{
+			try
+			{
+				Bitmap bitmap = new Bitmap(width, height);
+				Graphics g = Graphics.FromImage(bitmap);
+				g.FillRectangle(Brushes.Black, 0, 0, width, height);
+				Font font = new Font("Lucida Console", 15f);
+				float xCenter = width / 2f;
+				float yCenter = height / 2f;
+
+				string t = "Загрузка...";
+				SizeF sz = g.MeasureString(t, font);
+				float y = yCenter - sz.Height;
+				g.DrawString(t, font, Brushes.Lime, xCenter - sz.Width / 2f, y);
+
+				t = $"Try №{tryNumber} / {maxTries}";
+				y += sz.Height + 4f;
+				sz = g.MeasureString(t, font);
+				g.DrawString(t, font, Brushes.Lime, xCenter - sz.Width / 2f, y);
+
+				return bitmap;
+			} catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				return null;
+			}
+		}
+
+		public static Bitmap GenerateVideoThumbnailFailed(int width, int height)
+		{
+			try
+			{
+				Bitmap bitmap = new Bitmap(width, height);
+				Graphics g = Graphics.FromImage(bitmap);
+				g.FillRectangle(Brushes.Black, 0, 0, width, height);
+				Font font = new Font("Lucida Console", 15f);
+
+				string t = $"Ошибка!";
+				SizeF sz = g.MeasureString(t, font);
+				PointF center = new PointF(width / 2f - sz.Width / 2f, height / 2f - sz.Height / 2f);
+				g.DrawString(t, font, Brushes.Lime, center);
+
+				return bitmap;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				return null;
+			}
+		}
+
 		public static string DecryptCipherSignature(string signatureEncrypted, string algo)
 		{
 			if (algo.StartsWith("["))

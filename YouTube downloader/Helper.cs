@@ -64,11 +64,11 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		public static Stream DownloadPreviewImage(this YouTubeVideo video)
+		public static Stream DownloadPreviewImage(this YouTubeVideo video, FileDownloader downloader = null)
 		{
 			if (video.Thumbnails != null)
 			{
-				FileDownloader d = new FileDownloader();
+				FileDownloader d = downloader ?? new FileDownloader();
 				foreach (YouTubeVideoThumbnail thumbnail in video.Thumbnails)
 				{
 					Stream mem = new MemoryStream();
