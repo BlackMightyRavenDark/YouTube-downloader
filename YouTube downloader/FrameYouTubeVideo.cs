@@ -28,6 +28,8 @@ namespace YouTube_downloader
 		private bool _isContainer = false;
 		private YouTubeMediaTrack _mediaTrack;
 		public YouTubeVideoWebPage WebPage { get; }
+		public YouTubeStreamingData LastReceivedStreamingData { get; private set; }
+		public DateTime StreamingDataExpirationDate { get; private set; } = DateTime.MinValue;
 		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
 		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
 
@@ -253,29 +255,58 @@ namespace YouTube_downloader
 			contextMenuDownloads.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			bool isExternalVideoInfoServerNeeded = config.UseExternalRestApiServerToGetDownloadUrls ||
-				(config.UseExternalRestApiServerToGetAdultVideos && !VideoInfo.IsFamilySafe) ||
-				VideoInfo.IsPrivate;
-			string externalVideoInfoServerUrl = config.ExternalRestApiServerUrl;
-			ushort externalVideoInfoServerPort = config.ExternalRestApiServerPort;
-			int serverTimeout = config.ConnectionTimeoutExternalRestApiServer;
-			await Task.Run(() =>
+			if (!miOptimizeFormatListReceiveToolStripMenuItem.Checked ||
+				LastReceivedStreamingData == null || (LastReceivedStreamingData != null &&
+				StreamingDataExpirationDate < DateTime.UtcNow))
 			{
-				IYouTubeClient client = isExternalVideoInfoServerNeeded ?
-					new YouTubeClientRestApi(
-						externalVideoInfoServerUrl, externalVideoInfoServerPort,
-						serverTimeout, true, WebPage) :
-					(IYouTubeClient)new YouTubeClientAndroidVr();
-				YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
-				if (streamingDataResult.ErrorCode == 200)
+				bool isExternalVideoInfoServerNeeded = config.UseExternalRestApiServerToGetDownloadUrls ||
+					(config.UseExternalRestApiServerToGetAdultVideos && !VideoInfo.IsFamilySafe) ||
+					VideoInfo.IsPrivate;
+				string externalVideoInfoServerUrl = config.ExternalRestApiServerUrl;
+				ushort externalVideoInfoServerPort = config.ExternalRestApiServerPort;
+				int serverTimeout = config.ConnectionTimeoutExternalRestApiServer;
+				await Task.Run(() =>
 				{
-					mediaTracks = new LinkedList<YouTubeMediaTrack>();
-					foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+					IYouTubeClient client = isExternalVideoInfoServerNeeded ?
+						new YouTubeClientRestApi(
+							externalVideoInfoServerUrl, externalVideoInfoServerPort,
+							serverTimeout, true, WebPage) :
+						(IYouTubeClient)new YouTubeClientAndroidVr();
+					YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
+					if (streamingDataResult.ErrorCode == 200)
 					{
-						mediaTracks.AddLast(track);
+						LastReceivedStreamingData = streamingDataResult.Data;
+						StreamingDataExpirationDate = streamingDataResult.Data.DateReceived.AddSeconds(streamingDataResult.Data.GetLifeTimeSeconds());
+
+						mediaTracks = new LinkedList<YouTubeMediaTrack>();
+						foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+						{
+							mediaTracks.AddLast(track);
+						}
 					}
+				});
+			}
+			else if (LastReceivedStreamingData != null)
+			{
+				mediaTracks = new LinkedList<YouTubeMediaTrack>();
+				foreach (YouTubeMediaTrack track in LastReceivedStreamingData.Parse().Tracks)
+				{
+					mediaTracks.AddLast(track);
 				}
-			});
+			}
+			else
+			{
+				LastReceivedStreamingData = null;
+				StreamingDataExpirationDate = DateTime.MinValue;
+
+				lblStatus.Text = "Состояние: Ошибка поиска доступных форматов!";
+				MessageBox.Show("Не удалось получить список форматов! Попытайтесь ещё раз!\n" +
+					"Если это не помогает, попробуйте отключить галочку \"Оптимизировать получение списка форматов\" в меню \"Меню\".",
+					"Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				btnDownload.Enabled = true;
+				return;
+			}
 
 			if (mediaTracks == null || mediaTracks.Count == 0)
 			{

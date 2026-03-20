@@ -219,7 +219,22 @@ namespace YouTube_downloader
 
 			return new TableRow(data, track);
 		}
-		
+
+		public static int GetLifeTimeSeconds(this YouTubeStreamingData streamingData)
+		{
+			try
+			{
+				JObject json = JObject.Parse(streamingData.RawData);
+				return json.Value<int>("expiresInSeconds");
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+			}
+
+			return 0;
+		}
+
 		public static DateTime ToGmt(this DateTime dateTime)
 		{
 			TimeSpan offset = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time").BaseUtcOffset;

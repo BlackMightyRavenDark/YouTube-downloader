@@ -75,6 +75,7 @@
 			this.miGetPlayerCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.miOptimizeFormatListReceiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
@@ -393,9 +394,10 @@
 			// contextMenuFrameActions
 			// 
 			this.contextMenuFrameActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.miActionsToolStripMenuItem});
+			this.miActionsToolStripMenuItem,
+			this.miOptimizeFormatListReceiveToolStripMenuItem});
 			this.contextMenuFrameActions.Name = "contextMenuFrameActions";
-			this.contextMenuFrameActions.Size = new System.Drawing.Size(126, 26);
+			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 70);
 			// 
 			// miActionsToolStripMenuItem
 			// 
@@ -407,7 +409,7 @@
 			this.miGetHlsManifestToolStripMenuItem,
 			this.miGetPlayerCodeToolStripMenuItem});
 			this.miActionsToolStripMenuItem.Name = "miActionsToolStripMenuItem";
-			this.miActionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+			this.miActionsToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
 			this.miActionsToolStripMenuItem.Text = "Действия";
 			// 
 			// miGetVideoWebPageCodeToolStripMenuItem
@@ -464,6 +466,15 @@
 			this.lblBtnOpenFrameContextMenu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip1.SetToolTip(this.lblBtnOpenFrameContextMenu, "Меню");
 			this.lblBtnOpenFrameContextMenu.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseUp);
+			// 
+			// miOptimizeFormatListReceiveToolStripMenuItem
+			// 
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Checked = true;
+			this.miOptimizeFormatListReceiveToolStripMenuItem.CheckOnClick = true;
+			this.miOptimizeFormatListReceiveToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Name = "miOptimizeFormatListReceiveToolStripMenuItem";
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Text = "Оптимизировать получение списка форматов";
 			// 
 			// progressBarDownload
 			// 
@@ -558,5 +569,6 @@
 		private System.Windows.Forms.ToolStripMenuItem miActionsToolStripMenuItem;
 		private System.Windows.Forms.Label lblBtnOpenFrameContextMenu;
 		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.ToolStripMenuItem miOptimizeFormatListReceiveToolStripMenuItem;
 	}
 }
