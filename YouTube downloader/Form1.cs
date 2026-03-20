@@ -885,7 +885,7 @@ namespace YouTube_downloader
 			{
 				framesVideo[i].Left = 0;
 				framesVideo[i].Top = h - scrollBarSearchResults.Value;
-				framesVideo[i].Width = panelSearchResults.Width + FrameYouTubeVideo.EXTRA_WIDTH;
+				framesVideo[i].Width = panelSearchResults.Width;
 				h += framesVideo[i].Height;
 			}
 

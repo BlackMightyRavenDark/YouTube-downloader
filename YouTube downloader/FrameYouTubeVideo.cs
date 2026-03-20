@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
 using YouTubeApiLib;
 using MultiThreadedDownloaderLib;
 using static YouTube_downloader.Utils;
@@ -48,9 +47,6 @@ namespace YouTube_downloader
 		public ActivatedDelegate Activated;
 		public OpenChannelDelegate OpenChannel;
 
-		private int oldX;
-		private bool canDrag = false;
-		public const int EXTRA_WIDTH = 260;
 		private bool _cancelRequired;
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage, Control parent)
@@ -61,8 +57,6 @@ namespace YouTube_downloader
 			WebPage = webPage;
 
 			SetVideoTitleFontSize(config.VideoTitleFontSize);
-			imgScrollbar.SetDoubleBuffered(true);
-
 			SetVideoInfo(videoInfo);
 		}
 
@@ -73,24 +67,6 @@ namespace YouTube_downloader
 		{
 			lblStatus.Text = null;
 			lblProgress.Text = null;
-		}
-
-		private void FrameYouTubeVideo_Resize(object sender, EventArgs e)
-		{
-			Control parentControl = Parent;
-			if (parentControl != null)
-			{
-				const int offset = 10;
-				imageFavorite.Left = parentControl.Width - imageFavorite.Width - offset;
-				btnDownload.Left = parentControl.Width - btnDownload.Width - offset;
-				lblVideoTitle.Width = imageFavorite.Left - lblVideoTitle.Left - 4;
-				progressBarDownload.Width = btnDownload.Left - progressBarDownload.Left - 4;
-				groupBoxButtons.Left = parentControl.Width + offset;
-
-				imgScrollbar.Left = 0;
-				imgScrollbar.Width = parentControl.Width;
-				imgScrollbar.Invalidate();
-			}
 		}
 
 		private async void SetVideoInfo(YouTubeVideo videoInfo)
@@ -1352,50 +1328,6 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void FrameYouTubeVideo_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Left)
-			{
-				oldX = e.X;
-				canDrag = true;
-			}
-		}
-
-		private void FrameYouTubeVideo_MouseUp(object sender, MouseEventArgs e)
-		{
-			canDrag = false;
-		}
-
-		private void FrameYouTubeVideo_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (canDrag)
-			{
-				int newX = Left + e.X - oldX;
-				if (newX > 0)
-				{
-					newX = 0;
-				}
-				else if (newX < -EXTRA_WIDTH)
-				{
-					newX = -EXTRA_WIDTH;
-				}
-				Left = newX;
-				imgScrollbar.Left = -Left;
-				imgScrollbar.Invalidate();
-
-				progressBarDownload.Invalidate();
-			}
-		}
-
-		private void imgScrollbar_Paint(object sender, PaintEventArgs e)
-		{
-			e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
-			int xLeft = (int)Math.Round(imgScrollbar.Width / (double)Width * -Left);
-			int xRight = (int)Math.Round(imgScrollbar.Width / (double)Width * (-Left + Parent.Width));
-			e.Graphics.FillRectangle(Brushes.Black, new Rectangle(xLeft, 0, xRight - xLeft, imgScrollbar.Height));
-		}
-
 		private void imagePreview_Paint(object sender, PaintEventArgs e)
 		{
 			if (_videoImage != null)
@@ -1462,276 +1394,6 @@ namespace YouTube_downloader
 			double x = imageFavorite.Width / 2.0;
 			double y = imageFavorite.Height / 2.0;
 			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteChannel, Color.LimeGreen);
-		}
-
-		private async void btnGetWebPage_Click(object sender, EventArgs e)
-		{
-			btnGetWebPage.Enabled = false;
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				btnGetWebPage.Enabled = true;
-				return;
-			}
-
-			if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
-			{
-				SetClipboardText(WebPage.WebPageCode);
-				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
-					MessageBoxButtons.OK, MessageBoxIcon.Information);
-				btnGetWebPage.Enabled = true;
-				return;
-			}
-
-			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new YouTubeVideoId(VideoInfo.Id)));
-			if (webPageResult.ErrorCode == 200)
-			{
-				SetClipboardText(webPageResult.VideoWebPage.WebPageCode);
-				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
-					MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-			else
-			{
-				MessageBox.Show("Ошибатор ошибок", $"Ошибка {webPageResult.VideoWebPage}",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-
-			btnGetWebPage.Enabled = true;
-		}
-
-		private async void btnGetVideoInfo_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			{
-				if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
-				{
-					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(WebPage.WebPageCode);
-					YouTubeRawVideoInfoResult rawVideoInfoResult =
-						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
-					if (rawVideoInfoResult.ErrorCode == 200)
-					{
-						string t = rawVideoInfoResult.RawVideoInfo.RawData.ToString();
-						SetClipboardText(t);
-						MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
-							MessageBoxButtons.OK, MessageBoxIcon.Information);
-					}
-					else
-					{
-						MessageBox.Show("Не удалось получить информацию о видео!", "Ошибатор ошибок",
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-					return;
-				}
-			}
-			{
-				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(VideoInfo.Id));
-				if (rawVideoInfoResult.ErrorCode == 200)
-				{
-					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
-					MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
-						MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else
-				{
-					MessageBox.Show("Ошибатор ошибок", $"Ошибка {rawVideoInfoResult.ErrorCode}",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-		}
-
-		private async void btnGetVideoUrls_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
-			if (client == null)
-			{
-				MessageBox.Show("Клиент 'ios' недоступен!", "Ошибатор ошибок!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() =>
-				WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode) ?
-					ExtractStreamingDataFromVideoWebPage(WebPage.WebPageCode) :
-					YouTubeStreamingData.Get(VideoInfo.Id, client)
-			);
-			if (streamingDataResult.ErrorCode != 200 || streamingDataResult.Data == null ||
-				string.IsNullOrEmpty(streamingDataResult.Data.RawData) ||
-				string.IsNullOrWhiteSpace(streamingDataResult.Data.RawData))
-			{
-				MessageBox.Show("Не удалось получить ссылки для скачивания! ", "Ссылки для скачивания",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			SetClipboardText(streamingDataResult.Data.RawData);
-			MessageBox.Show("Скопировано в буфер обмена", "Ссылки для скачивания",
-				MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
-
-		private async void btnGetDashManifest_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
-			if (client == null)
-			{
-				MessageBox.Show("Клиент 'ios' недоступен!", "Ошибатор ошибок!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
-			if (streamingDataResult.ErrorCode == 200)
-			{
-				JObject json = TryParseJson(streamingDataResult.Data.RawData);
-				if (json != null)
-				{
-					string dashManifestUrl = json.Value<string>("dashManifestUrl");
-					FileDownloader d = new FileDownloader() { Url = dashManifestUrl };
-					if (d.DownloadString(out string manifest) == 200)
-					{
-						SetClipboardText(manifest);
-						MessageBox.Show("Скопировано в буфер обмена", "DASH manifest",
-							MessageBoxButtons.OK, MessageBoxIcon.Information);
-						return;
-					}
-				}
-			}
-
-			MessageBox.Show("DASH manifest не найден!", "Ошибатор ошибок",
-				MessageBoxButtons.OK, MessageBoxIcon.Error);
-		}
-
-		private async void btnGetHlsManifest_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			IYouTubeClient client = YouTubeApi.GetYouTubeClient("ios");
-			if (client == null)
-			{
-				MessageBox.Show("Клиент 'ios' недоступен!", "Ошибатор ошибок!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
-			if (streamingDataResult.ErrorCode == 200)
-			{
-				JObject json = TryParseJson(streamingDataResult.Data.RawData);
-				if (json != null)
-				{
-					string hlsManifestUrl = json.Value<string>("hlsManifestUrl");
-					FileDownloader d = new FileDownloader() { Url = hlsManifestUrl };
-					if (d.DownloadString(out string manifest) == 200)
-					{
-						SetClipboardText(manifest);
-						MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
-							MessageBoxButtons.OK, MessageBoxIcon.Information);
-						return;
-					}
-				}
-			}
-
-			MessageBox.Show("HLS manifest не найден!", "Ошибатор ошибок",
-				MessageBoxButtons.OK, MessageBoxIcon.Error);
-		}
-
-		private async void btnGetPlayerCode_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			string page = WebPage?.WebPageCode;
-			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
-			{
-				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
-				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
-				if (webPageResult.ErrorCode != 200)
-				{
-					MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
-				}
-
-				page = webPageResult.VideoWebPage.WebPageCode;
-			}
-
-			string url = ExtractPlayerUrlFromWebPageCode(page);
-			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
-			{
-				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			string code = null;
-			int errCode = await Task.Run(() =>
-			{
-				FileDownloader d = new FileDownloader() { Url = url };
-				int errorCode = d.DownloadString(out code);
-				d.Dispose();
-				return errorCode;
-			});
-			if (errCode != 200)
-			{
-				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			try
-			{
-				using (SaveFileDialog sfd = new SaveFileDialog())
-				{
-					sfd.InitialDirectory = config.DownloadingDirPath;
-					sfd.Title = "Сохранить код плеера как...";
-					sfd.Filter = "JS-files|*.js";
-					sfd.DefaultExt = ".js";
-					sfd.AddExtension = true;
-					sfd.FileName = $"Player for {VideoInfo.Id}";
-					if (sfd.ShowDialog() == DialogResult.OK)
-					{
-						if (File.Exists(sfd.FileName))
-						{
-							File.Delete(sfd.FileName);
-						}
-						File.WriteAllText(sfd.FileName, code);
-					}
-				}
-			} catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-				MessageBox.Show(ex.Message, "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
 		}
 
 		private void imagePreview_MouseDown(object sender, MouseEventArgs e)
@@ -1820,43 +1482,6 @@ namespace YouTube_downloader
 			}
 		}
 
-		private void imgScrollbar_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Left)
-			{
-				oldX = e.X;
-				canDrag = true;
-			}
-		}
-
-		private void imgScrollbar_MouseUp(object sender, MouseEventArgs e)
-		{
-			canDrag = false;
-		}
-
-		private void imgScrollbar_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (canDrag)
-			{
-				int newX = Left + oldX - e.X;
-				if (newX > 0)
-				{
-					newX = 0;
-				}
-				else if (newX < -EXTRA_WIDTH)
-				{
-					newX = -EXTRA_WIDTH;
-				}
-				Left = newX;
-				oldX = e.X;
-				imgScrollbar.Left = -Left;
-				imgScrollbar.Invalidate();
-
-				progressBarDownload.Invalidate();
-			}
-		}
-
 		public void SetVideoTitleFontSize(int fontSize)
 		{
 			lblVideoTitle.Font = new Font(lblVideoTitle.Font.FontFamily, fontSize);
@@ -1864,6 +1489,7 @@ namespace YouTube_downloader
 
 		public void SetMenusFontSize(int fontSize)
 		{
+			contextMenuFrameActions.SetFontSize(fontSize);
 			contextMenuImage.SetFontSize(fontSize);
 			contextMenuVideoTitle.SetFontSize(fontSize);
 			contextMenuChannelTitle.SetFontSize(fontSize);
@@ -1934,6 +1560,17 @@ namespace YouTube_downloader
 		private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			OpenChannel?.Invoke(this, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId);
+		}
+
+		private void lblBtnOpenFrameContextMenu_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+			{
+				Point pt = PointToScreen(new Point(
+					lblBtnOpenFrameContextMenu.Left + lblBtnOpenFrameContextMenu.Width,
+					lblBtnOpenFrameContextMenu.Top));
+				contextMenuFrameActions.Show(pt);
+			}
 		}
 
 		private void miSaveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2082,6 +1719,278 @@ namespace YouTube_downloader
 			{
 				UpdateDownloadProgress();
 			}
+		}
+
+		private async void miGetVideoWebPageCodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
+			{
+				SetClipboardText(WebPage.WebPageCode);
+				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
+				miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new YouTubeVideoId(VideoInfo.Id)));
+			if (webPageResult.ErrorCode == 200)
+			{
+				SetClipboardText(webPageResult.VideoWebPage.WebPageCode);
+				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show("Ошибатор ошибок", $"Ошибка {webPageResult.VideoWebPage}",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetVideoInfoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetVideoInfoToolStripMenuItem.Enabled = false;
+
+			{
+				if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
+				{
+					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(WebPage.WebPageCode);
+					YouTubeRawVideoInfoResult rawVideoInfoResult =
+						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
+					if (rawVideoInfoResult.ErrorCode == 200)
+					{
+						string t = rawVideoInfoResult.RawVideoInfo.RawData.ToString();
+						SetClipboardText(t);
+						MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+					else
+					{
+						MessageBox.Show("Не удалось получить информацию о видео!", "Ошибатор ошибок",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+
+					miGetVideoInfoToolStripMenuItem.Enabled = true;
+					return;
+				}
+			}
+			{
+				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(VideoInfo.Id));
+				if (rawVideoInfoResult.ErrorCode == 200)
+				{
+					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
+					MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show("Ошибатор ошибок", $"Ошибка {rawVideoInfoResult.ErrorCode}",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+
+			miGetVideoInfoToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetDownloadUrlsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetDownloadUrlsToolStripMenuItem.Enabled = false;
+
+			IYouTubeClient client = new YouTubeClientAndroidVr();
+			client.SetWebPage(WebPage);
+			YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _));
+			if (rawVideoInfoResult.ErrorCode == 200)
+			{
+				YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
+				if (streamingDataResult.ErrorCode == 200)
+				{
+					SetClipboardText(streamingDataResult.Data.RawData);
+					MessageBox.Show("Скопировано в буфер обмена", "Ссылки для скачивания",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+					miGetDownloadUrlsToolStripMenuItem.Enabled = true;
+					return;
+				}
+			}
+
+			MessageBox.Show("Не удалось получить ссылки для скачивания!", "Ошибка!",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
+			miGetDownloadUrlsToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetDashManifestToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetDashManifestToolStripMenuItem.Enabled = false;
+
+			IYouTubeClient client = new YouTubeClientAndroidVr();
+			client.SetWebPage(WebPage);
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
+			if (streamingDataResult.ErrorCode == 200)
+			{
+				string url = streamingDataResult.Data.GetDashManifestUrl();
+				if (!string.IsNullOrEmpty(url))
+				{
+					FileDownloader d = new FileDownloader() { Url = url };
+					if (d.DownloadString(out string manifest) == 200)
+					{
+						SetClipboardText(manifest);
+						MessageBox.Show("Скопировано в буфер обмена", "DASH manifest",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+						miGetDashManifestToolStripMenuItem.Enabled = true;
+						return;
+					}
+				}
+			}
+
+			MessageBox.Show("DASH manifest не найден!", "Ошибатор ошибок",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
+			miGetDashManifestToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetHlsManifestToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetHlsManifestToolStripMenuItem.Enabled = false;
+
+			IYouTubeClient client = new YouTubeClientAndroidVr();
+			client.SetWebPage(WebPage);
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
+			if (streamingDataResult.ErrorCode == 200)
+			{
+				string url = streamingDataResult.Data.GetHlsManifestUrl();
+				if (!string.IsNullOrEmpty(url))
+				{
+					FileDownloader d = new FileDownloader() { Url = url };
+					if (d.DownloadString(out string manifest) == 200)
+					{
+						SetClipboardText(manifest);
+						MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+						miGetHlsManifestToolStripMenuItem.Enabled = true;
+						return;
+					}
+				}
+			}
+
+			MessageBox.Show("HLS manifest не найден!", "Ошибатор ошибок",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
+			miGetHlsManifestToolStripMenuItem.Enabled = false;
+		}
+
+		private async void miGetPlayerCodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetPlayerCodeToolStripMenuItem.Enabled = false;
+			string page = WebPage?.WebPageCode;
+			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+			{
+				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
+				if (webPageResult.ErrorCode != 200)
+				{
+					MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					miGetPlayerCodeToolStripMenuItem.Enabled = true;
+					return;
+				}
+
+				page = webPageResult.VideoWebPage.WebPageCode;
+			}
+
+			string url = ExtractPlayerUrlFromWebPageCode(page);
+			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+			{
+				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miGetPlayerCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			string code = null;
+			int errCode = await Task.Run(() =>
+			{
+				FileDownloader d = new FileDownloader() { Url = url };
+				int errorCode = d.DownloadString(out code);
+				d.Dispose();
+				return errorCode;
+			});
+			if (errCode != 200)
+			{
+				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miGetPlayerCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			try
+			{
+				using (SaveFileDialog sfd = new SaveFileDialog())
+				{
+					sfd.InitialDirectory = config.DownloadingDirPath;
+					sfd.Title = "Сохранить код плеера как...";
+					sfd.Filter = "JS-files|*.js";
+					sfd.DefaultExt = ".js";
+					sfd.AddExtension = true;
+					sfd.FileName = $"Player for {VideoInfo.Id}";
+					if (sfd.ShowDialog() == DialogResult.OK)
+					{
+						if (File.Exists(sfd.FileName))
+						{
+							File.Delete(sfd.FileName);
+						}
+						File.WriteAllText(sfd.FileName, code);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			miGetPlayerCodeToolStripMenuItem.Enabled = true;
 		}
 	}
 }

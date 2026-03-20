@@ -38,12 +38,11 @@
 			this.contextMenuDownloads = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.lblStatus = new System.Windows.Forms.Label();
 			this.lblProgress = new System.Windows.Forms.Label();
-			this.imgScrollbar = new System.Windows.Forms.PictureBox();
-			this.btnGetVideoInfo = new System.Windows.Forms.Button();
 			this.imageFavoriteChannel = new System.Windows.Forms.PictureBox();
 			this.contextMenuImage = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miOpenVideoInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyVideoUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyPlayerUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
 			this.miOpenImageInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,10 +54,6 @@
 			this.miCopyChannelNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miOpenChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnGetWebPage = new System.Windows.Forms.Button();
-			this.btnGetDashManifest = new System.Windows.Forms.Button();
-			this.btnGetHlsManifest = new System.Windows.Forms.Button();
-			this.btnGetPlayerCode = new System.Windows.Forms.Button();
 			this.contextMenuVideoTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyTitleAsIsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyFixedTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,27 +62,35 @@
 			this.contextMenuDate = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miUpdateVideoPublishedDateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnGetVideoUrls = new System.Windows.Forms.Button();
-			this.groupBoxButtons = new System.Windows.Forms.GroupBox();
 			this.contextMenuProgressBar = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miSingleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miMultipleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.contextMenuFrameActions = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.miActionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miGetVideoWebPageCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miGetVideoInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miGetDownloadUrlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miGetDashManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miGetHlsManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miGetPlayerCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
-			this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavoriteChannel)).BeginInit();
 			this.contextMenuImage.SuspendLayout();
 			this.contextMenuChannelTitle.SuspendLayout();
 			this.contextMenuVideoTitle.SuspendLayout();
 			this.contextMenuDate.SuspendLayout();
-			this.groupBoxButtons.SuspendLayout();
 			this.contextMenuProgressBar.SuspendLayout();
+			this.contextMenuFrameActions.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// lblVideoTitle
 			// 
+			this.lblVideoTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblVideoTitle.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.lblVideoTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.lblVideoTitle.Location = new System.Drawing.Point(179, 12);
@@ -135,6 +138,7 @@
 			// 
 			// imageFavorite
 			// 
+			this.imageFavorite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.imageFavorite.Location = new System.Drawing.Point(462, 12);
 			this.imageFavorite.Name = "imageFavorite";
 			this.imageFavorite.Size = new System.Drawing.Size(25, 25);
@@ -145,6 +149,7 @@
 			// 
 			// btnDownload
 			// 
+			this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnDownload.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.btnDownload.Location = new System.Drawing.Point(425, 142);
 			this.btnDownload.Name = "btnDownload";
@@ -164,46 +169,20 @@
 			// lblStatus
 			// 
 			this.lblStatus.AutoSize = true;
-			this.lblStatus.Location = new System.Drawing.Point(0, 126);
+			this.lblStatus.Location = new System.Drawing.Point(3, 126);
 			this.lblStatus.Name = "lblStatus";
 			this.lblStatus.Size = new System.Drawing.Size(47, 13);
 			this.lblStatus.TabIndex = 7;
 			this.lblStatus.Text = "lblStatus";
-			this.lblStatus.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseDown);
 			// 
 			// lblProgress
 			// 
 			this.lblProgress.AutoSize = true;
-			this.lblProgress.Location = new System.Drawing.Point(55, 126);
+			this.lblProgress.Location = new System.Drawing.Point(56, 126);
 			this.lblProgress.Name = "lblProgress";
 			this.lblProgress.Size = new System.Drawing.Size(58, 13);
 			this.lblProgress.TabIndex = 8;
 			this.lblProgress.Text = "lblProgress";
-			this.lblProgress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseDown);
-			// 
-			// imgScrollbar
-			// 
-			this.imgScrollbar.Location = new System.Drawing.Point(3, 166);
-			this.imgScrollbar.Name = "imgScrollbar";
-			this.imgScrollbar.Size = new System.Drawing.Size(484, 12);
-			this.imgScrollbar.TabIndex = 9;
-			this.imgScrollbar.TabStop = false;
-			this.imgScrollbar.Paint += new System.Windows.Forms.PaintEventHandler(this.imgScrollbar_Paint);
-			this.imgScrollbar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseDown);
-			this.imgScrollbar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseMove);
-			this.imgScrollbar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.imgScrollbar_MouseUp);
-			// 
-			// btnGetVideoInfo
-			// 
-			this.btnGetVideoInfo.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.btnGetVideoInfo.Location = new System.Drawing.Point(8, 49);
-			this.btnGetVideoInfo.Name = "btnGetVideoInfo";
-			this.btnGetVideoInfo.Size = new System.Drawing.Size(112, 25);
-			this.btnGetVideoInfo.TabIndex = 10;
-			this.btnGetVideoInfo.Text = "Get video info";
-			this.btnGetVideoInfo.UseVisualStyleBackColor = false;
-			this.btnGetVideoInfo.Click += new System.EventHandler(this.btnGetVideoInfo_Click);
-			this.btnGetVideoInfo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnGetVideoInfo_MouseDown);
 			// 
 			// imageFavoriteChannel
 			// 
@@ -227,7 +206,7 @@
 			this.miCopyImageUrlToolStripMenuItem,
 			this.miSaveImageAssToolStripMenuItem});
 			this.contextMenuImage.Name = "contextMenuImage";
-			this.contextMenuImage.Size = new System.Drawing.Size(283, 186);
+			this.contextMenuImage.Size = new System.Drawing.Size(283, 164);
 			// 
 			// miOpenVideoInBrowserToolStripMenuItem
 			// 
@@ -242,6 +221,13 @@
 			this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
 			this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
 			this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
+			// 
+			// miCopyVideoIdToolStripMenuItem
+			// 
+			this.miCopyVideoIdToolStripMenuItem.Name = "miCopyVideoIdToolStripMenuItem";
+			this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyVideoIdToolStripMenuItem.Text = "Скопировать ID видео";
+			this.miCopyVideoIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoIdToolStripMenuItem_Click);
 			// 
 			// miCopyPlayerUrlToolStripMenuItem
 			// 
@@ -322,50 +308,6 @@
 			this.miOpenChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
 			this.miOpenChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenChannelInBrowserToolStripMenuItem_Click);
 			// 
-			// btnGetWebPage
-			// 
-			this.btnGetWebPage.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.btnGetWebPage.Location = new System.Drawing.Point(8, 18);
-			this.btnGetWebPage.Name = "btnGetWebPage";
-			this.btnGetWebPage.Size = new System.Drawing.Size(112, 25);
-			this.btnGetWebPage.TabIndex = 12;
-			this.btnGetWebPage.Text = "Get web page";
-			this.btnGetWebPage.UseVisualStyleBackColor = false;
-			this.btnGetWebPage.Click += new System.EventHandler(this.btnGetWebPage_Click);
-			// 
-			// btnGetDashManifest
-			// 
-			this.btnGetDashManifest.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.btnGetDashManifest.Location = new System.Drawing.Point(126, 18);
-			this.btnGetDashManifest.Name = "btnGetDashManifest";
-			this.btnGetDashManifest.Size = new System.Drawing.Size(112, 25);
-			this.btnGetDashManifest.TabIndex = 13;
-			this.btnGetDashManifest.Text = "Get DASH manifest";
-			this.btnGetDashManifest.UseVisualStyleBackColor = false;
-			this.btnGetDashManifest.Click += new System.EventHandler(this.btnGetDashManifest_Click);
-			// 
-			// btnGetHlsManifest
-			// 
-			this.btnGetHlsManifest.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.btnGetHlsManifest.Location = new System.Drawing.Point(126, 49);
-			this.btnGetHlsManifest.Name = "btnGetHlsManifest";
-			this.btnGetHlsManifest.Size = new System.Drawing.Size(112, 25);
-			this.btnGetHlsManifest.TabIndex = 14;
-			this.btnGetHlsManifest.Text = "Get HLS manifest";
-			this.btnGetHlsManifest.UseVisualStyleBackColor = false;
-			this.btnGetHlsManifest.Click += new System.EventHandler(this.btnGetHlsManifest_Click);
-			// 
-			// btnGetPlayerCode
-			// 
-			this.btnGetPlayerCode.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.btnGetPlayerCode.Location = new System.Drawing.Point(126, 80);
-			this.btnGetPlayerCode.Name = "btnGetPlayerCode";
-			this.btnGetPlayerCode.Size = new System.Drawing.Size(112, 25);
-			this.btnGetPlayerCode.TabIndex = 15;
-			this.btnGetPlayerCode.Text = "Get player code";
-			this.btnGetPlayerCode.UseVisualStyleBackColor = false;
-			this.btnGetPlayerCode.Click += new System.EventHandler(this.btnGetPlayerCode_Click);
-			// 
 			// contextMenuVideoTitle
 			// 
 			this.contextMenuVideoTitle.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -424,32 +366,6 @@
 			this.miUpdateVideoPublishedDateToolStripMenuItem.Text = "Обновить дату публикации";
 			this.miUpdateVideoPublishedDateToolStripMenuItem.Click += new System.EventHandler(this.miUpdateVideoPublishedDateToolStripMenuItem_Click);
 			// 
-			// btnGetVideoUrls
-			// 
-			this.btnGetVideoUrls.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.btnGetVideoUrls.Location = new System.Drawing.Point(8, 80);
-			this.btnGetVideoUrls.Name = "btnGetVideoUrls";
-			this.btnGetVideoUrls.Size = new System.Drawing.Size(112, 25);
-			this.btnGetVideoUrls.TabIndex = 16;
-			this.btnGetVideoUrls.Text = "Get video URLs";
-			this.btnGetVideoUrls.UseVisualStyleBackColor = false;
-			this.btnGetVideoUrls.Click += new System.EventHandler(this.btnGetVideoUrls_Click);
-			// 
-			// groupBoxButtons
-			// 
-			this.groupBoxButtons.Controls.Add(this.btnGetDashManifest);
-			this.groupBoxButtons.Controls.Add(this.btnGetVideoUrls);
-			this.groupBoxButtons.Controls.Add(this.btnGetVideoInfo);
-			this.groupBoxButtons.Controls.Add(this.btnGetWebPage);
-			this.groupBoxButtons.Controls.Add(this.btnGetHlsManifest);
-			this.groupBoxButtons.Controls.Add(this.btnGetPlayerCode);
-			this.groupBoxButtons.Location = new System.Drawing.Point(500, 12);
-			this.groupBoxButtons.Name = "groupBoxButtons";
-			this.groupBoxButtons.Size = new System.Drawing.Size(248, 111);
-			this.groupBoxButtons.TabIndex = 17;
-			this.groupBoxButtons.TabStop = false;
-			this.groupBoxButtons.Text = "Кнопки";
-			// 
 			// contextMenuProgressBar
 			// 
 			this.contextMenuProgressBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -474,31 +390,100 @@
 			this.miMultipleToolStripMenuItem.Text = "Прогресс каждого потока";
 			this.miMultipleToolStripMenuItem.Click += new System.EventHandler(this.miMultipleToolStripMenuItem_Click);
 			// 
+			// contextMenuFrameActions
+			// 
+			this.contextMenuFrameActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.miActionsToolStripMenuItem});
+			this.contextMenuFrameActions.Name = "contextMenuFrameActions";
+			this.contextMenuFrameActions.Size = new System.Drawing.Size(126, 26);
+			// 
+			// miActionsToolStripMenuItem
+			// 
+			this.miActionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.miGetVideoWebPageCodeToolStripMenuItem,
+			this.miGetVideoInfoToolStripMenuItem,
+			this.miGetDownloadUrlsToolStripMenuItem,
+			this.miGetDashManifestToolStripMenuItem,
+			this.miGetHlsManifestToolStripMenuItem,
+			this.miGetPlayerCodeToolStripMenuItem});
+			this.miActionsToolStripMenuItem.Name = "miActionsToolStripMenuItem";
+			this.miActionsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+			this.miActionsToolStripMenuItem.Text = "Действия";
+			// 
+			// miGetVideoWebPageCodeToolStripMenuItem
+			// 
+			this.miGetVideoWebPageCodeToolStripMenuItem.Name = "miGetVideoWebPageCodeToolStripMenuItem";
+			this.miGetVideoWebPageCodeToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			this.miGetVideoWebPageCodeToolStripMenuItem.Text = "Получить код веб-страницы";
+			this.miGetVideoWebPageCodeToolStripMenuItem.Click += new System.EventHandler(this.miGetVideoWebPageCodeToolStripMenuItem_Click);
+			// 
+			// miGetVideoInfoToolStripMenuItem
+			// 
+			this.miGetVideoInfoToolStripMenuItem.Name = "miGetVideoInfoToolStripMenuItem";
+			this.miGetVideoInfoToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			this.miGetVideoInfoToolStripMenuItem.Text = "Получить информацию о видео";
+			this.miGetVideoInfoToolStripMenuItem.Click += new System.EventHandler(this.miGetVideoInfoToolStripMenuItem_Click);
+			// 
+			// miGetDownloadUrlsToolStripMenuItem
+			// 
+			this.miGetDownloadUrlsToolStripMenuItem.Name = "miGetDownloadUrlsToolStripMenuItem";
+			this.miGetDownloadUrlsToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			this.miGetDownloadUrlsToolStripMenuItem.Text = "Получить ссылки для скачивания";
+			this.miGetDownloadUrlsToolStripMenuItem.Click += new System.EventHandler(this.miGetDownloadUrlsToolStripMenuItem_Click);
+			// 
+			// miGetDashManifestToolStripMenuItem
+			// 
+			this.miGetDashManifestToolStripMenuItem.Name = "miGetDashManifestToolStripMenuItem";
+			this.miGetDashManifestToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			this.miGetDashManifestToolStripMenuItem.Text = "Получить манифест DASH";
+			this.miGetDashManifestToolStripMenuItem.Click += new System.EventHandler(this.miGetDashManifestToolStripMenuItem_Click);
+			// 
+			// miGetHlsManifestToolStripMenuItem
+			// 
+			this.miGetHlsManifestToolStripMenuItem.Name = "miGetHlsManifestToolStripMenuItem";
+			this.miGetHlsManifestToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			this.miGetHlsManifestToolStripMenuItem.Text = "Получить манифест HLS";
+			this.miGetHlsManifestToolStripMenuItem.Click += new System.EventHandler(this.miGetHlsManifestToolStripMenuItem_Click);
+			// 
+			// miGetPlayerCodeToolStripMenuItem
+			// 
+			this.miGetPlayerCodeToolStripMenuItem.Name = "miGetPlayerCodeToolStripMenuItem";
+			this.miGetPlayerCodeToolStripMenuItem.Size = new System.Drawing.Size(261, 22);
+			this.miGetPlayerCodeToolStripMenuItem.Text = "Получить код плеера";
+			this.miGetPlayerCodeToolStripMenuItem.Click += new System.EventHandler(this.miGetPlayerCodeToolStripMenuItem_Click);
+			// 
+			// lblBtnOpenFrameContextMenu
+			// 
+			this.lblBtnOpenFrameContextMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.lblBtnOpenFrameContextMenu.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.lblBtnOpenFrameContextMenu.Location = new System.Drawing.Point(462, 42);
+			this.lblBtnOpenFrameContextMenu.Name = "lblBtnOpenFrameContextMenu";
+			this.lblBtnOpenFrameContextMenu.Size = new System.Drawing.Size(25, 25);
+			this.lblBtnOpenFrameContextMenu.TabIndex = 19;
+			this.lblBtnOpenFrameContextMenu.Text = "...";
+			this.lblBtnOpenFrameContextMenu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.toolTip1.SetToolTip(this.lblBtnOpenFrameContextMenu, "Меню");
+			this.lblBtnOpenFrameContextMenu.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseUp);
+			// 
 			// progressBarDownload
 			// 
-			this.progressBarDownload.Location = new System.Drawing.Point(0, 142);
+			this.progressBarDownload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBarDownload.Location = new System.Drawing.Point(3, 142);
 			this.progressBarDownload.Name = "progressBarDownload";
-			this.progressBarDownload.Size = new System.Drawing.Size(419, 23);
+			this.progressBarDownload.Size = new System.Drawing.Size(416, 23);
 			this.progressBarDownload.TabIndex = 18;
 			this.progressBarDownload.Text = "multipleProgressBar1";
 			this.progressBarDownload.MouseUp += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseUp);
-			// 
-			// miCopyVideoIdToolStripMenuItem
-			// 
-			this.miCopyVideoIdToolStripMenuItem.Name = "miCopyVideoIdToolStripMenuItem";
-			this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
-			this.miCopyVideoIdToolStripMenuItem.Text = "Скопировать ID видео";
-			this.miCopyVideoIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoIdToolStripMenuItem_Click);
 			// 
 			// FrameYouTubeVideo
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ButtonFace;
+			this.Controls.Add(this.lblBtnOpenFrameContextMenu);
 			this.Controls.Add(this.progressBarDownload);
-			this.Controls.Add(this.groupBoxButtons);
 			this.Controls.Add(this.imageFavoriteChannel);
-			this.Controls.Add(this.imgScrollbar);
 			this.Controls.Add(this.lblProgress);
 			this.Controls.Add(this.lblStatus);
 			this.Controls.Add(this.btnDownload);
@@ -508,22 +493,17 @@
 			this.Controls.Add(this.imagePreview);
 			this.Controls.Add(this.lblVideoTitle);
 			this.Name = "FrameYouTubeVideo";
-			this.Size = new System.Drawing.Size(771, 179);
+			this.Size = new System.Drawing.Size(496, 170);
 			this.Load += new System.EventHandler(this.FrameYouTubeVideo_Load);
-			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FrameYouTubeVideo_MouseDown);
-			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FrameYouTubeVideo_MouseMove);
-			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FrameYouTubeVideo_MouseUp);
-			this.Resize += new System.EventHandler(this.FrameYouTubeVideo_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.imgScrollbar)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavoriteChannel)).EndInit();
 			this.contextMenuImage.ResumeLayout(false);
 			this.contextMenuChannelTitle.ResumeLayout(false);
 			this.contextMenuVideoTitle.ResumeLayout(false);
 			this.contextMenuDate.ResumeLayout(false);
-			this.groupBoxButtons.ResumeLayout(false);
 			this.contextMenuProgressBar.ResumeLayout(false);
+			this.contextMenuFrameActions.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -539,8 +519,6 @@
 		private System.Windows.Forms.ContextMenuStrip contextMenuDownloads;
 		private System.Windows.Forms.Label lblStatus;
 		private System.Windows.Forms.Label lblProgress;
-		private System.Windows.Forms.PictureBox imgScrollbar;
-		private System.Windows.Forms.Button btnGetVideoInfo;
 		private System.Windows.Forms.PictureBox imageFavoriteChannel;
 		private System.Windows.Forms.ContextMenuStrip contextMenuImage;
 		private System.Windows.Forms.ToolStripMenuItem miCopyVideoUrlToolStripMenuItem;
@@ -549,12 +527,8 @@
 		private System.Windows.Forms.ToolStripMenuItem miOpenChannelInBrowserToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miOpenVideoInBrowserToolStripMenuItem;
 		public System.Windows.Forms.Button btnDownload;
-		private System.Windows.Forms.Button btnGetWebPage;
 		private System.Windows.Forms.ToolStripMenuItem miSaveImageAssToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyChannelNameWithIdToolStripMenuItem;
-		private System.Windows.Forms.Button btnGetDashManifest;
-		private System.Windows.Forms.Button btnGetHlsManifest;
-		private System.Windows.Forms.Button btnGetPlayerCode;
 		private System.Windows.Forms.ContextMenuStrip contextMenuVideoTitle;
 		private System.Windows.Forms.ToolStripMenuItem miCopyTitleAsIsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyFixedTitleToolStripMenuItem;
@@ -566,8 +540,6 @@
 		private System.Windows.Forms.ContextMenuStrip contextMenuDate;
 		private System.Windows.Forms.ToolStripMenuItem miUpdateVideoPublishedDateToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyVideoPublishedDateToolStripMenuItem;
-		private System.Windows.Forms.Button btnGetVideoUrls;
-		private System.Windows.Forms.GroupBox groupBoxButtons;
 		private System.Windows.Forms.ToolStripMenuItem miCopyPlayerUrlToolStripMenuItem;
 		private MultipleProgressBar progressBarDownload;
 		private System.Windows.Forms.ContextMenuStrip contextMenuProgressBar;
@@ -576,5 +548,15 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem miCopyFormattedFileNameToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyVideoIdToolStripMenuItem;
+		private System.Windows.Forms.ContextMenuStrip contextMenuFrameActions;
+		private System.Windows.Forms.ToolStripMenuItem miGetVideoWebPageCodeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miGetVideoInfoToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miGetDownloadUrlsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miGetDashManifestToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miGetHlsManifestToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miGetPlayerCodeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miActionsToolStripMenuItem;
+		private System.Windows.Forms.Label lblBtnOpenFrameContextMenu;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }
