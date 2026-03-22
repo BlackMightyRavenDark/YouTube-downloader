@@ -81,7 +81,9 @@ namespace YouTube_downloader
 							}
 							else
 							{
+#if DEBUG
 								System.Diagnostics.Debug.WriteLine(e);
+#endif
 								rawVideoInfo = null;
 								errorMessage = e;
 								return 404;
@@ -104,7 +106,9 @@ namespace YouTube_downloader
 			}
 			catch (Exception e)
 			{
+#if DEBUG
 				System.Diagnostics.Debug.WriteLine(e.Message);
+#endif
 				rawVideoInfo = null;
 				errorMessage = e.Message;
 				return e.HResult;

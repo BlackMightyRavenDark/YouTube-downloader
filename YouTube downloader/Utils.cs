@@ -472,11 +472,16 @@ namespace YouTube_downloader
 				g.DrawString(t, font, Brushes.Lime, xCenter - sz.Width / 2f, y);
 
 				return bitmap;
-			} catch (Exception ex)
+			}
+#if DEBUG
+			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
-				return null;
 			}
+#else
+			catch { }
+#endif
+			return null;
 		}
 
 		public static Bitmap GenerateVideoThumbnailFailed(int width, int height)
@@ -495,11 +500,16 @@ namespace YouTube_downloader
 
 				return bitmap;
 			}
+#if DEBUG
+
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
-				return null;
 			}
+#else
+			catch { }
+#endif
+			return null;
 		}
 
 		public static Image TryGetImageFromStream(Stream stream, out int imageWidth, out int imageHeight)
@@ -511,12 +521,16 @@ namespace YouTube_downloader
 				imageHeight = image.Height;
 				return image;
 			}
+#if DEBUG
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
-				imageWidth = imageHeight = 0;
-				return null;
 			}
+#else
+			catch { }
+#endif
+			imageWidth = imageHeight = 0;
+			return null;
 		}
 
 		public static int GetMaximalThumbnailFileNameLength(IEnumerable<YouTubeVideoThumbnail> thumbnails)
@@ -900,12 +914,16 @@ namespace YouTube_downloader
 				RamUsed = RamTotal - RamFree;
 				return true;
 			}
+#if DEBUG
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
-				computerInfo = null;
-				return false;
 			}
+#else
+			catch { }
+#endif
+			computerInfo = null;
+			return false;
 		}
 	}
 }

@@ -162,11 +162,12 @@ namespace YouTube_downloader
 		private async Task<bool> DownloadAndSetVideoThumbnail(VideoThumbnailWrapper thumbnail, int tryCountLimit)
 		{
 			FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
+#if DEBUG
 			d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, _tryCountLimit) =>
 			{
 				System.Diagnostics.Debug.WriteLine($"Video thumbnail loading error: {errorCode} | {tryNumber} / {_tryCountLimit} | {errorMessage}");
 			};
-
+#endif
 			bool ok = await Task.Run(() =>
 			{
 				for (int i = 0; i < tryCountLimit; ++i)
@@ -190,9 +191,14 @@ namespace YouTube_downloader
 				{
 					_thumbnail = Image.FromStream(thumbnail.ImageData);
 				}
+#if DEBUG
 				catch (Exception ex)
 				{
 					System.Diagnostics.Debug.WriteLine(ex.Message);
+#else
+				catch
+				{
+#endif
 					_thumbnail = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
 				}
 			}
@@ -869,7 +875,9 @@ namespace YouTube_downloader
 					return downloadResult;
 				} catch (Exception ex)
 				{
+#if DEBUG
 					System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
 					DownloadResult downloadResult =
 						new DownloadResult(ex.HResult, ex.Message,
 						_multiThreadedDownloader.OutputFileName);
@@ -1409,10 +1417,14 @@ namespace YouTube_downloader
 					thumbnail.ImageData.SaveToFile(outputFilePath);
 				}
 			}
+#if DEBUG
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
+#else
+			catch { }
+#endif
 		}
 
 		private void imagePreview_Paint(object sender, PaintEventArgs e)
@@ -1685,7 +1697,9 @@ namespace YouTube_downloader
 					}
 				} catch (Exception ex)
 				{
+#if DEBUG
 					System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
 					MessageBox.Show(ex.Message, "Ошибатор ошибок",
 						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
 				}
@@ -2075,7 +2089,9 @@ namespace YouTube_downloader
 			}
 			catch (Exception ex)
 			{
+#if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
 				MessageBox.Show(ex.Message, "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

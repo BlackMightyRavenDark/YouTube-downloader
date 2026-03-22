@@ -494,7 +494,9 @@ namespace YouTube_downloader
 				}
 			} catch (Exception ex)
 			{
+#if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
 				tvFavorites.Enabled = false;
 				string msg = $"Ошибка загрузки избранного! Список избранного недоступен до перезапуска программы!\n{ex.Message}";
 				MessageBox.Show(msg, "Ошибатор ошибок",
@@ -525,10 +527,15 @@ namespace YouTube_downloader
 							SaveFavorites(config.FavoritesFilePath);
 						}
 					}
-				} catch (Exception ex)
+				}
+#if DEBUG
+				catch (Exception ex)
 				{
 					System.Diagnostics.Debug.WriteLine(ex.Message);
 				}
+#else
+				catch { }
+#endif
 			}
 		}
 
@@ -1054,7 +1061,9 @@ namespace YouTube_downloader
 			}
 			catch (Exception ex)
 			{
+#if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
 				MessageBox.Show(ex.Message, "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

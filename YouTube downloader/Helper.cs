@@ -23,10 +23,14 @@ namespace YouTube_downloader
 					StreamAppender.Append(stream, fileStream);
 				}
 			}
+#if DEBUG
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
+#else
+			catch { }
+#endif
 		}
 
 		public static bool IsSucceed(this YouTubeVideo video)
@@ -56,11 +60,15 @@ namespace YouTube_downloader
 						return jaAdaptiveFormats[0].Value<JToken>("signatureCipher") != null;
 					}
 				}
-			} catch (Exception ex)
+			}
+#if DEBUG
+			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
-
+#else
+			catch { }
+#endif
 			return false;
 		}
 
@@ -227,11 +235,14 @@ namespace YouTube_downloader
 				JObject json = JObject.Parse(streamingData.RawData);
 				return json.Value<int>("expiresInSeconds");
 			}
+#if DEBUG
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
-
+#else
+			catch { }
+#endif
 			return 0;
 		}
 
