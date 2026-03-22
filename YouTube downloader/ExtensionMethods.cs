@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
@@ -72,26 +71,6 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		public static Stream DownloadPreviewImage(this YouTubeVideo video, FileDownloader downloader = null)
-		{
-			if (video.Thumbnails != null)
-			{
-				FileDownloader d = downloader ?? new FileDownloader();
-				foreach (YouTubeVideoThumbnail thumbnail in video.Thumbnails)
-				{
-					Stream mem = new MemoryStream();
-					d.Url = thumbnail.Url;
-					if (d.Download(mem) == 200)
-					{
-						return mem;
-					}
-					mem.Dispose();
-				}
-			}
-
-			return null;
-		}
-
 		public static Rectangle ResizeTo(this Rectangle source, Size newSize)
 		{
 			float aspectSource = source.Height / (float)source.Width;
@@ -114,13 +93,6 @@ namespace YouTube_downloader
 			int x = dest.Width / 2 - source.Width / 2;
 			int y = dest.Height / 2 - source.Height / 2;
 			return new Rectangle(x, y, source.Width, source.Height);
-		}
-
-		public static void SetDoubleBuffered(this Control control, bool enabled)
-		{
-			typeof(Control).InvokeMember("DoubleBuffered",
-				BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-				null, control, new object[] { enabled });
 		}
 
 		public static void SetFontSize(this ContextMenuStrip contextMenu, int newSize)
