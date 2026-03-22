@@ -502,6 +502,34 @@ namespace YouTube_downloader
 			}
 		}
 
+		public static Image TryGetImageFromStream(Stream stream, out int imageWidth, out int imageHeight)
+		{
+			try
+			{
+				Image image = Image.FromStream(stream);
+				imageWidth = image.Width;
+				imageHeight = image.Height;
+				return image;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				imageWidth = imageHeight = 0;
+				return null;
+			}
+		}
+
+		public static int GetMaximalThumbnailFileNameLength(IEnumerable<YouTubeVideoThumbnail> thumbnails)
+		{
+			int result = 0;
+			foreach (YouTubeVideoThumbnail thumbnail in thumbnails)
+			{
+				int length = string.IsNullOrEmpty(thumbnail.FileName) ? 0 : thumbnail.FileName.Length;
+				if (length > result) { result = length; }
+			}
+			return result;
+		}
+
 		public static string DecryptCipherSignature(string signatureEncrypted, string algo)
 		{
 			if (algo.StartsWith("["))

@@ -48,6 +48,8 @@
 			this.miOpenImageInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyImageUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miSaveImageAssToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.miThumbnailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuChannelTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyChannelTitleToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,9 +75,9 @@
 			this.miGetDashManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miGetHlsManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miGetPlayerCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miOptimizeFormatListReceiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.miOptimizeFormatListReceiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
 			((System.ComponentModel.ISupportInitialize)(this.imagePreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.imageFavorite)).BeginInit();
@@ -197,6 +199,7 @@
 			// 
 			// contextMenuImage
 			// 
+			this.contextMenuImage.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.contextMenuImage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.miOpenVideoInBrowserToolStripMenuItem,
 			this.miCopyVideoUrlToolStripMenuItem,
@@ -205,63 +208,76 @@
 			this.toolStripMenuItem2,
 			this.miOpenImageInBrowserToolStripMenuItem,
 			this.miCopyImageUrlToolStripMenuItem,
-			this.miSaveImageAssToolStripMenuItem});
+			this.miSaveImageAssToolStripMenuItem,
+			this.toolStripMenuItem3,
+			this.miThumbnailsToolStripMenuItem});
 			this.contextMenuImage.Name = "contextMenuImage";
-			this.contextMenuImage.Size = new System.Drawing.Size(283, 164);
+			this.contextMenuImage.Size = new System.Drawing.Size(302, 214);
 			// 
 			// miOpenVideoInBrowserToolStripMenuItem
 			// 
 			this.miOpenVideoInBrowserToolStripMenuItem.Name = "miOpenVideoInBrowserToolStripMenuItem";
-			this.miOpenVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miOpenVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miOpenVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
 			this.miOpenVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenVideoInBrowserToolStripMenuItem_Click);
 			// 
 			// miCopyVideoUrlToolStripMenuItem
 			// 
 			this.miCopyVideoUrlToolStripMenuItem.Name = "miCopyVideoUrlToolStripMenuItem";
-			this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyVideoUrlToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
 			this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
 			// 
 			// miCopyVideoIdToolStripMenuItem
 			// 
 			this.miCopyVideoIdToolStripMenuItem.Name = "miCopyVideoIdToolStripMenuItem";
-			this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyVideoIdToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miCopyVideoIdToolStripMenuItem.Text = "Скопировать ID видео";
 			this.miCopyVideoIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoIdToolStripMenuItem_Click);
 			// 
 			// miCopyPlayerUrlToolStripMenuItem
 			// 
 			this.miCopyPlayerUrlToolStripMenuItem.Name = "miCopyPlayerUrlToolStripMenuItem";
-			this.miCopyPlayerUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyPlayerUrlToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miCopyPlayerUrlToolStripMenuItem.Text = "Скопировать URL плеера";
 			this.miCopyPlayerUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyPlayerUrlToolStripMenuItem_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(279, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(298, 6);
 			// 
 			// miOpenImageInBrowserToolStripMenuItem
 			// 
 			this.miOpenImageInBrowserToolStripMenuItem.Name = "miOpenImageInBrowserToolStripMenuItem";
-			this.miOpenImageInBrowserToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miOpenImageInBrowserToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miOpenImageInBrowserToolStripMenuItem.Text = "Открыть изображение в браузере";
 			this.miOpenImageInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenImageInBrowserToolStripMenuItem_Click);
 			// 
 			// miCopyImageUrlToolStripMenuItem
 			// 
 			this.miCopyImageUrlToolStripMenuItem.Name = "miCopyImageUrlToolStripMenuItem";
-			this.miCopyImageUrlToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miCopyImageUrlToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miCopyImageUrlToolStripMenuItem.Text = "Скопировать ссылку на изображение";
 			this.miCopyImageUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyImageUrlToolStripMenuItem_Click);
 			// 
 			// miSaveImageAssToolStripMenuItem
 			// 
 			this.miSaveImageAssToolStripMenuItem.Name = "miSaveImageAssToolStripMenuItem";
-			this.miSaveImageAssToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+			this.miSaveImageAssToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
 			this.miSaveImageAssToolStripMenuItem.Text = "Сохранить изображение...";
 			this.miSaveImageAssToolStripMenuItem.Click += new System.EventHandler(this.miSaveImageAssToolStripMenuItem_Click);
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(298, 6);
+			// 
+			// miThumbnailsToolStripMenuItem
+			// 
+			this.miThumbnailsToolStripMenuItem.Name = "miThumbnailsToolStripMenuItem";
+			this.miThumbnailsToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
+			this.miThumbnailsToolStripMenuItem.Text = "Эскизы";
 			// 
 			// contextMenuChannelTitle
 			// 
@@ -397,7 +413,7 @@
 			this.miActionsToolStripMenuItem,
 			this.miOptimizeFormatListReceiveToolStripMenuItem});
 			this.contextMenuFrameActions.Name = "contextMenuFrameActions";
-			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 70);
+			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 48);
 			// 
 			// miActionsToolStripMenuItem
 			// 
@@ -454,6 +470,15 @@
 			this.miGetPlayerCodeToolStripMenuItem.Text = "Получить код плеера";
 			this.miGetPlayerCodeToolStripMenuItem.Click += new System.EventHandler(this.miGetPlayerCodeToolStripMenuItem_Click);
 			// 
+			// miOptimizeFormatListReceiveToolStripMenuItem
+			// 
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Checked = true;
+			this.miOptimizeFormatListReceiveToolStripMenuItem.CheckOnClick = true;
+			this.miOptimizeFormatListReceiveToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Name = "miOptimizeFormatListReceiveToolStripMenuItem";
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
+			this.miOptimizeFormatListReceiveToolStripMenuItem.Text = "Оптимизировать получение списка форматов";
+			// 
 			// lblBtnOpenFrameContextMenu
 			// 
 			this.lblBtnOpenFrameContextMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -466,15 +491,6 @@
 			this.lblBtnOpenFrameContextMenu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip1.SetToolTip(this.lblBtnOpenFrameContextMenu, "Меню");
 			this.lblBtnOpenFrameContextMenu.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseUp);
-			// 
-			// miOptimizeFormatListReceiveToolStripMenuItem
-			// 
-			this.miOptimizeFormatListReceiveToolStripMenuItem.Checked = true;
-			this.miOptimizeFormatListReceiveToolStripMenuItem.CheckOnClick = true;
-			this.miOptimizeFormatListReceiveToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.miOptimizeFormatListReceiveToolStripMenuItem.Name = "miOptimizeFormatListReceiveToolStripMenuItem";
-			this.miOptimizeFormatListReceiveToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
-			this.miOptimizeFormatListReceiveToolStripMenuItem.Text = "Оптимизировать получение списка форматов";
 			// 
 			// progressBarDownload
 			// 
@@ -570,5 +586,7 @@
 		private System.Windows.Forms.Label lblBtnOpenFrameContextMenu;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.ToolStripMenuItem miOptimizeFormatListReceiveToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+		private System.Windows.Forms.ToolStripMenuItem miThumbnailsToolStripMenuItem;
 	}
 }

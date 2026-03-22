@@ -19,14 +19,18 @@ namespace YouTube_downloader
 		private MultiThreadedDownloader _multiThreadedDownloader;
 		private ConcurrentDictionary<int, DownloadableTask> _contentChunks;
 		public YouTubeVideo VideoInfo { get; private set; }
-		private Stream _videoImageData = null;
-		private Image _videoImage = null;
+		public List<VideoThumbnailWrapper> Thumbnails { get; private set; }
+		public VideoThumbnailWrapper ActiveThumbnail { get; private set; }
+		public bool IsThumbnailLoading { get; private set; }
+
 		private bool _ciphered;
 		private bool _isFavoriteVideo = false;
 		private bool _isFavoriteChannel = false;
 		private bool _isVideo = true;
 		private bool _isContainer = false;
 		private YouTubeMediaTrack _mediaTrack;
+		private Image _thumbnail;
+
 		public YouTubeVideoWebPage WebPage { get; }
 		public YouTubeStreamingData LastReceivedStreamingData { get; private set; }
 		public DateTime StreamingDataExpirationDate { get; private set; } = DateTime.MinValue;
@@ -80,17 +84,8 @@ namespace YouTube_downloader
 				lblChannelTitle.Text = "Имя канала: Недоступно";
 				lblDatePublished.Text = "Дата публикации: Недоступно";
 				lblVideoTitle.Text = $"{videoInfo.Status.Status}, {videoInfo.Status.Reason}";
-				_videoImageData = new MemoryStream();
-				if (DownloadData(videoInfo.Status.ThumbnailUrl, _videoImageData) == 200)
-				{
-					_videoImage = Image.FromStream(_videoImageData);
-				}
-				else
-				{
-					_videoImageData.Dispose();
-					_videoImageData = null;
-					_videoImage = null;
-				}
+				Thumbnails = null;
+				ActiveThumbnail = null;
 				return;
 			}
 
@@ -113,47 +108,101 @@ namespace YouTube_downloader
 			favoriteItem.ID = VideoInfo.OwnerChannelId;
 			_isFavoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 			_ciphered = VideoInfo.IsCiphered();
-			_videoImageData = await Task.Run(() => DownloadVideoThumbnail());
-			try
+			RecreateThumbnailsContextMenu();
+			if (ActiveThumbnail != null)
 			{
-				_videoImage = _videoImageData != null ? Image.FromStream(_videoImageData) : GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
-				imagePreview.Refresh();
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-				_videoImage = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
-				_videoImageData = null;
-				imagePreview.Refresh();
+				IsThumbnailLoading = true;
+				await DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
+				IsThumbnailLoading = false;
 			}
 		}
 
-		private Stream DownloadVideoThumbnail()
+		private void RecreateThumbnailsContextMenu()
+		{
+			miThumbnailsToolStripMenuItem.DropDownItems.Clear();
+			Thumbnails = new List<VideoThumbnailWrapper>();
+			ActiveThumbnail = null;
+			if (VideoInfo.Thumbnails != null && VideoInfo.Thumbnails.Count > 0)
+			{
+				Thumbnails.Capacity = VideoInfo.Thumbnails.Count;
+				int maxFileNameLength = GetMaximalThumbnailFileNameLength(VideoInfo.Thumbnails);
+				foreach (YouTubeVideoThumbnail thumbnail in VideoInfo.Thumbnails)
+				{
+					VideoThumbnailWrapper thumbnailWrapper = new VideoThumbnailWrapper(thumbnail);
+					Thumbnails.Add(thumbnailWrapper);
+					string fn = (!string.IsNullOrEmpty(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg").PadRight(maxFileNameLength);
+					string menuItemTitle = $"{fn} | {thumbnail.Width}x{thumbnail.Height}";
+					ToolStripMenuItem menuItem = new ToolStripMenuItem(menuItemTitle) { Tag = thumbnailWrapper };
+					menuItem.Click += async (s, e) =>
+					{
+						if (!IsThumbnailLoading)
+						{
+							IsThumbnailLoading = true;
+							foreach (ToolStripMenuItem item in miThumbnailsToolStripMenuItem.DropDownItems)
+							{
+								item.Checked = false;
+							}
+							ToolStripMenuItem mi = s as ToolStripMenuItem;
+							mi.Checked = true;
+							miThumbnailsToolStripMenuItem.Enabled = false;
+							ActiveThumbnail = mi.Tag as VideoThumbnailWrapper;
+							await DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
+							miThumbnailsToolStripMenuItem.Enabled = true;
+							IsThumbnailLoading = false;
+						}
+					};
+					miThumbnailsToolStripMenuItem.DropDownItems.Add(menuItem);
+				}
+
+				ActiveThumbnail = Thumbnails[0];
+				(miThumbnailsToolStripMenuItem.DropDownItems[0] as ToolStripMenuItem).Checked = true;
+			}
+		}
+
+		private async Task<bool> DownloadAndSetVideoThumbnail(VideoThumbnailWrapper thumbnail, int tryCountLimit)
 		{
 			FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
-			d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, tryCountLimit) =>
+			d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, _tryCountLimit) =>
 			{
-				System.Diagnostics.Debug.WriteLine($"Video thumbnail loading error: {errorCode} | {tryNumber} / {tryCountLimit} | {errorMessage}");
+				System.Diagnostics.Debug.WriteLine($"Video thumbnail loading error: {errorCode} | {tryNumber} / {_tryCountLimit} | {errorMessage}");
 			};
 
-			const int maxTries = 5;
-			for (int i = 0; i < maxTries; ++i)
+			bool ok = await Task.Run(() =>
 			{
-				Invoke(new MethodInvoker(() =>
+				for (int i = 0; i < tryCountLimit; ++i)
 				{
-					_videoImage = GenerateVideoThumbnailLoadingIndicator(imagePreview.Width, imagePreview.Height, i + 1, maxTries);
-					_videoImageData = null;
-					imagePreview.Refresh();
-				}));
+					Invoke(new MethodInvoker(() =>
+					{
+						_thumbnail = GenerateVideoThumbnailLoadingIndicator(imagePreview.Width, imagePreview.Height, i + 1, tryCountLimit);
+						imagePreview.Refresh();
+					}));
 
-				Stream stream = VideoInfo.DownloadPreviewImage(d);
-				if (stream != null && stream.Length > 0L)
+					if (!thumbnail.IsOk) { thumbnail.DownloadThumbnail(d); }
+					if (thumbnail.IsOk) { return true; }
+				}
+
+				return false;
+			});
+
+			if (ok)
+			{
+				try
 				{
-					stream.Position = 0L;
-					return stream;
+					_thumbnail = Image.FromStream(thumbnail.ImageData);
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+					_thumbnail = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
 				}
 			}
-			return null;
+			else
+			{
+				_thumbnail = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
+			}
+			imagePreview.Refresh();
+
+			return ok;
 		}
 
 		public void SetFavoriteVideo(bool fav)
@@ -1201,10 +1250,11 @@ namespace YouTube_downloader
 				}
 
 				//сохранение картинки
-				if (config.SavePreviewImage && _videoImageData != null)
+				if (config.SavePreviewImage && ActiveThumbnail != null && ActiveThumbnail.IsOk)
 				{
-					SaveImageToFile(formattedFileName);
+					SaveThumbnailToFile(ActiveThumbnail, formattedFileName);
 				}
+
 				lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
 				MessageBox.Show($"{VideoInfo.Title}\nСкачано!", "Успех!",
 					MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1348,24 +1398,31 @@ namespace YouTube_downloader
 			return true;
 		}
 
-		private void SaveImageToFile(string formattedFileName)
+		private void SaveThumbnailToFile(VideoThumbnailWrapper thumbnail, string formattedFileName)
 		{
-			if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName))
+			try
 			{
-				string imageFileName = _videoImage != null ?
-					$"_image_{_videoImage.Width}x{_videoImage.Height}.jpg" : "_image.dat";
-				string filePath = $"{config.DownloadingDirPath}{formattedFileName}{imageFileName}";
-				_videoImageData.SaveToFile(filePath);
+				if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName) && thumbnail.IsOk)
+				{
+					string suffix = thumbnail.Image != null ? $"_image_{thumbnail.Image.Width}x{thumbnail.Image.Height}.jpg" : "_image.dat";
+					string outputFilePath = Path.Combine(config.DownloadingDirPath, formattedFileName + suffix);
+					thumbnail.ImageData.SaveToFile(outputFilePath);
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
 		}
 
 		private void imagePreview_Paint(object sender, PaintEventArgs e)
 		{
-			if (_videoImage != null)
+			Image image = ActiveThumbnail?.Image ?? _thumbnail;
+			if (image != null)
 			{
-				Rectangle imageRect = new Rectangle(0, 0, _videoImage.Width, _videoImage.Height);
+				Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
 				Rectangle resizedRect = imageRect.ResizeTo(imagePreview.Size).CenterIn(imagePreview.ClientRectangle);
-				e.Graphics.DrawImage(_videoImage, resizedRect);
+				e.Graphics.DrawImage(image, resizedRect);
 			}
 			Font fnt = new Font("Lucida Console", 10.0f);
 			if (fnt != null)
@@ -1606,27 +1663,24 @@ namespace YouTube_downloader
 
 		private void miSaveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_videoImageData != null)
+			if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
 			{
 				try
 				{
-					using (Image img = Image.FromStream(_videoImageData))
+					using (SaveFileDialog sfd = new SaveFileDialog())
 					{
-						using (SaveFileDialog sfd = new SaveFileDialog())
+						sfd.Title = "Сохранить изображение";
+						sfd.Filter = "jpg|*.jpg";
+						sfd.DefaultExt = ".jpg";
+						sfd.AddExtension = true;
+						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
+						string fileNameSuffix = $"_image_{ActiveThumbnail.Image.Width}x{ActiveThumbnail.Image.Height}";
+						string fileName = FixFileName(FormatFileName(
+							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
+						sfd.FileName = fileName;
+						if (sfd.ShowDialog() == DialogResult.OK)
 						{
-							sfd.Title = "Сохранить изображение";
-							sfd.Filter = "jpg|*.jpg";
-							sfd.DefaultExt = ".jpg";
-							sfd.AddExtension = true;
-							sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
-							string fileNameSuffix = $"_image_{img.Width}x{img.Height}";
-							string fileName = FixFileName(FormatFileName(
-								config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
-							sfd.FileName = fileName;
-							if (sfd.ShowDialog() == DialogResult.OK)
-							{
-								_videoImageData.SaveToFile(sfd.FileName);
-							}
+							ActiveThumbnail.ImageData.SaveToFile(sfd.FileName);
 						}
 					}
 				} catch (Exception ex)
@@ -1665,10 +1719,15 @@ namespace YouTube_downloader
 
 		private void miOpenImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (VideoInfo.Thumbnails?.Count > 0)
+			string url = ActiveThumbnail?.Thumbnail?.Url;
+			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
 			{
-				string url = VideoInfo.Thumbnails[0].Url;
 				OpenUrlInBrowser(url);
+			}
+			else
+			{
+				MessageBox.Show("Ссылка на изображение недоступна!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
