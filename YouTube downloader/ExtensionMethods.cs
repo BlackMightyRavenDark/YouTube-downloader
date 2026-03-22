@@ -11,7 +11,7 @@ using static YouTube_downloader.Utils;
 
 namespace YouTube_downloader
 {
-	public static class Helper
+	public static class ExtensionMethods
 	{
 		public static void SaveToFile(this Stream stream, string filePath)
 		{
