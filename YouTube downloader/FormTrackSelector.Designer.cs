@@ -29,58 +29,58 @@
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTrackSelector));
-			this.listViewTracksSelector = new BrightIdeasSoftware.ObjectListView();
+			this.listViewTrackSelector = new BrightIdeasSoftware.ObjectListView();
 			this.olvColumnTrackType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnResolution = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnFrameRate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvColumnVideoResolution = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvColumnVideoFrameRate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvColumnFormalBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvColumnAverageBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnFileExt = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvColumnFileExtension = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvColumnFileSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvColumnChunkCount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.columnButtonRenderer1 = new BrightIdeasSoftware.ColumnButtonRenderer();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnDownload = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.listViewTracksSelector)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.listViewTrackSelector)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// listViewTracksSelector
+			// listViewTrackSelector
 			// 
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnTrackType);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnResolution);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnFrameRate);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnFormalBitrate);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnAverageBitrate);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnFileExt);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnFileSize);
-			this.listViewTracksSelector.AllColumns.Add(this.olvColumnChunkCount);
-			this.listViewTracksSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnTrackType);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnVideoResolution);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnVideoFrameRate);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnFormalBitrate);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnAverageBitrate);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnFileExtension);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnFileSize);
+			this.listViewTrackSelector.AllColumns.Add(this.olvColumnChunkCount);
+			this.listViewTrackSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 			| System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.listViewTracksSelector.CellEditUseWholeCell = false;
-			this.listViewTracksSelector.CheckBoxes = true;
-			this.listViewTracksSelector.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.listViewTrackSelector.CellEditUseWholeCell = false;
+			this.listViewTrackSelector.CheckBoxes = true;
+			this.listViewTrackSelector.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 			this.olvColumnTrackType,
-			this.olvColumnResolution,
-			this.olvColumnFrameRate,
+			this.olvColumnVideoResolution,
+			this.olvColumnVideoFrameRate,
 			this.olvColumnFormalBitrate,
 			this.olvColumnAverageBitrate,
-			this.olvColumnFileExt,
+			this.olvColumnFileExtension,
 			this.olvColumnFileSize,
 			this.olvColumnChunkCount});
-			this.listViewTracksSelector.Cursor = System.Windows.Forms.Cursors.Default;
-			this.listViewTracksSelector.FullRowSelect = true;
-			this.listViewTracksSelector.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.listViewTracksSelector.HideSelection = false;
-			this.listViewTracksSelector.LabelWrap = false;
-			this.listViewTracksSelector.Location = new System.Drawing.Point(12, 12);
-			this.listViewTracksSelector.MultiSelect = false;
-			this.listViewTracksSelector.Name = "listViewTracksSelector";
-			this.listViewTracksSelector.ShowGroups = false;
-			this.listViewTracksSelector.Size = new System.Drawing.Size(794, 341);
-			this.listViewTracksSelector.TabIndex = 0;
-			this.listViewTracksSelector.UseCompatibleStateImageBehavior = false;
-			this.listViewTracksSelector.View = System.Windows.Forms.View.Details;
+			this.listViewTrackSelector.Cursor = System.Windows.Forms.Cursors.Default;
+			this.listViewTrackSelector.FullRowSelect = true;
+			this.listViewTrackSelector.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.listViewTrackSelector.HideSelection = false;
+			this.listViewTrackSelector.LabelWrap = false;
+			this.listViewTrackSelector.Location = new System.Drawing.Point(12, 12);
+			this.listViewTrackSelector.MultiSelect = false;
+			this.listViewTrackSelector.Name = "listViewTrackSelector";
+			this.listViewTrackSelector.ShowGroups = false;
+			this.listViewTrackSelector.Size = new System.Drawing.Size(794, 341);
+			this.listViewTrackSelector.TabIndex = 0;
+			this.listViewTrackSelector.UseCompatibleStateImageBehavior = false;
+			this.listViewTrackSelector.View = System.Windows.Forms.View.Details;
 			// 
 			// olvColumnTrackType
 			// 
@@ -88,19 +88,19 @@
 			this.olvColumnTrackType.Text = "Тип";
 			this.olvColumnTrackType.Width = 65;
 			// 
-			// olvColumnResolution
+			// olvColumnVideoResolution
 			// 
-			this.olvColumnResolution.AspectName = "Resolution";
-			this.olvColumnResolution.Text = "Разрешение";
-			this.olvColumnResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnResolution.Width = 96;
+			this.olvColumnVideoResolution.AspectName = "Resolution";
+			this.olvColumnVideoResolution.Text = "Разрешение";
+			this.olvColumnVideoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvColumnVideoResolution.Width = 96;
 			// 
-			// olvColumnFrameRate
+			// olvColumnVideoFrameRate
 			// 
-			this.olvColumnFrameRate.AspectName = "FrameRate";
-			this.olvColumnFrameRate.Text = "Частота кадров";
-			this.olvColumnFrameRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnFrameRate.Width = 96;
+			this.olvColumnVideoFrameRate.AspectName = "FrameRate";
+			this.olvColumnVideoFrameRate.Text = "Частота кадров";
+			this.olvColumnVideoFrameRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvColumnVideoFrameRate.Width = 96;
 			// 
 			// olvColumnFormalBitrate
 			// 
@@ -116,12 +116,12 @@
 			this.olvColumnAverageBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvColumnAverageBitrate.Width = 109;
 			// 
-			// olvColumnFileExt
+			// olvColumnFileExtension
 			// 
-			this.olvColumnFileExt.AspectName = "FileExtension";
-			this.olvColumnFileExt.Text = "Тип файла";
-			this.olvColumnFileExt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnFileExt.Width = 71;
+			this.olvColumnFileExtension.AspectName = "FileExtension";
+			this.olvColumnFileExtension.Text = "Тип файла";
+			this.olvColumnFileExtension.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvColumnFileExtension.Width = 71;
 			// 
 			// olvColumnFileSize
 			// 
@@ -163,34 +163,34 @@
 			this.btnDownload.UseVisualStyleBackColor = true;
 			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
 			// 
-			// FormTracksSelector
+			// FormTrackSelector
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(818, 385);
 			this.Controls.Add(this.btnDownload);
 			this.Controls.Add(this.btnCancel);
-			this.Controls.Add(this.listViewTracksSelector);
+			this.Controls.Add(this.listViewTrackSelector);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(834, 400);
-			this.Name = "FormTracksSelector";
+			this.Name = "FormTrackSelector";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Выбор форматов";
-			((System.ComponentModel.ISupportInitialize)(this.listViewTracksSelector)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.listViewTrackSelector)).EndInit();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private BrightIdeasSoftware.ObjectListView listViewTracksSelector;
-		private BrightIdeasSoftware.OLVColumn olvColumnResolution;
-		private BrightIdeasSoftware.OLVColumn olvColumnFrameRate;
+		private BrightIdeasSoftware.ObjectListView listViewTrackSelector;
+		private BrightIdeasSoftware.OLVColumn olvColumnVideoResolution;
+		private BrightIdeasSoftware.OLVColumn olvColumnVideoFrameRate;
 		private BrightIdeasSoftware.OLVColumn olvColumnFormalBitrate;
-		private BrightIdeasSoftware.OLVColumn olvColumnFileExt;
+		private BrightIdeasSoftware.OLVColumn olvColumnFileExtension;
 		private BrightIdeasSoftware.OLVColumn olvColumnFileSize;
 		private BrightIdeasSoftware.OLVColumn olvColumnTrackType;
 		private BrightIdeasSoftware.ColumnButtonRenderer columnButtonRenderer1;

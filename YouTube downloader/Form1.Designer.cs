@@ -33,89 +33,89 @@ namespace YouTube_downloader
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabControlSettings = new System.Windows.Forms.TabControl();
             this.tabPageFilesAndFolders = new System.Windows.Forms.TabPage();
             this.label18 = new System.Windows.Forms.Label();
-            this.editOutputFileNameFormatWithDate = new System.Windows.Forms.TextBox();
+            this.textBoxOutputFileNameFormatWithDate = new System.Windows.Forms.TextBox();
             this.btnResetFileNameFormatWithDate = new System.Windows.Forms.Button();
-            this.btnQ = new System.Windows.Forms.Button();
-            this.editMergingDirPath = new System.Windows.Forms.TextBox();
-            this.btnSelectMergingPath = new System.Windows.Forms.Button();
+            this.btnWtfMergerDirectory = new System.Windows.Forms.Button();
+            this.textBoxFilesMergerDirectory = new System.Windows.Forms.TextBox();
+            this.btnBrowseMergerDirectory = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.btnBrowseFfmpeg = new System.Windows.Forms.Button();
-            this.editFfmpeg = new System.Windows.Forms.TextBox();
+            this.btnBrowseFfmpegFilePath = new System.Windows.Forms.Button();
+            this.textBoxFfmpegFilePath = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.editOutputFileNameFormatWithoutDate = new System.Windows.Forms.TextBox();
+            this.textBoxOutputFileNameFormatWithoutDate = new System.Windows.Forms.TextBox();
             this.btnResetFileNameFormatWithoutDate = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
-            this.btnBrowseDownloadingPath = new System.Windows.Forms.Button();
-            this.btnSelectBrowser = new System.Windows.Forms.Button();
-            this.editDownloadingDirPath = new System.Windows.Forms.TextBox();
-            this.editBrowser = new System.Windows.Forms.TextBox();
+            this.btnBrowseDownloadDirectory = new System.Windows.Forms.Button();
+            this.btnSelectWebBrowserFilePath = new System.Windows.Forms.Button();
+            this.textBoxDownloadDirectory = new System.Windows.Forms.TextBox();
+            this.textBoxWebBrowserFilePath = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.editTempDirPath = new System.Windows.Forms.TextBox();
-            this.btnBrowseTempPath = new System.Windows.Forms.Button();
+            this.textBoxTempDirectory = new System.Windows.Forms.TextBox();
+            this.btnBrowseTempDirectory = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPageGUI = new System.Windows.Forms.TabPage();
             this.checkBoxShowHlsTracksOnlyForStreams = new System.Windows.Forms.CheckBox();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.chkSortDashFormatsByBitrate = new System.Windows.Forms.CheckBox();
-            this.chkMoveAudioId140First = new System.Windows.Forms.CheckBox();
-            this.chkSortFormatsByFileSize = new System.Windows.Forms.CheckBox();
-            this.groupBoxFonts = new System.Windows.Forms.GroupBox();
+            this.checkBoxSortDashFormatsByBitrate = new System.Windows.Forms.CheckBox();
+            this.checkBoxMoveAudioTrackId140ToTopOfList = new System.Windows.Forms.CheckBox();
+            this.checkBoxSortAdaptiveFormatsByFileSize = new System.Windows.Forms.CheckBox();
+            this.groupBoxFontSettings = new System.Windows.Forms.GroupBox();
             this.numericUpDownVideoTitleFontSize = new System.Windows.Forms.NumericUpDown();
             this.label17 = new System.Windows.Forms.Label();
             this.numericUpDownFavoritesListFontSize = new System.Windows.Forms.NumericUpDown();
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.numericUpDownMenusFontSize = new System.Windows.Forms.NumericUpDown();
-            this.tabPageDownloadingSettings = new System.Windows.Forms.TabPage();
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading = new System.Windows.Forms.CheckBox();
+            this.tabPageDownloadSettings = new System.Windows.Forms.TabPage();
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted = new System.Windows.Forms.CheckBox();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
             this.label28 = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
-            this.numericUpDownChunkDownloadErrorCount = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownChunkDownloadErrorCountLimit = new System.Windows.Forms.NumericUpDown();
             this.label26 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.numericUpDownChunkDownloadRetryCount = new System.Windows.Forms.NumericUpDown();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.numericUpDownChunkDownloadTryCountLimit = new System.Windows.Forms.NumericUpDown();
+            this.groupBoxAdaptiveFormatsSettings = new System.Windows.Forms.GroupBox();
             this.numericUpDownDelayAfterContainerCreated = new System.Windows.Forms.NumericUpDown();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
-            this.btnDownloadAllAdaptiveVideoTracksWtf = new System.Windows.Forms.Button();
-            this.chkDownloadAllAdaptiveVideoTracks = new System.Windows.Forms.CheckBox();
+            this.btnWtfDownloadAllAdaptiveVideoTracks = new System.Windows.Forms.Button();
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks = new System.Windows.Forms.CheckBox();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.radioButtonContainerTypeMkv = new System.Windows.Forms.RadioButton();
             this.radioButtonContainerTypeMp4 = new System.Windows.Forms.RadioButton();
-            this.chkMergeAdaptive = new System.Windows.Forms.CheckBox();
-            this.chkDeleteSourceFiles = new System.Windows.Forms.CheckBox();
+            this.checkBoxAutomaticallyMergeAdaptiveTracks = new System.Windows.Forms.CheckBox();
+            this.checkBoxDeleteSourceFilesWhenMerged = new System.Windows.Forms.CheckBox();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
-            this.chkDownloadFirstAudioTrack = new System.Windows.Forms.CheckBox();
-            this.chkIfOnlyBiggerFileSize = new System.Windows.Forms.CheckBox();
-            this.chkDownloadSecondAudioTrack = new System.Windows.Forms.CheckBox();
-            this.chkDownloadAllAudioTracks = new System.Windows.Forms.CheckBox();
-            this.chkSaveImage = new System.Windows.Forms.CheckBox();
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack = new System.Windows.Forms.CheckBox();
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = new System.Windows.Forms.CheckBox();
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack = new System.Windows.Forms.CheckBox();
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks = new System.Windows.Forms.CheckBox();
+            this.checkBoxAutomaticallySaveVideoThumbnailImage = new System.Windows.Forms.CheckBox();
             this.tabPageSystemSettings = new System.Windows.Forms.TabPage();
             this.groupBox20 = new System.Windows.Forms.GroupBox();
-            this.btnUserAgentWhy = new System.Windows.Forms.Button();
-            this.btnSetDefaultUserAgent = new System.Windows.Forms.Button();
+            this.btnWtfUserAgent = new System.Windows.Forms.Button();
+            this.btnRestoreDefaultUserAgent = new System.Windows.Forms.Button();
             this.textBoxUserAgent = new System.Windows.Forms.TextBox();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
-            this.numericUpDownDashChunkDownloadRetriesCountMax = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownDashChunkDownloadTryCountLimit = new System.Windows.Forms.NumericUpDown();
             this.label23 = new System.Windows.Forms.Label();
-            this.btnWhyDash = new System.Windows.Forms.Button();
+            this.btnWtfAlwaysDownloadAsDash = new System.Windows.Forms.Button();
             this.lblActualDashChunkSize = new System.Windows.Forms.Label();
             this.numericUpDownDashChunkSize = new System.Windows.Forms.NumericUpDown();
             this.label22 = new System.Windows.Forms.Label();
             this.checkBoxAlwaysDownloadAsDash = new System.Windows.Forms.CheckBox();
-            this.checkBoxUseGmtTime = new System.Windows.Forms.CheckBox();
+            this.checkBoxUseUniversalTime = new System.Windows.Forms.CheckBox();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
-            this.btnUseRamWhy = new System.Windows.Forms.Button();
+            this.btnWtfUseRam = new System.Windows.Forms.Button();
             this.panelRAM = new System.Windows.Forms.Panel();
-            this.chkUseRamForTempFiles = new System.Windows.Forms.CheckBox();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.checkBoxUseRamForTempFiles = new System.Windows.Forms.CheckBox();
+            this.groupBoxYouTubeApiSettings = new System.Windows.Forms.GroupBox();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.checkBoxUseExternalRestApiServerToGetDownloadUrls = new System.Windows.Forms.CheckBox();
@@ -123,92 +123,92 @@ namespace YouTube_downloader
             this.checkBoxUseExternalRestApiServerToGetAdultVideos = new System.Windows.Forms.CheckBox();
             this.numericUpDownConnectionTimeoutExternalRestApiServer = new System.Windows.Forms.NumericUpDown();
             this.label30 = new System.Windows.Forms.Label();
-            this.btnExternalRestApiServerWhy = new System.Windows.Forms.Button();
+            this.btnWtfExternalRestApiServer = new System.Windows.Forms.Button();
             this.label25 = new System.Windows.Forms.Label();
             this.numericUpDownExternalRestApiServerPort = new System.Windows.Forms.NumericUpDown();
             this.textBoxExternalRestApiServerUrl = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.editCipherDecryptionAlgo = new System.Windows.Forms.TextBox();
+            this.textBoxCipherDecryptionAlgorythm = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.editYouTubeApiKey = new System.Windows.Forms.TextBox();
+            this.textBoxYouTubeApiV3Key = new System.Windows.Forms.TextBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.numericUpDownConnectionTimeout = new System.Windows.Forms.NumericUpDown();
             this.label29 = new System.Windows.Forms.Label();
-            this.checkBoxAccurateMultithreading = new System.Windows.Forms.CheckBox();
+            this.checkBoxUseAccurateMultithreading = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.numericUpDownGlobalThreadsMaximum = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownGlobalThreadCountLimit = new System.Windows.Forms.NumericUpDown();
             this.panelWarningAudioThreads = new System.Windows.Forms.Panel();
             this.panelWarningVideoThreads = new System.Windows.Forms.Panel();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.numericUpDownThreadsAudio = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownThreadsVideo = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownThreadCountAudio = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownThreadCountVideo = new System.Windows.Forms.NumericUpDown();
             this.tabPageSearch = new System.Windows.Forms.TabPage();
             this.panelSearch = new System.Windows.Forms.Panel();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.btnWhy = new System.Windows.Forms.Button();
+            this.btnWtfWebPageCode = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.btnSearchByWebPage = new System.Windows.Forms.Button();
-            this.richTextBoxWebPage = new System.Windows.Forms.RichTextBox();
-            this.menuCopyPaste = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.cutTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasteTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.selectAllTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.richTextBoxWebPageCode = new System.Windows.Forms.RichTextBox();
+            this.contextMenuCopyPaste = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miCutTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPasteTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemSeparatorLine = new System.Windows.Forms.ToolStripSeparator();
+            this.miSelectAllTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.dateTimePickerBefore = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePickerAfter = new System.Windows.Forms.DateTimePicker();
-            this.chkPublishedAfter = new System.Windows.Forms.CheckBox();
-            this.chkPublishedBefore = new System.Windows.Forms.CheckBox();
+            this.dateTimePickerSearchBefore = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerSearchAfter = new System.Windows.Forms.DateTimePicker();
+            this.checkBoxSearchRangePublishedAfter = new System.Windows.Forms.CheckBox();
+            this.checkBoxSearchRangePublishedBefore = new System.Windows.Forms.CheckBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.chkSearchVideos = new System.Windows.Forms.CheckBox();
-            this.chkSearchChannels = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxSearchVideos = new System.Windows.Forms.CheckBox();
+            this.checkBoxSearchChannels = new System.Windows.Forms.CheckBox();
+            this.groupBoxQuerySearch = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnSearchByQuery = new System.Windows.Forms.Button();
-            this.editQuery = new System.Windows.Forms.TextBox();
+            this.textBoxSearchQuery = new System.Windows.Forms.TextBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.rbSearchResultsUserDefined = new System.Windows.Forms.RadioButton();
-            this.rbSearchResultsMax = new System.Windows.Forms.RadioButton();
-            this.numericUpDownSearchResult = new System.Windows.Forms.NumericUpDown();
+            this.radioButtonSearchResultCountLimitUserDefinedNumber = new System.Windows.Forms.RadioButton();
+            this.radioButtonSearchResultCountLimitMaxPossible = new System.Windows.Forms.RadioButton();
+            this.numericUpDownSearchResultCountLimit = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.editSearchUrl = new System.Windows.Forms.TextBox();
-            this.btnSearchByUrl = new System.Windows.Forms.Button();
+            this.textBoxVideoUrlOrId = new System.Windows.Forms.TextBox();
+            this.btnSearchByVideoUrlOrId = new System.Windows.Forms.Button();
             this.tabPageSearchResults = new System.Windows.Forms.TabPage();
             this.scrollBarSearchResults = new System.Windows.Forms.VScrollBar();
             this.panelSearchResults = new System.Windows.Forms.Panel();
-            this.tvFavorites = new BrightIdeasSoftware.TreeListView();
+            this.objectTreeViewFavorites = new BrightIdeasSoftware.TreeListView();
             this.olvColumn1 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.menuFavorites = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.openVideoInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuFavorites = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miOpenVideoInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyVideoUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miOpenChannelInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyChannelUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCopyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
-            this.tabControl2.SuspendLayout();
+            this.tabControlSettings.SuspendLayout();
             this.tabPageFilesAndFolders.SuspendLayout();
             this.tabPageGUI.SuspendLayout();
             this.groupBox12.SuspendLayout();
-            this.groupBoxFonts.SuspendLayout();
+            this.groupBoxFontSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoTitleFontSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).BeginInit();
-            this.tabPageDownloadingSettings.SuspendLayout();
+            this.tabPageDownloadSettings.SuspendLayout();
             this.groupBox19.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadErrorCount)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadRetryCount)).BeginInit();
-            this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadErrorCountLimit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadTryCountLimit)).BeginInit();
+            this.groupBoxAdaptiveFormatsSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelayAfterContainerCreated)).BeginInit();
             this.groupBox15.SuspendLayout();
             this.groupBox16.SuspendLayout();
@@ -216,10 +216,10 @@ namespace YouTube_downloader
             this.tabPageSystemSettings.SuspendLayout();
             this.groupBox20.SuspendLayout();
             this.groupBox17.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadTryCountLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).BeginInit();
             this.groupBox13.SuspendLayout();
-            this.groupBox11.SuspendLayout();
+            this.groupBoxYouTubeApiSettings.SuspendLayout();
             this.groupBox18.SuspendLayout();
             this.groupBox21.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeoutExternalRestApiServer)).BeginInit();
@@ -228,22 +228,22 @@ namespace YouTube_downloader
             this.groupBox5.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeout)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadsMaximum)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsAudio)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsVideo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadCountLimit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadCountAudio)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadCountVideo)).BeginInit();
             this.tabPageSearch.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.groupBox9.SuspendLayout();
-            this.menuCopyPaste.SuspendLayout();
+            this.contextMenuCopyPaste.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxQuerySearch.SuspendLayout();
             this.groupBox6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSearchResult)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSearchResultCountLimit)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.tabPageSearchResults.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tvFavorites)).BeginInit();
-            this.menuFavorites.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.objectTreeViewFavorites)).BeginInit();
+            this.contextMenuFavorites.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControlMain
@@ -263,7 +263,7 @@ namespace YouTube_downloader
             // tabPageSettings
             // 
             this.tabPageSettings.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPageSettings.Controls.Add(this.tabControl2);
+            this.tabPageSettings.Controls.Add(this.tabControlSettings);
             this.tabPageSettings.Location = new System.Drawing.Point(4, 22);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
@@ -271,45 +271,45 @@ namespace YouTube_downloader
             this.tabPageSettings.TabIndex = 0;
             this.tabPageSettings.Text = "Настройки";
             // 
-            // tabControl2
+            // tabControlSettings
             // 
-            this.tabControl2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabControlSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl2.Controls.Add(this.tabPageFilesAndFolders);
-            this.tabControl2.Controls.Add(this.tabPageGUI);
-            this.tabControl2.Controls.Add(this.tabPageDownloadingSettings);
-            this.tabControl2.Controls.Add(this.tabPageSystemSettings);
-            this.tabControl2.Location = new System.Drawing.Point(6, 8);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(535, 383);
-            this.tabControl2.TabIndex = 12;
+            this.tabControlSettings.Controls.Add(this.tabPageFilesAndFolders);
+            this.tabControlSettings.Controls.Add(this.tabPageGUI);
+            this.tabControlSettings.Controls.Add(this.tabPageDownloadSettings);
+            this.tabControlSettings.Controls.Add(this.tabPageSystemSettings);
+            this.tabControlSettings.Location = new System.Drawing.Point(6, 8);
+            this.tabControlSettings.Name = "tabControlSettings";
+            this.tabControlSettings.SelectedIndex = 0;
+            this.tabControlSettings.Size = new System.Drawing.Size(535, 383);
+            this.tabControlSettings.TabIndex = 12;
             // 
             // tabPageFilesAndFolders
             // 
             this.tabPageFilesAndFolders.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.tabPageFilesAndFolders.Controls.Add(this.label18);
-            this.tabPageFilesAndFolders.Controls.Add(this.editOutputFileNameFormatWithDate);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxOutputFileNameFormatWithDate);
             this.tabPageFilesAndFolders.Controls.Add(this.btnResetFileNameFormatWithDate);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnQ);
-            this.tabPageFilesAndFolders.Controls.Add(this.editMergingDirPath);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnSelectMergingPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnWtfMergerDirectory);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxFilesMergerDirectory);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseMergerDirectory);
             this.tabPageFilesAndFolders.Controls.Add(this.label14);
             this.tabPageFilesAndFolders.Controls.Add(this.label11);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseFfmpeg);
-            this.tabPageFilesAndFolders.Controls.Add(this.editFfmpeg);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseFfmpegFilePath);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxFfmpegFilePath);
             this.tabPageFilesAndFolders.Controls.Add(this.label8);
-            this.tabPageFilesAndFolders.Controls.Add(this.editOutputFileNameFormatWithoutDate);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxOutputFileNameFormatWithoutDate);
             this.tabPageFilesAndFolders.Controls.Add(this.btnResetFileNameFormatWithoutDate);
             this.tabPageFilesAndFolders.Controls.Add(this.label7);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseDownloadingPath);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnSelectBrowser);
-            this.tabPageFilesAndFolders.Controls.Add(this.editDownloadingDirPath);
-            this.tabPageFilesAndFolders.Controls.Add(this.editBrowser);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseDownloadDirectory);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnSelectWebBrowserFilePath);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxDownloadDirectory);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxWebBrowserFilePath);
             this.tabPageFilesAndFolders.Controls.Add(this.label3);
-            this.tabPageFilesAndFolders.Controls.Add(this.editTempDirPath);
-            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseTempPath);
+            this.tabPageFilesAndFolders.Controls.Add(this.textBoxTempDirectory);
+            this.tabPageFilesAndFolders.Controls.Add(this.btnBrowseTempDirectory);
             this.tabPageFilesAndFolders.Controls.Add(this.label4);
             this.tabPageFilesAndFolders.Location = new System.Drawing.Point(4, 22);
             this.tabPageFilesAndFolders.Name = "tabPageFilesAndFolders";
@@ -327,15 +327,15 @@ namespace YouTube_downloader
             this.label18.TabIndex = 25;
             this.label18.Text = "Формат имени файла (дата определена):";
             // 
-            // editOutputFileNameFormatWithDate
+            // textBoxOutputFileNameFormatWithDate
             // 
-            this.editOutputFileNameFormatWithDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxOutputFileNameFormatWithDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editOutputFileNameFormatWithDate.Location = new System.Drawing.Point(13, 142);
-            this.editOutputFileNameFormatWithDate.Name = "editOutputFileNameFormatWithDate";
-            this.editOutputFileNameFormatWithDate.Size = new System.Drawing.Size(392, 20);
-            this.editOutputFileNameFormatWithDate.TabIndex = 24;
-            this.editOutputFileNameFormatWithDate.TextChanged += new System.EventHandler(this.editOutputFileNameFormatWithDate_TextChanged);
+            this.textBoxOutputFileNameFormatWithDate.Location = new System.Drawing.Point(13, 142);
+            this.textBoxOutputFileNameFormatWithDate.Name = "textBoxOutputFileNameFormatWithDate";
+            this.textBoxOutputFileNameFormatWithDate.Size = new System.Drawing.Size(392, 20);
+            this.textBoxOutputFileNameFormatWithDate.TabIndex = 24;
+            this.textBoxOutputFileNameFormatWithDate.TextChanged += new System.EventHandler(this.textBoxOutputFileNameFormatWithDate_TextChanged);
             // 
             // btnResetFileNameFormatWithDate
             // 
@@ -348,36 +348,36 @@ namespace YouTube_downloader
             this.btnResetFileNameFormatWithDate.UseVisualStyleBackColor = true;
             this.btnResetFileNameFormatWithDate.Click += new System.EventHandler(this.btnResetFileNameFormatWithDate_Click);
             // 
-            // btnQ
+            // btnWtfMergerDirectory
             // 
-            this.btnQ.Location = new System.Drawing.Point(182, 84);
-            this.btnQ.Name = "btnQ";
-            this.btnQ.Size = new System.Drawing.Size(21, 19);
-            this.btnQ.TabIndex = 22;
-            this.btnQ.Text = "?";
-            this.btnQ.UseVisualStyleBackColor = true;
-            this.btnQ.Click += new System.EventHandler(this.btnQ_Click);
+            this.btnWtfMergerDirectory.Location = new System.Drawing.Point(182, 84);
+            this.btnWtfMergerDirectory.Name = "btnWtfMergerDirectory";
+            this.btnWtfMergerDirectory.Size = new System.Drawing.Size(21, 19);
+            this.btnWtfMergerDirectory.TabIndex = 22;
+            this.btnWtfMergerDirectory.Text = "?";
+            this.btnWtfMergerDirectory.UseVisualStyleBackColor = true;
+            this.btnWtfMergerDirectory.Click += new System.EventHandler(this.btnWtfMergerDirectory_Click);
             // 
-            // editMergingDirPath
+            // textBoxFilesMergerDirectory
             // 
-            this.editMergingDirPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxFilesMergerDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editMergingDirPath.Location = new System.Drawing.Point(13, 103);
-            this.editMergingDirPath.Name = "editMergingDirPath";
-            this.editMergingDirPath.Size = new System.Drawing.Size(470, 20);
-            this.editMergingDirPath.TabIndex = 21;
-            this.editMergingDirPath.Leave += new System.EventHandler(this.editMergingDirPath_Leave);
+            this.textBoxFilesMergerDirectory.Location = new System.Drawing.Point(13, 103);
+            this.textBoxFilesMergerDirectory.Name = "textBoxFilesMergerDirectory";
+            this.textBoxFilesMergerDirectory.Size = new System.Drawing.Size(470, 20);
+            this.textBoxFilesMergerDirectory.TabIndex = 21;
+            this.textBoxFilesMergerDirectory.Leave += new System.EventHandler(this.textBoxFilesMergerDirectory_Leave);
             // 
-            // btnSelectMergingPath
+            // btnBrowseMergerDirectory
             // 
-            this.btnSelectMergingPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectMergingPath.Location = new System.Drawing.Point(489, 103);
-            this.btnSelectMergingPath.Name = "btnSelectMergingPath";
-            this.btnSelectMergingPath.Size = new System.Drawing.Size(32, 23);
-            this.btnSelectMergingPath.TabIndex = 20;
-            this.btnSelectMergingPath.Text = "...";
-            this.btnSelectMergingPath.UseVisualStyleBackColor = true;
-            this.btnSelectMergingPath.Click += new System.EventHandler(this.btnSelectMergingDirPath_Click);
+            this.btnBrowseMergerDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseMergerDirectory.Location = new System.Drawing.Point(489, 103);
+            this.btnBrowseMergerDirectory.Name = "btnBrowseMergerDirectory";
+            this.btnBrowseMergerDirectory.Size = new System.Drawing.Size(32, 23);
+            this.btnBrowseMergerDirectory.TabIndex = 20;
+            this.btnBrowseMergerDirectory.Text = "...";
+            this.btnBrowseMergerDirectory.UseVisualStyleBackColor = true;
+            this.btnBrowseMergerDirectory.Click += new System.EventHandler(this.btnSelectMergerDirectory_Click);
             // 
             // label14
             // 
@@ -397,26 +397,26 @@ namespace YouTube_downloader
             this.label11.TabIndex = 18;
             this.label11.Text = "Путь к FFMPEG.EXE:";
             // 
-            // btnBrowseFfmpeg
+            // btnBrowseFfmpegFilePath
             // 
-            this.btnBrowseFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseFfmpeg.Location = new System.Drawing.Point(489, 259);
-            this.btnBrowseFfmpeg.Name = "btnBrowseFfmpeg";
-            this.btnBrowseFfmpeg.Size = new System.Drawing.Size(32, 20);
-            this.btnBrowseFfmpeg.TabIndex = 17;
-            this.btnBrowseFfmpeg.Text = "...";
-            this.btnBrowseFfmpeg.UseVisualStyleBackColor = true;
-            this.btnBrowseFfmpeg.Click += new System.EventHandler(this.btnBrowseFfmpeg_Click);
+            this.btnBrowseFfmpegFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseFfmpegFilePath.Location = new System.Drawing.Point(489, 259);
+            this.btnBrowseFfmpegFilePath.Name = "btnBrowseFfmpegFilePath";
+            this.btnBrowseFfmpegFilePath.Size = new System.Drawing.Size(32, 20);
+            this.btnBrowseFfmpegFilePath.TabIndex = 17;
+            this.btnBrowseFfmpegFilePath.Text = "...";
+            this.btnBrowseFfmpegFilePath.UseVisualStyleBackColor = true;
+            this.btnBrowseFfmpegFilePath.Click += new System.EventHandler(this.btnBrowseFfmpegFilePath_Click);
             // 
-            // editFfmpeg
+            // textBoxFfmpegFilePath
             // 
-            this.editFfmpeg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxFfmpegFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editFfmpeg.Location = new System.Drawing.Point(13, 259);
-            this.editFfmpeg.Name = "editFfmpeg";
-            this.editFfmpeg.Size = new System.Drawing.Size(470, 20);
-            this.editFfmpeg.TabIndex = 16;
-            this.editFfmpeg.Leave += new System.EventHandler(this.editFfmpeg_Leave);
+            this.textBoxFfmpegFilePath.Location = new System.Drawing.Point(13, 259);
+            this.textBoxFfmpegFilePath.Name = "textBoxFfmpegFilePath";
+            this.textBoxFfmpegFilePath.Size = new System.Drawing.Size(470, 20);
+            this.textBoxFfmpegFilePath.TabIndex = 16;
+            this.textBoxFfmpegFilePath.Leave += new System.EventHandler(this.textBoxFfmpegFilePath_Leave);
             // 
             // label8
             // 
@@ -427,15 +427,15 @@ namespace YouTube_downloader
             this.label8.TabIndex = 15;
             this.label8.Text = "Формат имени файла (дата не определена):";
             // 
-            // editOutputFileNameFormatWithoutDate
+            // textBoxOutputFileNameFormatWithoutDate
             // 
-            this.editOutputFileNameFormatWithoutDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxOutputFileNameFormatWithoutDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editOutputFileNameFormatWithoutDate.Location = new System.Drawing.Point(13, 181);
-            this.editOutputFileNameFormatWithoutDate.Name = "editOutputFileNameFormatWithoutDate";
-            this.editOutputFileNameFormatWithoutDate.Size = new System.Drawing.Size(392, 20);
-            this.editOutputFileNameFormatWithoutDate.TabIndex = 14;
-            this.editOutputFileNameFormatWithoutDate.TextChanged += new System.EventHandler(this.editOutputFileNameFormatWithoutDate_TextChanged);
+            this.textBoxOutputFileNameFormatWithoutDate.Location = new System.Drawing.Point(13, 181);
+            this.textBoxOutputFileNameFormatWithoutDate.Name = "textBoxOutputFileNameFormatWithoutDate";
+            this.textBoxOutputFileNameFormatWithoutDate.Size = new System.Drawing.Size(392, 20);
+            this.textBoxOutputFileNameFormatWithoutDate.TabIndex = 14;
+            this.textBoxOutputFileNameFormatWithoutDate.TextChanged += new System.EventHandler(this.textBoxOutputFileNameFormatWithoutDate_TextChanged);
             // 
             // btnResetFileNameFormatWithoutDate
             // 
@@ -457,46 +457,46 @@ namespace YouTube_downloader
             this.label7.TabIndex = 12;
             this.label7.Text = "Веб-браузер:";
             // 
-            // btnBrowseDownloadingPath
+            // btnBrowseDownloadDirectory
             // 
-            this.btnBrowseDownloadingPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseDownloadingPath.Location = new System.Drawing.Point(489, 23);
-            this.btnBrowseDownloadingPath.Name = "btnBrowseDownloadingPath";
-            this.btnBrowseDownloadingPath.Size = new System.Drawing.Size(32, 20);
-            this.btnBrowseDownloadingPath.TabIndex = 2;
-            this.btnBrowseDownloadingPath.Text = "...";
-            this.btnBrowseDownloadingPath.UseVisualStyleBackColor = true;
-            this.btnBrowseDownloadingPath.Click += new System.EventHandler(this.btnBrowseDownloadingDirPath_Click);
+            this.btnBrowseDownloadDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseDownloadDirectory.Location = new System.Drawing.Point(489, 23);
+            this.btnBrowseDownloadDirectory.Name = "btnBrowseDownloadDirectory";
+            this.btnBrowseDownloadDirectory.Size = new System.Drawing.Size(32, 20);
+            this.btnBrowseDownloadDirectory.TabIndex = 2;
+            this.btnBrowseDownloadDirectory.Text = "...";
+            this.btnBrowseDownloadDirectory.UseVisualStyleBackColor = true;
+            this.btnBrowseDownloadDirectory.Click += new System.EventHandler(this.btnBrowseDownloadDirectory_Click);
             // 
-            // btnSelectBrowser
+            // btnSelectWebBrowserFilePath
             // 
-            this.btnSelectBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectBrowser.Location = new System.Drawing.Point(489, 220);
-            this.btnSelectBrowser.Name = "btnSelectBrowser";
-            this.btnSelectBrowser.Size = new System.Drawing.Size(32, 20);
-            this.btnSelectBrowser.TabIndex = 11;
-            this.btnSelectBrowser.Text = "...";
-            this.btnSelectBrowser.UseVisualStyleBackColor = true;
-            this.btnSelectBrowser.Click += new System.EventHandler(this.btnSelectBrowser_Click);
+            this.btnSelectWebBrowserFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSelectWebBrowserFilePath.Location = new System.Drawing.Point(489, 220);
+            this.btnSelectWebBrowserFilePath.Name = "btnSelectWebBrowserFilePath";
+            this.btnSelectWebBrowserFilePath.Size = new System.Drawing.Size(32, 20);
+            this.btnSelectWebBrowserFilePath.TabIndex = 11;
+            this.btnSelectWebBrowserFilePath.Text = "...";
+            this.btnSelectWebBrowserFilePath.UseVisualStyleBackColor = true;
+            this.btnSelectWebBrowserFilePath.Click += new System.EventHandler(this.btnSelectWebBrowserFilePath_Click);
             // 
-            // editDownloadingDirPath
+            // textBoxDownloadDirectory
             // 
-            this.editDownloadingDirPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxDownloadDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editDownloadingDirPath.Location = new System.Drawing.Point(13, 23);
-            this.editDownloadingDirPath.Name = "editDownloadingDirPath";
-            this.editDownloadingDirPath.Size = new System.Drawing.Size(470, 20);
-            this.editDownloadingDirPath.TabIndex = 0;
-            this.editDownloadingDirPath.Leave += new System.EventHandler(this.editDownloadingPath_Leave);
+            this.textBoxDownloadDirectory.Location = new System.Drawing.Point(13, 23);
+            this.textBoxDownloadDirectory.Name = "textBoxDownloadDirectory";
+            this.textBoxDownloadDirectory.Size = new System.Drawing.Size(470, 20);
+            this.textBoxDownloadDirectory.TabIndex = 0;
+            this.textBoxDownloadDirectory.Leave += new System.EventHandler(this.textBoxDownloadDirectory_Leave);
             // 
-            // editBrowser
+            // textBoxWebBrowserFilePath
             // 
-            this.editBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxWebBrowserFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editBrowser.Location = new System.Drawing.Point(13, 220);
-            this.editBrowser.Name = "editBrowser";
-            this.editBrowser.Size = new System.Drawing.Size(470, 20);
-            this.editBrowser.TabIndex = 10;
+            this.textBoxWebBrowserFilePath.Location = new System.Drawing.Point(13, 220);
+            this.textBoxWebBrowserFilePath.Name = "textBoxWebBrowserFilePath";
+            this.textBoxWebBrowserFilePath.Size = new System.Drawing.Size(470, 20);
+            this.textBoxWebBrowserFilePath.TabIndex = 10;
             // 
             // label3
             // 
@@ -507,26 +507,26 @@ namespace YouTube_downloader
             this.label3.TabIndex = 5;
             this.label3.Text = "Папка для скачивания:";
             // 
-            // editTempDirPath
+            // textBoxTempDirectory
             // 
-            this.editTempDirPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxTempDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editTempDirPath.Location = new System.Drawing.Point(13, 64);
-            this.editTempDirPath.Name = "editTempDirPath";
-            this.editTempDirPath.Size = new System.Drawing.Size(470, 20);
-            this.editTempDirPath.TabIndex = 1;
-            this.editTempDirPath.Leave += new System.EventHandler(this.editTempPath_Leave);
+            this.textBoxTempDirectory.Location = new System.Drawing.Point(13, 64);
+            this.textBoxTempDirectory.Name = "textBoxTempDirectory";
+            this.textBoxTempDirectory.Size = new System.Drawing.Size(470, 20);
+            this.textBoxTempDirectory.TabIndex = 1;
+            this.textBoxTempDirectory.Leave += new System.EventHandler(this.textBoxTempDirectory_Leave);
             // 
-            // btnBrowseTempPath
+            // btnBrowseTempDirectory
             // 
-            this.btnBrowseTempPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseTempPath.Location = new System.Drawing.Point(489, 64);
-            this.btnBrowseTempPath.Name = "btnBrowseTempPath";
-            this.btnBrowseTempPath.Size = new System.Drawing.Size(32, 20);
-            this.btnBrowseTempPath.TabIndex = 3;
-            this.btnBrowseTempPath.Text = "...";
-            this.btnBrowseTempPath.UseVisualStyleBackColor = true;
-            this.btnBrowseTempPath.Click += new System.EventHandler(this.btnBrowseTempDirPath_Click);
+            this.btnBrowseTempDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseTempDirectory.Location = new System.Drawing.Point(489, 64);
+            this.btnBrowseTempDirectory.Name = "btnBrowseTempDirectory";
+            this.btnBrowseTempDirectory.Size = new System.Drawing.Size(32, 20);
+            this.btnBrowseTempDirectory.TabIndex = 3;
+            this.btnBrowseTempDirectory.Text = "...";
+            this.btnBrowseTempDirectory.UseVisualStyleBackColor = true;
+            this.btnBrowseTempDirectory.Click += new System.EventHandler(this.btnBrowseTempDirectory_Click);
             // 
             // label4
             // 
@@ -542,7 +542,7 @@ namespace YouTube_downloader
             this.tabPageGUI.BackColor = System.Drawing.SystemColors.Control;
             this.tabPageGUI.Controls.Add(this.checkBoxShowHlsTracksOnlyForStreams);
             this.tabPageGUI.Controls.Add(this.groupBox12);
-            this.tabPageGUI.Controls.Add(this.groupBoxFonts);
+            this.tabPageGUI.Controls.Add(this.groupBoxFontSettings);
             this.tabPageGUI.Location = new System.Drawing.Point(4, 22);
             this.tabPageGUI.Name = "tabPageGUI";
             this.tabPageGUI.Size = new System.Drawing.Size(527, 357);
@@ -564,9 +564,9 @@ namespace YouTube_downloader
             // 
             this.groupBox12.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox12.Controls.Add(this.chkSortDashFormatsByBitrate);
-            this.groupBox12.Controls.Add(this.chkMoveAudioId140First);
-            this.groupBox12.Controls.Add(this.chkSortFormatsByFileSize);
+            this.groupBox12.Controls.Add(this.checkBoxSortDashFormatsByBitrate);
+            this.groupBox12.Controls.Add(this.checkBoxMoveAudioTrackId140ToTopOfList);
+            this.groupBox12.Controls.Add(this.checkBoxSortAdaptiveFormatsByFileSize);
             this.groupBox12.Location = new System.Drawing.Point(3, 120);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Size = new System.Drawing.Size(521, 91);
@@ -574,57 +574,57 @@ namespace YouTube_downloader
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Сортировка списка форматов для скачивания";
             // 
-            // chkSortDashFormatsByBitrate
+            // checkBoxSortDashFormatsByBitrate
             // 
-            this.chkSortDashFormatsByBitrate.AutoSize = true;
-            this.chkSortDashFormatsByBitrate.Location = new System.Drawing.Point(18, 42);
-            this.chkSortDashFormatsByBitrate.Name = "chkSortDashFormatsByBitrate";
-            this.chkSortDashFormatsByBitrate.Size = new System.Drawing.Size(320, 17);
-            this.chkSortDashFormatsByBitrate.TabIndex = 2;
-            this.chkSortDashFormatsByBitrate.Text = "Сортировать форматы DASH по битрейту (если известен)";
-            this.chkSortDashFormatsByBitrate.UseVisualStyleBackColor = true;
-            this.chkSortDashFormatsByBitrate.CheckedChanged += new System.EventHandler(this.chkSortDashFormatsByBitrate_CheckedChanged);
+            this.checkBoxSortDashFormatsByBitrate.AutoSize = true;
+            this.checkBoxSortDashFormatsByBitrate.Location = new System.Drawing.Point(18, 42);
+            this.checkBoxSortDashFormatsByBitrate.Name = "checkBoxSortDashFormatsByBitrate";
+            this.checkBoxSortDashFormatsByBitrate.Size = new System.Drawing.Size(320, 17);
+            this.checkBoxSortDashFormatsByBitrate.TabIndex = 2;
+            this.checkBoxSortDashFormatsByBitrate.Text = "Сортировать форматы DASH по битрейту (если известен)";
+            this.checkBoxSortDashFormatsByBitrate.UseVisualStyleBackColor = true;
+            this.checkBoxSortDashFormatsByBitrate.CheckedChanged += new System.EventHandler(this.checkBoxSortDashFormatsByBitrate_CheckedChanged);
             // 
-            // chkMoveAudioId140First
+            // checkBoxMoveAudioTrackId140ToTopOfList
             // 
-            this.chkMoveAudioId140First.AutoSize = true;
-            this.chkMoveAudioId140First.Location = new System.Drawing.Point(18, 65);
-            this.chkMoveAudioId140First.Name = "chkMoveAudioId140First";
-            this.chkMoveAudioId140First.Size = new System.Drawing.Size(302, 17);
-            this.chkMoveAudioId140First.TabIndex = 1;
-            this.chkMoveAudioId140First.Text = "Перемещать аудио-дорожку с ID 140 на первое место";
-            this.toolTip1.SetToolTip(this.chkMoveAudioId140First, "Независимо от сортировки");
-            this.chkMoveAudioId140First.UseVisualStyleBackColor = true;
-            this.chkMoveAudioId140First.CheckedChanged += new System.EventHandler(this.chkMoveAudioId140First_CheckedChanged);
+            this.checkBoxMoveAudioTrackId140ToTopOfList.AutoSize = true;
+            this.checkBoxMoveAudioTrackId140ToTopOfList.Location = new System.Drawing.Point(18, 65);
+            this.checkBoxMoveAudioTrackId140ToTopOfList.Name = "checkBoxMoveAudioTrackId140ToTopOfList";
+            this.checkBoxMoveAudioTrackId140ToTopOfList.Size = new System.Drawing.Size(302, 17);
+            this.checkBoxMoveAudioTrackId140ToTopOfList.TabIndex = 1;
+            this.checkBoxMoveAudioTrackId140ToTopOfList.Text = "Перемещать аудио-дорожку с ID 140 на первое место";
+            this.toolTip1.SetToolTip(this.checkBoxMoveAudioTrackId140ToTopOfList, "Независимо от сортировки");
+            this.checkBoxMoveAudioTrackId140ToTopOfList.UseVisualStyleBackColor = true;
+            this.checkBoxMoveAudioTrackId140ToTopOfList.CheckedChanged += new System.EventHandler(this.checkBoxMoveAudioTrackId140ToTopOfList_CheckedChanged);
             // 
-            // chkSortFormatsByFileSize
+            // checkBoxSortAdaptiveFormatsByFileSize
             // 
-            this.chkSortFormatsByFileSize.AutoSize = true;
-            this.chkSortFormatsByFileSize.Location = new System.Drawing.Point(18, 19);
-            this.chkSortFormatsByFileSize.Name = "chkSortFormatsByFileSize";
-            this.chkSortFormatsByFileSize.Size = new System.Drawing.Size(320, 17);
-            this.chkSortFormatsByFileSize.TabIndex = 0;
-            this.chkSortFormatsByFileSize.Text = "Сортировать форматы по размеру файла (если известен)";
-            this.toolTip1.SetToolTip(this.chkSortFormatsByFileSize, "Не применяется к HLS, DASH и контейнерным форматам!");
-            this.chkSortFormatsByFileSize.UseVisualStyleBackColor = true;
-            this.chkSortFormatsByFileSize.CheckedChanged += new System.EventHandler(this.chkSortFormatsByFileSize_CheckedChanged);
+            this.checkBoxSortAdaptiveFormatsByFileSize.AutoSize = true;
+            this.checkBoxSortAdaptiveFormatsByFileSize.Location = new System.Drawing.Point(18, 19);
+            this.checkBoxSortAdaptiveFormatsByFileSize.Name = "checkBoxSortAdaptiveFormatsByFileSize";
+            this.checkBoxSortAdaptiveFormatsByFileSize.Size = new System.Drawing.Size(320, 17);
+            this.checkBoxSortAdaptiveFormatsByFileSize.TabIndex = 0;
+            this.checkBoxSortAdaptiveFormatsByFileSize.Text = "Сортировать форматы по размеру файла (если известен)";
+            this.toolTip1.SetToolTip(this.checkBoxSortAdaptiveFormatsByFileSize, "Не применяется к HLS, DASH и контейнерным форматам!");
+            this.checkBoxSortAdaptiveFormatsByFileSize.UseVisualStyleBackColor = true;
+            this.checkBoxSortAdaptiveFormatsByFileSize.CheckedChanged += new System.EventHandler(this.checkBoxSortAdaptiveFormatsByFileSize_CheckedChanged);
             // 
-            // groupBoxFonts
+            // groupBoxFontSettings
             // 
-            this.groupBoxFonts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBoxFontSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxFonts.Controls.Add(this.numericUpDownVideoTitleFontSize);
-            this.groupBoxFonts.Controls.Add(this.label17);
-            this.groupBoxFonts.Controls.Add(this.numericUpDownFavoritesListFontSize);
-            this.groupBoxFonts.Controls.Add(this.label16);
-            this.groupBoxFonts.Controls.Add(this.label15);
-            this.groupBoxFonts.Controls.Add(this.numericUpDownMenusFontSize);
-            this.groupBoxFonts.Location = new System.Drawing.Point(3, 3);
-            this.groupBoxFonts.Name = "groupBoxFonts";
-            this.groupBoxFonts.Size = new System.Drawing.Size(521, 111);
-            this.groupBoxFonts.TabIndex = 0;
-            this.groupBoxFonts.TabStop = false;
-            this.groupBoxFonts.Text = "Размер шрифтов";
+            this.groupBoxFontSettings.Controls.Add(this.numericUpDownVideoTitleFontSize);
+            this.groupBoxFontSettings.Controls.Add(this.label17);
+            this.groupBoxFontSettings.Controls.Add(this.numericUpDownFavoritesListFontSize);
+            this.groupBoxFontSettings.Controls.Add(this.label16);
+            this.groupBoxFontSettings.Controls.Add(this.label15);
+            this.groupBoxFontSettings.Controls.Add(this.numericUpDownMenusFontSize);
+            this.groupBoxFontSettings.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxFontSettings.Name = "groupBoxFontSettings";
+            this.groupBoxFontSettings.Size = new System.Drawing.Size(521, 111);
+            this.groupBoxFontSettings.TabIndex = 0;
+            this.groupBoxFontSettings.TabStop = false;
+            this.groupBoxFontSettings.Text = "Размер шрифтов";
             // 
             // numericUpDownVideoTitleFontSize
             // 
@@ -722,33 +722,33 @@ namespace YouTube_downloader
             0});
             this.numericUpDownMenusFontSize.ValueChanged += new System.EventHandler(this.numericUpDownMenusFontSize_ValueChanged);
             // 
-            // tabPageDownloadingSettings
+            // tabPageDownloadSettings
             // 
-            this.tabPageDownloadingSettings.AutoScroll = true;
-            this.tabPageDownloadingSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.tabPageDownloadingSettings.Controls.Add(this.checkBoxCheckUrlsAccessibilityBeforeDownloading);
-            this.tabPageDownloadingSettings.Controls.Add(this.groupBox19);
-            this.tabPageDownloadingSettings.Controls.Add(this.groupBox10);
-            this.tabPageDownloadingSettings.Controls.Add(this.chkSaveImage);
-            this.tabPageDownloadingSettings.Location = new System.Drawing.Point(4, 22);
-            this.tabPageDownloadingSettings.Name = "tabPageDownloadingSettings";
-            this.tabPageDownloadingSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDownloadingSettings.Size = new System.Drawing.Size(527, 357);
-            this.tabPageDownloadingSettings.TabIndex = 2;
-            this.tabPageDownloadingSettings.Text = "Скачивание";
+            this.tabPageDownloadSettings.AutoScroll = true;
+            this.tabPageDownloadSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.tabPageDownloadSettings.Controls.Add(this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted);
+            this.tabPageDownloadSettings.Controls.Add(this.groupBox19);
+            this.tabPageDownloadSettings.Controls.Add(this.groupBoxAdaptiveFormatsSettings);
+            this.tabPageDownloadSettings.Controls.Add(this.checkBoxAutomaticallySaveVideoThumbnailImage);
+            this.tabPageDownloadSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDownloadSettings.Name = "tabPageDownloadSettings";
+            this.tabPageDownloadSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDownloadSettings.Size = new System.Drawing.Size(527, 357);
+            this.tabPageDownloadSettings.TabIndex = 2;
+            this.tabPageDownloadSettings.Text = "Скачивание";
             // 
-            // checkBoxCheckUrlsAccessibilityBeforeDownloading
+            // checkBoxCheckUrlsAccessibilityBeforeDownloadStarted
             // 
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.AutoSize = true;
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.Checked = true;
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.Location = new System.Drawing.Point(14, 292);
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.Name = "checkBoxCheckUrlsAccessibilityBeforeDownloading";
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.Size = new System.Drawing.Size(317, 17);
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.TabIndex = 21;
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.Text = "Проверять доступность всех ссылок перед скачиванием";
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.UseVisualStyleBackColor = true;
-            this.checkBoxCheckUrlsAccessibilityBeforeDownloading.CheckedChanged += new System.EventHandler(this.checkBoxCheckUrlsAccessibilityBeforeDownloading_CheckedChanged);
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.AutoSize = true;
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.Checked = true;
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.Location = new System.Drawing.Point(14, 292);
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.Name = "checkBoxCheckUrlsAccessibilityBeforeDownloadStarted";
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.Size = new System.Drawing.Size(317, 17);
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.TabIndex = 21;
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.Text = "Проверять доступность всех ссылок перед скачиванием";
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.UseVisualStyleBackColor = true;
+            this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.CheckedChanged += new System.EventHandler(this.checkBoxCheckUrlsAccessibilityBeforeDownloadStarted_CheckedChanged);
             // 
             // groupBox19
             // 
@@ -756,13 +756,13 @@ namespace YouTube_downloader
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox19.Controls.Add(this.label28);
             this.groupBox19.Controls.Add(this.label27);
-            this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadErrorCount);
+            this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadErrorCountLimit);
             this.groupBox19.Controls.Add(this.label26);
             this.groupBox19.Controls.Add(this.label21);
-            this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadRetryCount);
+            this.groupBox19.Controls.Add(this.numericUpDownChunkDownloadTryCountLimit);
             this.groupBox19.Location = new System.Drawing.Point(14, 315);
             this.groupBox19.Name = "groupBox19";
-            this.groupBox19.Size = new System.Drawing.Size(478, 72);
+            this.groupBox19.Size = new System.Drawing.Size(490, 72);
             this.groupBox19.TabIndex = 20;
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Попытки скачивания";
@@ -785,23 +785,23 @@ namespace YouTube_downloader
             this.label27.TabIndex = 22;
             this.label27.Text = "0 - бесконечно";
             // 
-            // numericUpDownChunkDownloadErrorCount
+            // numericUpDownChunkDownloadErrorCountLimit
             // 
-            this.numericUpDownChunkDownloadErrorCount.Location = new System.Drawing.Point(237, 45);
-            this.numericUpDownChunkDownloadErrorCount.Maximum = new decimal(new int[] {
+            this.numericUpDownChunkDownloadErrorCountLimit.Location = new System.Drawing.Point(237, 45);
+            this.numericUpDownChunkDownloadErrorCountLimit.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.numericUpDownChunkDownloadErrorCount.Name = "numericUpDownChunkDownloadErrorCount";
-            this.numericUpDownChunkDownloadErrorCount.Size = new System.Drawing.Size(46, 20);
-            this.numericUpDownChunkDownloadErrorCount.TabIndex = 21;
-            this.numericUpDownChunkDownloadErrorCount.Value = new decimal(new int[] {
+            this.numericUpDownChunkDownloadErrorCountLimit.Name = "numericUpDownChunkDownloadErrorCountLimit";
+            this.numericUpDownChunkDownloadErrorCountLimit.Size = new System.Drawing.Size(46, 20);
+            this.numericUpDownChunkDownloadErrorCountLimit.TabIndex = 21;
+            this.numericUpDownChunkDownloadErrorCountLimit.Value = new decimal(new int[] {
             3,
             0,
             0,
             0});
-            this.numericUpDownChunkDownloadErrorCount.ValueChanged += new System.EventHandler(this.numericUpDownChunkDownloadErrorCount_ValueChanged);
+            this.numericUpDownChunkDownloadErrorCountLimit.ValueChanged += new System.EventHandler(this.numericUpDownChunkDownloadErrorCount_ValueChanged);
             // 
             // label26
             // 
@@ -822,41 +822,41 @@ namespace YouTube_downloader
             this.label21.TabIndex = 18;
             this.label21.Text = "Количество попыток скачивания чанков:";
             // 
-            // numericUpDownChunkDownloadRetryCount
+            // numericUpDownChunkDownloadTryCountLimit
             // 
-            this.numericUpDownChunkDownloadRetryCount.Location = new System.Drawing.Point(237, 19);
-            this.numericUpDownChunkDownloadRetryCount.Maximum = new decimal(new int[] {
+            this.numericUpDownChunkDownloadTryCountLimit.Location = new System.Drawing.Point(237, 19);
+            this.numericUpDownChunkDownloadTryCountLimit.Maximum = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.numericUpDownChunkDownloadRetryCount.Name = "numericUpDownChunkDownloadRetryCount";
-            this.numericUpDownChunkDownloadRetryCount.Size = new System.Drawing.Size(46, 20);
-            this.numericUpDownChunkDownloadRetryCount.TabIndex = 19;
-            this.numericUpDownChunkDownloadRetryCount.Value = new decimal(new int[] {
+            this.numericUpDownChunkDownloadTryCountLimit.Name = "numericUpDownChunkDownloadTryCountLimit";
+            this.numericUpDownChunkDownloadTryCountLimit.Size = new System.Drawing.Size(46, 20);
+            this.numericUpDownChunkDownloadTryCountLimit.TabIndex = 19;
+            this.numericUpDownChunkDownloadTryCountLimit.Value = new decimal(new int[] {
             5,
             0,
             0,
             0});
-            this.numericUpDownChunkDownloadRetryCount.ValueChanged += new System.EventHandler(this.numericUpDownDownloadRetryCount_ValueChanged);
+            this.numericUpDownChunkDownloadTryCountLimit.ValueChanged += new System.EventHandler(this.numericUpDownChunkDownloadTryCountLimit_ValueChanged);
             // 
-            // groupBox10
+            // groupBoxAdaptiveFormatsSettings
             // 
-            this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBoxAdaptiveFormatsSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox10.Controls.Add(this.numericUpDownDelayAfterContainerCreated);
-            this.groupBox10.Controls.Add(this.label20);
-            this.groupBox10.Controls.Add(this.label19);
-            this.groupBox10.Controls.Add(this.btnDownloadAllAdaptiveVideoTracksWtf);
-            this.groupBox10.Controls.Add(this.chkDownloadAllAdaptiveVideoTracks);
-            this.groupBox10.Controls.Add(this.groupBox15);
-            this.groupBox10.Controls.Add(this.groupBox14);
-            this.groupBox10.Location = new System.Drawing.Point(14, 6);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(490, 280);
-            this.groupBox10.TabIndex = 17;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "Адаптивные форматы";
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.numericUpDownDelayAfterContainerCreated);
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.label20);
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.label19);
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.btnWtfDownloadAllAdaptiveVideoTracks);
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks);
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.groupBox15);
+            this.groupBoxAdaptiveFormatsSettings.Controls.Add(this.groupBox14);
+            this.groupBoxAdaptiveFormatsSettings.Location = new System.Drawing.Point(14, 6);
+            this.groupBoxAdaptiveFormatsSettings.Name = "groupBoxAdaptiveFormatsSettings";
+            this.groupBoxAdaptiveFormatsSettings.Size = new System.Drawing.Size(490, 280);
+            this.groupBoxAdaptiveFormatsSettings.TabIndex = 17;
+            this.groupBoxAdaptiveFormatsSettings.TabStop = false;
+            this.groupBoxAdaptiveFormatsSettings.Text = "Адаптивные форматы";
             // 
             // numericUpDownDelayAfterContainerCreated
             // 
@@ -900,34 +900,34 @@ namespace YouTube_downloader
             this.label19.Text = "Задержка после создания контейнера:";
             this.toolTip1.SetToolTip(this.label19, "Позволяет избежать падения программы, если закрыть окно консоли раньше времени");
             // 
-            // btnDownloadAllAdaptiveVideoTracksWtf
+            // btnWtfDownloadAllAdaptiveVideoTracks
             // 
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Location = new System.Drawing.Point(339, 15);
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Name = "btnDownloadAllAdaptiveVideoTracksWtf";
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Size = new System.Drawing.Size(30, 23);
-            this.btnDownloadAllAdaptiveVideoTracksWtf.TabIndex = 20;
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Text = "?";
-            this.btnDownloadAllAdaptiveVideoTracksWtf.UseVisualStyleBackColor = true;
-            this.btnDownloadAllAdaptiveVideoTracksWtf.Click += new System.EventHandler(this.btnDownloadAllAdaptiveVideoTracksWtf_Click);
+            this.btnWtfDownloadAllAdaptiveVideoTracks.Location = new System.Drawing.Point(339, 15);
+            this.btnWtfDownloadAllAdaptiveVideoTracks.Name = "btnWtfDownloadAllAdaptiveVideoTracks";
+            this.btnWtfDownloadAllAdaptiveVideoTracks.Size = new System.Drawing.Size(30, 23);
+            this.btnWtfDownloadAllAdaptiveVideoTracks.TabIndex = 20;
+            this.btnWtfDownloadAllAdaptiveVideoTracks.Text = "?";
+            this.btnWtfDownloadAllAdaptiveVideoTracks.UseVisualStyleBackColor = true;
+            this.btnWtfDownloadAllAdaptiveVideoTracks.Click += new System.EventHandler(this.btnWtfDownloadAllAdaptiveVideoTracks_Click);
             // 
-            // chkDownloadAllAdaptiveVideoTracks
+            // checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks
             // 
-            this.chkDownloadAllAdaptiveVideoTracks.AutoSize = true;
-            this.chkDownloadAllAdaptiveVideoTracks.Location = new System.Drawing.Point(6, 19);
-            this.chkDownloadAllAdaptiveVideoTracks.Name = "chkDownloadAllAdaptiveVideoTracks";
-            this.chkDownloadAllAdaptiveVideoTracks.Size = new System.Drawing.Size(327, 17);
-            this.chkDownloadAllAdaptiveVideoTracks.TabIndex = 19;
-            this.chkDownloadAllAdaptiveVideoTracks.Text = "Автоматически скачивать все адаптивные форматы видео";
-            this.chkDownloadAllAdaptiveVideoTracks.UseVisualStyleBackColor = true;
-            this.chkDownloadAllAdaptiveVideoTracks.CheckedChanged += new System.EventHandler(this.chkDownloadAllAdaptiveVideoTracks_CheckedChanged);
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.AutoSize = true;
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.Location = new System.Drawing.Point(6, 19);
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.Name = "checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks";
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.Size = new System.Drawing.Size(327, 17);
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.TabIndex = 19;
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.Text = "Автоматически скачивать все адаптивные форматы видео";
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks_CheckedChanged);
             // 
             // groupBox15
             // 
             this.groupBox15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox15.Controls.Add(this.groupBox16);
-            this.groupBox15.Controls.Add(this.chkMergeAdaptive);
-            this.groupBox15.Controls.Add(this.chkDeleteSourceFiles);
+            this.groupBox15.Controls.Add(this.checkBoxAutomaticallyMergeAdaptiveTracks);
+            this.groupBox15.Controls.Add(this.checkBoxDeleteSourceFilesWhenMerged);
             this.groupBox15.Location = new System.Drawing.Point(6, 160);
             this.groupBox15.Name = "groupBox15";
             this.groupBox15.Size = new System.Drawing.Size(478, 83);
@@ -972,38 +972,38 @@ namespace YouTube_downloader
             this.radioButtonContainerTypeMp4.UseVisualStyleBackColor = true;
             this.radioButtonContainerTypeMp4.CheckedChanged += new System.EventHandler(this.radioButtonContainerTypeMp4_CheckedChanged);
             // 
-            // chkMergeAdaptive
+            // checkBoxAutomaticallyMergeAdaptiveTracks
             // 
-            this.chkMergeAdaptive.AutoSize = true;
-            this.chkMergeAdaptive.Location = new System.Drawing.Point(20, 18);
-            this.chkMergeAdaptive.Name = "chkMergeAdaptive";
-            this.chkMergeAdaptive.Size = new System.Drawing.Size(274, 17);
-            this.chkMergeAdaptive.TabIndex = 14;
-            this.chkMergeAdaptive.Text = "Объединять дорожки видео и аудио в контейнер";
-            this.toolTip1.SetToolTip(this.chkMergeAdaptive, "Не применяется, если скачаны только аудио-дорожки");
-            this.chkMergeAdaptive.UseVisualStyleBackColor = true;
-            this.chkMergeAdaptive.CheckedChanged += new System.EventHandler(this.chkMergeAdaptive_CheckedChanged);
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.AutoSize = true;
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.Location = new System.Drawing.Point(20, 18);
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.Name = "checkBoxAutomaticallyMergeAdaptiveTracks";
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.Size = new System.Drawing.Size(274, 17);
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.TabIndex = 14;
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.Text = "Объединять дорожки видео и аудио в контейнер";
+            this.toolTip1.SetToolTip(this.checkBoxAutomaticallyMergeAdaptiveTracks, "Не применяется, если скачаны только аудио-дорожки");
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallyMergeAdaptiveTracks.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallyMergeAdaptiveTracks_CheckedChanged);
             // 
-            // chkDeleteSourceFiles
+            // checkBoxDeleteSourceFilesWhenMerged
             // 
-            this.chkDeleteSourceFiles.AutoSize = true;
-            this.chkDeleteSourceFiles.Location = new System.Drawing.Point(30, 41);
-            this.chkDeleteSourceFiles.Name = "chkDeleteSourceFiles";
-            this.chkDeleteSourceFiles.Size = new System.Drawing.Size(158, 17);
-            this.chkDeleteSourceFiles.TabIndex = 16;
-            this.chkDeleteSourceFiles.Text = "Удалять исходные файлы";
-            this.toolTip1.SetToolTip(this.chkDeleteSourceFiles, "Не применяется, если скачаны только аудио-дорожки");
-            this.chkDeleteSourceFiles.UseVisualStyleBackColor = true;
-            this.chkDeleteSourceFiles.CheckedChanged += new System.EventHandler(this.chkDeleteSourceFiles_CheckedChanged);
+            this.checkBoxDeleteSourceFilesWhenMerged.AutoSize = true;
+            this.checkBoxDeleteSourceFilesWhenMerged.Location = new System.Drawing.Point(30, 41);
+            this.checkBoxDeleteSourceFilesWhenMerged.Name = "checkBoxDeleteSourceFilesWhenMerged";
+            this.checkBoxDeleteSourceFilesWhenMerged.Size = new System.Drawing.Size(158, 17);
+            this.checkBoxDeleteSourceFilesWhenMerged.TabIndex = 16;
+            this.checkBoxDeleteSourceFilesWhenMerged.Text = "Удалять исходные файлы";
+            this.toolTip1.SetToolTip(this.checkBoxDeleteSourceFilesWhenMerged, "Не применяется, если скачаны только аудио-дорожки");
+            this.checkBoxDeleteSourceFilesWhenMerged.UseVisualStyleBackColor = true;
+            this.checkBoxDeleteSourceFilesWhenMerged.CheckedChanged += new System.EventHandler(this.checkBoxDeleteSourceFilesWhenMerged_CheckedChanged);
             // 
             // groupBox14
             // 
             this.groupBox14.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox14.Controls.Add(this.chkDownloadFirstAudioTrack);
-            this.groupBox14.Controls.Add(this.chkIfOnlyBiggerFileSize);
-            this.groupBox14.Controls.Add(this.chkDownloadSecondAudioTrack);
-            this.groupBox14.Controls.Add(this.chkDownloadAllAudioTracks);
+            this.groupBox14.Controls.Add(this.checkBoxAutomaticallyDownloadFirstAudioTrack);
+            this.groupBox14.Controls.Add(this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger);
+            this.groupBox14.Controls.Add(this.checkBoxAutomaticallyDownloadSecondAudioTrack);
+            this.groupBox14.Controls.Add(this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks);
             this.groupBox14.Location = new System.Drawing.Point(6, 42);
             this.groupBox14.Name = "groupBox14";
             this.groupBox14.Size = new System.Drawing.Size(478, 112);
@@ -1011,60 +1011,60 @@ namespace YouTube_downloader
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "Скачивание аудио-дорожек";
             // 
-            // chkDownloadFirstAudioTrack
+            // checkBoxAutomaticallyDownloadFirstAudioTrack
             // 
-            this.chkDownloadFirstAudioTrack.AutoSize = true;
-            this.chkDownloadFirstAudioTrack.Location = new System.Drawing.Point(20, 19);
-            this.chkDownloadFirstAudioTrack.Name = "chkDownloadFirstAudioTrack";
-            this.chkDownloadFirstAudioTrack.Size = new System.Drawing.Size(277, 17);
-            this.chkDownloadFirstAudioTrack.TabIndex = 19;
-            this.chkDownloadFirstAudioTrack.Text = "Автоматически скачивать первую аудио-дорожку";
-            this.chkDownloadFirstAudioTrack.UseVisualStyleBackColor = true;
-            this.chkDownloadFirstAudioTrack.CheckedChanged += new System.EventHandler(this.chkDownloadFirstAudioTrack_CheckedChanged);
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.AutoSize = true;
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.Location = new System.Drawing.Point(20, 19);
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.Name = "checkBoxAutomaticallyDownloadFirstAudioTrack";
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.Size = new System.Drawing.Size(277, 17);
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.TabIndex = 19;
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.Text = "Автоматически скачивать первую аудио-дорожку";
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallyDownloadFirstAudioTrack.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallyDownloadFirstAudioTrack_CheckedChanged);
             // 
-            // chkIfOnlyBiggerFileSize
+            // checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger
             // 
-            this.chkIfOnlyBiggerFileSize.AutoSize = true;
-            this.chkIfOnlyBiggerFileSize.Location = new System.Drawing.Point(30, 65);
-            this.chkIfOnlyBiggerFileSize.Name = "chkIfOnlyBiggerFileSize";
-            this.chkIfOnlyBiggerFileSize.Size = new System.Drawing.Size(207, 17);
-            this.chkIfOnlyBiggerFileSize.TabIndex = 18;
-            this.chkIfOnlyBiggerFileSize.Text = "Только если размер файла больше";
-            this.chkIfOnlyBiggerFileSize.UseVisualStyleBackColor = true;
-            this.chkIfOnlyBiggerFileSize.CheckedChanged += new System.EventHandler(this.chkIfOnlyBiggerFileSize_CheckedChanged);
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.AutoSize = true;
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Location = new System.Drawing.Point(30, 65);
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Name = "checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger";
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Size = new System.Drawing.Size(207, 17);
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.TabIndex = 18;
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Text = "Только если размер файла больше";
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger_CheckedChanged);
             // 
-            // chkDownloadSecondAudioTrack
+            // checkBoxAutomaticallyDownloadSecondAudioTrack
             // 
-            this.chkDownloadSecondAudioTrack.AutoSize = true;
-            this.chkDownloadSecondAudioTrack.Location = new System.Drawing.Point(20, 42);
-            this.chkDownloadSecondAudioTrack.Name = "chkDownloadSecondAudioTrack";
-            this.chkDownloadSecondAudioTrack.Size = new System.Drawing.Size(276, 17);
-            this.chkDownloadSecondAudioTrack.TabIndex = 1;
-            this.chkDownloadSecondAudioTrack.Text = "Автоматически скачивать вторую аудио-дорожку";
-            this.chkDownloadSecondAudioTrack.UseVisualStyleBackColor = true;
-            this.chkDownloadSecondAudioTrack.CheckedChanged += new System.EventHandler(this.chkDownloadSecondAudioTrack_CheckedChanged);
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.AutoSize = true;
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.Location = new System.Drawing.Point(20, 42);
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.Name = "checkBoxAutomaticallyDownloadSecondAudioTrack";
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.Size = new System.Drawing.Size(276, 17);
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.TabIndex = 1;
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.Text = "Автоматически скачивать вторую аудио-дорожку";
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallyDownloadSecondAudioTrack.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallyDownloadSecondAudioTrack_CheckedChanged);
             // 
-            // chkDownloadAllAudioTracks
+            // checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks
             // 
-            this.chkDownloadAllAudioTracks.AutoSize = true;
-            this.chkDownloadAllAudioTracks.Location = new System.Drawing.Point(20, 88);
-            this.chkDownloadAllAudioTracks.Name = "chkDownloadAllAudioTracks";
-            this.chkDownloadAllAudioTracks.Size = new System.Drawing.Size(179, 17);
-            this.chkDownloadAllAudioTracks.TabIndex = 0;
-            this.chkDownloadAllAudioTracks.Text = "Скачивать все аудио-дорожки";
-            this.chkDownloadAllAudioTracks.UseVisualStyleBackColor = true;
-            this.chkDownloadAllAudioTracks.CheckedChanged += new System.EventHandler(this.chkDownloadAllAudioTracks_CheckedChanged);
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.AutoSize = true;
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.Location = new System.Drawing.Point(20, 88);
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.Name = "checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks";
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.Size = new System.Drawing.Size(179, 17);
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.TabIndex = 0;
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.Text = "Скачивать все аудио-дорожки";
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks_CheckedChanged);
             // 
-            // chkSaveImage
+            // checkBoxAutomaticallySaveVideoThumbnailImage
             // 
-            this.chkSaveImage.AutoSize = true;
-            this.chkSaveImage.Location = new System.Drawing.Point(14, 393);
-            this.chkSaveImage.Name = "chkSaveImage";
-            this.chkSaveImage.Size = new System.Drawing.Size(175, 17);
-            this.chkSaveImage.TabIndex = 15;
-            this.chkSaveImage.Text = "Скачивать картинку от видео";
-            this.chkSaveImage.UseVisualStyleBackColor = true;
-            this.chkSaveImage.CheckedChanged += new System.EventHandler(this.chkSaveImage_CheckedChanged);
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.AutoSize = true;
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.Location = new System.Drawing.Point(14, 393);
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.Name = "checkBoxAutomaticallySaveVideoThumbnailImage";
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.Size = new System.Drawing.Size(175, 17);
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.TabIndex = 15;
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.Text = "Скачивать картинку от видео";
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.UseVisualStyleBackColor = true;
+            this.checkBoxAutomaticallySaveVideoThumbnailImage.CheckedChanged += new System.EventHandler(this.checkBoxAutomaticallySaveVideoThumbnailImage_CheckedChanged);
             // 
             // tabPageSystemSettings
             // 
@@ -1072,9 +1072,9 @@ namespace YouTube_downloader
             this.tabPageSystemSettings.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.tabPageSystemSettings.Controls.Add(this.groupBox20);
             this.tabPageSystemSettings.Controls.Add(this.groupBox17);
-            this.tabPageSystemSettings.Controls.Add(this.checkBoxUseGmtTime);
+            this.tabPageSystemSettings.Controls.Add(this.checkBoxUseUniversalTime);
             this.tabPageSystemSettings.Controls.Add(this.groupBox13);
-            this.tabPageSystemSettings.Controls.Add(this.groupBox11);
+            this.tabPageSystemSettings.Controls.Add(this.groupBoxYouTubeApiSettings);
             this.tabPageSystemSettings.Controls.Add(this.groupBox7);
             this.tabPageSystemSettings.Location = new System.Drawing.Point(4, 22);
             this.tabPageSystemSettings.Name = "tabPageSystemSettings";
@@ -1087,36 +1087,36 @@ namespace YouTube_downloader
             // 
             this.groupBox20.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox20.Controls.Add(this.btnUserAgentWhy);
-            this.groupBox20.Controls.Add(this.btnSetDefaultUserAgent);
+            this.groupBox20.Controls.Add(this.btnWtfUserAgent);
+            this.groupBox20.Controls.Add(this.btnRestoreDefaultUserAgent);
             this.groupBox20.Controls.Add(this.textBoxUserAgent);
-            this.groupBox20.Location = new System.Drawing.Point(6, 349);
+            this.groupBox20.Location = new System.Drawing.Point(6, 354);
             this.groupBox20.Name = "groupBox20";
             this.groupBox20.Size = new System.Drawing.Size(498, 77);
             this.groupBox20.TabIndex = 17;
             this.groupBox20.TabStop = false;
             this.groupBox20.Text = "User agent";
             // 
-            // btnUserAgentWhy
+            // btnWtfUserAgent
             // 
-            this.btnUserAgentWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUserAgentWhy.Location = new System.Drawing.Point(409, 48);
-            this.btnUserAgentWhy.Name = "btnUserAgentWhy";
-            this.btnUserAgentWhy.Size = new System.Drawing.Size(75, 23);
-            this.btnUserAgentWhy.TabIndex = 2;
-            this.btnUserAgentWhy.Text = "Зачем?";
-            this.btnUserAgentWhy.UseVisualStyleBackColor = true;
-            this.btnUserAgentWhy.Click += new System.EventHandler(this.btnUserAgentWhy_Click);
+            this.btnWtfUserAgent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnWtfUserAgent.Location = new System.Drawing.Point(417, 48);
+            this.btnWtfUserAgent.Name = "btnWtfUserAgent";
+            this.btnWtfUserAgent.Size = new System.Drawing.Size(75, 23);
+            this.btnWtfUserAgent.TabIndex = 2;
+            this.btnWtfUserAgent.Text = "Зачем?";
+            this.btnWtfUserAgent.UseVisualStyleBackColor = true;
+            this.btnWtfUserAgent.Click += new System.EventHandler(this.btnWtfUserAgent_Click);
             // 
-            // btnSetDefaultUserAgent
+            // btnRestoreDefaultUserAgent
             // 
-            this.btnSetDefaultUserAgent.Location = new System.Drawing.Point(7, 48);
-            this.btnSetDefaultUserAgent.Name = "btnSetDefaultUserAgent";
-            this.btnSetDefaultUserAgent.Size = new System.Drawing.Size(99, 23);
-            this.btnSetDefaultUserAgent.TabIndex = 1;
-            this.btnSetDefaultUserAgent.Text = "По-умолчанию";
-            this.btnSetDefaultUserAgent.UseVisualStyleBackColor = true;
-            this.btnSetDefaultUserAgent.Click += new System.EventHandler(this.btnSetDefaultUserAgent_Click);
+            this.btnRestoreDefaultUserAgent.Location = new System.Drawing.Point(7, 48);
+            this.btnRestoreDefaultUserAgent.Name = "btnRestoreDefaultUserAgent";
+            this.btnRestoreDefaultUserAgent.Size = new System.Drawing.Size(99, 23);
+            this.btnRestoreDefaultUserAgent.TabIndex = 1;
+            this.btnRestoreDefaultUserAgent.Text = "По-умолчанию";
+            this.btnRestoreDefaultUserAgent.UseVisualStyleBackColor = true;
+            this.btnRestoreDefaultUserAgent.Click += new System.EventHandler(this.btnRestoreDefaultUserAgent_Click);
             // 
             // textBoxUserAgent
             // 
@@ -1132,37 +1132,37 @@ namespace YouTube_downloader
             // 
             this.groupBox17.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox17.Controls.Add(this.numericUpDownDashChunkDownloadRetriesCountMax);
+            this.groupBox17.Controls.Add(this.numericUpDownDashChunkDownloadTryCountLimit);
             this.groupBox17.Controls.Add(this.label23);
-            this.groupBox17.Controls.Add(this.btnWhyDash);
+            this.groupBox17.Controls.Add(this.btnWtfAlwaysDownloadAsDash);
             this.groupBox17.Controls.Add(this.lblActualDashChunkSize);
             this.groupBox17.Controls.Add(this.numericUpDownDashChunkSize);
             this.groupBox17.Controls.Add(this.label22);
             this.groupBox17.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
-            this.groupBox17.Location = new System.Drawing.Point(9, 652);
+            this.groupBox17.Location = new System.Drawing.Point(6, 652);
             this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(495, 102);
+            this.groupBox17.Size = new System.Drawing.Size(498, 102);
             this.groupBox17.TabIndex = 16;
             this.groupBox17.TabStop = false;
             this.groupBox17.Text = "Скачивание файлов по частям";
             // 
-            // numericUpDownDashChunkDownloadRetriesCountMax
+            // numericUpDownDashChunkDownloadTryCountLimit
             // 
-            this.numericUpDownDashChunkDownloadRetriesCountMax.Location = new System.Drawing.Point(232, 68);
-            this.numericUpDownDashChunkDownloadRetriesCountMax.Minimum = new decimal(new int[] {
+            this.numericUpDownDashChunkDownloadTryCountLimit.Location = new System.Drawing.Point(232, 68);
+            this.numericUpDownDashChunkDownloadTryCountLimit.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDownDashChunkDownloadRetriesCountMax.Name = "numericUpDownDashChunkDownloadRetriesCountMax";
-            this.numericUpDownDashChunkDownloadRetriesCountMax.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDownDashChunkDownloadRetriesCountMax.TabIndex = 6;
-            this.numericUpDownDashChunkDownloadRetriesCountMax.Value = new decimal(new int[] {
+            this.numericUpDownDashChunkDownloadTryCountLimit.Name = "numericUpDownDashChunkDownloadTryCountLimit";
+            this.numericUpDownDashChunkDownloadTryCountLimit.Size = new System.Drawing.Size(48, 20);
+            this.numericUpDownDashChunkDownloadTryCountLimit.TabIndex = 6;
+            this.numericUpDownDashChunkDownloadTryCountLimit.Value = new decimal(new int[] {
             8,
             0,
             0,
             0});
-            this.numericUpDownDashChunkDownloadRetriesCountMax.ValueChanged += new System.EventHandler(this.numericUpDownDashChunkDownloadRetriesCountMax_ValueChanged);
+            this.numericUpDownDashChunkDownloadTryCountLimit.ValueChanged += new System.EventHandler(this.numericUpDownDashChunkDownloadTryCountLimit_ValueChanged);
             // 
             // label23
             // 
@@ -1173,16 +1173,16 @@ namespace YouTube_downloader
             this.label23.TabIndex = 5;
             this.label23.Text = "Количество попыток скачивания чанка:";
             // 
-            // btnWhyDash
+            // btnWtfAlwaysDownloadAsDash
             // 
-            this.btnWhyDash.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnWhyDash.Location = new System.Drawing.Point(414, 15);
-            this.btnWhyDash.Name = "btnWhyDash";
-            this.btnWhyDash.Size = new System.Drawing.Size(75, 23);
-            this.btnWhyDash.TabIndex = 4;
-            this.btnWhyDash.Text = "Зачем?";
-            this.btnWhyDash.UseVisualStyleBackColor = true;
-            this.btnWhyDash.Click += new System.EventHandler(this.btnWhyDash_Click);
+            this.btnWtfAlwaysDownloadAsDash.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnWtfAlwaysDownloadAsDash.Location = new System.Drawing.Point(417, 15);
+            this.btnWtfAlwaysDownloadAsDash.Name = "btnWtfAlwaysDownloadAsDash";
+            this.btnWtfAlwaysDownloadAsDash.Size = new System.Drawing.Size(75, 23);
+            this.btnWtfAlwaysDownloadAsDash.TabIndex = 4;
+            this.btnWtfAlwaysDownloadAsDash.Text = "Зачем?";
+            this.btnWtfAlwaysDownloadAsDash.UseVisualStyleBackColor = true;
+            this.btnWtfAlwaysDownloadAsDash.Click += new System.EventHandler(this.btnWtfAlwaysDownloadAsDash_Click);
             // 
             // lblActualDashChunkSize
             // 
@@ -1243,28 +1243,28 @@ namespace YouTube_downloader
             this.checkBoxAlwaysDownloadAsDash.UseVisualStyleBackColor = true;
             this.checkBoxAlwaysDownloadAsDash.CheckedChanged += new System.EventHandler(this.checkBoxAlwaysDownloadAsDash_CheckedChanged);
             // 
-            // checkBoxUseGmtTime
+            // checkBoxUseUniversalTime
             // 
-            this.checkBoxUseGmtTime.AutoSize = true;
-            this.checkBoxUseGmtTime.Checked = true;
-            this.checkBoxUseGmtTime.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxUseGmtTime.Location = new System.Drawing.Point(16, 719);
-            this.checkBoxUseGmtTime.Name = "checkBoxUseGmtTime";
-            this.checkBoxUseGmtTime.Size = new System.Drawing.Size(101, 17);
-            this.checkBoxUseGmtTime.TabIndex = 15;
-            this.checkBoxUseGmtTime.Text = "Время по GMT";
-            this.toolTip1.SetToolTip(this.checkBoxUseGmtTime, "После изменения этого параметра необходимо повторить поиск видео!");
-            this.checkBoxUseGmtTime.UseVisualStyleBackColor = true;
-            this.checkBoxUseGmtTime.CheckedChanged += new System.EventHandler(this.checkBoxUseGmtTime_CheckedChanged);
+            this.checkBoxUseUniversalTime.AutoSize = true;
+            this.checkBoxUseUniversalTime.Checked = true;
+            this.checkBoxUseUniversalTime.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxUseUniversalTime.Location = new System.Drawing.Point(7, 760);
+            this.checkBoxUseUniversalTime.Name = "checkBoxUseUniversalTime";
+            this.checkBoxUseUniversalTime.Size = new System.Drawing.Size(101, 17);
+            this.checkBoxUseUniversalTime.TabIndex = 15;
+            this.checkBoxUseUniversalTime.Text = "Время по GMT";
+            this.toolTip1.SetToolTip(this.checkBoxUseUniversalTime, "После изменения этого параметра необходимо повторить поиск видео!");
+            this.checkBoxUseUniversalTime.UseVisualStyleBackColor = true;
+            this.checkBoxUseUniversalTime.CheckedChanged += new System.EventHandler(this.checkBoxUseUniversalTime_CheckedChanged);
             // 
             // groupBox13
             // 
             this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox13.Controls.Add(this.btnUseRamWhy);
+            this.groupBox13.Controls.Add(this.btnWtfUseRam);
             this.groupBox13.Controls.Add(this.panelRAM);
-            this.groupBox13.Controls.Add(this.chkUseRamForTempFiles);
-            this.groupBox13.Location = new System.Drawing.Point(6, 580);
+            this.groupBox13.Controls.Add(this.checkBoxUseRamForTempFiles);
+            this.groupBox13.Location = new System.Drawing.Point(6, 585);
             this.groupBox13.Name = "groupBox13";
             this.groupBox13.Size = new System.Drawing.Size(498, 66);
             this.groupBox13.TabIndex = 14;
@@ -1272,16 +1272,16 @@ namespace YouTube_downloader
             this.groupBox13.Text = "Оперативная память (RAM)";
             this.groupBox13.Resize += new System.EventHandler(this.groupBox13_Resize);
             // 
-            // btnUseRamWhy
+            // btnWtfUseRam
             // 
-            this.btnUseRamWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUseRamWhy.Location = new System.Drawing.Point(417, 28);
-            this.btnUseRamWhy.Name = "btnUseRamWhy";
-            this.btnUseRamWhy.Size = new System.Drawing.Size(73, 23);
-            this.btnUseRamWhy.TabIndex = 16;
-            this.btnUseRamWhy.Text = "Зачем?";
-            this.btnUseRamWhy.UseVisualStyleBackColor = true;
-            this.btnUseRamWhy.Click += new System.EventHandler(this.btnUseRamWhy_Click);
+            this.btnWtfUseRam.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnWtfUseRam.Location = new System.Drawing.Point(417, 28);
+            this.btnWtfUseRam.Name = "btnWtfUseRam";
+            this.btnWtfUseRam.Size = new System.Drawing.Size(75, 23);
+            this.btnWtfUseRam.TabIndex = 16;
+            this.btnWtfUseRam.Text = "Зачем?";
+            this.btnWtfUseRam.UseVisualStyleBackColor = true;
+            this.btnWtfUseRam.Click += new System.EventHandler(this.btnWtfUseRam_Click);
             // 
             // panelRAM
             // 
@@ -1294,31 +1294,31 @@ namespace YouTube_downloader
             this.toolTip1.SetToolTip(this.panelRAM, "Доступно только в версии x64!");
             this.panelRAM.Visible = false;
             // 
-            // chkUseRamForTempFiles
+            // checkBoxUseRamForTempFiles
             // 
-            this.chkUseRamForTempFiles.Location = new System.Drawing.Point(17, 19);
-            this.chkUseRamForTempFiles.Name = "chkUseRamForTempFiles";
-            this.chkUseRamForTempFiles.Size = new System.Drawing.Size(288, 42);
-            this.chkUseRamForTempFiles.TabIndex = 13;
-            this.chkUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)" +
+            this.checkBoxUseRamForTempFiles.Location = new System.Drawing.Point(17, 19);
+            this.checkBoxUseRamForTempFiles.Name = "checkBoxUseRamForTempFiles";
+            this.checkBoxUseRamForTempFiles.Size = new System.Drawing.Size(288, 42);
+            this.checkBoxUseRamForTempFiles.TabIndex = 13;
+            this.checkBoxUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)" +
     "";
-            this.toolTip1.SetToolTip(this.chkUseRamForTempFiles, "Не применяется к DASH и HLS");
-            this.chkUseRamForTempFiles.UseVisualStyleBackColor = true;
-            this.chkUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.chkUseRamForTempFiles_CheckedChanged);
+            this.toolTip1.SetToolTip(this.checkBoxUseRamForTempFiles, "Не применяется к DASH и HLS");
+            this.checkBoxUseRamForTempFiles.UseVisualStyleBackColor = true;
+            this.checkBoxUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.checkBoxUseRamForTempFiles_CheckedChanged);
             // 
-            // groupBox11
+            // groupBoxYouTubeApiSettings
             // 
-            this.groupBox11.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBoxYouTubeApiSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox11.Controls.Add(this.groupBox18);
-            this.groupBox11.Controls.Add(this.groupBox4);
-            this.groupBox11.Controls.Add(this.groupBox5);
-            this.groupBox11.Location = new System.Drawing.Point(3, 6);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(484, 346);
-            this.groupBox11.TabIndex = 12;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "API";
+            this.groupBoxYouTubeApiSettings.Controls.Add(this.groupBox18);
+            this.groupBoxYouTubeApiSettings.Controls.Add(this.groupBox4);
+            this.groupBoxYouTubeApiSettings.Controls.Add(this.groupBox5);
+            this.groupBoxYouTubeApiSettings.Location = new System.Drawing.Point(3, 6);
+            this.groupBoxYouTubeApiSettings.Name = "groupBoxYouTubeApiSettings";
+            this.groupBoxYouTubeApiSettings.Size = new System.Drawing.Size(501, 349);
+            this.groupBoxYouTubeApiSettings.TabIndex = 12;
+            this.groupBoxYouTubeApiSettings.TabStop = false;
+            this.groupBoxYouTubeApiSettings.Text = "API";
             // 
             // groupBox18
             // 
@@ -1327,14 +1327,14 @@ namespace YouTube_downloader
             this.groupBox18.Controls.Add(this.groupBox21);
             this.groupBox18.Controls.Add(this.numericUpDownConnectionTimeoutExternalRestApiServer);
             this.groupBox18.Controls.Add(this.label30);
-            this.groupBox18.Controls.Add(this.btnExternalRestApiServerWhy);
+            this.groupBox18.Controls.Add(this.btnWtfExternalRestApiServer);
             this.groupBox18.Controls.Add(this.label25);
             this.groupBox18.Controls.Add(this.numericUpDownExternalRestApiServerPort);
             this.groupBox18.Controls.Add(this.textBoxExternalRestApiServerUrl);
             this.groupBox18.Controls.Add(this.label24);
-            this.groupBox18.Location = new System.Drawing.Point(11, 147);
+            this.groupBox18.Location = new System.Drawing.Point(3, 149);
             this.groupBox18.Name = "groupBox18";
-            this.groupBox18.Size = new System.Drawing.Size(467, 235);
+            this.groupBox18.Size = new System.Drawing.Size(498, 195);
             this.groupBox18.TabIndex = 17;
             this.groupBox18.TabStop = false;
             this.groupBox18.Text = "Внешний REST API сервер";
@@ -1348,7 +1348,7 @@ namespace YouTube_downloader
             this.groupBox21.Controls.Add(this.checkBoxUseExternalRestApiServerToGetAdultVideos);
             this.groupBox21.Location = new System.Drawing.Point(16, 102);
             this.groupBox21.Name = "groupBox21";
-            this.groupBox21.Size = new System.Drawing.Size(443, 88);
+            this.groupBox21.Size = new System.Drawing.Size(476, 88);
             this.groupBox21.TabIndex = 8;
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Использование сервера";
@@ -1424,16 +1424,16 @@ namespace YouTube_downloader
             this.label30.TabIndex = 6;
             this.label30.Text = "Время ожидания соединения (миллисекунды):";
             // 
-            // btnExternalRestApiServerWhy
+            // btnWtfExternalRestApiServer
             // 
-            this.btnExternalRestApiServerWhy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExternalRestApiServerWhy.Location = new System.Drawing.Point(384, 47);
-            this.btnExternalRestApiServerWhy.Name = "btnExternalRestApiServerWhy";
-            this.btnExternalRestApiServerWhy.Size = new System.Drawing.Size(75, 23);
-            this.btnExternalRestApiServerWhy.TabIndex = 5;
-            this.btnExternalRestApiServerWhy.Text = "Зачем?";
-            this.btnExternalRestApiServerWhy.UseVisualStyleBackColor = true;
-            this.btnExternalRestApiServerWhy.Click += new System.EventHandler(this.btnExternalRestApiServerWhy_Click);
+            this.btnWtfExternalRestApiServer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnWtfExternalRestApiServer.Location = new System.Drawing.Point(417, 47);
+            this.btnWtfExternalRestApiServer.Name = "btnWtfExternalRestApiServer";
+            this.btnWtfExternalRestApiServer.Size = new System.Drawing.Size(75, 23);
+            this.btnWtfExternalRestApiServer.TabIndex = 5;
+            this.btnWtfExternalRestApiServer.Text = "Зачем?";
+            this.btnWtfExternalRestApiServer.UseVisualStyleBackColor = true;
+            this.btnWtfExternalRestApiServer.Click += new System.EventHandler(this.btnWtfExternalRestApiServer_Click);
             // 
             // label25
             // 
@@ -1473,7 +1473,7 @@ namespace YouTube_downloader
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxExternalRestApiServerUrl.Location = new System.Drawing.Point(105, 19);
             this.textBoxExternalRestApiServerUrl.Name = "textBoxExternalRestApiServerUrl";
-            this.textBoxExternalRestApiServerUrl.Size = new System.Drawing.Size(356, 20);
+            this.textBoxExternalRestApiServerUrl.Size = new System.Drawing.Size(387, 20);
             this.textBoxExternalRestApiServerUrl.TabIndex = 2;
             // 
             // label24
@@ -1490,10 +1490,10 @@ namespace YouTube_downloader
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.label5);
-            this.groupBox4.Controls.Add(this.editCipherDecryptionAlgo);
+            this.groupBox4.Controls.Add(this.textBoxCipherDecryptionAlgorythm);
             this.groupBox4.Location = new System.Drawing.Point(11, 19);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(467, 58);
+            this.groupBox4.Size = new System.Drawing.Size(484, 58);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Алгоритм для расшифровки Cipher";
@@ -1507,25 +1507,25 @@ namespace YouTube_downloader
             this.label5.TabIndex = 1;
             this.label5.Text = "Для скачивания некоторых видео потребуется ввести специальный алгоритм";
             // 
-            // editCipherDecryptionAlgo
+            // textBoxCipherDecryptionAlgorythm
             // 
-            this.editCipherDecryptionAlgo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxCipherDecryptionAlgorythm.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editCipherDecryptionAlgo.Location = new System.Drawing.Point(8, 32);
-            this.editCipherDecryptionAlgo.Name = "editCipherDecryptionAlgo";
-            this.editCipherDecryptionAlgo.Size = new System.Drawing.Size(451, 20);
-            this.editCipherDecryptionAlgo.TabIndex = 0;
-            this.editCipherDecryptionAlgo.Leave += new System.EventHandler(this.editCipherDecryptionAlgo_Leave);
+            this.textBoxCipherDecryptionAlgorythm.Location = new System.Drawing.Point(8, 32);
+            this.textBoxCipherDecryptionAlgorythm.Name = "textBoxCipherDecryptionAlgorythm";
+            this.textBoxCipherDecryptionAlgorythm.Size = new System.Drawing.Size(468, 20);
+            this.textBoxCipherDecryptionAlgorythm.TabIndex = 0;
+            this.textBoxCipherDecryptionAlgorythm.Leave += new System.EventHandler(this.textBoxCipherDecryptionAlgorythm_Leave);
             // 
             // groupBox5
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.label6);
-            this.groupBox5.Controls.Add(this.editYouTubeApiKey);
+            this.groupBox5.Controls.Add(this.textBoxYouTubeApiV3Key);
             this.groupBox5.Location = new System.Drawing.Point(11, 82);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(467, 61);
+            this.groupBox5.Size = new System.Drawing.Size(484, 61);
             this.groupBox5.TabIndex = 8;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Ключ от YouTube API V3";
@@ -1539,32 +1539,32 @@ namespace YouTube_downloader
             this.label6.TabIndex = 1;
             this.label6.Text = "Некоторые функции программы не будут работать без этого ключа";
             // 
-            // editYouTubeApiKey
+            // textBoxYouTubeApiV3Key
             // 
-            this.editYouTubeApiKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.textBoxYouTubeApiV3Key.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.editYouTubeApiKey.Location = new System.Drawing.Point(6, 35);
-            this.editYouTubeApiKey.Name = "editYouTubeApiKey";
-            this.editYouTubeApiKey.Size = new System.Drawing.Size(455, 20);
-            this.editYouTubeApiKey.TabIndex = 0;
-            this.editYouTubeApiKey.Leave += new System.EventHandler(this.editYouTubeApiKey_Leave);
+            this.textBoxYouTubeApiV3Key.Location = new System.Drawing.Point(6, 35);
+            this.textBoxYouTubeApiV3Key.Name = "textBoxYouTubeApiV3Key";
+            this.textBoxYouTubeApiV3Key.Size = new System.Drawing.Size(472, 20);
+            this.textBoxYouTubeApiV3Key.TabIndex = 0;
+            this.textBoxYouTubeApiV3Key.Leave += new System.EventHandler(this.textBoxYouTubeApiV3Key_Leave);
             // 
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.numericUpDownConnectionTimeout);
             this.groupBox7.Controls.Add(this.label29);
-            this.groupBox7.Controls.Add(this.checkBoxAccurateMultithreading);
+            this.groupBox7.Controls.Add(this.checkBoxUseAccurateMultithreading);
             this.groupBox7.Controls.Add(this.label13);
-            this.groupBox7.Controls.Add(this.numericUpDownGlobalThreadsMaximum);
+            this.groupBox7.Controls.Add(this.numericUpDownGlobalThreadCountLimit);
             this.groupBox7.Controls.Add(this.panelWarningAudioThreads);
             this.groupBox7.Controls.Add(this.panelWarningVideoThreads);
             this.groupBox7.Controls.Add(this.label10);
             this.groupBox7.Controls.Add(this.label9);
-            this.groupBox7.Controls.Add(this.numericUpDownThreadsAudio);
-            this.groupBox7.Controls.Add(this.numericUpDownThreadsVideo);
-            this.groupBox7.Location = new System.Drawing.Point(6, 432);
+            this.groupBox7.Controls.Add(this.numericUpDownThreadCountAudio);
+            this.groupBox7.Controls.Add(this.numericUpDownThreadCountVideo);
+            this.groupBox7.Location = new System.Drawing.Point(6, 437);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(345, 142);
+            this.groupBox7.Size = new System.Drawing.Size(498, 142);
             this.groupBox7.TabIndex = 10;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Потоки";
@@ -1606,17 +1606,17 @@ namespace YouTube_downloader
             this.label29.TabIndex = 9;
             this.label29.Text = "Время ожидания соединения (миллисекунды):";
             // 
-            // checkBoxAccurateMultithreading
+            // checkBoxUseAccurateMultithreading
             // 
-            this.checkBoxAccurateMultithreading.AutoSize = true;
-            this.checkBoxAccurateMultithreading.Location = new System.Drawing.Point(11, 92);
-            this.checkBoxAccurateMultithreading.Name = "checkBoxAccurateMultithreading";
-            this.checkBoxAccurateMultithreading.Size = new System.Drawing.Size(124, 17);
-            this.checkBoxAccurateMultithreading.TabIndex = 8;
-            this.checkBoxAccurateMultithreading.Text = "Аккуратный режим";
-            this.toolTip1.SetToolTip(this.checkBoxAccurateMultithreading, "Не влияет на уже начатые загрузки");
-            this.checkBoxAccurateMultithreading.UseVisualStyleBackColor = true;
-            this.checkBoxAccurateMultithreading.CheckedChanged += new System.EventHandler(this.checkBoxAccurateMultithreading_CheckedChanged);
+            this.checkBoxUseAccurateMultithreading.AutoSize = true;
+            this.checkBoxUseAccurateMultithreading.Location = new System.Drawing.Point(11, 92);
+            this.checkBoxUseAccurateMultithreading.Name = "checkBoxUseAccurateMultithreading";
+            this.checkBoxUseAccurateMultithreading.Size = new System.Drawing.Size(124, 17);
+            this.checkBoxUseAccurateMultithreading.TabIndex = 8;
+            this.checkBoxUseAccurateMultithreading.Text = "Аккуратный режим";
+            this.toolTip1.SetToolTip(this.checkBoxUseAccurateMultithreading, "Не влияет на уже начатые загрузки");
+            this.checkBoxUseAccurateMultithreading.UseVisualStyleBackColor = true;
+            this.checkBoxUseAccurateMultithreading.CheckedChanged += new System.EventHandler(this.checkBoxUseAccurateMultithreading_CheckedChanged);
             // 
             // label13
             // 
@@ -1629,28 +1629,28 @@ namespace YouTube_downloader
             this.toolTip1.SetToolTip(this.label13, "При достижении этого значения, новые потоки будут ждать завершения предыдущих, пр" +
         "ежде чем запуститься");
             // 
-            // numericUpDownGlobalThreadsMaximum
+            // numericUpDownGlobalThreadCountLimit
             // 
-            this.numericUpDownGlobalThreadsMaximum.Location = new System.Drawing.Point(263, 68);
-            this.numericUpDownGlobalThreadsMaximum.Maximum = new decimal(new int[] {
+            this.numericUpDownGlobalThreadCountLimit.Location = new System.Drawing.Point(263, 68);
+            this.numericUpDownGlobalThreadCountLimit.Maximum = new decimal(new int[] {
             2000,
             0,
             0,
             0});
-            this.numericUpDownGlobalThreadsMaximum.Minimum = new decimal(new int[] {
+            this.numericUpDownGlobalThreadCountLimit.Minimum = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.numericUpDownGlobalThreadsMaximum.Name = "numericUpDownGlobalThreadsMaximum";
-            this.numericUpDownGlobalThreadsMaximum.Size = new System.Drawing.Size(51, 20);
-            this.numericUpDownGlobalThreadsMaximum.TabIndex = 6;
-            this.numericUpDownGlobalThreadsMaximum.Value = new decimal(new int[] {
+            this.numericUpDownGlobalThreadCountLimit.Name = "numericUpDownGlobalThreadCountLimit";
+            this.numericUpDownGlobalThreadCountLimit.Size = new System.Drawing.Size(51, 20);
+            this.numericUpDownGlobalThreadCountLimit.TabIndex = 6;
+            this.numericUpDownGlobalThreadCountLimit.Value = new decimal(new int[] {
             300,
             0,
             0,
             0});
-            this.numericUpDownGlobalThreadsMaximum.ValueChanged += new System.EventHandler(this.numericUpDownGlobalThreadsMaximum_ValueChanged);
+            this.numericUpDownGlobalThreadCountLimit.ValueChanged += new System.EventHandler(this.numericUpDownGlobalThreadCountLimit_ValueChanged);
             // 
             // panelWarningAudioThreads
             // 
@@ -1692,46 +1692,46 @@ namespace YouTube_downloader
             this.label9.TabIndex = 2;
             this.label9.Text = "Количество потоков для скачивания видео:";
             // 
-            // numericUpDownThreadsAudio
+            // numericUpDownThreadCountAudio
             // 
-            this.numericUpDownThreadsAudio.Location = new System.Drawing.Point(263, 41);
-            this.numericUpDownThreadsAudio.Maximum = new decimal(new int[] {
+            this.numericUpDownThreadCountAudio.Location = new System.Drawing.Point(263, 41);
+            this.numericUpDownThreadCountAudio.Maximum = new decimal(new int[] {
             60,
             0,
             0,
             0});
-            this.numericUpDownThreadsAudio.Minimum = new decimal(new int[] {
+            this.numericUpDownThreadCountAudio.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDownThreadsAudio.Name = "numericUpDownThreadsAudio";
-            this.numericUpDownThreadsAudio.Size = new System.Drawing.Size(41, 20);
-            this.numericUpDownThreadsAudio.TabIndex = 1;
-            this.numericUpDownThreadsAudio.Value = new decimal(new int[] {
+            this.numericUpDownThreadCountAudio.Name = "numericUpDownThreadCountAudio";
+            this.numericUpDownThreadCountAudio.Size = new System.Drawing.Size(41, 20);
+            this.numericUpDownThreadCountAudio.TabIndex = 1;
+            this.numericUpDownThreadCountAudio.Value = new decimal(new int[] {
             4,
             0,
             0,
             0});
-            this.numericUpDownThreadsAudio.ValueChanged += new System.EventHandler(this.numericUpDownThreadsAudio_ValueChanged);
+            this.numericUpDownThreadCountAudio.ValueChanged += new System.EventHandler(this.numericUpDownThreadCountAudio_ValueChanged);
             // 
-            // numericUpDownThreadsVideo
+            // numericUpDownThreadCountVideo
             // 
-            this.numericUpDownThreadsVideo.Location = new System.Drawing.Point(264, 14);
-            this.numericUpDownThreadsVideo.Minimum = new decimal(new int[] {
+            this.numericUpDownThreadCountVideo.Location = new System.Drawing.Point(264, 14);
+            this.numericUpDownThreadCountVideo.Minimum = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.numericUpDownThreadsVideo.Name = "numericUpDownThreadsVideo";
-            this.numericUpDownThreadsVideo.Size = new System.Drawing.Size(40, 20);
-            this.numericUpDownThreadsVideo.TabIndex = 1;
-            this.numericUpDownThreadsVideo.Value = new decimal(new int[] {
+            this.numericUpDownThreadCountVideo.Name = "numericUpDownThreadCountVideo";
+            this.numericUpDownThreadCountVideo.Size = new System.Drawing.Size(40, 20);
+            this.numericUpDownThreadCountVideo.TabIndex = 1;
+            this.numericUpDownThreadCountVideo.Value = new decimal(new int[] {
             8,
             0,
             0,
             0});
-            this.numericUpDownThreadsVideo.ValueChanged += new System.EventHandler(this.numericUpDownThreadsVideo_ValueChanged);
+            this.numericUpDownThreadCountVideo.ValueChanged += new System.EventHandler(this.numericUpDownThreadCountVideo_ValueChanged);
             // 
             // tabPageSearch
             // 
@@ -1754,7 +1754,7 @@ namespace YouTube_downloader
             this.panelSearch.Controls.Add(this.groupBox9);
             this.panelSearch.Controls.Add(this.groupBox3);
             this.panelSearch.Controls.Add(this.groupBox8);
-            this.panelSearch.Controls.Add(this.groupBox1);
+            this.panelSearch.Controls.Add(this.groupBoxQuerySearch);
             this.panelSearch.Controls.Add(this.groupBox6);
             this.panelSearch.Controls.Add(this.groupBox2);
             this.panelSearch.Location = new System.Drawing.Point(0, 0);
@@ -1764,10 +1764,10 @@ namespace YouTube_downloader
             // 
             // groupBox9
             // 
-            this.groupBox9.Controls.Add(this.btnWhy);
+            this.groupBox9.Controls.Add(this.btnWtfWebPageCode);
             this.groupBox9.Controls.Add(this.label12);
             this.groupBox9.Controls.Add(this.btnSearchByWebPage);
-            this.groupBox9.Controls.Add(this.richTextBoxWebPage);
+            this.groupBox9.Controls.Add(this.richTextBoxWebPageCode);
             this.groupBox9.Location = new System.Drawing.Point(6, 268);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(515, 173);
@@ -1775,15 +1775,15 @@ namespace YouTube_downloader
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Поиск по коду веб-страницы";
             // 
-            // btnWhy
+            // btnWtfWebPageCode
             // 
-            this.btnWhy.Location = new System.Drawing.Point(434, 10);
-            this.btnWhy.Name = "btnWhy";
-            this.btnWhy.Size = new System.Drawing.Size(75, 23);
-            this.btnWhy.TabIndex = 3;
-            this.btnWhy.Text = "Зачем?";
-            this.btnWhy.UseVisualStyleBackColor = true;
-            this.btnWhy.Click += new System.EventHandler(this.btnWhy_Click);
+            this.btnWtfWebPageCode.Location = new System.Drawing.Point(434, 10);
+            this.btnWtfWebPageCode.Name = "btnWtfWebPageCode";
+            this.btnWtfWebPageCode.Size = new System.Drawing.Size(75, 23);
+            this.btnWtfWebPageCode.TabIndex = 3;
+            this.btnWtfWebPageCode.Text = "Зачем?";
+            this.btnWtfWebPageCode.UseVisualStyleBackColor = true;
+            this.btnWtfWebPageCode.Click += new System.EventHandler(this.btnWtfWebPageCode_Click);
             // 
             // label12
             // 
@@ -1807,69 +1807,69 @@ namespace YouTube_downloader
             this.btnSearchByWebPage.UseVisualStyleBackColor = true;
             this.btnSearchByWebPage.Click += new System.EventHandler(this.btnSearchByWebPage_Click);
             // 
-            // richTextBoxWebPage
+            // richTextBoxWebPageCode
             // 
-            this.richTextBoxWebPage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.richTextBoxWebPageCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBoxWebPage.ContextMenuStrip = this.menuCopyPaste;
-            this.richTextBoxWebPage.Location = new System.Drawing.Point(9, 39);
-            this.richTextBoxWebPage.Name = "richTextBoxWebPage";
-            this.richTextBoxWebPage.Size = new System.Drawing.Size(500, 99);
-            this.richTextBoxWebPage.TabIndex = 0;
-            this.richTextBoxWebPage.Text = "";
+            this.richTextBoxWebPageCode.ContextMenuStrip = this.contextMenuCopyPaste;
+            this.richTextBoxWebPageCode.Location = new System.Drawing.Point(9, 39);
+            this.richTextBoxWebPageCode.Name = "richTextBoxWebPageCode";
+            this.richTextBoxWebPageCode.Size = new System.Drawing.Size(500, 99);
+            this.richTextBoxWebPageCode.TabIndex = 0;
+            this.richTextBoxWebPageCode.Text = "";
             // 
-            // menuCopyPaste
+            // contextMenuCopyPaste
             // 
-            this.menuCopyPaste.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cutTextToolStripMenuItem,
-            this.copyTextToolStripMenuItem,
-            this.pasteTextToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.selectAllTextToolStripMenuItem});
-            this.menuCopyPaste.Name = "menuCopyPaste";
-            this.menuCopyPaste.Size = new System.Drawing.Size(149, 98);
-            this.menuCopyPaste.Opening += new System.ComponentModel.CancelEventHandler(this.menuCopyPaste_Opening);
+            this.contextMenuCopyPaste.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miCutTextToolStripMenuItem,
+            this.miCopyTextToolStripMenuItem,
+            this.miPasteTextToolStripMenuItem,
+            this.toolStripMenuItemSeparatorLine,
+            this.miSelectAllTextToolStripMenuItem});
+            this.contextMenuCopyPaste.Name = "menuCopyPaste";
+            this.contextMenuCopyPaste.Size = new System.Drawing.Size(149, 98);
+            this.contextMenuCopyPaste.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuCopyPaste_Opening);
             // 
-            // cutTextToolStripMenuItem
+            // miCutTextToolStripMenuItem
             // 
-            this.cutTextToolStripMenuItem.Name = "cutTextToolStripMenuItem";
-            this.cutTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.cutTextToolStripMenuItem.Text = "Вырезать";
-            this.cutTextToolStripMenuItem.Click += new System.EventHandler(this.cutTextToolStripMenuItem_Click);
+            this.miCutTextToolStripMenuItem.Name = "miCutTextToolStripMenuItem";
+            this.miCutTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.miCutTextToolStripMenuItem.Text = "Вырезать";
+            this.miCutTextToolStripMenuItem.Click += new System.EventHandler(this.miCutTextToolStripMenuItem_Click);
             // 
-            // copyTextToolStripMenuItem
+            // miCopyTextToolStripMenuItem
             // 
-            this.copyTextToolStripMenuItem.Name = "copyTextToolStripMenuItem";
-            this.copyTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.copyTextToolStripMenuItem.Text = "Копировать";
-            this.copyTextToolStripMenuItem.Click += new System.EventHandler(this.copyTextToolStripMenuItem_Click);
+            this.miCopyTextToolStripMenuItem.Name = "miCopyTextToolStripMenuItem";
+            this.miCopyTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.miCopyTextToolStripMenuItem.Text = "Копировать";
+            this.miCopyTextToolStripMenuItem.Click += new System.EventHandler(this.miCopyTextToolStripMenuItem_Click);
             // 
-            // pasteTextToolStripMenuItem
+            // miPasteTextToolStripMenuItem
             // 
-            this.pasteTextToolStripMenuItem.Name = "pasteTextToolStripMenuItem";
-            this.pasteTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.pasteTextToolStripMenuItem.Text = "Вставить";
-            this.pasteTextToolStripMenuItem.Click += new System.EventHandler(this.pasteTextToolStripMenuItem_Click);
+            this.miPasteTextToolStripMenuItem.Name = "miPasteTextToolStripMenuItem";
+            this.miPasteTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.miPasteTextToolStripMenuItem.Text = "Вставить";
+            this.miPasteTextToolStripMenuItem.Click += new System.EventHandler(this.miPasteTextToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem1
+            // toolStripMenuItemSeparatorLine
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(145, 6);
+            this.toolStripMenuItemSeparatorLine.Name = "toolStripMenuItemSeparatorLine";
+            this.toolStripMenuItemSeparatorLine.Size = new System.Drawing.Size(145, 6);
             // 
-            // selectAllTextToolStripMenuItem
+            // miSelectAllTextToolStripMenuItem
             // 
-            this.selectAllTextToolStripMenuItem.Name = "selectAllTextToolStripMenuItem";
-            this.selectAllTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.selectAllTextToolStripMenuItem.Text = "Выделить всё";
-            this.selectAllTextToolStripMenuItem.Click += new System.EventHandler(this.selectAllTextToolStripMenuItem_Click);
+            this.miSelectAllTextToolStripMenuItem.Name = "miSelectAllTextToolStripMenuItem";
+            this.miSelectAllTextToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.miSelectAllTextToolStripMenuItem.Text = "Выделить всё";
+            this.miSelectAllTextToolStripMenuItem.Click += new System.EventHandler(this.miSelectAllTextToolStripMenuItem_Click);
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.dateTimePickerBefore);
-            this.groupBox3.Controls.Add(this.dateTimePickerAfter);
-            this.groupBox3.Controls.Add(this.chkPublishedAfter);
-            this.groupBox3.Controls.Add(this.chkPublishedBefore);
+            this.groupBox3.Controls.Add(this.dateTimePickerSearchBefore);
+            this.groupBox3.Controls.Add(this.dateTimePickerSearchAfter);
+            this.groupBox3.Controls.Add(this.checkBoxSearchRangePublishedAfter);
+            this.groupBox3.Controls.Add(this.checkBoxSearchRangePublishedBefore);
             this.groupBox3.Location = new System.Drawing.Point(310, 6);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(198, 121);
@@ -1877,48 +1877,48 @@ namespace YouTube_downloader
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Диапазон поиска";
             // 
-            // dateTimePickerBefore
+            // dateTimePickerSearchBefore
             // 
-            this.dateTimePickerBefore.Location = new System.Drawing.Point(17, 91);
-            this.dateTimePickerBefore.Name = "dateTimePickerBefore";
-            this.dateTimePickerBefore.Size = new System.Drawing.Size(152, 20);
-            this.dateTimePickerBefore.TabIndex = 4;
+            this.dateTimePickerSearchBefore.Location = new System.Drawing.Point(17, 91);
+            this.dateTimePickerSearchBefore.Name = "dateTimePickerSearchBefore";
+            this.dateTimePickerSearchBefore.Size = new System.Drawing.Size(152, 20);
+            this.dateTimePickerSearchBefore.TabIndex = 4;
             // 
-            // dateTimePickerAfter
+            // dateTimePickerSearchAfter
             // 
-            this.dateTimePickerAfter.Location = new System.Drawing.Point(17, 41);
-            this.dateTimePickerAfter.Name = "dateTimePickerAfter";
-            this.dateTimePickerAfter.Size = new System.Drawing.Size(152, 20);
-            this.dateTimePickerAfter.TabIndex = 3;
+            this.dateTimePickerSearchAfter.Location = new System.Drawing.Point(17, 41);
+            this.dateTimePickerSearchAfter.Name = "dateTimePickerSearchAfter";
+            this.dateTimePickerSearchAfter.Size = new System.Drawing.Size(152, 20);
+            this.dateTimePickerSearchAfter.TabIndex = 3;
             // 
-            // chkPublishedAfter
+            // checkBoxSearchRangePublishedAfter
             // 
-            this.chkPublishedAfter.AutoSize = true;
-            this.chkPublishedAfter.Checked = true;
-            this.chkPublishedAfter.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkPublishedAfter.Location = new System.Drawing.Point(17, 18);
-            this.chkPublishedAfter.Name = "chkPublishedAfter";
-            this.chkPublishedAfter.Size = new System.Drawing.Size(146, 17);
-            this.chkPublishedAfter.TabIndex = 2;
-            this.chkPublishedAfter.Text = "Опубликованные после";
-            this.chkPublishedAfter.UseVisualStyleBackColor = true;
+            this.checkBoxSearchRangePublishedAfter.AutoSize = true;
+            this.checkBoxSearchRangePublishedAfter.Checked = true;
+            this.checkBoxSearchRangePublishedAfter.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSearchRangePublishedAfter.Location = new System.Drawing.Point(17, 18);
+            this.checkBoxSearchRangePublishedAfter.Name = "checkBoxSearchRangePublishedAfter";
+            this.checkBoxSearchRangePublishedAfter.Size = new System.Drawing.Size(146, 17);
+            this.checkBoxSearchRangePublishedAfter.TabIndex = 2;
+            this.checkBoxSearchRangePublishedAfter.Text = "Опубликованные после";
+            this.checkBoxSearchRangePublishedAfter.UseVisualStyleBackColor = true;
             // 
-            // chkPublishedBefore
+            // checkBoxSearchRangePublishedBefore
             // 
-            this.chkPublishedBefore.AutoSize = true;
-            this.chkPublishedBefore.Checked = true;
-            this.chkPublishedBefore.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkPublishedBefore.Location = new System.Drawing.Point(17, 68);
-            this.chkPublishedBefore.Name = "chkPublishedBefore";
-            this.chkPublishedBefore.Size = new System.Drawing.Size(128, 17);
-            this.chkPublishedBefore.TabIndex = 1;
-            this.chkPublishedBefore.Text = "Опубликованные до";
-            this.chkPublishedBefore.UseVisualStyleBackColor = true;
+            this.checkBoxSearchRangePublishedBefore.AutoSize = true;
+            this.checkBoxSearchRangePublishedBefore.Checked = true;
+            this.checkBoxSearchRangePublishedBefore.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSearchRangePublishedBefore.Location = new System.Drawing.Point(17, 68);
+            this.checkBoxSearchRangePublishedBefore.Name = "checkBoxSearchRangePublishedBefore";
+            this.checkBoxSearchRangePublishedBefore.Size = new System.Drawing.Size(128, 17);
+            this.checkBoxSearchRangePublishedBefore.TabIndex = 1;
+            this.checkBoxSearchRangePublishedBefore.Text = "Опубликованные до";
+            this.checkBoxSearchRangePublishedBefore.UseVisualStyleBackColor = true;
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.chkSearchVideos);
-            this.groupBox8.Controls.Add(this.chkSearchChannels);
+            this.groupBox8.Controls.Add(this.checkBoxSearchVideos);
+            this.groupBox8.Controls.Add(this.checkBoxSearchChannels);
             this.groupBox8.Location = new System.Drawing.Point(6, 204);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(293, 58);
@@ -1926,43 +1926,43 @@ namespace YouTube_downloader
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "В результатах поиска выдавать";
             // 
-            // chkSearchVideos
+            // checkBoxSearchVideos
             // 
-            this.chkSearchVideos.AutoSize = true;
-            this.chkSearchVideos.Checked = true;
-            this.chkSearchVideos.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSearchVideos.Location = new System.Drawing.Point(92, 27);
-            this.chkSearchVideos.Name = "chkSearchVideos";
-            this.chkSearchVideos.Size = new System.Drawing.Size(57, 17);
-            this.chkSearchVideos.TabIndex = 1;
-            this.chkSearchVideos.Text = "Видео";
-            this.chkSearchVideos.UseVisualStyleBackColor = true;
-            this.chkSearchVideos.CheckedChanged += new System.EventHandler(this.chkSearchVideos_CheckedChanged);
+            this.checkBoxSearchVideos.AutoSize = true;
+            this.checkBoxSearchVideos.Checked = true;
+            this.checkBoxSearchVideos.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSearchVideos.Location = new System.Drawing.Point(92, 27);
+            this.checkBoxSearchVideos.Name = "checkBoxSearchVideos";
+            this.checkBoxSearchVideos.Size = new System.Drawing.Size(57, 17);
+            this.checkBoxSearchVideos.TabIndex = 1;
+            this.checkBoxSearchVideos.Text = "Видео";
+            this.checkBoxSearchVideos.UseVisualStyleBackColor = true;
+            this.checkBoxSearchVideos.CheckedChanged += new System.EventHandler(this.checkBoxSearchVideos_CheckedChanged);
             // 
-            // chkSearchChannels
+            // checkBoxSearchChannels
             // 
-            this.chkSearchChannels.AutoSize = true;
-            this.chkSearchChannels.Checked = true;
-            this.chkSearchChannels.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSearchChannels.Location = new System.Drawing.Point(21, 27);
-            this.chkSearchChannels.Name = "chkSearchChannels";
-            this.chkSearchChannels.Size = new System.Drawing.Size(65, 17);
-            this.chkSearchChannels.TabIndex = 0;
-            this.chkSearchChannels.Text = "Каналы";
-            this.chkSearchChannels.UseVisualStyleBackColor = true;
-            this.chkSearchChannels.CheckedChanged += new System.EventHandler(this.chkSearchChannels_CheckedChanged);
+            this.checkBoxSearchChannels.AutoSize = true;
+            this.checkBoxSearchChannels.Checked = true;
+            this.checkBoxSearchChannels.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSearchChannels.Location = new System.Drawing.Point(21, 27);
+            this.checkBoxSearchChannels.Name = "checkBoxSearchChannels";
+            this.checkBoxSearchChannels.Size = new System.Drawing.Size(65, 17);
+            this.checkBoxSearchChannels.TabIndex = 0;
+            this.checkBoxSearchChannels.Text = "Каналы";
+            this.checkBoxSearchChannels.UseVisualStyleBackColor = true;
+            this.checkBoxSearchChannels.CheckedChanged += new System.EventHandler(this.checkBoxSearchChannels_CheckedChanged);
             // 
-            // groupBox1
+            // groupBoxQuerySearch
             // 
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.btnSearchByQuery);
-            this.groupBox1.Controls.Add(this.editQuery);
-            this.groupBox1.Location = new System.Drawing.Point(0, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(299, 91);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Поиск по запросу";
+            this.groupBoxQuerySearch.Controls.Add(this.label2);
+            this.groupBoxQuerySearch.Controls.Add(this.btnSearchByQuery);
+            this.groupBoxQuerySearch.Controls.Add(this.textBoxSearchQuery);
+            this.groupBoxQuerySearch.Location = new System.Drawing.Point(0, 6);
+            this.groupBoxQuerySearch.Name = "groupBoxQuerySearch";
+            this.groupBoxQuerySearch.Size = new System.Drawing.Size(299, 91);
+            this.groupBoxQuerySearch.TabIndex = 0;
+            this.groupBoxQuerySearch.TabStop = false;
+            this.groupBoxQuerySearch.Text = "Поиск по запросу";
             // 
             // label2
             // 
@@ -1982,20 +1982,20 @@ namespace YouTube_downloader
             this.btnSearchByQuery.Text = "Искать";
             this.btnSearchByQuery.UseCompatibleTextRendering = true;
             this.btnSearchByQuery.UseVisualStyleBackColor = true;
-            this.btnSearchByQuery.Click += new System.EventHandler(this.BtnSearchByQuery_Click);
+            this.btnSearchByQuery.Click += new System.EventHandler(this.btnSearchByQuery_Click);
             // 
-            // editQuery
+            // textBoxSearchQuery
             // 
-            this.editQuery.Location = new System.Drawing.Point(15, 35);
-            this.editQuery.Name = "editQuery";
-            this.editQuery.Size = new System.Drawing.Size(278, 20);
-            this.editQuery.TabIndex = 0;
+            this.textBoxSearchQuery.Location = new System.Drawing.Point(15, 35);
+            this.textBoxSearchQuery.Name = "textBoxSearchQuery";
+            this.textBoxSearchQuery.Size = new System.Drawing.Size(278, 20);
+            this.textBoxSearchQuery.TabIndex = 0;
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.rbSearchResultsUserDefined);
-            this.groupBox6.Controls.Add(this.rbSearchResultsMax);
-            this.groupBox6.Controls.Add(this.numericUpDownSearchResult);
+            this.groupBox6.Controls.Add(this.radioButtonSearchResultCountLimitUserDefinedNumber);
+            this.groupBox6.Controls.Add(this.radioButtonSearchResultCountLimitMaxPossible);
+            this.groupBox6.Controls.Add(this.numericUpDownSearchResultCountLimit);
             this.groupBox6.Location = new System.Drawing.Point(310, 133);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(198, 65);
@@ -2003,60 +2003,60 @@ namespace YouTube_downloader
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Количество результатов выдачи";
             // 
-            // rbSearchResultsUserDefined
+            // radioButtonSearchResultCountLimitUserDefinedNumber
             // 
-            this.rbSearchResultsUserDefined.AutoCheck = false;
-            this.rbSearchResultsUserDefined.AutoSize = true;
-            this.rbSearchResultsUserDefined.Location = new System.Drawing.Point(22, 40);
-            this.rbSearchResultsUserDefined.Name = "rbSearchResultsUserDefined";
-            this.rbSearchResultsUserDefined.Size = new System.Drawing.Size(62, 17);
-            this.rbSearchResultsUserDefined.TabIndex = 2;
-            this.rbSearchResultsUserDefined.Text = "Только";
-            this.rbSearchResultsUserDefined.UseVisualStyleBackColor = true;
-            this.rbSearchResultsUserDefined.Click += new System.EventHandler(this.rbSearchResultsUserDefined_Click);
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.AutoCheck = false;
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.AutoSize = true;
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.Location = new System.Drawing.Point(22, 40);
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.Name = "radioButtonSearchResultCountLimitUserDefinedNumber";
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.Size = new System.Drawing.Size(62, 17);
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.TabIndex = 2;
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.Text = "Только";
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.UseVisualStyleBackColor = true;
+            this.radioButtonSearchResultCountLimitUserDefinedNumber.Click += new System.EventHandler(this.radioButtonSearchResultCountLimitUserDefinedNumber_Click);
             // 
-            // rbSearchResultsMax
+            // radioButtonSearchResultCountLimitMaxPossible
             // 
-            this.rbSearchResultsMax.AutoCheck = false;
-            this.rbSearchResultsMax.AutoSize = true;
-            this.rbSearchResultsMax.Checked = true;
-            this.rbSearchResultsMax.Location = new System.Drawing.Point(22, 17);
-            this.rbSearchResultsMax.Name = "rbSearchResultsMax";
-            this.rbSearchResultsMax.Size = new System.Drawing.Size(106, 17);
-            this.rbSearchResultsMax.TabIndex = 1;
-            this.rbSearchResultsMax.TabStop = true;
-            this.rbSearchResultsMax.Text = "Максимум (500)";
-            this.rbSearchResultsMax.UseVisualStyleBackColor = true;
-            this.rbSearchResultsMax.Click += new System.EventHandler(this.rbSearchResultsMax_Click);
+            this.radioButtonSearchResultCountLimitMaxPossible.AutoCheck = false;
+            this.radioButtonSearchResultCountLimitMaxPossible.AutoSize = true;
+            this.radioButtonSearchResultCountLimitMaxPossible.Checked = true;
+            this.radioButtonSearchResultCountLimitMaxPossible.Location = new System.Drawing.Point(22, 17);
+            this.radioButtonSearchResultCountLimitMaxPossible.Name = "radioButtonSearchResultCountLimitMaxPossible";
+            this.radioButtonSearchResultCountLimitMaxPossible.Size = new System.Drawing.Size(106, 17);
+            this.radioButtonSearchResultCountLimitMaxPossible.TabIndex = 1;
+            this.radioButtonSearchResultCountLimitMaxPossible.TabStop = true;
+            this.radioButtonSearchResultCountLimitMaxPossible.Text = "Максимум (500)";
+            this.radioButtonSearchResultCountLimitMaxPossible.UseVisualStyleBackColor = true;
+            this.radioButtonSearchResultCountLimitMaxPossible.Click += new System.EventHandler(this.radioButtonSearchResultCountLimitMaxPossible_Click);
             // 
-            // numericUpDownSearchResult
+            // numericUpDownSearchResultCountLimit
             // 
-            this.numericUpDownSearchResult.Location = new System.Drawing.Point(90, 40);
-            this.numericUpDownSearchResult.Maximum = new decimal(new int[] {
+            this.numericUpDownSearchResultCountLimit.Location = new System.Drawing.Point(90, 40);
+            this.numericUpDownSearchResultCountLimit.Maximum = new decimal(new int[] {
             500,
             0,
             0,
             0});
-            this.numericUpDownSearchResult.Minimum = new decimal(new int[] {
+            this.numericUpDownSearchResultCountLimit.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numericUpDownSearchResult.Name = "numericUpDownSearchResult";
-            this.numericUpDownSearchResult.Size = new System.Drawing.Size(50, 20);
-            this.numericUpDownSearchResult.TabIndex = 0;
-            this.numericUpDownSearchResult.Value = new decimal(new int[] {
+            this.numericUpDownSearchResultCountLimit.Name = "numericUpDownSearchResultCountLimit";
+            this.numericUpDownSearchResultCountLimit.Size = new System.Drawing.Size(50, 20);
+            this.numericUpDownSearchResultCountLimit.TabIndex = 0;
+            this.numericUpDownSearchResultCountLimit.Value = new decimal(new int[] {
             50,
             0,
             0,
             0});
-            this.numericUpDownSearchResult.ValueChanged += new System.EventHandler(this.numericUpDownSearchResult_ValueChanged);
+            this.numericUpDownSearchResultCountLimit.ValueChanged += new System.EventHandler(this.numericUpDownSearchResultCountLimit_ValueChanged);
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.editSearchUrl);
-            this.groupBox2.Controls.Add(this.btnSearchByUrl);
+            this.groupBox2.Controls.Add(this.textBoxVideoUrlOrId);
+            this.groupBox2.Controls.Add(this.btnSearchByVideoUrlOrId);
             this.groupBox2.Location = new System.Drawing.Point(0, 103);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(299, 95);
@@ -2073,22 +2073,22 @@ namespace YouTube_downloader
             this.label1.TabIndex = 2;
             this.label1.Text = "Введите ссылку на видео или его ID:";
             // 
-            // editSearchUrl
+            // textBoxVideoUrlOrId
             // 
-            this.editSearchUrl.Location = new System.Drawing.Point(15, 39);
-            this.editSearchUrl.Name = "editSearchUrl";
-            this.editSearchUrl.Size = new System.Drawing.Size(278, 20);
-            this.editSearchUrl.TabIndex = 1;
+            this.textBoxVideoUrlOrId.Location = new System.Drawing.Point(15, 39);
+            this.textBoxVideoUrlOrId.Name = "textBoxVideoUrlOrId";
+            this.textBoxVideoUrlOrId.Size = new System.Drawing.Size(278, 20);
+            this.textBoxVideoUrlOrId.TabIndex = 1;
             // 
-            // btnSearchByUrl
+            // btnSearchByVideoUrlOrId
             // 
-            this.btnSearchByUrl.Location = new System.Drawing.Point(219, 65);
-            this.btnSearchByUrl.Name = "btnSearchByUrl";
-            this.btnSearchByUrl.Size = new System.Drawing.Size(74, 23);
-            this.btnSearchByUrl.TabIndex = 0;
-            this.btnSearchByUrl.Text = "Искать";
-            this.btnSearchByUrl.UseVisualStyleBackColor = true;
-            this.btnSearchByUrl.Click += new System.EventHandler(this.btnSearchByUrl_Click);
+            this.btnSearchByVideoUrlOrId.Location = new System.Drawing.Point(219, 65);
+            this.btnSearchByVideoUrlOrId.Name = "btnSearchByVideoUrlOrId";
+            this.btnSearchByVideoUrlOrId.Size = new System.Drawing.Size(74, 23);
+            this.btnSearchByVideoUrlOrId.TabIndex = 0;
+            this.btnSearchByVideoUrlOrId.Text = "Искать";
+            this.btnSearchByVideoUrlOrId.UseVisualStyleBackColor = true;
+            this.btnSearchByVideoUrlOrId.Click += new System.EventHandler(this.btnSearchByVideoUrlOrId_Click);
             // 
             // tabPageSearchResults
             // 
@@ -2124,27 +2124,27 @@ namespace YouTube_downloader
             this.panelSearchResults.TabIndex = 0;
             this.panelSearchResults.Resize += new System.EventHandler(this.panelSearchResults_Resize);
             // 
-            // tvFavorites
+            // objectTreeViewFavorites
             // 
-            this.tvFavorites.AllColumns.Add(this.olvColumn1);
-            this.tvFavorites.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.objectTreeViewFavorites.AllColumns.Add(this.olvColumn1);
+            this.objectTreeViewFavorites.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tvFavorites.CellEditUseWholeCell = false;
-            this.tvFavorites.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.objectTreeViewFavorites.CellEditUseWholeCell = false;
+            this.objectTreeViewFavorites.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvColumn1});
-            this.tvFavorites.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.tvFavorites.HideSelection = false;
-            this.tvFavorites.Location = new System.Drawing.Point(569, 20);
-            this.tvFavorites.Name = "tvFavorites";
-            this.tvFavorites.ShowGroups = false;
-            this.tvFavorites.Size = new System.Drawing.Size(244, 412);
-            this.tvFavorites.TabIndex = 1;
-            this.tvFavorites.UseCompatibleStateImageBehavior = false;
-            this.tvFavorites.View = System.Windows.Forms.View.Details;
-            this.tvFavorites.VirtualMode = true;
-            this.tvFavorites.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.tvFavorites_CellRightClick);
-            this.tvFavorites.ItemsRemoving += new System.EventHandler<BrightIdeasSoftware.ItemsRemovingEventArgs>(this.tvFavorites_ItemsRemoving);
-            this.tvFavorites.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tvFavorites_MouseDoubleClick);
+            this.objectTreeViewFavorites.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.objectTreeViewFavorites.HideSelection = false;
+            this.objectTreeViewFavorites.Location = new System.Drawing.Point(569, 20);
+            this.objectTreeViewFavorites.Name = "objectTreeViewFavorites";
+            this.objectTreeViewFavorites.ShowGroups = false;
+            this.objectTreeViewFavorites.Size = new System.Drawing.Size(244, 412);
+            this.objectTreeViewFavorites.TabIndex = 1;
+            this.objectTreeViewFavorites.UseCompatibleStateImageBehavior = false;
+            this.objectTreeViewFavorites.View = System.Windows.Forms.View.Details;
+            this.objectTreeViewFavorites.VirtualMode = true;
+            this.objectTreeViewFavorites.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.objectTreeViewFavorites_CellRightClick);
+            this.objectTreeViewFavorites.ItemsRemoving += new System.EventHandler<BrightIdeasSoftware.ItemsRemovingEventArgs>(this.objectTreeViewFavorites_ItemsRemoving);
+            this.objectTreeViewFavorites.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.objectTreeViewFavorites_MouseDoubleClick);
             // 
             // olvColumn1
             // 
@@ -2152,27 +2152,27 @@ namespace YouTube_downloader
             this.olvColumn1.FillsFreeSpace = true;
             this.olvColumn1.Width = 25;
             // 
-            // menuFavorites
+            // contextMenuFavorites
             // 
-            this.menuFavorites.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openVideoInBrowserToolStripMenuItem,
+            this.contextMenuFavorites.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miOpenVideoInBrowserToolStripMenuItem,
             this.miCopyVideoUrlToolStripMenuItem,
-            this.openChannelInBrowserToolStripMenuItem,
+            this.miOpenChannelInBrowserToolStripMenuItem,
             this.miCopyChannelUrlToolStripMenuItem,
-            this.copyDisplayNameToolStripMenuItem,
+            this.miCopyDisplayNameToolStripMenuItem,
             this.miCopyVideoIdToolStripMenuItem,
             this.miCopyChannelIdToolStripMenuItem,
-            this.copyDisplayNameWithIdToolStripMenuItem});
-            this.menuFavorites.Name = "menuFavarites";
-            this.menuFavorites.Size = new System.Drawing.Size(281, 180);
-            this.menuFavorites.Opening += new System.ComponentModel.CancelEventHandler(this.menuFavorites_Opening);
+            this.miCopyDisplayNameWithIdToolStripMenuItem});
+            this.contextMenuFavorites.Name = "menuFavarites";
+            this.contextMenuFavorites.Size = new System.Drawing.Size(281, 180);
+            this.contextMenuFavorites.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuFavorites_Opening);
             // 
-            // openVideoInBrowserToolStripMenuItem
+            // miOpenVideoInBrowserToolStripMenuItem
             // 
-            this.openVideoInBrowserToolStripMenuItem.Name = "openVideoInBrowserToolStripMenuItem";
-            this.openVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
-            this.openVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
-            this.openVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openVideoInBrowserToolStripMenuItem_Click);
+            this.miOpenVideoInBrowserToolStripMenuItem.Name = "miOpenVideoInBrowserToolStripMenuItem";
+            this.miOpenVideoInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miOpenVideoInBrowserToolStripMenuItem.Text = "Открыть видео в браузере";
+            this.miOpenVideoInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenVideoInBrowserToolStripMenuItem_Click);
             // 
             // miCopyVideoUrlToolStripMenuItem
             // 
@@ -2181,12 +2181,12 @@ namespace YouTube_downloader
             this.miCopyVideoUrlToolStripMenuItem.Text = "Скопировать ссылку на видео";
             this.miCopyVideoUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyVideoUrlToolStripMenuItem_Click);
             // 
-            // openChannelInBrowserToolStripMenuItem
+            // miOpenChannelInBrowserToolStripMenuItem
             // 
-            this.openChannelInBrowserToolStripMenuItem.Name = "openChannelInBrowserToolStripMenuItem";
-            this.openChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
-            this.openChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
-            this.openChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.openChannelInBrowserToolStripMenuItem_Click);
+            this.miOpenChannelInBrowserToolStripMenuItem.Name = "miOpenChannelInBrowserToolStripMenuItem";
+            this.miOpenChannelInBrowserToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miOpenChannelInBrowserToolStripMenuItem.Text = "Открыть канал в браузере";
+            this.miOpenChannelInBrowserToolStripMenuItem.Click += new System.EventHandler(this.miOpenChannelInBrowserToolStripMenuItem_Click);
             // 
             // miCopyChannelUrlToolStripMenuItem
             // 
@@ -2195,12 +2195,12 @@ namespace YouTube_downloader
             this.miCopyChannelUrlToolStripMenuItem.Text = "Скопировать ссылку на канал";
             this.miCopyChannelUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelUrlToolStripMenuItem_Click);
             // 
-            // copyDisplayNameToolStripMenuItem
+            // miCopyDisplayNameToolStripMenuItem
             // 
-            this.copyDisplayNameToolStripMenuItem.Name = "copyDisplayNameToolStripMenuItem";
-            this.copyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
-            this.copyDisplayNameToolStripMenuItem.Text = "Скопировать отображаемое имя";
-            this.copyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameToolStripMenuItem_Click);
+            this.miCopyDisplayNameToolStripMenuItem.Name = "miCopyDisplayNameToolStripMenuItem";
+            this.miCopyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miCopyDisplayNameToolStripMenuItem.Text = "Скопировать отображаемое имя";
+            this.miCopyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.miCopyDisplayNameToolStripMenuItem_Click);
             // 
             // miCopyVideoIdToolStripMenuItem
             // 
@@ -2216,19 +2216,19 @@ namespace YouTube_downloader
             this.miCopyChannelIdToolStripMenuItem.Text = "Скопировать ID канала";
             this.miCopyChannelIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyChannelIdToolStripMenuItem_Click);
             // 
-            // copyDisplayNameWithIdToolStripMenuItem
+            // miCopyDisplayNameWithIdToolStripMenuItem
             // 
-            this.copyDisplayNameWithIdToolStripMenuItem.Name = "copyDisplayNameWithIdToolStripMenuItem";
-            this.copyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
-            this.copyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
-            this.copyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.copyDisplayNameWithIdToolStripMenuItem_Click);
+            this.miCopyDisplayNameWithIdToolStripMenuItem.Name = "miCopyDisplayNameWithIdToolStripMenuItem";
+            this.miCopyDisplayNameWithIdToolStripMenuItem.Size = new System.Drawing.Size(280, 22);
+            this.miCopyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
+            this.miCopyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyDisplayNameWithIdToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(825, 439);
-            this.Controls.Add(this.tvFavorites);
+            this.Controls.Add(this.objectTreeViewFavorites);
             this.Controls.Add(this.tabControlMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(830, 440);
@@ -2238,26 +2238,26 @@ namespace YouTube_downloader
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControlMain.ResumeLayout(false);
             this.tabPageSettings.ResumeLayout(false);
-            this.tabControl2.ResumeLayout(false);
+            this.tabControlSettings.ResumeLayout(false);
             this.tabPageFilesAndFolders.ResumeLayout(false);
             this.tabPageFilesAndFolders.PerformLayout();
             this.tabPageGUI.ResumeLayout(false);
             this.tabPageGUI.PerformLayout();
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
-            this.groupBoxFonts.ResumeLayout(false);
-            this.groupBoxFonts.PerformLayout();
+            this.groupBoxFontSettings.ResumeLayout(false);
+            this.groupBoxFontSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVideoTitleFontSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFavoritesListFontSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMenusFontSize)).EndInit();
-            this.tabPageDownloadingSettings.ResumeLayout(false);
-            this.tabPageDownloadingSettings.PerformLayout();
+            this.tabPageDownloadSettings.ResumeLayout(false);
+            this.tabPageDownloadSettings.PerformLayout();
             this.groupBox19.ResumeLayout(false);
             this.groupBox19.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadErrorCount)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadRetryCount)).EndInit();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadErrorCountLimit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownChunkDownloadTryCountLimit)).EndInit();
+            this.groupBoxAdaptiveFormatsSettings.ResumeLayout(false);
+            this.groupBoxAdaptiveFormatsSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelayAfterContainerCreated)).EndInit();
             this.groupBox15.ResumeLayout(false);
             this.groupBox15.PerformLayout();
@@ -2271,10 +2271,10 @@ namespace YouTube_downloader
             this.groupBox20.PerformLayout();
             this.groupBox17.ResumeLayout(false);
             this.groupBox17.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadRetriesCountMax)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadTryCountLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).EndInit();
             this.groupBox13.ResumeLayout(false);
-            this.groupBox11.ResumeLayout(false);
+            this.groupBoxYouTubeApiSettings.ResumeLayout(false);
             this.groupBox18.ResumeLayout(false);
             this.groupBox18.PerformLayout();
             this.groupBox21.ResumeLayout(false);
@@ -2288,28 +2288,28 @@ namespace YouTube_downloader
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeout)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadsMaximum)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsAudio)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadsVideo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownGlobalThreadCountLimit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadCountAudio)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownThreadCountVideo)).EndInit();
             this.tabPageSearch.ResumeLayout(false);
             this.panelSearch.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
-            this.menuCopyPaste.ResumeLayout(false);
+            this.contextMenuCopyPaste.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxQuerySearch.ResumeLayout(false);
+            this.groupBoxQuerySearch.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSearchResult)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSearchResultCountLimit)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabPageSearchResults.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.tvFavorites)).EndInit();
-            this.menuFavorites.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.objectTreeViewFavorites)).EndInit();
+            this.contextMenuFavorites.ResumeLayout(false);
             this.ResumeLayout(false);
 
 		}
@@ -2320,95 +2320,95 @@ namespace YouTube_downloader
 		private System.Windows.Forms.TabPage tabPageSettings;
 		private System.Windows.Forms.TabPage tabPageSearch;
 		private System.Windows.Forms.TabPage tabPageSearchResults;
-		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.GroupBox groupBoxQuerySearch;
 		private System.Windows.Forms.Button btnSearchByQuery;
-		private System.Windows.Forms.TextBox editQuery;
+		private System.Windows.Forms.TextBox textBoxSearchQuery;
 		private System.Windows.Forms.Panel panelSearchResults;
-		private BrightIdeasSoftware.TreeListView tvFavorites;
+		private BrightIdeasSoftware.TreeListView objectTreeViewFavorites;
 		private BrightIdeasSoftware.OLVColumn olvColumn1;
-		private System.Windows.Forms.Button btnBrowseTempPath;
-		private System.Windows.Forms.Button btnBrowseDownloadingPath;
-		private System.Windows.Forms.TextBox editTempDirPath;
-		private System.Windows.Forms.TextBox editDownloadingDirPath;
+		private System.Windows.Forms.Button btnBrowseTempDirectory;
+		private System.Windows.Forms.Button btnBrowseDownloadDirectory;
+		private System.Windows.Forms.TextBox textBoxTempDirectory;
+		private System.Windows.Forms.TextBox textBoxDownloadDirectory;
 		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.TextBox editSearchUrl;
-		private System.Windows.Forms.Button btnSearchByUrl;
+		private System.Windows.Forms.TextBox textBoxVideoUrlOrId;
+		private System.Windows.Forms.Button btnSearchByVideoUrlOrId;
 		private System.Windows.Forms.GroupBox groupBox3;
-		private System.Windows.Forms.DateTimePicker dateTimePickerBefore;
-		private System.Windows.Forms.DateTimePicker dateTimePickerAfter;
-		private System.Windows.Forms.CheckBox chkPublishedAfter;
-		private System.Windows.Forms.CheckBox chkPublishedBefore;
+		private System.Windows.Forms.DateTimePicker dateTimePickerSearchBefore;
+		private System.Windows.Forms.DateTimePicker dateTimePickerSearchAfter;
+		private System.Windows.Forms.CheckBox checkBoxSearchRangePublishedAfter;
+		private System.Windows.Forms.CheckBox checkBoxSearchRangePublishedBefore;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.GroupBox groupBox4;
-		private System.Windows.Forms.TextBox editCipherDecryptionAlgo;
+		private System.Windows.Forms.TextBox textBoxCipherDecryptionAlgorythm;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.GroupBox groupBox5;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.TextBox editYouTubeApiKey;
+		private System.Windows.Forms.TextBox textBoxYouTubeApiV3Key;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.GroupBox groupBox6;
-		private System.Windows.Forms.NumericUpDown numericUpDownSearchResult;
-		private System.Windows.Forms.RadioButton rbSearchResultsUserDefined;
-		private System.Windows.Forms.RadioButton rbSearchResultsMax;
-		private System.Windows.Forms.Button btnSelectBrowser;
-		private System.Windows.Forms.TextBox editBrowser;
-		private System.Windows.Forms.ContextMenuStrip menuFavorites;
-		private System.Windows.Forms.ToolStripMenuItem openVideoInBrowserToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem openChannelInBrowserToolStripMenuItem;
-		private System.Windows.Forms.TabControl tabControl2;
+		private System.Windows.Forms.NumericUpDown numericUpDownSearchResultCountLimit;
+		private System.Windows.Forms.RadioButton radioButtonSearchResultCountLimitUserDefinedNumber;
+		private System.Windows.Forms.RadioButton radioButtonSearchResultCountLimitMaxPossible;
+		private System.Windows.Forms.Button btnSelectWebBrowserFilePath;
+		private System.Windows.Forms.TextBox textBoxWebBrowserFilePath;
+		private System.Windows.Forms.ContextMenuStrip contextMenuFavorites;
+		private System.Windows.Forms.ToolStripMenuItem miOpenVideoInBrowserToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miOpenChannelInBrowserToolStripMenuItem;
+		private System.Windows.Forms.TabControl tabControlSettings;
 		private System.Windows.Forms.TabPage tabPageFilesAndFolders;
-		private System.Windows.Forms.TextBox editOutputFileNameFormatWithoutDate;
+		private System.Windows.Forms.TextBox textBoxOutputFileNameFormatWithoutDate;
 		private System.Windows.Forms.Button btnResetFileNameFormatWithoutDate;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.TabPage tabPageSystemSettings;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.GroupBox groupBox7;
-		private System.Windows.Forms.NumericUpDown numericUpDownThreadsAudio;
-		private System.Windows.Forms.NumericUpDown numericUpDownThreadsVideo;
+		private System.Windows.Forms.NumericUpDown numericUpDownThreadCountAudio;
+		private System.Windows.Forms.NumericUpDown numericUpDownThreadCountVideo;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Button btnBrowseFfmpeg;
-		private System.Windows.Forms.TextBox editFfmpeg;
+		private System.Windows.Forms.Button btnBrowseFfmpegFilePath;
+		private System.Windows.Forms.TextBox textBoxFfmpegFilePath;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.GroupBox groupBox8;
-		private System.Windows.Forms.CheckBox chkSearchVideos;
-		private System.Windows.Forms.CheckBox chkSearchChannels;
-		private System.Windows.Forms.TabPage tabPageDownloadingSettings;
-		private System.Windows.Forms.CheckBox chkDeleteSourceFiles;
-		private System.Windows.Forms.CheckBox chkMergeAdaptive;
-		private System.Windows.Forms.CheckBox chkSaveImage;
+		private System.Windows.Forms.CheckBox checkBoxSearchVideos;
+		private System.Windows.Forms.CheckBox checkBoxSearchChannels;
+		private System.Windows.Forms.TabPage tabPageDownloadSettings;
+		private System.Windows.Forms.CheckBox checkBoxDeleteSourceFilesWhenMerged;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallyMergeAdaptiveTracks;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallySaveVideoThumbnailImage;
 		private System.Windows.Forms.Panel panelSearch;
 		private System.Windows.Forms.GroupBox groupBox9;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Button btnSearchByWebPage;
-		private System.Windows.Forms.RichTextBox richTextBoxWebPage;
-		private System.Windows.Forms.ContextMenuStrip menuCopyPaste;
-		private System.Windows.Forms.ToolStripMenuItem cutTextToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem copyTextToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem pasteTextToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem selectAllTextToolStripMenuItem;
+		private System.Windows.Forms.RichTextBox richTextBoxWebPageCode;
+		private System.Windows.Forms.ContextMenuStrip contextMenuCopyPaste;
+		private System.Windows.Forms.ToolStripMenuItem miCutTextToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miCopyTextToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miPasteTextToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItemSeparatorLine;
+		private System.Windows.Forms.ToolStripMenuItem miSelectAllTextToolStripMenuItem;
 		private System.Windows.Forms.Panel panelWarningVideoThreads;
 		private System.Windows.Forms.Panel panelWarningAudioThreads;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label label13;
-		private System.Windows.Forms.NumericUpDown numericUpDownGlobalThreadsMaximum;
-		private System.Windows.Forms.GroupBox groupBox10;
-		private System.Windows.Forms.ToolStripMenuItem copyDisplayNameToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem copyDisplayNameWithIdToolStripMenuItem;
+		private System.Windows.Forms.NumericUpDown numericUpDownGlobalThreadCountLimit;
+		private System.Windows.Forms.GroupBox groupBoxAdaptiveFormatsSettings;
+		private System.Windows.Forms.ToolStripMenuItem miCopyDisplayNameToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miCopyDisplayNameWithIdToolStripMenuItem;
 		private System.Windows.Forms.VScrollBar scrollBarSearchResults;
-		private System.Windows.Forms.Button btnWhy;
-		private System.Windows.Forms.TextBox editMergingDirPath;
-		private System.Windows.Forms.Button btnSelectMergingPath;
+		private System.Windows.Forms.Button btnWtfWebPageCode;
+		private System.Windows.Forms.TextBox textBoxFilesMergerDirectory;
+		private System.Windows.Forms.Button btnBrowseMergerDirectory;
 		private System.Windows.Forms.Label label14;
-		private System.Windows.Forms.Button btnQ;
-		private System.Windows.Forms.GroupBox groupBox11;
+		private System.Windows.Forms.Button btnWtfMergerDirectory;
+		private System.Windows.Forms.GroupBox groupBoxYouTubeApiSettings;
 		private System.Windows.Forms.ToolStripMenuItem miCopyVideoUrlToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyChannelUrlToolStripMenuItem;
 		private System.Windows.Forms.TabPage tabPageGUI;
-		private System.Windows.Forms.GroupBox groupBoxFonts;
+		private System.Windows.Forms.GroupBox groupBoxFontSettings;
 		private System.Windows.Forms.NumericUpDown numericUpDownMenusFontSize;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.NumericUpDown numericUpDownFavoritesListFontSize;
@@ -2416,66 +2416,66 @@ namespace YouTube_downloader
 		private System.Windows.Forms.NumericUpDown numericUpDownVideoTitleFontSize;
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.GroupBox groupBox12;
-		private System.Windows.Forms.CheckBox chkSortFormatsByFileSize;
-		private System.Windows.Forms.CheckBox chkMoveAudioId140First;
-		private System.Windows.Forms.CheckBox chkUseRamForTempFiles;
+		private System.Windows.Forms.CheckBox checkBoxSortAdaptiveFormatsByFileSize;
+		private System.Windows.Forms.CheckBox checkBoxMoveAudioTrackId140ToTopOfList;
+		private System.Windows.Forms.CheckBox checkBoxUseRamForTempFiles;
 		private System.Windows.Forms.GroupBox groupBox13;
 		private System.Windows.Forms.Panel panelRAM;
-		private System.Windows.Forms.Button btnUseRamWhy;
+		private System.Windows.Forms.Button btnWtfUseRam;
 		private System.Windows.Forms.GroupBox groupBox14;
-		private System.Windows.Forms.CheckBox chkDownloadFirstAudioTrack;
-		private System.Windows.Forms.CheckBox chkIfOnlyBiggerFileSize;
-		private System.Windows.Forms.CheckBox chkDownloadSecondAudioTrack;
-		private System.Windows.Forms.CheckBox chkDownloadAllAudioTracks;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallyDownloadFirstAudioTrack;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallyDownloadSecondAudioTrack;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks;
 		private System.Windows.Forms.GroupBox groupBox15;
-		private System.Windows.Forms.CheckBox chkDownloadAllAdaptiveVideoTracks;
-		private System.Windows.Forms.Button btnDownloadAllAdaptiveVideoTracksWtf;
+		private System.Windows.Forms.CheckBox checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks;
+		private System.Windows.Forms.Button btnWtfDownloadAllAdaptiveVideoTracks;
 		private System.Windows.Forms.GroupBox groupBox16;
 		private System.Windows.Forms.RadioButton radioButtonContainerTypeMkv;
 		private System.Windows.Forms.RadioButton radioButtonContainerTypeMp4;
-		private System.Windows.Forms.CheckBox chkSortDashFormatsByBitrate;
+		private System.Windows.Forms.CheckBox checkBoxSortDashFormatsByBitrate;
 		private System.Windows.Forms.ToolStripMenuItem miCopyVideoIdToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miCopyChannelIdToolStripMenuItem;
 		private System.Windows.Forms.Label label18;
-		private System.Windows.Forms.TextBox editOutputFileNameFormatWithDate;
+		private System.Windows.Forms.TextBox textBoxOutputFileNameFormatWithDate;
 		private System.Windows.Forms.Button btnResetFileNameFormatWithDate;
-		private System.Windows.Forms.CheckBox checkBoxUseGmtTime;
+		private System.Windows.Forms.CheckBox checkBoxUseUniversalTime;
 		private System.Windows.Forms.NumericUpDown numericUpDownDelayAfterContainerCreated;
 		private System.Windows.Forms.Label label20;
 		private System.Windows.Forms.Label label19;
-		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadRetryCount;
+		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadTryCountLimit;
 		private System.Windows.Forms.Label label21;
 		private System.Windows.Forms.GroupBox groupBox17;
 		private System.Windows.Forms.CheckBox checkBoxAlwaysDownloadAsDash;
 		private System.Windows.Forms.Label lblActualDashChunkSize;
 		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkSize;
 		private System.Windows.Forms.Label label22;
-		private System.Windows.Forms.Button btnWhyDash;
+		private System.Windows.Forms.Button btnWtfAlwaysDownloadAsDash;
 		private System.Windows.Forms.Label label23;
-		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkDownloadRetriesCountMax;
+		private System.Windows.Forms.NumericUpDown numericUpDownDashChunkDownloadTryCountLimit;
 		private System.Windows.Forms.GroupBox groupBox18;
 		private System.Windows.Forms.CheckBox checkBoxUseExternalRestApiServerToGetAdultVideos;
 		private System.Windows.Forms.NumericUpDown numericUpDownExternalRestApiServerPort;
 		private System.Windows.Forms.TextBox textBoxExternalRestApiServerUrl;
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.Label label25;
-		private System.Windows.Forms.Button btnExternalRestApiServerWhy;
+		private System.Windows.Forms.Button btnWtfExternalRestApiServer;
 		private System.Windows.Forms.CheckBox checkBoxUseExternalRestApiServerToGetBasicVideoInfo;
 		private System.Windows.Forms.GroupBox groupBox19;
-		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadErrorCount;
+		private System.Windows.Forms.NumericUpDown numericUpDownChunkDownloadErrorCountLimit;
 		private System.Windows.Forms.Label label26;
-		private System.Windows.Forms.CheckBox checkBoxAccurateMultithreading;
+		private System.Windows.Forms.CheckBox checkBoxUseAccurateMultithreading;
 		private System.Windows.Forms.Label label28;
 		private System.Windows.Forms.Label label27;
-		private System.Windows.Forms.CheckBox checkBoxCheckUrlsAccessibilityBeforeDownloading;
+		private System.Windows.Forms.CheckBox checkBoxCheckUrlsAccessibilityBeforeDownloadStarted;
 		private System.Windows.Forms.NumericUpDown numericUpDownConnectionTimeout;
 		private System.Windows.Forms.Label label29;
 		private System.Windows.Forms.NumericUpDown numericUpDownConnectionTimeoutExternalRestApiServer;
 		private System.Windows.Forms.Label label30;
 		private System.Windows.Forms.GroupBox groupBox20;
 		private System.Windows.Forms.TextBox textBoxUserAgent;
-		private System.Windows.Forms.Button btnUserAgentWhy;
-		private System.Windows.Forms.Button btnSetDefaultUserAgent;
+		private System.Windows.Forms.Button btnWtfUserAgent;
+		private System.Windows.Forms.Button btnRestoreDefaultUserAgent;
 		private System.Windows.Forms.CheckBox checkBoxShowHlsTracksOnlyForStreams;
         private System.Windows.Forms.GroupBox groupBox21;
         private System.Windows.Forms.CheckBox checkBoxUseExternalRestApiServerToGetDownloadUrls;

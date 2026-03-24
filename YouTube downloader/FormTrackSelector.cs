@@ -42,12 +42,12 @@ namespace YouTube_downloader
 				}
 			}
 
-			listViewTracksSelector.Objects = root.ToArray();
+			listViewTrackSelector.Objects = root.ToArray();
 		}
 
 		private void SetupListView()
 		{
-			olvColumnFrameRate.AspectToStringConverter = (obj) =>
+			olvColumnVideoFrameRate.AspectToStringConverter = (obj) =>
 			{
 				int n = (int)obj;
 				return n > 0 ? $"{n} fps" : null;
@@ -62,7 +62,7 @@ namespace YouTube_downloader
 				int n = (int)obj;
 				return n > 0 ? $"~{n / 1024} kbps" : "Неизвестно";
 			};
-			olvColumnFileExt.AspectToStringConverter = (obj) =>
+			olvColumnFileExtension.AspectToStringConverter = (obj) =>
 			{
 				if (obj == null)
 				{
@@ -84,7 +84,7 @@ namespace YouTube_downloader
 
 		private void btnDownload_Click(object sender, System.EventArgs e)
 		{
-			var items = listViewTracksSelector.CheckedObjects;
+			var items = listViewTrackSelector.CheckedObjects;
 			if (items == null || items.Count == 0)
 			{
 				MessageBox.Show("Ничего не выбрано!", "Ошибатор ошибок",

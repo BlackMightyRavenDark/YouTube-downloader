@@ -75,6 +75,659 @@ namespace YouTube_downloader
 			lblProgress.Text = null;
 		}
 
+		private void pictureBoxVideoThumbnail_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+			{
+				contextMenuThumnailImage.Show(Cursor.Position);
+			}
+		}
+
+		private void pictureBoxVideoThumbnail_Paint(object sender, PaintEventArgs e)
+		{
+			Image image = ActiveThumbnail?.Image ?? _thumbnail;
+			if (image != null)
+			{
+				Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
+				Rectangle resizedRect = imageRect.ResizeTo(pictureBoxVideoThumbnail.Size).CenterIn(pictureBoxVideoThumbnail.ClientRectangle);
+				e.Graphics.DrawImage(image, resizedRect);
+			}
+			Font fnt = new Font("Lucida Console", 10.0f);
+			if (fnt != null)
+			{
+				if (VideoInfo.Duration > TimeSpan.Zero)
+				{
+					TimeSpan hour = TimeSpan.FromHours(1);
+					string videoLength = VideoInfo.Duration.ToString(VideoInfo.Duration >= hour ? "h':'mm':'ss" : "m':'ss");
+					SizeF sz = e.Graphics.MeasureString(videoLength, fnt);
+					float x = pictureBoxVideoThumbnail.Width - sz.Width;
+					float y = pictureBoxVideoThumbnail.Height - sz.Height;
+					e.Graphics.FillRectangle(Brushes.Black, new RectangleF(x, y, sz.Width, sz.Height));
+					e.Graphics.DrawString(videoLength, fnt, Brushes.White, new PointF(x, y));
+				}
+
+				if (_ciphered || VideoInfo.IsDashed)
+				{
+					string t = VideoInfo.IsDashed ? "dash" : "cipher";
+					SizeF sz = e.Graphics.MeasureString(t, fnt);
+					RectangleF rect = new RectangleF(0, pictureBoxVideoThumbnail.Height - sz.Height, sz.Width, sz.Height);
+					e.Graphics.FillRectangle(Brushes.Black, rect);
+					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
+				}
+				if (VideoInfo.IsLiveNow)
+				{
+					string t = "hls";
+					SizeF sz = e.Graphics.MeasureString(t, fnt);
+					float y = (_ciphered || VideoInfo.IsDashed) ?
+						pictureBoxVideoThumbnail.Height - sz.Height * 2 : pictureBoxVideoThumbnail.Height - sz.Height;
+					RectangleF rect = new RectangleF(0, y, sz.Width, sz.Height);
+					e.Graphics.FillRectangle(Brushes.Black, rect);
+					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
+				}
+
+				bool isAdultVideo = VideoInfo.Status != null ? VideoInfo.Status.IsAdult : !VideoInfo.IsFamilySafe;
+				if (isAdultVideo)
+				{
+					e.Graphics.DrawImage(Resources.age18plus, pictureBoxVideoThumbnail.Width - 40, 0, 40, 40);
+				}
+				if (VideoInfo.IsUnlisted)
+				{
+					e.Graphics.DrawImage(Resources.unlisted, 0, 0, 40, 40);
+				}
+				fnt.Dispose();
+			}
+		}
+
+		private void pictureBoxFavoriteVideo_Paint(object sender, PaintEventArgs e)
+		{
+			double x = pictureBoxFavoriteVideo.Width / 2.0;
+			double y = pictureBoxFavoriteVideo.Height / 2.0;
+			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteVideo, Color.LimeGreen);
+		}
+
+		private void pictureBoxFavoriteChannel_Paint(object sender, PaintEventArgs e)
+		{
+			double x = pictureBoxFavoriteChannel.Width / 2.0;
+			double y = pictureBoxFavoriteChannel.Height / 2.0;
+			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteChannel, Color.LimeGreen);
+		}
+
+		private void pictureBoxFavoriteVideo_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
+			{
+				SetFavoriteVideo(!IsFavoriteVideo);
+			}
+		}
+
+		private void pictureBoxFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
+			{
+				if (FavoriteChannelChanged != null)
+				{
+					FavoriteChannelChanged.Invoke(this, VideoInfo.OwnerChannelId, !IsFavoriteChannel);
+				}
+				else
+				{
+					IsFavoriteChannel = !IsFavoriteChannel;
+				}
+
+				isFavoritesChanged = true;
+			}
+		}
+
+		private void progressBarDownload_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+		}
+
+		private void progressBarDownload_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+			{
+				contextMenuProgressBar.Show(Cursor.Position);
+			}
+		}
+
+		private void btnDownload_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+		}
+
+		private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			OpenChannel?.Invoke(this, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId);
+		}
+
+		private void lblBtnOpenFrameContextMenu_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+			{
+				Point pt = PointToScreen(new Point(
+					lblBtnOpenFrameContextMenu.Left + lblBtnOpenFrameContextMenu.Width,
+					lblBtnOpenFrameContextMenu.Top));
+				contextMenuFrameActions.Show(pt);
+			}
+		}
+
+		private void lblVideoTitle_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+			{
+				contextMenuVideoTitle.Show(Cursor.Position);
+			}
+		}
+
+		private void lblChannelTitle_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+			if (e.Button == MouseButtons.Right)
+			{
+				contextMenuChannelTitle.Show(Cursor.Position);
+			}
+		}
+
+		private void lblDatePublished_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+			{
+				contextMenuDate.Show(Cursor.Position);
+			}
+		}
+
+		private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenUrlInBrowser($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
+		}
+
+		private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SetClipboardText($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
+		}
+
+		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (WebPage == null ||
+				string.IsNullOrEmpty(WebPage.WebPageCode) ||
+				string.IsNullOrWhiteSpace(WebPage.WebPageCode))
+			{
+				MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
+					"Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			string playerUrl = WebPage.ExtractYouTubeConfig()?.PlayerUrl;
+			if (string.IsNullOrEmpty(playerUrl) || string.IsNullOrWhiteSpace(playerUrl))
+			{
+				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			SetClipboardText(playerUrl);
+		}
+
+		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!string.IsNullOrEmpty(VideoInfo.OwnerChannelTitle) && !string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
+			{
+				SetClipboardText(VideoInfo.OwnerChannelTitle);
+			}
+		}
+
+		private void miCopyChannelIdToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (VideoInfo == null || string.IsNullOrEmpty(VideoInfo.OwnerChannelId) ||
+				string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelId))
+			{
+				string msg = "Произошла ошибация! По-этому, в настоящее время " +
+					"данное действие совершить невозможно! Сорян, бро!";
+				MessageBox.Show(msg, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			SetClipboardText(VideoInfo.OwnerChannelId);
+		}
+
+		private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId));
+		}
+
+		private void miSaveThumbnailImageAssToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
+			{
+				try
+				{
+					using (SaveFileDialog sfd = new SaveFileDialog())
+					{
+						sfd.Title = "Сохранить изображение";
+						sfd.Filter = "jpg|*.jpg";
+						sfd.DefaultExt = ".jpg";
+						sfd.AddExtension = true;
+						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
+						string fileNameSuffix = $"_image_{ActiveThumbnail.Image.Width}x{ActiveThumbnail.Image.Height}";
+						string fileName = FixFileName(FormatFileName(
+							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
+						sfd.FileName = fileName;
+						if (sfd.ShowDialog() == DialogResult.OK)
+						{
+							ActiveThumbnail.ImageData.SaveToFile(sfd.FileName);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+#if DEBUG
+					System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
+					MessageBox.Show(ex.Message, "Ошибатор ошибок",
+						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
+				}
+			}
+		}
+
+		private void miCopyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SetClipboardText($"{VideoInfo.OwnerChannelTitle} [{VideoInfo.OwnerChannelId}]");
+		}
+
+		private void miCopyTitleAsIsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SetClipboardText(VideoInfo.Title);
+		}
+
+		private void miCopyFixedTitleToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string t = FixFileName(VideoInfo.Title);
+			SetClipboardText(t);
+		}
+
+		private void miCopyFormattedFileNameToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string formattedFileName = FixFileName(FormatFileName(
+				IsVideoDateAvailable(VideoInfo) ?
+				config.OutputFileNameFormatWithDate :
+				config.OutputFileNameFormatWithoutDate, VideoInfo));
+			SetClipboardText(formattedFileName);
+		}
+
+		private void miOpenThumbnailImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string url = ActiveThumbnail?.Thumbnail?.Url;
+			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
+			{
+				OpenUrlInBrowser(url);
+			}
+			else
+			{
+				MessageBox.Show("Ссылка на изображение недоступна!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void miCopyChannelUrlToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId);
+			SetClipboardText(url);
+		}
+
+		private void miCopyThumbnailUrlToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (VideoInfo.Thumbnails?.Count == 0 ||
+				string.IsNullOrEmpty(VideoInfo.Thumbnails[0].Url) || string.IsNullOrWhiteSpace(VideoInfo.Thumbnails[0].Url))
+			{
+				MessageBox.Show("Ссылка на изображение отсутствует!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+			SetClipboardText(VideoInfo.Thumbnails[0].Url);
+		}
+
+		private void miCopyVideoIdToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (VideoInfo != null && !string.IsNullOrEmpty(VideoInfo.Id))
+			{
+				SetClipboardText(VideoInfo.Id);
+			}
+		}
+
+		private void miUpdateVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DateTime dateTime = GetVideoPublishedDate(VideoInfo.Id);
+			if (dateTime == DateTime.MaxValue)
+			{
+				MessageBox.Show("Не получилось.", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
+
+			VideoInfo = new YouTubeVideo(VideoInfo.Title, VideoInfo.Id,
+				VideoInfo.Duration, VideoInfo.DateUploaded, dateTime,
+				VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
+				VideoInfo.Description, VideoInfo.ViewCount, VideoInfo.Category, VideoInfo.IsShortFormat,
+				VideoInfo.IsPrivate, VideoInfo.IsUnlisted, VideoInfo.IsFamilySafe,
+				VideoInfo.IsLiveContent, VideoInfo.Thumbnails,
+				VideoInfo.InitialSimplifiedInfo, VideoInfo.Status);
+
+			DateTime date = config.UseGmtTime ? dateTime.ToGmt() : dateTime;
+			string datePublishedString = $"Дата публикации: {date:yyyy.MM.dd, HH:mm:ss}";
+			if (config.UseGmtTime) { datePublishedString += " GMT"; }
+
+			lblDatePublished.Text = datePublishedString;
+		}
+
+		private void miCopyVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			DateTime date = config.UseGmtTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished;
+			string datePublishedString = date.ToString("yyyy-MM-dd HH-mm-ss");
+			if (config.UseGmtTime) { datePublishedString += " GMT"; }
+
+			SetClipboardText(datePublishedString);
+		}
+
+		private async void miGetVideoWebPageCodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
+			{
+				SetClipboardText(WebPage.WebPageCode);
+				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
+				miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new YouTubeVideoId(VideoInfo.Id)));
+			if (webPageResult.ErrorCode == 200)
+			{
+				SetClipboardText(webPageResult.VideoWebPage.WebPageCode);
+				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show("Ошибатор ошибок", $"Ошибка {webPageResult.VideoWebPage}",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetVideoInfoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetVideoInfoToolStripMenuItem.Enabled = false;
+
+			{
+				if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
+				{
+					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(WebPage.WebPageCode);
+					YouTubeRawVideoInfoResult rawVideoInfoResult =
+						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
+					if (rawVideoInfoResult.ErrorCode == 200)
+					{
+						string t = rawVideoInfoResult.RawVideoInfo.RawData.ToString();
+						SetClipboardText(t);
+						MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+					else
+					{
+						MessageBox.Show("Не удалось получить информацию о видео!", "Ошибатор ошибок",
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+
+					miGetVideoInfoToolStripMenuItem.Enabled = true;
+					return;
+				}
+			}
+			{
+				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(VideoInfo.Id));
+				if (rawVideoInfoResult.ErrorCode == 200)
+				{
+					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
+					MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				else
+				{
+					MessageBox.Show("Ошибатор ошибок", $"Ошибка {rawVideoInfoResult.ErrorCode}",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+
+			miGetVideoInfoToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetDownloadUrlsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetDownloadUrlsToolStripMenuItem.Enabled = false;
+
+			IYouTubeClient client = new YouTubeClientAndroidVr();
+			client.SetWebPage(WebPage);
+			YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _));
+			if (rawVideoInfoResult.ErrorCode == 200)
+			{
+				YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
+				if (streamingDataResult.ErrorCode == 200)
+				{
+					SetClipboardText(streamingDataResult.Data.RawData);
+					MessageBox.Show("Скопировано в буфер обмена", "Ссылки для скачивания",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+					miGetDownloadUrlsToolStripMenuItem.Enabled = true;
+					return;
+				}
+			}
+
+			MessageBox.Show("Не удалось получить ссылки для скачивания!", "Ошибка!",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
+			miGetDownloadUrlsToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetDashManifestToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetDashManifestToolStripMenuItem.Enabled = false;
+
+			IYouTubeClient client = new YouTubeClientAndroidVr();
+			client.SetWebPage(WebPage);
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
+			if (streamingDataResult.ErrorCode == 200)
+			{
+				string url = streamingDataResult.Data.GetDashManifestUrl();
+				if (!string.IsNullOrEmpty(url))
+				{
+					FileDownloader d = new FileDownloader() { Url = url };
+					if (d.DownloadString(out string manifest) == 200)
+					{
+						SetClipboardText(manifest);
+						MessageBox.Show("Скопировано в буфер обмена", "DASH manifest",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+						miGetDashManifestToolStripMenuItem.Enabled = true;
+						return;
+					}
+				}
+			}
+
+			MessageBox.Show("DASH manifest не найден!", "Ошибатор ошибок",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
+			miGetDashManifestToolStripMenuItem.Enabled = true;
+		}
+
+		private async void miGetHlsManifestToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetHlsManifestToolStripMenuItem.Enabled = false;
+
+			IYouTubeClient client = new YouTubeClientAndroidVr();
+			client.SetWebPage(WebPage);
+			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
+			if (streamingDataResult.ErrorCode == 200)
+			{
+				string url = streamingDataResult.Data.GetHlsManifestUrl();
+				if (!string.IsNullOrEmpty(url))
+				{
+					FileDownloader d = new FileDownloader() { Url = url };
+					if (d.DownloadString(out string manifest) == 200)
+					{
+						SetClipboardText(manifest);
+						MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
+							MessageBoxButtons.OK, MessageBoxIcon.Information);
+						miGetHlsManifestToolStripMenuItem.Enabled = true;
+						return;
+					}
+				}
+			}
+
+			MessageBox.Show("HLS manifest не найден!", "Ошибатор ошибок",
+				MessageBoxButtons.OK, MessageBoxIcon.Error);
+			miGetHlsManifestToolStripMenuItem.Enabled = false;
+		}
+
+		private async void miGetPlayerCodeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (!VideoInfo.IsInfoAvailable)
+			{
+				MessageBox.Show("Видео недоступно!", "Ошибка!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
+			miGetPlayerCodeToolStripMenuItem.Enabled = false;
+			string page = WebPage?.WebPageCode;
+			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+			{
+				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
+				if (webPageResult.ErrorCode != 200)
+				{
+					MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					miGetPlayerCodeToolStripMenuItem.Enabled = true;
+					return;
+				}
+
+				page = webPageResult.VideoWebPage.WebPageCode;
+			}
+
+			string url = ExtractPlayerUrlFromWebPageCode(page);
+			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+			{
+				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок!",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miGetPlayerCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			string code = null;
+			int errCode = await Task.Run(() =>
+			{
+				FileDownloader d = new FileDownloader() { Url = url };
+				int errorCode = d.DownloadString(out code);
+				d.Dispose();
+				return errorCode;
+			});
+			if (errCode != 200)
+			{
+				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miGetPlayerCodeToolStripMenuItem.Enabled = true;
+				return;
+			}
+
+			try
+			{
+				using (SaveFileDialog sfd = new SaveFileDialog())
+				{
+					sfd.InitialDirectory = config.DownloadingDirPath;
+					sfd.Title = "Сохранить код плеера как...";
+					sfd.Filter = "JS-files|*.js";
+					sfd.DefaultExt = ".js";
+					sfd.AddExtension = true;
+					sfd.FileName = $"Player for {VideoInfo.Id}";
+					if (sfd.ShowDialog() == DialogResult.OK)
+					{
+						if (File.Exists(sfd.FileName))
+						{
+							File.Delete(sfd.FileName);
+						}
+						File.WriteAllText(sfd.FileName, code);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			miGetPlayerCodeToolStripMenuItem.Enabled = true;
+		}
+
+		private void miSingleToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			miSingleToolStripMenuItem.Checked = true;
+			miMultipleToolStripMenuItem.Checked = false;
+			if (_contentChunks != null && _mediaTrack != null)
+			{
+				UpdateDownloadProgress();
+			}
+		}
+
+		private void miMultipleToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			miSingleToolStripMenuItem.Checked = false;
+			miMultipleToolStripMenuItem.Checked = true;
+			if (_contentChunks != null && _mediaTrack != null)
+			{
+				UpdateDownloadProgress();
+			}
+		}
+
 		private async void SetVideoInfo(YouTubeVideo videoInfo)
 		{
 			VideoInfo = videoInfo;
@@ -174,8 +827,8 @@ namespace YouTube_downloader
 				{
 					Invoke(new MethodInvoker(() =>
 					{
-						_thumbnail = GenerateVideoThumbnailLoadingIndicator(imagePreview.Width, imagePreview.Height, i + 1, tryCountLimit);
-						imagePreview.Refresh();
+						_thumbnail = GenerateVideoThumbnailLoadingIndicator(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, i + 1, tryCountLimit);
+						pictureBoxVideoThumbnail.Refresh();
 					}));
 
 					if (!thumbnail.IsOk) { thumbnail.DownloadThumbnail(d); }
@@ -199,14 +852,14 @@ namespace YouTube_downloader
 				catch
 				{
 #endif
-					_thumbnail = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
+					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height);
 				}
 			}
 			else
 			{
-				_thumbnail = GenerateVideoThumbnailFailed(imagePreview.Width, imagePreview.Height);
+				_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height);
 			}
-			imagePreview.Refresh();
+			pictureBoxVideoThumbnail.Refresh();
 
 			return ok;
 		}
@@ -240,7 +893,7 @@ namespace YouTube_downloader
 					isFavoritesChanged = true;
 				}
 			}
-			imageFavorite.Invalidate();
+			pictureBoxFavoriteVideo.Invalidate();
 		}
 
 		private void SetFavoriteChannel(bool fav)
@@ -272,7 +925,7 @@ namespace YouTube_downloader
 					isFavoritesChanged = true;
 				}
 			}
-			imageFavoriteChannel.Invalidate();
+			pictureBoxFavoriteChannel.Invalidate();
 		}
 
 		public void UpdateVideoDateTimeIndicator()
@@ -307,10 +960,10 @@ namespace YouTube_downloader
 			hlsFormats.Clear();
 			containerFormats.Clear();
 			audioFormats.Clear();
-			contextMenuDownloads.Items.Clear();
+			contextMenuDownloadFormats.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			if (!miOptimizeFormatListReceiveToolStripMenuItem.Checked ||
+			if (!miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
 				LastReceivedStreamingData == null || (LastReceivedStreamingData != null &&
 				StreamingDataExpirationDate < DateTime.UtcNow))
 			{
@@ -503,28 +1156,28 @@ namespace YouTube_downloader
 					Type objectType = row.Tag.GetType();
 					if (objectType != previousObjectType)
 					{
-						contextMenuDownloads.Items.Add("-");
+						contextMenuDownloadFormats.Items.Add("-");
 						previousObjectType = objectType;
 					}
 
 					string title = row.Join(columnSeparator);
 					ToolStripMenuItem mi = new ToolStripMenuItem(title) { Tag = row.Tag };
 					mi.Click += MenuItemDownloadClick;
-					contextMenuDownloads.Items.Add(mi);
+					contextMenuDownloadFormats.Items.Add(mi);
 				}
 
-				if (contextMenuDownloads.Items.Count > 0)
+				if (contextMenuDownloadFormats.Items.Count > 0)
 				{
-					contextMenuDownloads.Items.Add("-");
+					contextMenuDownloadFormats.Items.Add("-");
 					ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...") { Tag = null };
 					mi.Click += MenuItemDownloadClick;
-					contextMenuDownloads.Items.Add(mi);
+					contextMenuDownloadFormats.Items.Add(mi);
 				}
 
 				lblStatus.Text = null;
 
 				Point pt = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
-				contextMenuDownloads.Show(pt.X, pt.Y);
+				contextMenuDownloadFormats.Show(pt.X, pt.Y);
 			}
 			else
 			{
@@ -1427,161 +2080,6 @@ namespace YouTube_downloader
 #endif
 		}
 
-		private void imagePreview_Paint(object sender, PaintEventArgs e)
-		{
-			Image image = ActiveThumbnail?.Image ?? _thumbnail;
-			if (image != null)
-			{
-				Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
-				Rectangle resizedRect = imageRect.ResizeTo(imagePreview.Size).CenterIn(imagePreview.ClientRectangle);
-				e.Graphics.DrawImage(image, resizedRect);
-			}
-			Font fnt = new Font("Lucida Console", 10.0f);
-			if (fnt != null)
-			{
-				if (VideoInfo.Duration > TimeSpan.Zero)
-				{
-					TimeSpan hour = TimeSpan.FromHours(1);
-					string videoLength = VideoInfo.Duration.ToString(VideoInfo.Duration >= hour ? "h':'mm':'ss" : "m':'ss");
-					SizeF sz = e.Graphics.MeasureString(videoLength, fnt);
-					float x = imagePreview.Width - sz.Width;
-					float y = imagePreview.Height - sz.Height;
-					e.Graphics.FillRectangle(Brushes.Black, new RectangleF(x, y, sz.Width, sz.Height));
-					e.Graphics.DrawString(videoLength, fnt, Brushes.White, new PointF(x, y));
-				}
-			
-				if (_ciphered || VideoInfo.IsDashed)
-				{
-					string t = VideoInfo.IsDashed ? "dash" : "cipher";
-					SizeF sz = e.Graphics.MeasureString(t, fnt);
-					RectangleF rect = new RectangleF(0, imagePreview.Height - sz.Height, sz.Width, sz.Height);
-					e.Graphics.FillRectangle(Brushes.Black, rect);
-					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
-				}
-				if (VideoInfo.IsLiveNow)
-				{
-					string t = "hls";
-					SizeF sz = e.Graphics.MeasureString(t, fnt);
-					float y = (_ciphered || VideoInfo.IsDashed) ? 
-						imagePreview.Height - sz.Height * 2 : imagePreview.Height - sz.Height;
-					RectangleF rect = new RectangleF(0, y, sz.Width, sz.Height);
-					e.Graphics.FillRectangle(Brushes.Black, rect);
-					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
-				}
-
-				bool isAdultVideo = VideoInfo.Status != null ? VideoInfo.Status.IsAdult : !VideoInfo.IsFamilySafe;
-				if (isAdultVideo)
-				{
-					e.Graphics.DrawImage(Resources.age18plus, imagePreview.Width - 40, 0, 40, 40);
-				}
-				if (VideoInfo.IsUnlisted)
-				{
-					e.Graphics.DrawImage(Resources.unlisted, 0, 0, 40, 40);
-				}
-				fnt.Dispose();
-			}
-		}
-
-		private void imageFavorite_Paint(object sender, PaintEventArgs e)
-		{
-			double x = imageFavorite.Width / 2.0;
-			double y = imageFavorite.Height / 2.0;
-			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteVideo, Color.LimeGreen);
-		}
-
-		private void imgFavoriteChannel_Paint(object sender, PaintEventArgs e)
-		{
-			double x = imageFavorite.Width / 2.0;
-			double y = imageFavorite.Height / 2.0;
-			e.Graphics.DrawStar(x, y, x, 3.0, 0.0, IsFavoriteChannel, Color.LimeGreen);
-		}
-
-		private void imagePreview_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
-			{
-				contextMenuImage.Show(Cursor.Position);
-			}
-		}
-
-		private void lblChannelTitle_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right)
-			{
-				contextMenuChannelTitle.Show(Cursor.Position);
-			}
-		}
-
-		private void lblVideoTitle_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
-			{
-				contextMenuVideoTitle.Show(Cursor.Position);
-			}
-		}
-
-		private void imageFavoriteVideo_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
-			{
-				SetFavoriteVideo(!IsFavoriteVideo);
-			}
-		}
-
-		private void imageFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
-			{
-				if (FavoriteChannelChanged != null)
-				{
-					FavoriteChannelChanged.Invoke(this, VideoInfo.OwnerChannelId, !IsFavoriteChannel);
-				}
-				else
-				{
-					IsFavoriteChannel = !IsFavoriteChannel;
-				}
-
-				isFavoritesChanged = true;
-			}
-		}
-
-		private void lblDatePublished_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
-			{
-				contextMenuDate.Show(Cursor.Position);
-			}
-		}
-
-		private void btnGetVideoInfo_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-		}
-
-		private void btnDownload_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-		}
-
-		private void progressBarDownload_MouseDown(object sender, MouseEventArgs e)
-		{
-			Activated?.Invoke(this);
-		}
-
-		private void progressBarDownload_MouseUp(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Right)
-			{
-				contextMenuProgressBar.Show(Cursor.Position);
-			}
-		}
-
 		public void SetVideoTitleFontSize(int fontSize)
 		{
 			lblVideoTitle.Font = new Font(lblVideoTitle.Font.FontFamily, fontSize);
@@ -1590,513 +2088,11 @@ namespace YouTube_downloader
 		public void SetMenusFontSize(int fontSize)
 		{
 			contextMenuFrameActions.SetFontSize(fontSize);
-			contextMenuImage.SetFontSize(fontSize);
+			contextMenuThumnailImage.SetFontSize(fontSize);
 			contextMenuVideoTitle.SetFontSize(fontSize);
 			contextMenuChannelTitle.SetFontSize(fontSize);
 			contextMenuDate.SetFontSize(fontSize);
-			contextMenuDownloads.SetFontSize(fontSize);
-		}
-
-		private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			OpenUrlInBrowser($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
-		}
-
-		private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			SetClipboardText($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
-		}
-
-		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (WebPage == null ||
-				string.IsNullOrEmpty(WebPage.WebPageCode) ||
-				string.IsNullOrWhiteSpace(WebPage.WebPageCode))
-			{
-				MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
-					"Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			string playerUrl = WebPage.ExtractYouTubeConfig()?.PlayerUrl;
-			if (string.IsNullOrEmpty(playerUrl) || string.IsNullOrWhiteSpace(playerUrl))
-			{
-				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			SetClipboardText(playerUrl);
-		}
-
-		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!string.IsNullOrEmpty(VideoInfo.OwnerChannelTitle) && !string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
-			{
-				SetClipboardText(VideoInfo.OwnerChannelTitle);
-			}
-		}
-
-		private void miCopyChannelIdToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (VideoInfo == null || string.IsNullOrEmpty(VideoInfo.OwnerChannelId) ||
-				string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelId))
-			{
-				string msg = "Произошла ошибация! По-этому, в настоящее время " +
-					"данное действие совершить невозможно! Сорян, бро!";
-				MessageBox.Show(msg, "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			SetClipboardText(VideoInfo.OwnerChannelId);
-		}
-
-		private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId));
-		}
-
-		private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
-		{
-			OpenChannel?.Invoke(this, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId);
-		}
-
-		private void lblBtnOpenFrameContextMenu_MouseUp(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
-			{
-				Point pt = PointToScreen(new Point(
-					lblBtnOpenFrameContextMenu.Left + lblBtnOpenFrameContextMenu.Width,
-					lblBtnOpenFrameContextMenu.Top));
-				contextMenuFrameActions.Show(pt);
-			}
-		}
-
-		private void miSaveImageAssToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
-			{
-				try
-				{
-					using (SaveFileDialog sfd = new SaveFileDialog())
-					{
-						sfd.Title = "Сохранить изображение";
-						sfd.Filter = "jpg|*.jpg";
-						sfd.DefaultExt = ".jpg";
-						sfd.AddExtension = true;
-						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
-						string fileNameSuffix = $"_image_{ActiveThumbnail.Image.Width}x{ActiveThumbnail.Image.Height}";
-						string fileName = FixFileName(FormatFileName(
-							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
-						sfd.FileName = fileName;
-						if (sfd.ShowDialog() == DialogResult.OK)
-						{
-							ActiveThumbnail.ImageData.SaveToFile(sfd.FileName);
-						}
-					}
-				} catch (Exception ex)
-				{
-#if DEBUG
-					System.Diagnostics.Debug.WriteLine(ex.Message);
-#endif
-					MessageBox.Show(ex.Message, "Ошибатор ошибок",
-						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
-				}
-			}
-		}
-
-		private void miCopyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			SetClipboardText($"{VideoInfo.OwnerChannelTitle} [{VideoInfo.OwnerChannelId}]");
-		}
-
-		private void miCopyTitleAsIsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			SetClipboardText(VideoInfo.Title);
-		}
-
-		private void miCopyFixedTitleToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			string t = FixFileName(VideoInfo.Title);
-			SetClipboardText(t);
-		}
-
-		private void miCopyFormattedFileNameToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			string formattedFileName = FixFileName(FormatFileName(
-				IsVideoDateAvailable(VideoInfo) ?
-				config.OutputFileNameFormatWithDate :
-				config.OutputFileNameFormatWithoutDate, VideoInfo));
-			SetClipboardText(formattedFileName);
-		}
-
-		private void miOpenImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			string url = ActiveThumbnail?.Thumbnail?.Url;
-			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
-			{
-				OpenUrlInBrowser(url);
-			}
-			else
-			{
-				MessageBox.Show("Ссылка на изображение недоступна!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
-
-		private void miCopyChannelUrlToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, VideoInfo.OwnerChannelId);
-			SetClipboardText(url);
-		}
-
-		private void miCopyImageUrlToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (VideoInfo.Thumbnails?.Count == 0 ||
-				string.IsNullOrEmpty(VideoInfo.Thumbnails[0].Url) || string.IsNullOrWhiteSpace(VideoInfo.Thumbnails[0].Url))
-			{
-				MessageBox.Show("Ссылка на изображение отсутствует!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			SetClipboardText(VideoInfo.Thumbnails[0].Url);
-		}
-
-		private void miCopyVideoIdToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (VideoInfo != null && !string.IsNullOrEmpty(VideoInfo.Id))
-			{
-				SetClipboardText(VideoInfo.Id);
-			}
-		}
-
-		private void miUpdateVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DateTime dateTime = GetVideoPublishedDate(VideoInfo.Id);
-			if (dateTime == DateTime.MaxValue)
-			{
-				MessageBox.Show("Не получилось.", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-				return;
-			}
-
-			VideoInfo = new YouTubeVideo(VideoInfo.Title, VideoInfo.Id,
-				VideoInfo.Duration, VideoInfo.DateUploaded, dateTime,
-				VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
-				VideoInfo.Description, VideoInfo.ViewCount, VideoInfo.Category, VideoInfo.IsShortFormat,
-				VideoInfo.IsPrivate, VideoInfo.IsUnlisted, VideoInfo.IsFamilySafe,
-				VideoInfo.IsLiveContent, VideoInfo.Thumbnails,
-				VideoInfo.InitialSimplifiedInfo, VideoInfo.Status);
-
-			DateTime date = config.UseGmtTime ? dateTime.ToGmt() : dateTime;
-			string datePublishedString = $"Дата публикации: {date:yyyy.MM.dd, HH:mm:ss}";
-			if (config.UseGmtTime) { datePublishedString += " GMT"; }
-
-			lblDatePublished.Text = datePublishedString;
-		}
-
-		private void miCopyVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			DateTime date = config.UseGmtTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished;
-			string datePublishedString = date.ToString("yyyy-MM-dd HH-mm-ss");
-			if (config.UseGmtTime) { datePublishedString += " GMT"; }
-
-			SetClipboardText(datePublishedString);
-		}
-
-		private void miSingleToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			miSingleToolStripMenuItem.Checked = true;
-			miMultipleToolStripMenuItem.Checked = false;
-			if (_contentChunks != null && _mediaTrack != null)
-			{
-				UpdateDownloadProgress();
-			}
-		}
-
-		private void miMultipleToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			miSingleToolStripMenuItem.Checked = false;
-			miMultipleToolStripMenuItem.Checked = true;
-			if (_contentChunks != null && _mediaTrack != null)
-			{
-				UpdateDownloadProgress();
-			}
-		}
-
-		private async void miGetVideoWebPageCodeToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
-				return;
-			}
-
-			if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
-			{
-				SetClipboardText(WebPage.WebPageCode);
-				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
-					MessageBoxButtons.OK, MessageBoxIcon.Information);
-				miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
-				return;
-			}
-
-			YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(new YouTubeVideoId(VideoInfo.Id)));
-			if (webPageResult.ErrorCode == 200)
-			{
-				SetClipboardText(webPageResult.VideoWebPage.WebPageCode);
-				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
-					MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-			else
-			{
-				MessageBox.Show("Ошибатор ошибок", $"Ошибка {webPageResult.VideoWebPage}",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-
-			miGetVideoWebPageCodeToolStripMenuItem.Enabled = true;
-		}
-
-		private async void miGetVideoInfoToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			miGetVideoInfoToolStripMenuItem.Enabled = false;
-
-			{
-				if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
-				{
-					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(WebPage.WebPageCode);
-					YouTubeRawVideoInfoResult rawVideoInfoResult =
-						YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(videoWebPageResult.VideoWebPage);
-					if (rawVideoInfoResult.ErrorCode == 200)
-					{
-						string t = rawVideoInfoResult.RawVideoInfo.RawData.ToString();
-						SetClipboardText(t);
-						MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
-							MessageBoxButtons.OK, MessageBoxIcon.Information);
-					}
-					else
-					{
-						MessageBox.Show("Не удалось получить информацию о видео!", "Ошибатор ошибок",
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
-					}
-
-					miGetVideoInfoToolStripMenuItem.Enabled = true;
-					return;
-				}
-			}
-			{
-				YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => YouTubeRawVideoInfo.Get(VideoInfo.Id));
-				if (rawVideoInfoResult.ErrorCode == 200)
-				{
-					SetClipboardText(rawVideoInfoResult.RawVideoInfo.RawData.ToString());
-					MessageBox.Show("Скопировано в буфер обмена", "Информация о видео",
-						MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-				else
-				{
-					MessageBox.Show("Ошибатор ошибок", $"Ошибка {rawVideoInfoResult.ErrorCode}",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-
-			miGetVideoInfoToolStripMenuItem.Enabled = true;
-		}
-
-		private async void miGetDownloadUrlsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			miGetDownloadUrlsToolStripMenuItem.Enabled = false;
-
-			IYouTubeClient client = new YouTubeClientAndroidVr();
-			client.SetWebPage(WebPage);
-			YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _));
-			if (rawVideoInfoResult.ErrorCode == 200)
-			{
-				YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
-				if (streamingDataResult.ErrorCode == 200)
-				{
-					SetClipboardText(streamingDataResult.Data.RawData);
-					MessageBox.Show("Скопировано в буфер обмена", "Ссылки для скачивания",
-						MessageBoxButtons.OK, MessageBoxIcon.Information);
-					miGetDownloadUrlsToolStripMenuItem.Enabled = true;
-					return;
-				}
-			}
-
-			MessageBox.Show("Не удалось получить ссылки для скачивания!", "Ошибка!",
-				MessageBoxButtons.OK, MessageBoxIcon.Error);
-			miGetDownloadUrlsToolStripMenuItem.Enabled = true;
-		}
-
-		private async void miGetDashManifestToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			miGetDashManifestToolStripMenuItem.Enabled = false;
-
-			IYouTubeClient client = new YouTubeClientAndroidVr();
-			client.SetWebPage(WebPage);
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
-			if (streamingDataResult.ErrorCode == 200)
-			{
-				string url = streamingDataResult.Data.GetDashManifestUrl();
-				if (!string.IsNullOrEmpty(url))
-				{
-					FileDownloader d = new FileDownloader() { Url = url };
-					if (d.DownloadString(out string manifest) == 200)
-					{
-						SetClipboardText(manifest);
-						MessageBox.Show("Скопировано в буфер обмена", "DASH manifest",
-							MessageBoxButtons.OK, MessageBoxIcon.Information);
-						miGetDashManifestToolStripMenuItem.Enabled = true;
-						return;
-					}
-				}
-			}
-
-			MessageBox.Show("DASH manifest не найден!", "Ошибатор ошибок",
-				MessageBoxButtons.OK, MessageBoxIcon.Error);
-			miGetDashManifestToolStripMenuItem.Enabled = true;
-		}
-
-		private async void miGetHlsManifestToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			miGetHlsManifestToolStripMenuItem.Enabled = false;
-
-			IYouTubeClient client = new YouTubeClientAndroidVr();
-			client.SetWebPage(WebPage);
-			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
-			if (streamingDataResult.ErrorCode == 200)
-			{
-				string url = streamingDataResult.Data.GetHlsManifestUrl();
-				if (!string.IsNullOrEmpty(url))
-				{
-					FileDownloader d = new FileDownloader() { Url = url };
-					if (d.DownloadString(out string manifest) == 200)
-					{
-						SetClipboardText(manifest);
-						MessageBox.Show("Скопировано в буфер обмена", "HLS manifest",
-							MessageBoxButtons.OK, MessageBoxIcon.Information);
-						miGetHlsManifestToolStripMenuItem.Enabled = true;
-						return;
-					}
-				}
-			}
-
-			MessageBox.Show("HLS manifest не найден!", "Ошибатор ошибок",
-				MessageBoxButtons.OK, MessageBoxIcon.Error);
-			miGetHlsManifestToolStripMenuItem.Enabled = false;
-		}
-
-		private async void miGetPlayerCodeToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (!VideoInfo.IsInfoAvailable)
-			{
-				MessageBox.Show("Видео недоступно!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			miGetPlayerCodeToolStripMenuItem.Enabled = false;
-			string page = WebPage?.WebPageCode;
-			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
-			{
-				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
-				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
-				if (webPageResult.ErrorCode != 200)
-				{
-					MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-					miGetPlayerCodeToolStripMenuItem.Enabled = true;
-					return;
-				}
-
-				page = webPageResult.VideoWebPage.WebPageCode;
-			}
-
-			string url = ExtractPlayerUrlFromWebPageCode(page);
-			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
-			{
-				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				miGetPlayerCodeToolStripMenuItem.Enabled = true;
-				return;
-			}
-
-			string code = null;
-			int errCode = await Task.Run(() =>
-			{
-				FileDownloader d = new FileDownloader() { Url = url };
-				int errorCode = d.DownloadString(out code);
-				d.Dispose();
-				return errorCode;
-			});
-			if (errCode != 200)
-			{
-				MessageBox.Show("Ошибка скачивания плеера!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				miGetPlayerCodeToolStripMenuItem.Enabled = true;
-				return;
-			}
-
-			try
-			{
-				using (SaveFileDialog sfd = new SaveFileDialog())
-				{
-					sfd.InitialDirectory = config.DownloadingDirPath;
-					sfd.Title = "Сохранить код плеера как...";
-					sfd.Filter = "JS-files|*.js";
-					sfd.DefaultExt = ".js";
-					sfd.AddExtension = true;
-					sfd.FileName = $"Player for {VideoInfo.Id}";
-					if (sfd.ShowDialog() == DialogResult.OK)
-					{
-						if (File.Exists(sfd.FileName))
-						{
-							File.Delete(sfd.FileName);
-						}
-						File.WriteAllText(sfd.FileName, code);
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-#if DEBUG
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-#endif
-				MessageBox.Show(ex.Message, "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-
-			miGetPlayerCodeToolStripMenuItem.Enabled = true;
+			contextMenuDownloadFormats.SetFontSize(fontSize);
 		}
 	}
 }
