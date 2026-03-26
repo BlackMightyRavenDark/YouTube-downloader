@@ -50,23 +50,37 @@ namespace YouTube_downloader
 		public bool UseExternalRestApiServerToGetDownloadUrls { get; set; }
 		public bool UseExternalRestApiServerToGetAdultVideos { get; set; }
 		public int VideoTitleFontSize { get; set; }
-		public int MenusFontSize { get; set; }
-		public int FavoritesListFontSize { get; set; }
+		public int MenusFontSize
+		{
+			get => _menusFontSize;
+			set { if (_menusFontSize != value) { _menusFontSize = value; MenusFontSizeChanged?.Invoke(this, value); } }
+		}
+		public int FavoritesListFontSize
+		{
+			get => _favoritesListFontSize;
+			set { if (_favoritesListFontSize != value) { _favoritesListFontSize = value; FavoritesListFontSizeChanged?.Invoke(this, value); } }
+		}
 		public int ThreadCountVideo { get; set; }
 		public int ThreadCountAudio { get; set; }
 		public int GlobalThreadCountMaximum { get; set; }
 		public bool AccurateMultithreading { get; set; }
 		public int ConnectionTimeout { get; set; }
 		public int ConnectionTimeoutExternalRestApiServer { get; set; }
+		private int _menusFontSize;
+		private int _favoritesListFontSize;
 
 		public const string DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0";
 
 		public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
 		public delegate void LoadedDelegate(object sender);
+		public delegate void MenusFontSizeChangedDelegate(object sender, int newSize);
+		public delegate void favoritesListFontSizeChangedDelegate(object sender, int newSize);
 		public SavingDelegate Saving;
 		public LoadingDelegate Loading;
 		public LoadedDelegate Loaded;
+		public MenusFontSizeChangedDelegate MenusFontSizeChanged;
+		public favoritesListFontSizeChangedDelegate FavoritesListFontSizeChanged;
 
 		public Configurator(string fileName)
 		{

@@ -71,7 +71,9 @@
     <Reference Include="ObjectListView, Version=2.9.1.1072, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
       <HintPath>..\packages\ObjectListView.Official.2.9.1\lib\net20\ObjectListView.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
@@ -97,6 +99,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrameSettingsDownloadOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameSettingsDownloadOptions.Designer.cs">
+      <DependentUpon>FrameSettingsDownloadOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameSettingsFilesAndFolders.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameSettingsFilesAndFolders.Designer.cs">
+      <DependentUpon>FrameSettingsFilesAndFolders.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameSettingsGuiOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameSettingsGuiOptions.Designer.cs">
+      <DependentUpon>FrameSettingsGuiOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrameSettingsSystemOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FrameSettingsSystemOptions.Designer.cs">
+      <DependentUpon>FrameSettingsSystemOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="TrackUrlDecryptor.cs" />
     <Compile Include="VideoThumbnailWrapper.cs" />
     <Compile Include="YouTubeClientRestApi.cs" />
@@ -142,6 +168,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormTrackSelector.resx">
       <DependentUpon>FormTrackSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameSettingsDownloadOptions.resx">
+      <DependentUpon>FrameSettingsDownloadOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameSettingsFilesAndFolders.resx">
+      <DependentUpon>FrameSettingsFilesAndFolders.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameSettingsGuiOptions.resx">
+      <DependentUpon>FrameSettingsGuiOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrameSettingsSystemOptions.resx">
+      <DependentUpon>FrameSettingsSystemOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrameYouTubeChannel.resx">
       <DependentUpon>FrameYouTubeChannel.cs</DependentUpon>
