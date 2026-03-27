@@ -234,12 +234,7 @@ namespace YouTube_downloader
 
 		private void radioButtonContainerTypeMkv_CheckedChanged(object sender, EventArgs e)
 		{
-			config.AlwaysUseMkvContainer = radioButtonContainerTypeMkv.Checked;
-		}
-
-        private void groupBoxAudioTracks_Enter(object sender, EventArgs e)
-        {
-
+			config.AlwaysUseMkvContainerIfPossible = radioButtonContainerTypeMkv.Checked;
         }
     }
 }

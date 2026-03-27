@@ -333,7 +333,6 @@ namespace YouTube_downloader
 			this.groupBoxAudioTracks.TabIndex = 17;
 			this.groupBoxAudioTracks.TabStop = false;
 			this.groupBoxAudioTracks.Text = "Скачивание аудио-дорожек";
-			this.groupBoxAudioTracks.Enter += new System.EventHandler(this.groupBoxAudioTracks_Enter);
 			// 
 			// checkBoxAutomaticallyDownloadFirstAudioTrack
 			// 
