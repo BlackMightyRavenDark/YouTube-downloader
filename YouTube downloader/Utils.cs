@@ -317,9 +317,9 @@ namespace YouTube_downloader
 
 		public static string DecideMergingDirectory()
 		{
-			return !string.IsNullOrEmpty(config.ChunksMergingDirPath) &&
-				!string.IsNullOrWhiteSpace(config.ChunksMergingDirPath) ?
-				config.ChunksMergingDirPath : config.TempDirPath;
+			return !string.IsNullOrEmpty(config.ChunkMergerDirectory) &&
+				!string.IsNullOrWhiteSpace(config.ChunkMergerDirectory) ?
+				config.ChunkMergerDirectory : config.TemporaryDirectory;
 		}
 
 		public static bool IsEnoughDiskSpace(IEnumerable<char> driveLetters, long contentLength)
@@ -342,29 +342,29 @@ namespace YouTube_downloader
 			long minimumFreeSpaceRequired = (long)(totalFilesSize * 1.1);
 
 			char chunkMergingDirDriveLetter;
-			if (!string.IsNullOrEmpty(config.ChunksMergingDirPath) && !string.IsNullOrWhiteSpace(config.ChunksMergingDirPath))
+			if (!string.IsNullOrEmpty(config.ChunkMergerDirectory) && !string.IsNullOrWhiteSpace(config.ChunkMergerDirectory))
 			{
-				chunkMergingDirDriveLetter = config.ChunksMergingDirPath[0];
+				chunkMergingDirDriveLetter = config.ChunkMergerDirectory[0];
 			}
-			else if (!string.IsNullOrEmpty(config.TempDirPath) && !string.IsNullOrWhiteSpace(config.TempDirPath))
+			else if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 			{
-				chunkMergingDirDriveLetter = config.TempDirPath[0];
+				chunkMergingDirDriveLetter = config.TemporaryDirectory[0];
 			}
 			else
 			{
-				chunkMergingDirDriveLetter = config.DownloadingDirPath[0];
+				chunkMergingDirDriveLetter = config.DownloadDirectory[0];
 			}
 
 			char tempDirDriveLetter;
 			if (!config.UseRamToStoreTemporaryFiles)
 			{
-				if (!string.IsNullOrEmpty(config.TempDirPath) && !string.IsNullOrWhiteSpace(config.TempDirPath))
+				if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 				{
-					tempDirDriveLetter = config.TempDirPath[0];
+					tempDirDriveLetter = config.TemporaryDirectory[0];
 				}
 				else
 				{
-					tempDirDriveLetter = config.DownloadingDirPath[0];
+					tempDirDriveLetter = config.DownloadDirectory[0];
 				}
 			}
 			else
@@ -372,12 +372,12 @@ namespace YouTube_downloader
 				tempDirDriveLetter = chunkMergingDirDriveLetter;
 			}
 
-			char downloadingDirDriveLetter = config.DownloadingDirPath[0];
+			char downloadingDirDriveLetter = config.DownloadDirectory[0];
 
 			DriveInfo driveInfoTempDir = new DriveInfo(tempDirDriveLetter.ToString());
 			if (tempDirDriveLetter == chunkMergingDirDriveLetter)
 			{
-				if (config.MergeToContainer && downloadingDirDriveLetter == chunkMergingDirDriveLetter)
+				if (config.AutomaticallyMergeToContainer && downloadingDirDriveLetter == chunkMergingDirDriveLetter)
 				{
 					minimumFreeSpaceRequired += totalFilesSize;
 				}
@@ -402,7 +402,7 @@ namespace YouTube_downloader
 
 				if (downloadingDirDriveLetter == chunkMergingDirDriveLetter)
 				{
-					if (config.MergeToContainer)
+					if (config.AutomaticallyMergeToContainer)
 					{
 						minimumFreeSpaceRequired += totalFilesSize;
 					}
@@ -430,7 +430,7 @@ namespace YouTube_downloader
 
 		public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
 		{
-			DateTime date = videoInfo.DatePublished < DateTime.MaxValue && config.UseGmtTime ?
+			DateTime date = videoInfo.DatePublished < DateTime.MaxValue && config.UseUniversalTime ?
 				videoInfo.DatePublished.ToGmt() : videoInfo.DatePublished;
 			return fmt.Replace("<year>", date.Year.ToString())
 				.Replace("<month>", date.Month.ToString().PadLeft(2, '0'))
@@ -716,9 +716,9 @@ namespace YouTube_downloader
 
 		public static string FormatDateTime(DateTime dateTime)
 		{
-			DateTime dt = config.UseGmtTime ? dateTime : dateTime.ToLocalTime();
+			DateTime dt = config.UseUniversalTime ? dateTime : dateTime.ToLocalTime();
 			string t = dt.ToString("yyyy.MM.dd, HH:mm:ss");
-			return config.UseGmtTime ? $"{t} GMT" : t;
+			return config.UseUniversalTime ? $"{t} GMT" : t;
 		}
 
 		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
@@ -808,10 +808,10 @@ namespace YouTube_downloader
 			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
 			{
 				Process process = new Process();
-				if (!string.IsNullOrEmpty(config.BrowserExeFilePath) &&
-					!string.IsNullOrWhiteSpace(config.BrowserExeFilePath))
+				if (!string.IsNullOrEmpty(config.WebBrowserExeFilePath) &&
+					!string.IsNullOrWhiteSpace(config.WebBrowserExeFilePath))
 				{
-					process.StartInfo.FileName = config.BrowserExeFilePath;
+					process.StartInfo.FileName = config.WebBrowserExeFilePath;
 					process.StartInfo.Arguments = url;
 				}
 				else

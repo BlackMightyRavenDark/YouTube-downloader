@@ -33,18 +33,18 @@ namespace YouTube_downloader
 
 			dateTimePickerSearchAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
 
-			config.Saving += (s, json) => json["maxSearch"] = config.MaxSearch;
+			config.Saving += (s, json) => json["maxSearch"] = config.MaximumSearchResults;
 			config.Loading += (s, json) =>
 			{
 				JToken jt = json.Value<JToken>("maxSearch");
 				if (jt != null)
 				{
-					config.MaxSearch = ClampValue(jt.Value<int>(), 1, 500);
+					config.MaximumSearchResults = ClampValue(jt.Value<int>(), 1, 500);
 				}
 			};
 			config.Loaded += (s) =>
 			{
-				numericUpDownSearchResultCountLimit.Value = config.MaxSearch;
+				numericUpDownSearchResultCountLimit.Value = config.MaximumSearchResults;
 				MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountMaximum;
 			};
 			config.MenusFontSizeChanged += (s, sz) => SetMenusFontSize(sz);
@@ -88,11 +88,11 @@ namespace YouTube_downloader
 			{
 				try
 				{
-					if (!Directory.Exists(config.HomeDirPath))
+					if (!Directory.Exists(config.HomeDirectory))
 					{
-						Directory.CreateDirectory(config.HomeDirPath);
+						Directory.CreateDirectory(config.HomeDirectory);
 					}
-					if (Directory.Exists(config.HomeDirPath))
+					if (Directory.Exists(config.HomeDirectory))
 					{
 						config.Save();
 						if (isFavoritesLoaded && isFavoritesChanged)
@@ -386,7 +386,7 @@ namespace YouTube_downloader
 
 		private void numericUpDownSearchResultCountLimit_ValueChanged(object sender, EventArgs e)
 		{
-			config.MaxSearch = (int)numericUpDownSearchResultCountLimit.Value;
+			config.MaximumSearchResults = (int)numericUpDownSearchResultCountLimit.Value;
 		}
 
 		private void radioButtonSearchResultCountLimitMaxPossible_Click(object sender, EventArgs e)

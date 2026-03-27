@@ -18,7 +18,7 @@ namespace YouTube_downloader
 				json["favoritesListFontSize"] = config.FavoritesListFontSize;
 				json["sortFormatsByFileSize"] = config.SortFormatsByFileSize;
 				json["sortDashFormatsByBitrate"] = config.SortDashFormatsByBitrate;
-				json["moveAudioId140First"] = config.MoveAudioId140First;
+				json["moveAudioId140First"] = config.AlwaysMoveAudioId140ToTopOfList;
 				json["showHlsTracksOnlyForStreams"] = config.ShowHlsTracksOnlyForStreams;
 			};
 
@@ -63,7 +63,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("moveAudioId140First");
 					if (jt != null)
 					{
-						config.MoveAudioId140First = jt.Value<bool>();
+						config.AlwaysMoveAudioId140ToTopOfList = jt.Value<bool>();
 					}
 				}
 				{
@@ -82,7 +82,7 @@ namespace YouTube_downloader
 				numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
 				checkBoxSortAdaptiveFormatsByFileSize.Checked = config.SortFormatsByFileSize;
 				checkBoxSortDashFormatsByBitrate.Checked = config.SortDashFormatsByBitrate;
-				checkBoxMoveAudioTrackId140ToTopOfList.Checked = config.MoveAudioId140First;
+				checkBoxMoveAudioTrackId140ToTopOfList.Checked = config.AlwaysMoveAudioId140ToTopOfList;
 				checkBoxShowHlsTracksOnlyForStreams.Checked = config.ShowHlsTracksOnlyForStreams;
 			};
 		}
@@ -99,7 +99,7 @@ namespace YouTube_downloader
 
 		private void checkBoxMoveAudioTrackId140ToTopOfList_CheckedChanged(object sender, EventArgs e)
 		{
-			config.MoveAudioId140First = checkBoxMoveAudioTrackId140ToTopOfList.Checked;
+			config.AlwaysMoveAudioId140ToTopOfList = checkBoxMoveAudioTrackId140ToTopOfList.Checked;
 		}
 
 		private void checkBoxShowHlsTracksOnlyForStreams_CheckedChanged(object sender, EventArgs e)

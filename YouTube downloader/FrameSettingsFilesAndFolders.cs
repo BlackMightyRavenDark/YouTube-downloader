@@ -14,12 +14,12 @@ namespace YouTube_downloader
 
 			config.Saving += (s, json) =>
 			{
-				json["downloadingDirPath"] = config.DownloadingDirPath;
-				json["tempDirPath"] = config.TempDirPath;
-				json["chunksMergingDirPath"] = config.ChunksMergingDirPath;
+				json["downloadingDirPath"] = config.DownloadDirectory;
+				json["tempDirPath"] = config.TemporaryDirectory;
+				json["chunksMergingDirPath"] = config.ChunkMergerDirectory;
 				json["outputFileNameFormatWithDate"] = config.OutputFileNameFormatWithDate;
 				json["outputFileNameFormatWithoutDate"] = config.OutputFileNameFormatWithoutDate;
-				json["browserExeFilePath"] = config.BrowserExeFilePath;
+				json["browserExeFilePath"] = config.WebBrowserExeFilePath;
 				json["ffmpegExeFilePath"] = config.FfmpegExeFilePath;
 			};
 
@@ -29,21 +29,21 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("downloadingDirPath");
 					if (jt != null)
 					{
-						config.DownloadingDirPath = jt.Value<string>();
+						config.DownloadDirectory = jt.Value<string>();
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("tempDirPath");
 					if (jt != null)
 					{
-						config.TempDirPath = jt.Value<string>();
+						config.TemporaryDirectory = jt.Value<string>();
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("chunksMergingDirPath");
 					if (jt != null)
 					{
-						config.ChunksMergingDirPath = jt.Value<string>();
+						config.ChunkMergerDirectory = jt.Value<string>();
 					}
 				}
 				{
@@ -64,7 +64,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("browserExeFilePath");
 					if (jt != null)
 					{
-						config.BrowserExeFilePath = jt.Value<string>();
+						config.WebBrowserExeFilePath = jt.Value<string>();
 					}
 				}
 				{
@@ -78,12 +78,12 @@ namespace YouTube_downloader
 
 			config.Loaded += (s) =>
 			{
-				textBoxDownloadDirectory.Text = config.DownloadingDirPath;
-				textBoxTempDirectory.Text = config.TempDirPath;
-				textBoxFileMergerDirectory.Text = config.ChunksMergingDirPath;
+				textBoxDownloadDirectory.Text = config.DownloadDirectory;
+				textBoxTempDirectory.Text = config.TemporaryDirectory;
+				textBoxFileMergerDirectory.Text = config.ChunkMergerDirectory;
 				textBoxOutputFileNameFormatWithDate.Text = config.OutputFileNameFormatWithDate;
 				textBoxOutputFileNameFormatWithoutDate.Text = config.OutputFileNameFormatWithoutDate;
-				textBoxWebBrowserFilePath.Text = config.BrowserExeFilePath;
+				textBoxWebBrowserFilePath.Text = config.WebBrowserExeFilePath;
 				textBoxFfmpegFilePath.Text = config.FfmpegExeFilePath;
 			};
 		}
@@ -93,14 +93,14 @@ namespace YouTube_downloader
 			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
 			folderBrowserDialog.Description = "Выберите папку для скачивания";
 			folderBrowserDialog.SelectedPath =
-				(!string.IsNullOrEmpty(config.DownloadingDirPath) && Directory.Exists(config.DownloadingDirPath)) ?
-				config.DownloadingDirPath : config.SelfDirPath;
+				(!string.IsNullOrEmpty(config.DownloadDirectory) && Directory.Exists(config.DownloadDirectory)) ?
+				config.DownloadDirectory : config.SelfDirectory;
 			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
 			{
-				config.DownloadingDirPath =
+				config.DownloadDirectory =
 					folderBrowserDialog.SelectedPath.EndsWith("\\")
 					? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-				textBoxDownloadDirectory.Text = config.DownloadingDirPath;
+				textBoxDownloadDirectory.Text = config.DownloadDirectory;
 			}
 			folderBrowserDialog.Dispose();
 		}
@@ -110,14 +110,14 @@ namespace YouTube_downloader
 			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
 			folderBrowserDialog.Description = "Выберите папку для временных файлов";
 			folderBrowserDialog.SelectedPath =
-				(!string.IsNullOrEmpty(config.TempDirPath) && Directory.Exists(config.TempDirPath)) ?
-				config.TempDirPath : config.SelfDirPath;
+				(!string.IsNullOrEmpty(config.TemporaryDirectory) && Directory.Exists(config.TemporaryDirectory)) ?
+				config.TemporaryDirectory : config.SelfDirectory;
 			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
 			{
-				config.TempDirPath =
+				config.TemporaryDirectory =
 					folderBrowserDialog.SelectedPath.EndsWith("\\")
 					? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-				textBoxTempDirectory.Text = config.TempDirPath;
+				textBoxTempDirectory.Text = config.TemporaryDirectory;
 			}
 			folderBrowserDialog.Dispose();
 		}
@@ -136,14 +136,14 @@ namespace YouTube_downloader
 			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
 			folderBrowserDialog.Description = "Выберите папку для объединения чанков";
 			folderBrowserDialog.SelectedPath =
-				(!string.IsNullOrEmpty(config.ChunksMergingDirPath) && Directory.Exists(config.ChunksMergingDirPath)) ?
-				config.ChunksMergingDirPath : config.SelfDirPath;
+				(!string.IsNullOrEmpty(config.ChunkMergerDirectory) && Directory.Exists(config.ChunkMergerDirectory)) ?
+				config.ChunkMergerDirectory : config.SelfDirectory;
 			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
 			{
-				config.ChunksMergingDirPath =
+				config.ChunkMergerDirectory =
 					folderBrowserDialog.SelectedPath.EndsWith("\\")
 					? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-				textBoxFileMergerDirectory.Text = config.ChunksMergingDirPath;
+				textBoxFileMergerDirectory.Text = config.ChunkMergerDirectory;
 			}
 			folderBrowserDialog.Dispose();
 		}
@@ -167,8 +167,8 @@ namespace YouTube_downloader
 			ofd.Filter = "EXE-файлы|*.exe";
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
-				config.BrowserExeFilePath = ofd.FileName;
-				textBoxWebBrowserFilePath.Text = config.BrowserExeFilePath;
+				config.WebBrowserExeFilePath = ofd.FileName;
+				textBoxWebBrowserFilePath.Text = config.WebBrowserExeFilePath;
 			}
 			ofd.Dispose();
 		}
@@ -188,17 +188,17 @@ namespace YouTube_downloader
 
 		private void textBoxDownloadDirectory_Leave(object sender, EventArgs e)
 		{
-			config.DownloadingDirPath = textBoxDownloadDirectory.Text;
+			config.DownloadDirectory = textBoxDownloadDirectory.Text;
 		}
 
 		private void textBoxTempDirectory_Leave(object sender, EventArgs e)
 		{
-			config.TempDirPath = textBoxTempDirectory.Text;
+			config.TemporaryDirectory = textBoxTempDirectory.Text;
 		}
 
 		private void textBoxFileMergerDirectory_Leave(object sender, EventArgs e)
 		{
-			config.ChunksMergingDirPath = textBoxFileMergerDirectory.Text;
+			config.ChunkMergerDirectory = textBoxFileMergerDirectory.Text;
 		}
 
 		private void textBoxOutputFileNameFormatWithDate_TextChanged(object sender, EventArgs e)

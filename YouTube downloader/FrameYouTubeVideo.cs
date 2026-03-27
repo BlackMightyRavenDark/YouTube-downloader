@@ -313,7 +313,7 @@ namespace YouTube_downloader
 						sfd.Filter = "jpg|*.jpg";
 						sfd.DefaultExt = ".jpg";
 						sfd.AddExtension = true;
-						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadingDirPath) ? config.SelfDirPath : config.DownloadingDirPath;
+						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
 						string fileNameSuffix = $"_image_{ActiveThumbnail.Image.Width}x{ActiveThumbnail.Image.Height}";
 						string fileName = FixFileName(FormatFileName(
 							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
@@ -418,18 +418,18 @@ namespace YouTube_downloader
 				VideoInfo.IsLiveContent, VideoInfo.Thumbnails,
 				VideoInfo.InitialSimplifiedInfo, VideoInfo.Status);
 
-			DateTime date = config.UseGmtTime ? dateTime.ToGmt() : dateTime;
+			DateTime date = config.UseUniversalTime ? dateTime.ToGmt() : dateTime;
 			string datePublishedString = $"Дата публикации: {date:yyyy.MM.dd, HH:mm:ss}";
-			if (config.UseGmtTime) { datePublishedString += " GMT"; }
+			if (config.UseUniversalTime) { datePublishedString += " GMT"; }
 
 			lblDatePublished.Text = datePublishedString;
 		}
 
 		private void miCopyVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DateTime date = config.UseGmtTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished;
+			DateTime date = config.UseUniversalTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished;
 			string datePublishedString = date.ToString("yyyy-MM-dd HH-mm-ss");
-			if (config.UseGmtTime) { datePublishedString += " GMT"; }
+			if (config.UseUniversalTime) { datePublishedString += " GMT"; }
 
 			SetClipboardText(datePublishedString);
 		}
@@ -680,7 +680,7 @@ namespace YouTube_downloader
 			{
 				using (SaveFileDialog sfd = new SaveFileDialog())
 				{
-					sfd.InitialDirectory = config.DownloadingDirPath;
+					sfd.InitialDirectory = config.DownloadDirectory;
 					sfd.Title = "Сохранить код плеера как...";
 					sfd.Filter = "JS-files|*.js";
 					sfd.DefaultExt = ".js";
@@ -1085,7 +1085,7 @@ namespace YouTube_downloader
 				});
 			}
 
-			if (config.MoveAudioId140First)
+			if (config.AlwaysMoveAudioId140ToTopOfList)
 			{
 				for (int i = 0; i < audioFormats.Count; ++i)
 				{
@@ -1212,9 +1212,9 @@ namespace YouTube_downloader
 				lblProgress.Text = $"0 / {dashUrlList.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
 			}));
 
-			bool canMerge = !audioOnly && config.MergeToContainer && IsFfmpegAvailable();
+			bool canMerge = !audioOnly && config.AutomaticallyMergeToContainer && IsFfmpegAvailable();
 			string fnDash = fnDash = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-				(canMerge ? config.TempDirPath : config.DownloadingDirPath) +
+				(canMerge ? config.TemporaryDirectory : config.DownloadDirectory) +
 				$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
 			string fnDashFinal = fnDash;
 			string fnDashTmp = fnDash + ".tmp";
@@ -1235,7 +1235,7 @@ namespace YouTube_downloader
 			};
 			_singleThreadedDownloader.Headers = headers;
 			int retryCountMax;
-			lock (config) { retryCountMax = config.DashDownloadRetryCountMax; }
+			lock (config) { retryCountMax = config.DashChunkDownloadTryCountLimit; }
 			int errorCode = 400;
 			for (int i = 0; i < dashUrlList.Count; ++i)
 			{
@@ -1350,13 +1350,13 @@ namespace YouTube_downloader
 				//TODO: Вынести это в отдельный метод.
 				if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadUrls)
 				{
-					if (string.IsNullOrEmpty(config.CipherDecryptionAlgo) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgo))
+					if (string.IsNullOrEmpty(config.CipherDecryptionAlgorythm) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
 					{
 						return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
 					}
 
 					#region Внимание! Непротестированный код!
-					IYouTubeMediaTrackUrlDecryptor decryptor = new TrackUrlDecryptor(config.CipherDecryptionAlgo);
+					IYouTubeMediaTrackUrlDecryptor decryptor = new TrackUrlDecryptor(config.CipherDecryptionAlgorythm);
 					decryptor.Decrypt(mediaTrack.FileUrl);
 					if (audioFormats.Count > 0)
 					{
@@ -1400,15 +1400,15 @@ namespace YouTube_downloader
 					_multiThreadedDownloader = new MultiThreadedDownloader();
 					_multiThreadedDownloader.Headers = requestHeaders;
 					_multiThreadedDownloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
-					_multiThreadedDownloader.TryCountLimitPerThread = config.ChunkDownloadRetryCountMax;
-					_multiThreadedDownloader.TryCountLimitInsideThread = config.ChunkDownloadErrorCountMax;
+					_multiThreadedDownloader.TryCountLimitPerThread = config.ChunkDownloadTryCountLimit;
+					_multiThreadedDownloader.TryCountLimitInsideThread = config.ChunkDownloadInnerErrorCountLimit;
 					_multiThreadedDownloader.Url = fileUrl;
 					if (!useRamToStoreTemporaryFiles)
 					{
-						_multiThreadedDownloader.TempDirectory = config.TempDirPath;
+						_multiThreadedDownloader.TempDirectory = config.TemporaryDirectory;
 					}
 					_multiThreadedDownloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
-					string outputFilePath = Path.Combine(isContainer || audioOnly ? config.DownloadingDirPath : config.ChunksMergingDirPath,
+					string outputFilePath = Path.Combine(isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,
 						isContainer ? $"{formattedFileName}.{mediaTrack.FileExtension}" :
 						$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
 					_multiThreadedDownloader.OutputFileName = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(outputFilePath);
@@ -1514,7 +1514,7 @@ namespace YouTube_downloader
 							progressBarDownload.SetItems(items);
 						}));
 					};
-					int res = await Task.Run(() => _multiThreadedDownloader.Download(config.AccurateMultithreading));
+					int res = await Task.Run(() => _multiThreadedDownloader.Download(config.UseAccurateMultithreading));
 					if (useRamToStoreTemporaryFiles)
 					{
 						GC.Collect();
@@ -1575,14 +1575,14 @@ namespace YouTube_downloader
 		{
 			btnDownload.Enabled = false;
 
-			if (string.IsNullOrEmpty(config.DownloadingDirPath) || string.IsNullOrWhiteSpace(config.DownloadingDirPath))
+			if (string.IsNullOrEmpty(config.DownloadDirectory) || string.IsNullOrWhiteSpace(config.DownloadDirectory))
 			{
 				MessageBox.Show("Не указана папка для скачивания!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				btnDownload.Enabled = true;
 				return;
 			}
-			if (!Directory.Exists(config.DownloadingDirPath))
+			if (!Directory.Exists(config.DownloadDirectory))
 			{
 				MessageBox.Show("Папка для скачивания не найдена!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1591,14 +1591,14 @@ namespace YouTube_downloader
 			}
 			if (!config.UseRamToStoreTemporaryFiles)
 			{
-				if (string.IsNullOrEmpty(config.TempDirPath) || string.IsNullOrWhiteSpace(config.TempDirPath))
+				if (string.IsNullOrEmpty(config.TemporaryDirectory) || string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 				{
 					MessageBox.Show("Не указана папка для временных файлов!", "Ошибка!",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 					btnDownload.Enabled = true;
 					return;
 				}
-				if (!Directory.Exists(config.TempDirPath))
+				if (!Directory.Exists(config.TemporaryDirectory))
 				{
 					MessageBox.Show("Папка для временных файлов не найдена!", "Ошибка!",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1606,9 +1606,9 @@ namespace YouTube_downloader
 					return;
 				}
 			}
-			if (!string.IsNullOrEmpty(config.ChunksMergingDirPath) &&
-				!string.IsNullOrWhiteSpace(config.ChunksMergingDirPath) &&
-				!Directory.Exists(config.ChunksMergingDirPath))
+			if (!string.IsNullOrEmpty(config.ChunkMergerDirectory) &&
+				!string.IsNullOrWhiteSpace(config.ChunkMergerDirectory) &&
+				!Directory.Exists(config.ChunkMergerDirectory))
 			{
 				MessageBox.Show("Папка для объединения чанков не найдена!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1665,7 +1665,7 @@ namespace YouTube_downloader
 					lblStatus.Refresh();
 
 					string filePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadingDirPath, formattedFileName + ".ts"));
+						Path.Combine(config.DownloadDirectory, formattedFileName + ".ts"));
 					YouTubeMediaTrackHlsStream stream = mi.Tag as YouTubeMediaTrackHlsStream;
 					GrabHls(stream.FileUrl.Url, filePath);
 					lblStatus.Text = null;
@@ -1684,7 +1684,7 @@ namespace YouTube_downloader
 			}
 			else if (typeOfTag == typeof(YouTubeMediaTrackVideo))
 			{
-				if (config.DownloadAllAdaptiveVideoTracks)
+				if (config.AutomaticallyDownloadAllAdaptiveVideoTracks)
 				{
 					foreach (YouTubeMediaTrack videoFormat in videoFormats)
 					{
@@ -1701,7 +1701,7 @@ namespace YouTube_downloader
 
 				if (audioFormats.Count > 0)
 				{
-					if (config.DownloadAllAudioTracks)
+					if (config.AutomaticallyDownloadAllAdaptiveAudioTracks)
 					{
 						foreach (YouTubeMediaTrack audioFormat in audioFormats)
 						{
@@ -1713,19 +1713,19 @@ namespace YouTube_downloader
 					}
 					else
 					{
-						if (config.DownloadFirstAudioTrack)
+						if (config.AutomaticallyDownloadFirstAudioTrack)
 						{
 							tracksToDownload.Add(audioFormats[0]);
 						}
-						if (config.DownloadSecondAudioTrack && audioFormats.Count > 1)
+						if (config.AutomaticallyDownloadSecondAudioTrack && audioFormats.Count > 1)
 						{
-							if (config.IfOnlySecondAudioTrackIsBetter)
+							if (config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger)
 							{
 								if (audioFormats[1].ContentLength > audioFormats[0].ContentLength)
 								{
 									tracksToDownload.Add(audioFormats[1]);
 								}
-								else if (!config.DownloadFirstAudioTrack)
+								else if (!config.AutomaticallyDownloadFirstAudioTrack)
 								{
 									tracksToDownload.Add(audioFormats[0]);
 								}
@@ -1761,8 +1761,8 @@ namespace YouTube_downloader
 			if (minimumFreeSpaceRequired > 0L)
 			{
 				MultiThreadedDownloader tempDownloader = new MultiThreadedDownloader();
-				tempDownloader.OutputFileName = Path.Combine(config.DownloadingDirPath, "temp.tmp");
-				tempDownloader.TempDirectory = config.TempDirPath;
+				tempDownloader.OutputFileName = Path.Combine(config.DownloadDirectory, "temp.tmp");
+				tempDownloader.TempDirectory = config.TemporaryDirectory;
 
 				List<char> driveLetters = tempDownloader.GetUsedDriveLetters();
 				if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
@@ -1793,7 +1793,7 @@ namespace YouTube_downloader
 			if (needToMerge)
 			{
 				bool stop = false;
-				if (config.MergeToContainer && !IsFfmpegAvailable())
+				if (config.AutomaticallyMergeToContainer && !IsFfmpegAvailable())
 				{
 					string msg = "Формат данного видео является адаптивным. " +
 						"Это значит, что дорожки видео и аудио хранятся по отдельности. " +
@@ -1815,7 +1815,7 @@ namespace YouTube_downloader
 			btnDownload.Text = "Отмена";
 			btnDownload.Enabled = true;
 
-			if (config.CheckUrlsAccessibilityBeforeDownloading)
+			if (config.CheckUrlsAccessibilityBeforeDownloadStarted)
 			{
 				lblStatus.Text = "Состояние: Проверка доступности ссылок...";
 				int[] statusCodes = await Task.Run(() => GetTrackAccessibilityHttpStatusCodes(tracksToDownload, config.ConnectionTimeout));
@@ -1856,16 +1856,16 @@ namespace YouTube_downloader
 
 			if (downloadResult.ErrorCode == 200)
 			{
-				if (config.MergeToContainer && needToMerge && !audioOnly && IsFfmpegAvailable())
+				if (config.AutomaticallyMergeToContainer && needToMerge && !audioOnly && IsFfmpegAvailable())
 				{
 					btnDownload.Enabled = false;
 					if (minimumFreeSpaceRequired > 0L)
 					{
-						DriveInfo driveInfo = new DriveInfo(config.DownloadingDirPath[0].ToString());
+						DriveInfo driveInfo = new DriveInfo(config.DownloadDirectory[0].ToString());
 						if (driveInfo.AvailableFreeSpace < minimumFreeSpaceRequired)
 						{
 							lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
-							string dir = config.ChunksMergingDirPath;
+							string dir = config.ChunkMergerDirectory;
 							string msg = "Недостаточно места на диске для сборки контейнера! " +
 								$"Оригинальные файлы сохранены в папку\n{dir}";
 							MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1878,7 +1878,7 @@ namespace YouTube_downloader
 					}
 
 					string ext = "mkv";
-					if (!config.AlwaysUseMkvContainer)
+					if (!config.AlwaysUseMkvContainerIfPossible)
 					{
 						ext = "mp4";
 						foreach (YouTubeMediaTrack mediaTrack in tracksToDownload)
@@ -1895,10 +1895,10 @@ namespace YouTube_downloader
 					lblStatus.Refresh();
 
 					string containerFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadingDirPath, $"{formattedFileName}.{ext}"));
+						Path.Combine(config.DownloadDirectory, $"{formattedFileName}.{ext}"));
 					await MergeYouTubeMediaTracks(downloadResults, containerFilePath, config.ExtraDelayAfterContainerWasBuilt);
 
-					if (config.DeleteSourceFiles)
+					if (config.DeleteSourceFilesWhenMerged)
 					{
 						foreach (DownloadResult dr in downloadResults)
 						{
@@ -1911,7 +1911,7 @@ namespace YouTube_downloader
 				}
 
 				//сохранение картинки
-				if (config.SavePreviewImage && ActiveThumbnail != null && ActiveThumbnail.IsOk)
+				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsOk)
 				{
 					SaveThumbnailToFile(ActiveThumbnail, formattedFileName);
 				}
@@ -2066,7 +2066,7 @@ namespace YouTube_downloader
 				if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName) && thumbnail.IsOk)
 				{
 					string suffix = thumbnail.Image != null ? $"_image_{thumbnail.Image.Width}x{thumbnail.Image.Height}.jpg" : "_image.dat";
-					string outputFilePath = Path.Combine(config.DownloadingDirPath, formattedFileName + suffix);
+					string outputFilePath = Path.Combine(config.DownloadDirectory, formattedFileName + suffix);
 					thumbnail.ImageData.SaveToFile(outputFilePath);
 				}
 			}

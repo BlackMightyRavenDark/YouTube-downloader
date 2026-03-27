@@ -14,7 +14,7 @@ namespace YouTube_downloader
 
 			config.Saving += (s, json) =>
 			{
-				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgo;
+				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgorythm;
 				json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
 				json["externalRestApiServerUrl"] = config.ExternalRestApiServerUrl;
 				json["externalRestApiServerPort"] = config.ExternalRestApiServerPort;
@@ -26,13 +26,13 @@ namespace YouTube_downloader
 				json["threadCountVideo"] = config.ThreadCountVideo;
 				json["threadCountAudio"] = config.ThreadCountAudio;
 				json["globalThreadCountMaximum"] = config.GlobalThreadCountMaximum;
-				json["accurateMultithreading"] = config.AccurateMultithreading;
+				json["accurateMultithreading"] = config.UseAccurateMultithreading;
 				json["connectionTimeout"] = config.ConnectionTimeout;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
 				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
-				json["dashDownloadRetryCountMax"] = config.DashDownloadRetryCountMax;
-				json["useGmtTime"] = config.UseGmtTime;
+				json["dashDownloadRetryCountMax"] = config.DashChunkDownloadTryCountLimit;
+				json["useGmtTime"] = config.UseUniversalTime;
 			};
 
 			config.Loading += (s, json) =>
@@ -41,7 +41,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("cipherDecryptionAlgo");
 					if (jt != null)
 					{
-						config.CipherDecryptionAlgo = jt.Value<string>();
+						config.CipherDecryptionAlgorythm = jt.Value<string>();
 					}
 				}
 				{
@@ -124,7 +124,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("accurateMultithreading");
 					if (jt != null)
 					{
-						config.AccurateMultithreading = jt.Value<bool>();
+						config.UseAccurateMultithreading = jt.Value<bool>();
 					}
 				}
 				{
@@ -161,21 +161,21 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("dashDownloadRetryCountMax");
 					if (jt != null)
 					{
-						config.DashDownloadRetryCountMax = jt.Value<int>();
+						config.DashChunkDownloadTryCountLimit = jt.Value<int>();
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("useGmtTime");
 					if (jt != null)
 					{
-						config.UseGmtTime = jt.Value<bool>();
+						config.UseUniversalTime = jt.Value<bool>();
 					}
 				}
 			};
 
 			config.Loaded += s =>
 			{
-				textBoxCipherDecryptionAlgorythm.Text = config.CipherDecryptionAlgo;
+				textBoxCipherDecryptionAlgorythm.Text = config.CipherDecryptionAlgorythm;
 				textBoxYouTubeApiV3Key.Text = config.YouTubeApiV3Key;
 				textBoxExternalRestApiServerUrl.Text = config.ExternalRestApiServerUrl;
 				numericUpDownExternalRestApiServerPort.Value = config.ExternalRestApiServerPort;
@@ -187,10 +187,10 @@ namespace YouTube_downloader
 				numericUpDownThreadCountVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadCountAudio.Value = config.ThreadCountAudio;
 				numericUpDownGlobalThreadCountLimit.Value = config.GlobalThreadCountMaximum;
-				checkBoxUseAccurateMultithreading.Checked = config.AccurateMultithreading;
+				checkBoxUseAccurateMultithreading.Checked = config.UseAccurateMultithreading;
 				numericUpDownConnectionTimeout.Value = config.ConnectionTimeout;
 				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
-				numericUpDownDashChunkDownloadTryCountLimit.Value = config.DashDownloadRetryCountMax;
+				numericUpDownDashChunkDownloadTryCountLimit.Value = config.DashChunkDownloadTryCountLimit;
 				numericUpDownDashChunkSize.Value = config.DashManualFragmentationChunkSize;
 				if (Is64BitProcess)
 				{
@@ -208,7 +208,7 @@ namespace YouTube_downloader
 					textBoxYouTubeApiV3Key.Enabled = false;
 				}
 
-				checkBoxUseUniversalTime.Checked = config.UseGmtTime;
+				checkBoxUseUniversalTime.Checked = config.UseUniversalTime;
 			};
 		}
 
@@ -273,7 +273,7 @@ namespace YouTube_downloader
 
 		private void textBoxCipherDecryptionAlgorythm_Leave(object sender, EventArgs e)
 		{
-			config.CipherDecryptionAlgo = textBoxCipherDecryptionAlgorythm.Text;
+			config.CipherDecryptionAlgorythm = textBoxCipherDecryptionAlgorythm.Text;
 		}
 
 		private void textBoxExternalRestApiServerUrl_Leave(object sender, EventArgs e)
@@ -303,7 +303,7 @@ namespace YouTube_downloader
 
 		private void checkBoxUseUniversalTime_CheckedChanged(object sender, EventArgs e)
 		{
-			config.UseGmtTime = checkBoxUseUniversalTime.Checked;
+			config.UseUniversalTime = checkBoxUseUniversalTime.Checked;
 			foreach (FrameYouTubeVideo frame in framesVideo)
 			{
 				frame.UpdateVideoDateTimeIndicator();
@@ -333,7 +333,7 @@ namespace YouTube_downloader
 
 		private void checkBoxUseAccurateMultithreading_CheckedChanged(object sender, EventArgs e)
 		{
-			config.AccurateMultithreading = checkBoxUseAccurateMultithreading.Checked;
+			config.UseAccurateMultithreading = checkBoxUseAccurateMultithreading.Checked;
 		}
 
 		private void numericUpDownThreadCountAudio_ValueChanged(object sender, EventArgs e)
@@ -401,7 +401,7 @@ namespace YouTube_downloader
 
 		private void numericUpDownDashChunkDownloadTryCountLimit_ValueChanged(object sender, EventArgs e)
 		{
-			config.DashDownloadRetryCountMax = (int)numericUpDownDashChunkDownloadTryCountLimit.Value;
+			config.DashChunkDownloadTryCountLimit = (int)numericUpDownDashChunkDownloadTryCountLimit.Value;
 		}
 
 		private void numericUpDownDashChunkSize_ValueChanged(object sender, EventArgs e)
