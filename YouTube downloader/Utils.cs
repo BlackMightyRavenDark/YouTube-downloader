@@ -102,12 +102,6 @@ namespace YouTube_downloader
 			return url;
 		}
 
-		public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos)
-		{
-			DateTime maxDate = DateTime.MaxValue;
-			return GetYouTubeChannelVideosRequestUrl(channelId, maxVideos, maxDate, maxDate);
-		}
-
 		public static string GetYouTubeSearchQueryRequestUrl(
 			string searchingPhrase, string resultTypes, int maxResults,
 			DateTime publishedAfter, DateTime publishedBefore)
@@ -135,13 +129,6 @@ namespace YouTube_downloader
 
 			string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
 			return url;
-		}
-
-		public static string GetYouTubeSearchQueryRequestUrl(
-			string searchingPhrase, string resultTypes, int maxResults)
-		{
-			DateTime maxDate = DateTime.MaxValue;
-			return GetYouTubeSearchQueryRequestUrl(searchingPhrase, resultTypes, maxResults, maxDate, maxDate);
 		}
 
 		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out string errorMessage)
@@ -273,14 +260,6 @@ namespace YouTube_downloader
 				new YouTubeStreamingDataResult(null, rawVideoInfoResult.ErrorCode);
 		}
 
-		internal static YouTubeStreamingDataResult ExtractStreamingDataFromVideoWebPage(string webPageCode)
-		{
-			YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
-			return webPageResult.ErrorCode == 200 ?
-				ExtractStreamingDataFromVideoWebPage(webPageResult.VideoWebPage) :
-				new YouTubeStreamingDataResult(null, webPageResult.ErrorCode);
-		}
-
 		private static FavoriteItem FindItemWithId(string itemId, FavoriteItem root)
 		{
 			if (string.IsNullOrEmpty(itemId) || string.IsNullOrEmpty(itemId)) { return null; }
@@ -313,13 +292,6 @@ namespace YouTube_downloader
 		public static FavoriteItem FindInFavorites(string itemId)
 		{
 			return FindItemWithId(itemId, favoritesRootNode);
-		}
-
-		public static string DecideMergingDirectory()
-		{
-			return !string.IsNullOrEmpty(config.ChunkMergerDirectory) &&
-				!string.IsNullOrWhiteSpace(config.ChunkMergerDirectory) ?
-				config.ChunkMergerDirectory : config.TemporaryDirectory;
 		}
 
 		public static bool IsEnoughDiskSpace(IEnumerable<char> driveLetters, long contentLength)
@@ -659,18 +631,6 @@ namespace YouTube_downloader
 				}
 			}
 			return null;
-		}
-
-		public static IEnumerable<YouTubeMediaTrack> MediaTracksToEnumerable(Dictionary<string, YouTubeMediaFormatList> formatLists)
-		{
-			IEnumerable<YouTubeMediaFormatList> lists = formatLists.Values;
-			foreach (YouTubeMediaFormatList list in lists)
-			{
-				foreach (YouTubeMediaTrack track in list.Tracks)
-				{
-					yield return track;
-				}
-			}
 		}
 
 		public static void SetClipboardText(string text)
