@@ -366,7 +366,7 @@ namespace YouTube_downloader
 			{
 				if (config.ThreadCountVideo > 50)
 				{
-					//toolTip1.SetToolTip(panelWarningVideoThreads, "Опасно! Перегрузка!");
+					toolTip1.SetToolTip(panelWarningVideoThreads, "Опасно! Перегрузка!");
 					if (config.ThreadCountVideo <= 70)
 					{
 						panelWarningVideoThreads.BackgroundImage = Resources.fire;
@@ -382,7 +382,7 @@ namespace YouTube_downloader
 				}
 				else
 				{
-					//toolTip1.SetToolTip(panelWarningVideoThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
+					toolTip1.SetToolTip(panelWarningVideoThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
 					panelWarningVideoThreads.BackgroundImage = Resources.warning;
 				}
 				panelWarningVideoThreads.Visible = true;
