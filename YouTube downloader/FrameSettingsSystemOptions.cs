@@ -343,12 +343,12 @@ namespace YouTube_downloader
 			{
 				if (config.ThreadCountAudio > 50)
 				{
-					//toolTip1.SetToolTip(panelWarningAudioThreads, "Опасно! Перегрузка!");
+					toolTip1.SetToolTip(panelWarningAudioThreads, "Опасно! Перегрузка!");
 					panelWarningAudioThreads.BackgroundImage = Resources.fire;
 				}
 				else
 				{
-					//toolTip1.SetToolTip(panelWarningAudioThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
+					toolTip1.SetToolTip(panelWarningAudioThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
 					panelWarningAudioThreads.BackgroundImage = Resources.warning;
 				}
 				panelWarningAudioThreads.Visible = true;
