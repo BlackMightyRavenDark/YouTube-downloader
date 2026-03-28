@@ -33,10 +33,10 @@ namespace YouTube_downloader
 
 			dateTimePickerSearchAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
 
-			config.Saving += (s, json) => json["maxSearch"] = config.MaximumSearchResults;
+			config.Saving += (s, json) => json["maximumSearchResults"] = config.MaximumSearchResults;
 			config.Loading += (s, json) =>
 			{
-				JToken jt = json.Value<JToken>("maxSearch");
+				JToken jt = json.Value<JToken>("maximumSearchResults");
 				if (jt != null)
 				{
 					config.MaximumSearchResults = ClampValue(jt.Value<int>(), 1, 500);

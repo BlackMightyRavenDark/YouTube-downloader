@@ -18,8 +18,8 @@ namespace YouTube_downloader
 				json["favoritesListFontSize"] = config.FavoritesListFontSize;
 				json["sortFormatsByFileSize"] = config.SortFormatsByFileSize;
 				json["sortDashFormatsByBitrate"] = config.SortDashFormatsByBitrate;
-				json["moveAudioId140First"] = config.AlwaysMoveAudioId140ToTopOfList;
-				json["showHlsTracksOnlyForStreams"] = config.ShowHlsTracksOnlyForStreams;
+				json["alwaysMoveAudioId140ToTopOfList"] = config.AlwaysMoveAudioId140ToTopOfList;
+				json["showHlsFormatsOnlyForStreams"] = config.ShowHlsTracksOnlyForStreams;
 			};
 
 			config.Loading += (s, json) =>
@@ -60,14 +60,14 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("moveAudioId140First");
+					JToken jt = json.Value<JToken>("alwaysMoveAudioId140ToTopOfList");
 					if (jt != null)
 					{
 						config.AlwaysMoveAudioId140ToTopOfList = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("showHlsTracksOnlyForStreams");
+					JToken jt = json.Value<JToken>("showHlsFormatsOnlyForStreams");
 					if (jt != null)
 					{
 						config.ShowHlsTracksOnlyForStreams = jt.Value<bool>();

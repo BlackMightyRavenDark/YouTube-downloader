@@ -13,50 +13,50 @@ namespace YouTube_downloader
 
 			config.Saving += (s, json) =>
 			{
-				json["downloadFirstAudioTrackAutomatically"] = config.AutomaticallyDownloadFirstAudioTrack;
-				json["downloadSecondAudioTrackAutomatically"] = config.AutomaticallyDownloadSecondAudioTrack;
-				json["ifOnlySecondAudioTrackIsBetter"] = config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
-				json["downloadAllAudioTracksAutomatically"] = config.AutomaticallyDownloadAllAdaptiveAudioTracks;
-				json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainerIfPossible;
+				json["automaticallyDownloadFirstAudioTrack"] = config.AutomaticallyDownloadFirstAudioTrack;
+				json["automaticallyDownloadSecondAudioTrack"] = config.AutomaticallyDownloadSecondAudioTrack;
+				json["automaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger"] = config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
+				json["automaticallyDownloadAllAdaptiveAudioTracks"] = config.AutomaticallyDownloadAllAdaptiveAudioTracks;
+				json["alwaysUseMkvContainerIfPossible"] = config.AlwaysUseMkvContainerIfPossible;
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
-				json["checkUrlsAccessibilityBeforeDownloading"] = config.CheckUrlsAccessibilityBeforeDownloadStarted;
-				json["chunkDownloadTryCountMax"] = config.ChunkDownloadTryCountLimit;
-				json["chunkDownloadErrorCountMax"] = config.ChunkDownloadInnerErrorCountLimit;
-				json["savePreviewImage"] = config.AutomaticallySaveVideoThumbnailImage;
+				json["checkUrlsAccessibilityBeforeDownloadStarted"] = config.CheckUrlsAccessibilityBeforeDownloadStarted;
+				json["chunkDownloadTryCountLimit"] = config.ChunkDownloadTryCountLimit;
+				json["chunkDownloadInnerErrorCountLimit"] = config.ChunkDownloadInnerErrorCountLimit;
+				json["automaticallySaveVideoThumbnailImage"] = config.AutomaticallySaveVideoThumbnailImage;
 			};
 
 			config.Loading += (s, json) =>
 			{
 				{
-					JToken jt = json.Value<JToken>("downloadFirstAudioTrackAutomatically");
+					JToken jt = json.Value<JToken>("automaticallyDownloadFirstAudioTrack");
 					if (jt != null)
 					{
 						config.AutomaticallyDownloadFirstAudioTrack = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("downloadSecondAudioTrackAutomatically");
+					JToken jt = json.Value<JToken>("automaticallyDownloadSecondAudioTrack");
 					if (jt != null)
 					{
 						config.AutomaticallyDownloadSecondAudioTrack = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("ifOnlySecondAudioTrackIsBetter");
+					JToken jt = json.Value<JToken>("automaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger");
 					if (jt != null)
 					{
 						config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("downloadAllAudioTracksAutomatically");
+					JToken jt = json.Value<JToken>("automaticallyDownloadAllAdaptiveAudioTracks");
 					if (jt != null)
 					{
 						config.AutomaticallyDownloadAllAdaptiveAudioTracks = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("alwaysUseMkvContainer");
+					JToken jt = json.Value<JToken>("alwaysUseMkvContainerIfPossible");
 					if (jt != null)
 					{
 						config.AlwaysUseMkvContainerIfPossible = jt.Value<bool>();
@@ -70,14 +70,14 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("checkUrlsAccessibilityBeforeDownloading");
+					JToken jt = json.Value<JToken>("checkUrlsAccessibilityBeforeDownloadStarted");
 					if (jt != null)
 					{
 						config.CheckUrlsAccessibilityBeforeDownloadStarted = jt.Value<bool>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("chunkDownloadTryCountMax");
+					JToken jt = json.Value<JToken>("chunkDownloadTryCountLimit");
 					if (jt != null)
 					{
 						int n = jt.Value<int>();
@@ -85,14 +85,14 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("chunkDownloadErrorCountMax");
+					JToken jt = json.Value<JToken>("chunkDownloadInnerErrorCountLimit");
 					if (jt != null)
 					{
 						config.ChunkDownloadInnerErrorCountLimit = jt.Value<int>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("savePreviewImage");
+					JToken jt = json.Value<JToken>("automaticallySaveVideoThumbnailImage");
 					if (jt != null)
 					{
 						config.AutomaticallySaveVideoThumbnailImage = jt.Value<bool>();

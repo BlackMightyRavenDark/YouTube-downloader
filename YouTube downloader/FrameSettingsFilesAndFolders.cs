@@ -14,33 +14,33 @@ namespace YouTube_downloader
 
 			config.Saving += (s, json) =>
 			{
-				json["downloadingDirPath"] = config.DownloadDirectory;
-				json["tempDirPath"] = config.TemporaryDirectory;
-				json["chunksMergingDirPath"] = config.ChunkMergerDirectory;
+				json["downloadDirectory"] = config.DownloadDirectory;
+				json["temporaryDirectory"] = config.TemporaryDirectory;
+				json["chunkMergerDirectory"] = config.ChunkMergerDirectory;
 				json["outputFileNameFormatWithDate"] = config.OutputFileNameFormatWithDate;
 				json["outputFileNameFormatWithoutDate"] = config.OutputFileNameFormatWithoutDate;
-				json["browserExeFilePath"] = config.WebBrowserExeFilePath;
+				json["webBrowserExeFilePath"] = config.WebBrowserExeFilePath;
 				json["ffmpegExeFilePath"] = config.FfmpegExeFilePath;
 			};
 
 			config.Loading += (s, json) =>
 			{
 				{
-					JToken jt = json.Value<JToken>("downloadingDirPath");
+					JToken jt = json.Value<JToken>("downloadDirectory");
 					if (jt != null)
 					{
 						config.DownloadDirectory = jt.Value<string>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("tempDirPath");
+					JToken jt = json.Value<JToken>("temporaryDirectory");
 					if (jt != null)
 					{
 						config.TemporaryDirectory = jt.Value<string>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("chunksMergingDirPath");
+					JToken jt = json.Value<JToken>("chunkMergerDirectory");
 					if (jt != null)
 					{
 						config.ChunkMergerDirectory = jt.Value<string>();
@@ -61,7 +61,7 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("browserExeFilePath");
+					JToken jt = json.Value<JToken>("webBrowserExeFilePath");
 					if (jt != null)
 					{
 						config.WebBrowserExeFilePath = jt.Value<string>();

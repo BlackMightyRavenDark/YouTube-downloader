@@ -14,7 +14,7 @@ namespace YouTube_downloader
 
 			config.Saving += (s, json) =>
 			{
-				json["cipherDecryptionAlgo"] = config.CipherDecryptionAlgorythm;
+				json["cipherDecryptionAlgorythm"] = config.CipherDecryptionAlgorythm;
 				json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
 				json["externalRestApiServerUrl"] = config.ExternalRestApiServerUrl;
 				json["externalRestApiServerPort"] = config.ExternalRestApiServerPort;
@@ -25,20 +25,20 @@ namespace YouTube_downloader
 				json["userAgent"] = config.UserAgent;
 				json["threadCountVideo"] = config.ThreadCountVideo;
 				json["threadCountAudio"] = config.ThreadCountAudio;
-				json["globalThreadCountMaximum"] = config.GlobalThreadCountMaximum;
-				json["accurateMultithreading"] = config.UseAccurateMultithreading;
+				json["globalThreadCountLimit"] = config.GlobalThreadCountMaximum;
+				json["useAccurateMultithreading"] = config.UseAccurateMultithreading;
 				json["connectionTimeout"] = config.ConnectionTimeout;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
 				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
 				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
-				json["dashDownloadRetryCountMax"] = config.DashChunkDownloadTryCountLimit;
-				json["useGmtTime"] = config.UseUniversalTime;
+				json["dashChunkDownloadTryCountLimit"] = config.DashChunkDownloadTryCountLimit;
+				json["useUniversalTime"] = config.UseUniversalTime;
 			};
 
 			config.Loading += (s, json) =>
 			{
 				{
-					JToken jt = json.Value<JToken>("cipherDecryptionAlgo");
+					JToken jt = json.Value<JToken>("cipherDecryptionAlgorythm");
 					if (jt != null)
 					{
 						config.CipherDecryptionAlgorythm = jt.Value<string>();
@@ -114,14 +114,14 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("globalThreadCountMaximum");
+					JToken jt = json.Value<JToken>("globalThreadCountLimit");
 					if (jt != null)
 					{
 						config.GlobalThreadCountMaximum = jt.Value<int>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("accurateMultithreading");
+					JToken jt = json.Value<JToken>("useAccurateMultithreading");
 					if (jt != null)
 					{
 						config.UseAccurateMultithreading = jt.Value<bool>();
@@ -158,14 +158,14 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("dashDownloadRetryCountMax");
+					JToken jt = json.Value<JToken>("dashChunkDownloadTryCountLimit");
 					if (jt != null)
 					{
 						config.DashChunkDownloadTryCountLimit = jt.Value<int>();
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("useGmtTime");
+					JToken jt = json.Value<JToken>("useUniversalTime");
 					if (jt != null)
 					{
 						config.UseUniversalTime = jt.Value<bool>();
