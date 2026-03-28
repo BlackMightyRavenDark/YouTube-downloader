@@ -98,9 +98,11 @@ namespace YouTube_downloader
 		public MenusFontSizeChangedDelegate MenusFontSizeChanged;
 		public favoritesListFontSizeChangedDelegate FavoritesListFontSizeChanged;
 
-		public Configurator(string fileName)
+		public Configurator()
 		{
-			SelfDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+			string selfExePath = Application.ExecutablePath;
+			string selfFileName = Path.GetFileName(selfExePath);
+			SelfDirectory = Path.GetDirectoryName(selfExePath);
 			bool useAppData = false;
 			string[] args = Environment.GetCommandLineArgs();
 			foreach (string arg in args)
@@ -111,10 +113,10 @@ namespace YouTube_downloader
 					break;
 				}
 			}
-			HomeDirectory = useAppData ? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-				"\\YouTube downloader\\" : SelfDirectory + "\\";
+			HomeDirectory = (useAppData ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				"YouTube downloader") : SelfDirectory) + "\\";
 			FavoritesFilePath = HomeDirectory + "fav.json";
-			FilePath = HomeDirectory + fileName;
+			FilePath = HomeDirectory + (useAppData ? "config_ytdl.json" : (Path.GetFileNameWithoutExtension(selfFileName) + "_config.json"));
 
 			LoadDefaults();
 		}

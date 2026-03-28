@@ -34,7 +34,7 @@ namespace YouTube_downloader
 
 		public static TreeListView treeFavorites = null;
 		public static FavoriteItem favoritesRootNode = null;
-		public static readonly Configurator config = new Configurator("config_ytdl.json");
+		public static readonly Configurator config = new Configurator();
 
 		public static readonly bool Is64BitProcess = Environment.Is64BitProcess;
 
