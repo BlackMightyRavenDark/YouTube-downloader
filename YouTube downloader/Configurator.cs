@@ -91,12 +91,12 @@ namespace YouTube_downloader
 		public delegate void LoadingDelegate(object sender, JObject root);
 		public delegate void LoadedDelegate(object sender);
 		public delegate void MenusFontSizeChangedDelegate(object sender, int newSize);
-		public delegate void favoritesListFontSizeChangedDelegate(object sender, int newSize);
+		public delegate void FavoritesListFontSizeChangedDelegate(object sender, int newSize);
 		public SavingDelegate Saving;
 		public LoadingDelegate Loading;
 		public LoadedDelegate Loaded;
 		public MenusFontSizeChangedDelegate MenusFontSizeChanged;
-		public favoritesListFontSizeChangedDelegate FavoritesListFontSizeChanged;
+		public FavoritesListFontSizeChangedDelegate FavoritesListFontSizeChanged;
 
 		public Configurator()
 		{
