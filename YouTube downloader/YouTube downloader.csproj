@@ -99,6 +99,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DownloadResult.cs" />
+    <Compile Include="FavoriteItem.cs" />
     <Compile Include="FrameSettingsDownloadOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -123,6 +125,7 @@
     <Compile Include="FrameSettingsSystemOptions.Designer.cs">
       <DependentUpon>FrameSettingsSystemOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="MemoryWatcher.cs" />
     <Compile Include="TrackUrlDecryptor.cs" />
     <Compile Include="VideoThumbnailWrapper.cs" />
     <Compile Include="YouTubeClientRestApi.cs" />
