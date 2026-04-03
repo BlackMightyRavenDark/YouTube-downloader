@@ -23,10 +23,6 @@ namespace YouTube_downloader
 		public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
 		public const string YOUTUBE_WATCH_URL_BASE = "https://www.youtube.com/watch";
 
-		public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
-			"[<year>-<month>-<day> <hour>-<minute>-<second><GMT>] <video_title> (id_<video_id>)";
-		public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
-
 		public static List<YouTubeChannelInfo> channelInfos = new List<YouTubeChannelInfo>();
 		public static List<YouTubeVideo> videos = new List<YouTubeVideo>();
 		public static List<FrameYouTubeChannel> framesChannel = new List<FrameYouTubeChannel>();

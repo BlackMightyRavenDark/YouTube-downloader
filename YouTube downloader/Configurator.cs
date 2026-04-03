@@ -86,6 +86,9 @@ namespace YouTube_downloader
 		private int _favoritesListFontSize;
 
 		public const string DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0";
+		public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
+			"[<year>-<month>-<day> <hour>-<minute>-<second><GMT>] <video_title> (id_<video_id>)";
+		public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
 
 		public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
@@ -138,8 +141,8 @@ namespace YouTube_downloader
 			DownloadDirectory = null;
 			TemporaryDirectory = null;
 			ChunkMergerDirectory = null;
-			OutputFileNameFormatWithDate = Utils.FILENAME_FORMAT_DEFAULT_WITH_DATE;
-			OutputFileNameFormatWithoutDate = Utils.FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
+			OutputFileNameFormatWithDate = FILENAME_FORMAT_DEFAULT_WITH_DATE;
+			OutputFileNameFormatWithoutDate = FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
 			WebBrowserExeFilePath = null;
 			FfmpegExeFilePath = "FFMPEG.EXE";
 			#endregion

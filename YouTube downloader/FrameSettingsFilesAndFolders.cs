@@ -150,14 +150,14 @@ namespace YouTube_downloader
 
 		private void btnResetFileNameFormatWithDate_Click(object sender, EventArgs e)
 		{
-			config.OutputFileNameFormatWithDate = FILENAME_FORMAT_DEFAULT_WITH_DATE;
-			textBoxOutputFileNameFormatWithDate.Text = FILENAME_FORMAT_DEFAULT_WITH_DATE;
+			config.OutputFileNameFormatWithDate = Configurator.FILENAME_FORMAT_DEFAULT_WITH_DATE;
+			textBoxOutputFileNameFormatWithDate.Text = Configurator.FILENAME_FORMAT_DEFAULT_WITH_DATE;
 		}
 
 		private void btnResetFileNameFormatWithoutDate_Click(object sender, EventArgs e)
 		{
-			config.OutputFileNameFormatWithoutDate = FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
-			textBoxOutputFileNameFormatWithoutDate.Text = FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
+			config.OutputFileNameFormatWithoutDate = Configurator.FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
+			textBoxOutputFileNameFormatWithoutDate.Text = Configurator.FILENAME_FORMAT_DEFAULT_WITHOUT_DATE;
 		}
 
 		private void btnSelectWebBrowserFilePath_Click(object sender, EventArgs e)
