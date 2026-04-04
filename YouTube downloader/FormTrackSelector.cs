@@ -15,7 +15,7 @@ namespace YouTube_downloader
 
 			SetupListView();
 
-			List<TrackItem> root = new List<TrackItem>();
+			List<TrackSelectorItem> root = new List<TrackSelectorItem>();
 			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
 			{
 				if (mediaTrack.GetType() == typeof(YouTubeMediaTrackVideo))
@@ -23,7 +23,7 @@ namespace YouTube_downloader
 					YouTubeMediaTrackVideo videoFile = mediaTrack as YouTubeMediaTrackVideo;
 					string resolution = $"{videoFile.VideoWidth}x{videoFile.VideoHeight}";
 					int chunkCount = videoFile.DashUrls != null ? videoFile.DashUrls.Count : -1;
-					TrackItem trackItem = new TrackItem("Видео", resolution, videoFile.FrameRate,
+					TrackSelectorItem trackItem = new TrackSelectorItem("Видео", resolution, videoFile.FrameRate,
 						videoFile.Bitrate, videoFile.AverageBitrate, videoFile.FileExtension,
 						videoFile.ContentLength, chunkCount, mediaTrack);
 					root.Add(trackItem);
@@ -35,7 +35,7 @@ namespace YouTube_downloader
 				{
 					YouTubeMediaTrackAudio audioTrack = mediaTrack as YouTubeMediaTrackAudio;
 					int chunkCount = audioTrack.DashUrls != null ? audioTrack.DashUrls.Count : -1;
-					TrackItem trackItem = new TrackItem("Аудио", null, -1,
+					TrackSelectorItem trackItem = new TrackSelectorItem("Аудио", null, -1,
 						audioTrack.Bitrate, audioTrack.AverageBitrate, audioTrack.FileExtension,
 						audioTrack.ContentLength, chunkCount, mediaTrack);
 					root.Add(trackItem);
@@ -92,7 +92,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			foreach (TrackItem item in items)
+			foreach (TrackSelectorItem item in items)
 			{
 				SelectedTracks.Add(item.Tag as YouTubeMediaTrack);
 			}
@@ -105,34 +105,6 @@ namespace YouTube_downloader
 		{
 			DialogResult = DialogResult.Cancel;
 			Close();
-		}
-	}
-
-	public sealed class TrackItem
-	{
-		public string TrackType { get; private set; }
-		public string Resolution { get; private set; }
-		public int FrameRate { get; private set; }
-		public int FormalBitrate { get; private set; }
-		public int AverageBitrate { get; private set; }
-		public string FileExtension { get; private set; }
-		public long FileSize { get; private set; }
-		public int ChunkCount { get; private set; }
-		public object Tag { get; private set; }
-
-		public TrackItem(string trackType, string resolution, int frameRate,
-			int formalBitrate, int averageBitrate,
-			string fileExtension, long fileSize, int chunkCount, object tag)
-		{
-			TrackType = trackType;
-			Resolution = resolution;
-			FrameRate = frameRate;
-			FormalBitrate = formalBitrate;
-			AverageBitrate = averageBitrate;
-			FileExtension = fileExtension;
-			FileSize = fileSize;
-			ChunkCount = chunkCount;
-			Tag = tag;
 		}
 	}
 }

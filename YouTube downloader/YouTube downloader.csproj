@@ -126,6 +126,7 @@
       <DependentUpon>FrameSettingsSystemOptions.cs</DependentUpon>
     </Compile>
     <Compile Include="MemoryWatcher.cs" />
+    <Compile Include="TrackSelectorItem.cs" />
     <Compile Include="TrackUrlDecryptor.cs" />
     <Compile Include="VideoThumbnailWrapper.cs" />
     <Compile Include="YouTubeClientRestApi.cs" />
