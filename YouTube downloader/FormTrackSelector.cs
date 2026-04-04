@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using YouTubeApiLib;
@@ -43,6 +44,13 @@ namespace YouTube_downloader
 			}
 
 			listViewTrackSelector.Objects = root.ToArray();
+		}
+
+		private void listViewTrackSelector_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e)
+		{
+			TrackSelectorItem item = e.Model as TrackSelectorItem;
+			if (item.TrackType == "Видео") { e.Item.BackColor = Color.Lime; }
+			else if (item.TrackType == "Аудио") { e.Item.BackColor = Color.LightSkyBlue; }
 		}
 
 		private void SetupListView()

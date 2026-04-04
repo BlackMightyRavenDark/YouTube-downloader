@@ -81,6 +81,7 @@
 			this.listViewTrackSelector.TabIndex = 0;
 			this.listViewTrackSelector.UseCompatibleStateImageBehavior = false;
 			this.listViewTrackSelector.View = System.Windows.Forms.View.Details;
+			this.listViewTrackSelector.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.listViewTrackSelector_FormatRow);
 			// 
 			// olvColumnTrackType
 			// 
