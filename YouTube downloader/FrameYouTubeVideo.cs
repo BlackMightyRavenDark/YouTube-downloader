@@ -1024,8 +1024,9 @@ namespace YouTube_downloader
 				{
 					t += "\nДля этого видео установлено ограничение по возрасту. " +
 						"Чтобы его скачать, вам необходимо запустить " +
-						"специальный веб-сервер на Python и включить его использование в настройках.\n" +
-						"Скачать код сервера можно здесь:\nhttps://github.com/BlackMightyRavenDark/youtube_video_info_server_python\n" +
+						"специальный локальный веб-сервер на JavaScript и включить его использование в настройках.\n" +
+						"Скачать код сервера можно здесь:\n" +
+						"https://github.com/BlackMightyRavenDark/youtube_rest_api_server_node_js\n" +
 						"Если это не помогло, можно попробовать воспользоваться поиском по коду веб-страницы с видео.";
 				}
 				MessageBox.Show(t, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
