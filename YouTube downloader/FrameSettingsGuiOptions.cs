@@ -75,7 +75,7 @@ namespace YouTube_downloader
 				}
 			};
 
-			config.Loaded += (s) =>
+			config.Loaded += s =>
 			{
 				numericUpDownVideoTitleFontSize.Value = config.VideoTitleFontSize;
 				numericUpDownMenusFontSize.Value = config.MenusFontSize;

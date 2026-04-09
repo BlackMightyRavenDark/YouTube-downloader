@@ -218,12 +218,6 @@ namespace YouTube_downloader
 			return 0;
 		}
 
-		public static DateTime ToGmt(this DateTime dateTime)
-		{
-			TimeSpan offset = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time").BaseUtcOffset;
-			return dateTime.ToUniversalTime().AddHours(offset.Hours);
-		}
-
 		public static void DrawStar(this Graphics graphics,
 			double positionX, double positionY, double outerRadius,
 			double spikeSizeDivider, double rotationAngle, bool fillArea, Color areaColor)

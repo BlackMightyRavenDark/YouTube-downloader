@@ -76,7 +76,7 @@ namespace YouTube_downloader
 				}
 			};
 
-			config.Loaded += (s) =>
+			config.Loaded += s =>
 			{
 				textBoxDownloadDirectory.Text = config.DownloadDirectory;
 				textBoxTempDirectory.Text = config.TemporaryDirectory;

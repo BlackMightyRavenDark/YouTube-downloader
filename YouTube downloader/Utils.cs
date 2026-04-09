@@ -226,14 +226,6 @@ namespace YouTube_downloader
 			return video != null ? video.DatePublished : DateTime.MaxValue;
 		}
 
-		internal static YouTubeStreamingDataResult ExtractStreamingDataFromVideoWebPage(YouTubeVideoWebPage webPage)
-		{
-			YouTubeRawVideoInfoResult rawVideoInfoResult = YouTubeApiLib.Utils.ExtractRawVideoInfoFromWebPage(webPage);
-			return rawVideoInfoResult.ErrorCode == 200 ?
-				rawVideoInfoResult.RawVideoInfo.StreamingData :
-				new YouTubeStreamingDataResult(null, rawVideoInfoResult.ErrorCode);
-		}
-
 		private static FavoriteItem FindItemWithId(string itemId, FavoriteItem root)
 		{
 			if (string.IsNullOrEmpty(itemId) || string.IsNullOrWhiteSpace(itemId)) { return null; }
@@ -397,7 +389,7 @@ namespace YouTube_downloader
 		public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
 		{
 			DateTime date = videoInfo.DatePublished < DateTime.MaxValue && config.UseUniversalTime ?
-				videoInfo.DatePublished.ToGmt() : videoInfo.DatePublished;
+				videoInfo.DatePublished : videoInfo.DatePublished.ToLocalTime();
 			return fmt.Replace("<year>", date.Year.ToString())
 				.Replace("<month>", date.Month.ToString().PadLeft(2, '0'))
 				.Replace("<day>", date.Day.ToString().PadLeft(2, '0'))
@@ -739,12 +731,6 @@ namespace YouTube_downloader
 			string destinationFileName, int delayAfterCompletion)
 		{
 			return await MergeYouTubeMediaTracks(files, destinationFileName, true, delayAfterCompletion);
-		}
-
-		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
-			string destinationFileName)
-		{
-			return await MergeYouTubeMediaTracks(files, destinationFileName, true, 0);
 		}
 
 		public static bool GrabHls(string hlsUrl, string outputFileName)

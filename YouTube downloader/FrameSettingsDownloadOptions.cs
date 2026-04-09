@@ -100,7 +100,7 @@ namespace YouTube_downloader
 				}
 			};
 
-			config.Loaded += (s) =>
+			config.Loaded += s =>
 			{
 				numericUpDownChunkDownloadTryCountLimit.Value = config.ChunkDownloadTryCountLimit;
 				numericUpDownChunkDownloadErrorCountLimit.Value = config.ChunkDownloadInnerErrorCountLimit;

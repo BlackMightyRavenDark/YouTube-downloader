@@ -431,7 +431,7 @@ namespace YouTube_downloader
 				VideoInfo.IsLiveContent, VideoInfo.Thumbnails,
 				VideoInfo.InitialSimplifiedInfo, VideoInfo.Status);
 
-			DateTime date = config.UseUniversalTime ? dateTime.ToGmt() : dateTime;
+			DateTime date = config.UseUniversalTime ? dateTime : dateTime.ToLocalTime();
 			string datePublishedString = $"Дата публикации: {date:yyyy.MM.dd, HH:mm:ss}";
 			if (config.UseUniversalTime) { datePublishedString += " GMT"; }
 
@@ -440,7 +440,7 @@ namespace YouTube_downloader
 
 		private void miCopyVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DateTime date = config.UseUniversalTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished.ToLocalTime();
+			DateTime date = config.UseUniversalTime ? VideoInfo.DatePublished : VideoInfo.DatePublished.ToLocalTime();
 			string datePublishedString = date.ToString("yyyy-MM-dd HH-mm-ss");
 			if (config.UseUniversalTime) { datePublishedString += " GMT"; }
 
