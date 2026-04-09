@@ -218,6 +218,7 @@ namespace YouTube_downloader
 		{
 			config.ExtraDelayAfterContainerWasBuilt = (int)numericUpDownDelayAfterContainerCreated.Value;
 		}
+
 		private void numericUpDownChunkDownloadTryCountLimit_ValueChanged(object sender, EventArgs e)
 		{
 			config.ChunkDownloadTryCountLimit = (int)numericUpDownChunkDownloadTryCountLimit.Value;

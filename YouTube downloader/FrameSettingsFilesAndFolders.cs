@@ -84,42 +84,58 @@ namespace YouTube_downloader
 				textBoxOutputFileNameFormatWithDate.Text = config.OutputFileNameFormatWithDate;
 				textBoxOutputFileNameFormatWithoutDate.Text = config.OutputFileNameFormatWithoutDate;
 				textBoxWebBrowserFilePath.Text = config.WebBrowserExeFilePath;
-				textBoxFfmpegFilePath.Text = config.FfmpegExeFilePath;
+				textBoxFfmpegExeFilePath.Text = config.FfmpegExeFilePath;
 			};
 		}
 
 		private void btnBrowseDownloadDirectory_Click(object sender, EventArgs e)
 		{
-			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-			folderBrowserDialog.Description = "Выберите папку для скачивания";
-			folderBrowserDialog.SelectedPath =
-				(!string.IsNullOrEmpty(config.DownloadDirectory) && Directory.Exists(config.DownloadDirectory)) ?
-				config.DownloadDirectory : config.SelfDirectory;
-			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+			try
 			{
-				config.DownloadDirectory =
-					folderBrowserDialog.SelectedPath.EndsWith("\\")
-					? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-				textBoxDownloadDirectory.Text = config.DownloadDirectory;
+				using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+				{
+					Description = "Выберите папку для скачивания",
+					SelectedPath = (!string.IsNullOrEmpty(config.DownloadDirectory) && Directory.Exists(config.DownloadDirectory)) ?
+						config.DownloadDirectory : config.SelfDirectory
+				})
+				{
+					if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+					{
+						textBoxDownloadDirectory.Text =
+						config.DownloadDirectory = folderBrowserDialog.SelectedPath;
+					}
+				}
 			}
-			folderBrowserDialog.Dispose();
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		private void btnBrowseTempDirectory_Click(object sender, EventArgs e)
 		{
-			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-			folderBrowserDialog.Description = "Выберите папку для временных файлов";
-			folderBrowserDialog.SelectedPath =
-				(!string.IsNullOrEmpty(config.TemporaryDirectory) && Directory.Exists(config.TemporaryDirectory)) ?
-				config.TemporaryDirectory : config.SelfDirectory;
-			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+			try
 			{
-				config.TemporaryDirectory =
-					folderBrowserDialog.SelectedPath.EndsWith("\\")
-					? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-				textBoxTempDirectory.Text = config.TemporaryDirectory;
+				using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+				{
+					Description = "Выберите папку для временных файлов",
+					SelectedPath = (!string.IsNullOrEmpty(config.TemporaryDirectory) && Directory.Exists(config.TemporaryDirectory)) ?
+						config.TemporaryDirectory : config.SelfDirectory
+				})
+				{
+					if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+					{
+						textBoxTempDirectory.Text =
+						config.TemporaryDirectory = folderBrowserDialog.SelectedPath;
+					}
+				}
 			}
-			folderBrowserDialog.Dispose();
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		private void btnWtfFileMergerDirectory_Click(object sender, EventArgs e)
@@ -133,19 +149,27 @@ namespace YouTube_downloader
 
 		private void btnBrowseFileMergerDirectory_Click(object sender, EventArgs e)
 		{
-			FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-			folderBrowserDialog.Description = "Выберите папку для объединения чанков";
-			folderBrowserDialog.SelectedPath =
-				(!string.IsNullOrEmpty(config.ChunkMergerDirectory) && Directory.Exists(config.ChunkMergerDirectory)) ?
-				config.ChunkMergerDirectory : config.SelfDirectory;
-			if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+			try
 			{
-				config.ChunkMergerDirectory =
-					folderBrowserDialog.SelectedPath.EndsWith("\\")
-					? folderBrowserDialog.SelectedPath : folderBrowserDialog.SelectedPath + "\\";
-				textBoxFileMergerDirectory.Text = config.ChunkMergerDirectory;
+				using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+				{
+					Description = "Выберите папку для объединения чанков",
+					SelectedPath = !string.IsNullOrEmpty(config.ChunkMergerDirectory) && Directory.Exists(config.ChunkMergerDirectory) ?
+						config.ChunkMergerDirectory : config.SelfDirectory
+				})
+				{
+					if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+					{
+						textBoxFileMergerDirectory.Text =
+						config.ChunkMergerDirectory = folderBrowserDialog.SelectedPath;
+					}
+				}
 			}
-			folderBrowserDialog.Dispose();
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		private void btnResetFileNameFormatWithDate_Click(object sender, EventArgs e)
@@ -162,28 +186,50 @@ namespace YouTube_downloader
 
 		private void btnSelectWebBrowserFilePath_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Title = "Выберите EXE-файл браузера";
-			ofd.Filter = "EXE-файлы|*.exe";
-			if (ofd.ShowDialog() == DialogResult.OK)
+			try
 			{
-				config.WebBrowserExeFilePath = ofd.FileName;
-				textBoxWebBrowserFilePath.Text = config.WebBrowserExeFilePath;
+				using (OpenFileDialog openFileDialog = new OpenFileDialog()
+				{
+					Title = "Выберите EXE-файл браузера",
+					Filter = "EXE-файлы|*.exe"
+				})
+				{
+					if (openFileDialog.ShowDialog() == DialogResult.OK)
+					{
+						textBoxWebBrowserFilePath.Text =
+						config.WebBrowserExeFilePath = openFileDialog.FileName;
+					}
+				}
 			}
-			ofd.Dispose();
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		private void btnBrowseFfmpegFilePath_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.Title = "Выберите EXE-файл FFMPEG";
-			ofd.Filter = "EXE-файлы|*.exe";
-			if (ofd.ShowDialog() == DialogResult.OK)
+			try
 			{
-				config.FfmpegExeFilePath = ofd.FileName;
-				textBoxFfmpegFilePath.Text = config.FfmpegExeFilePath;
+				using (OpenFileDialog openFileDialog = new OpenFileDialog()
+				{
+					Title = "Выберите EXE-файл FFMPEG",
+					Filter = "EXE-файлы|*.exe"
+				})
+				{
+					if (openFileDialog.ShowDialog() == DialogResult.OK)
+					{
+						textBoxFfmpegExeFilePath.Text =
+						config.FfmpegExeFilePath = openFileDialog.FileName;
+					}
+				}
 			}
-			ofd.Dispose();
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 
 		private void textBoxDownloadDirectory_Leave(object sender, EventArgs e)
@@ -213,7 +259,7 @@ namespace YouTube_downloader
 
 		private void textBoxFfmpegFilePath_Leave(object sender, EventArgs e)
 		{
-			config.FfmpegExeFilePath = textBoxFfmpegFilePath.Text;
+			config.FfmpegExeFilePath = textBoxFfmpegExeFilePath.Text;
 		}
 	}
 }

@@ -5,13 +5,13 @@ namespace YouTube_downloader
 	{
 		public int ErrorCode { get; }
 		public string ErrorMessage { get; }
-		public string FileName { get; }
+		public string OutputFilePath { get; }
 
-		public DownloadResult(int errorCode, string errorMessage, string fileName)
+		public DownloadResult(int errorCode, string errorMessage, string outputFilePath)
 		{
 			ErrorCode = errorCode;
 			ErrorMessage = errorMessage;
-			FileName = fileName;
+			OutputFilePath = outputFilePath;
 		}
 	}
 }

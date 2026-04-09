@@ -221,30 +221,38 @@ namespace YouTube_downloader
 		private void btnWtfUseRam_Click(object sender, EventArgs e)
 		{
 			btnWtfUseRam.Enabled = false;
+
 			string msg = "Это позволяет ускорить скачивание, сократив количество обращений к накопителю.";
 			MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
 			btnWtfUseRam.Enabled = true;
 		}
 
 		private void btnWtfUserAgent_Click(object sender, EventArgs e)
 		{
+			btnWtfUserAgent.Enabled = false;
+
 			const string msg = "\"User-Agent\" это специальный идентификатор, отправляемый серверам ютуба. " +
 				"При пустом или неподходящем значении, скачивание может не работать или чаще выдавать ошибки.\n" +
 				"Внимание! Этот параметр используется при скачивании видео / аудио! " +
 				"При обращении к API ютуба (например, при поиске видео) значение этого параметра может быть другим!";
 			MessageBox.Show(msg, "Зачематор зачемок",
 				MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+			btnWtfUserAgent.Enabled = true;
 		}
 
 		private void btnWtfAlwaysDownloadAsDash_Click(object sender, EventArgs e)
 		{
 			btnWtfAlwaysDownloadAsDash.Enabled = false;
+
 			string msg = "Бывают ситуации, когда обычным способом видео " +
 				"не качается из-за постоянных разрывов соединения с сервером. " +
 				"Эта опция может помочь обойти данную проблему. " +
 				"Однако, скорость скачивания может стать намного ниже обычного :'(";
 			MessageBox.Show(msg, "Зачематор зачемок",
 				MessageBoxButtons.OK, MessageBoxIcon.Information);
+
 			btnWtfAlwaysDownloadAsDash.Enabled = true;
 		}
 
@@ -290,8 +298,8 @@ namespace YouTube_downloader
 		{
 			if (!Is64BitProcess && checkBoxUseRamForTempFiles.Enabled)
 			{
-				checkBoxUseRamForTempFiles.Enabled = false;
-				checkBoxUseRamForTempFiles.Checked = false;
+				checkBoxUseRamForTempFiles.Enabled =
+				checkBoxUseRamForTempFiles.Checked =
 				config.UseRamToStoreTemporaryFiles = false;
 				MessageBox.Show("Это должно быть доступно только в 64-битной версии программы!",
 					"Низя так делать, Вася ты чо!",

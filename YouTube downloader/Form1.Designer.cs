@@ -640,7 +640,6 @@ namespace YouTube_downloader
 			this.objectTreeViewFavorites.View = System.Windows.Forms.View.Details;
 			this.objectTreeViewFavorites.VirtualMode = true;
 			this.objectTreeViewFavorites.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.objectTreeViewFavorites_CellRightClick);
-			this.objectTreeViewFavorites.ItemsRemoving += new System.EventHandler<BrightIdeasSoftware.ItemsRemovingEventArgs>(this.objectTreeViewFavorites_ItemsRemoving);
 			this.objectTreeViewFavorites.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.objectTreeViewFavorites_MouseDoubleClick);
 			// 
 			// olvColumn1

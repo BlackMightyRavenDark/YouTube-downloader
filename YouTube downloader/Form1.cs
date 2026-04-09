@@ -24,9 +24,9 @@ namespace YouTube_downloader
 		{
 			tabControlMain.SelectedTab = tabPageSearch;
 
-			objectTreeViewFavorites.ChildrenGetter = obj => { return ((FavoriteItem)obj).Children; };
-			objectTreeViewFavorites.ParentGetter = obj => { return ((FavoriteItem)obj).Parent; };
-			objectTreeViewFavorites.CanExpandGetter = obj => { return ((FavoriteItem)obj).Children.Count > 0; };
+			objectTreeViewFavorites.ChildrenGetter = obj => ((FavoriteItem)obj).Children;
+			objectTreeViewFavorites.ParentGetter = obj => ((FavoriteItem)obj).Parent;
+			objectTreeViewFavorites.CanExpandGetter = obj => ((FavoriteItem)obj).Children.Count > 0;
 			objectTreeViewFavorites.Roots = new List<FavoriteItem>() { new FavoriteItem("Избранное") };
 			favoritesRootNode = objectTreeViewFavorites.Roots.Cast<FavoriteItem>().ToArray()[0];
 			treeFavorites = objectTreeViewFavorites;
@@ -42,7 +42,7 @@ namespace YouTube_downloader
 					config.MaximumSearchResults = ClampValue(jt.Value<int>(), 1, 500);
 				}
 			};
-			config.Loaded += (s) =>
+			config.Loaded += s =>
 			{
 				numericUpDownSearchResultCountLimit.Value = config.MaximumSearchResults;
 				MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountMaximum;
@@ -117,20 +117,6 @@ namespace YouTube_downloader
 			StackFrames();
 		}
 
-		private void objectTreeViewFavorites_ItemsRemoving(object sender, BrightIdeasSoftware.ItemsRemovingEventArgs e)
-		{
-			List<FavoriteItem> items = e.ObjectsToRemove.Cast<FavoriteItem>().ToList();
-			for (int iItem = items.Count - 1; iItem >= 0; --iItem)
-			{
-				for (int iChild = items[iItem].Children.Count - 1; iChild >= 0; --iChild)
-				{
-					objectTreeViewFavorites.RemoveObject(items[iItem].Children[iChild]);
-					items[iItem].Children.RemoveAt(iChild);
-				}
-				items.RemoveAt(iItem);
-			}
-		}
-
 		private void objectTreeViewFavorites_CellRightClick(object sender, BrightIdeasSoftware.CellRightClickEventArgs e)
 		{
 			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
@@ -145,14 +131,11 @@ namespace YouTube_downloader
 			if (e.Button == MouseButtons.Left && objectTreeViewFavorites.SelectedObject != null)
 			{
 				FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-				if (item == null || item.Parent == null)
-				{
-					return;
-				}
+				if (item == null || item.Parent == null) { return; }
 
 				if (item.ItemType != FavoriteItemType.Directory)
 				{
-					DisableControls();
+					EnableControls(false);
 
 					if (item.ItemType == FavoriteItemType.Video)
 					{
@@ -167,8 +150,7 @@ namespace YouTube_downloader
 							tabPageSearchResults.Text = "Результаты поиска";
 							scrollBarSearchResults.Value = 0;
 
-							YouTubeVideoId youTubeVideo = new YouTubeVideoId(item.ID);
-							await FindVideoById(youTubeVideo);
+							await FindVideoById(new YouTubeVideoId(item.ID));
 						}
 					}
 					else if (item.ItemType == FavoriteItemType.Channel)
@@ -180,7 +162,7 @@ namespace YouTube_downloader
 							{
 								MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
 									"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-								EnableControls();
+								EnableControls(true);
 								return;
 							}
 
@@ -189,7 +171,7 @@ namespace YouTube_downloader
 							{
 								MessageBox.Show("Указан неверный диапазон дат!", "Ошибка!",
 									MessageBoxButtons.OK, MessageBoxIcon.Error);
-								EnableControls();
+								EnableControls(true);
 								return;
 							}
 
@@ -198,31 +180,31 @@ namespace YouTube_downloader
 						}
 					}
 
-					EnableControls();
+					EnableControls(true);
 				}
 			}
 		}
 
 		private void btnWtfWebPageCode_Click(object sender, EventArgs e)
 		{
-			DisableControls();
+			EnableControls(false);
 
 			string msg = "Это позволит скачать скрытое, заблокированное или 18+ видео, " +
 				"если у вас есть к нему доступ из браузера.\nНо это не точно!";
 			MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-			EnableControls();
+			EnableControls(true);
 		}
 
 		private async void btnSearchByQuery_Click(object sender, EventArgs e)
 		{
-			DisableControls();
+			EnableControls(false);
 
 			if (string.IsNullOrEmpty(textBoxSearchQuery.Text) || string.IsNullOrWhiteSpace(textBoxSearchQuery.Text))
 			{
 				MessageBox.Show("Введите поисковый запрос!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				EnableControls();
+				EnableControls(true);
 				textBoxSearchQuery.Focus();
 				return;
 			}
@@ -230,7 +212,7 @@ namespace YouTube_downloader
 			{
 				MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
 					"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				EnableControls();
+				EnableControls(true);
 				return;
 			}
 			if (checkBoxSearchRangePublishedAfter.Checked && checkBoxSearchRangePublishedBefore.Checked &&
@@ -238,7 +220,7 @@ namespace YouTube_downloader
 			{
 				MessageBox.Show("Указан неверный диапазон дат!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				EnableControls();
+				EnableControls(true);
 				return;
 			}
 
@@ -269,18 +251,18 @@ namespace YouTube_downloader
 			tabControlMain.SelectedTab = tabPageSearchResults;
 			tabPageSearchResults.Text = $"Результаты поиска: {count}";
 
-			EnableControls();
+			EnableControls(true);
 		}
 
 		private async void btnSearchByVideoUrlOrId_Click(object sender, EventArgs e)
 		{
-			DisableControls();
+			EnableControls(false);
 
 			string url = textBoxVideoUrlOrId.Text;
 			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
 			{
 				MessageBox.Show("Не введена ссылка!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				EnableControls();
+				EnableControls(true);
 				return;
 			}
 
@@ -289,7 +271,7 @@ namespace YouTube_downloader
 			{
 				MessageBox.Show("Не удалось распознать ID видео!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				EnableControls();
+				EnableControls(true);
 				return;
 			}
 
@@ -298,7 +280,7 @@ namespace YouTube_downloader
 				MessageBox.Show("Введённый вами или автоматически определённый ID видео " +
 					$"имеет длину {videoId.Id.Length} символов. Такого не может быть!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				EnableControls();
+				EnableControls(true);
 				return;
 			}
 
@@ -312,19 +294,19 @@ namespace YouTube_downloader
 
 			await FindVideoById(videoId);
 
-			EnableControls();
+			EnableControls(true);
 		}
 
 		private void btnSearchByWebPage_Click(object sender, EventArgs e)
 		{
-			DisableControls();
+			EnableControls(false);
 
 			string webPageCode = richTextBoxWebPageCode.Text;
 			if (string.IsNullOrEmpty(webPageCode) || string.IsNullOrWhiteSpace(webPageCode))
 			{
 				MessageBox.Show("Вставьте код веб-страницы с видео!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				EnableControls();
+				EnableControls(true);
 				return;
 			}
 
@@ -342,7 +324,7 @@ namespace YouTube_downloader
 				if (video != null)
 				{
 					YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
-					CreateAndAddNewFrame(video, webPageResult.VideoWebPage);
+					CreateAndAddNewVideoFrame(video, webPageResult.VideoWebPage);
 					StackFrames();
 
 					tabPageSearchResults.Text = "Результаты поиска: 1";
@@ -365,7 +347,7 @@ namespace YouTube_downloader
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			EnableControls();
+			EnableControls(true);
 		}
 
 		private void checkBoxSearchVideos_CheckedChanged(object sender, EventArgs e)
@@ -425,12 +407,12 @@ namespace YouTube_downloader
 				switch (item.ItemType)
 				{
 					case FavoriteItemType.Video:
-						miOpenVideoInBrowserToolStripMenuItem.Visible = true;
+						miOpenVideoInBrowserToolStripMenuItem.Visible =
 						miCopyVideoUrlToolStripMenuItem.Visible = true;
 						miOpenChannelInBrowserToolStripMenuItem.Visible = false;
-						miCopyChannelUrlToolStripMenuItem.Visible = true;
-						miCopyChannelIdToolStripMenuItem.Visible = true;
-						miCopyVideoIdToolStripMenuItem.Visible = true;
+						miCopyChannelUrlToolStripMenuItem.Visible =
+						miCopyChannelIdToolStripMenuItem.Visible =
+						miCopyVideoIdToolStripMenuItem.Visible =
 						miCopyDisplayNameWithIdToolStripMenuItem.Visible = true;
 						break;
 
@@ -438,19 +420,19 @@ namespace YouTube_downloader
 						miOpenVideoInBrowserToolStripMenuItem.Visible = false;
 						miOpenChannelInBrowserToolStripMenuItem.Visible = true;
 						miCopyVideoUrlToolStripMenuItem.Visible = false;
-						miCopyChannelUrlToolStripMenuItem.Visible = true;
+						miCopyChannelUrlToolStripMenuItem.Visible =
 						miCopyChannelIdToolStripMenuItem.Visible = true;
 						miCopyVideoIdToolStripMenuItem.Visible = false;
 						miCopyDisplayNameWithIdToolStripMenuItem.Visible = true;
 						break;
 
 					case FavoriteItemType.Directory:
-						miOpenVideoInBrowserToolStripMenuItem.Visible = false;
-						miCopyVideoUrlToolStripMenuItem.Visible = false;
-						miOpenChannelInBrowserToolStripMenuItem.Visible = false;
-						miCopyChannelUrlToolStripMenuItem.Visible = false;
-						miCopyChannelIdToolStripMenuItem.Visible = false;
-						miCopyVideoIdToolStripMenuItem.Visible = false;
+						miOpenVideoInBrowserToolStripMenuItem.Visible =
+						miCopyVideoUrlToolStripMenuItem.Visible =
+						miOpenChannelInBrowserToolStripMenuItem.Visible =
+						miCopyChannelUrlToolStripMenuItem.Visible =
+						miCopyChannelIdToolStripMenuItem.Visible =
+						miCopyVideoIdToolStripMenuItem.Visible =
 						miCopyDisplayNameWithIdToolStripMenuItem.Visible = false;
 						break;
 				}
@@ -480,7 +462,7 @@ namespace YouTube_downloader
 			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
 			if (item != null && item.ItemType == FavoriteItemType.Video)
 			{
-				string url = $"{YOUTUBE_WATCH_URL_BASE}?v={item.ID}";
+				string url = GetYouTubeVideoUrl(item.ID);
 				SetClipboardText(url);
 			}
 		}
@@ -520,7 +502,7 @@ namespace YouTube_downloader
 			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
 			if (item != null)
 			{
-				string url = $"{YOUTUBE_WATCH_URL_BASE}?v={item.ID}";
+				string url = GetYouTubeVideoUrl(item.ID);
 				OpenUrlInBrowser(url);
 			}
 		}
@@ -563,8 +545,10 @@ namespace YouTube_downloader
 
 		private void SaveNode(FavoriteItem root, JArray jsonArr)
 		{
-			JObject json = new JObject();
-			json["displayName"] = root.DisplayName;
+			JObject json = new JObject()
+			{
+				["displayName"] = root.DisplayName
+			};
 			if (root.Children.Count > 0) //directory
 			{
 				JArray ja = new JArray();
@@ -602,8 +586,10 @@ namespace YouTube_downloader
 			{
 				SaveNode(favoritesRootNode.Children[i], ja);
 			}
-			JObject json = new JObject();
-			json["items"] = ja;
+			JObject json = new JObject()
+			{
+				["items"] = ja
+			};
 			File.WriteAllText(fileName, json.ToString());
 		}
 
@@ -628,11 +614,7 @@ namespace YouTube_downloader
 			}
 			else
 			{
-				jt = item.Value<JToken>("type");
-				if (jt == null)
-				{
-					throw new ArgumentNullException("type = NULL");
-				}
+				jt = item.Value<JToken>("type") ?? throw new ArgumentNullException("type = NULL");
 				string t = jt.Value<string>().ToLower();
 				if (t.Equals("video"))
 				{
@@ -675,7 +657,10 @@ namespace YouTube_downloader
 				{
 					ParseDataItem(j, favoritesRootNode);
 				}
-				else { return false; }
+				else
+				{
+					return false;
+				}
 			}
 
 			return true;
@@ -702,8 +687,10 @@ namespace YouTube_downloader
 							await Task.Run(() => DownloadData(channelInfo.ImageUrl, channelInfo.ImageData));
 						}
 
-						FrameYouTubeChannel frame = new FrameYouTubeChannel();
-						frame.Parent = panelSearchResults;
+						FrameYouTubeChannel frame = new FrameYouTubeChannel()
+						{
+							Parent = panelSearchResults
+						};
 						frame.SetChannelInfo(channelInfo);
 						framesChannel.Add(frame);
 					}
@@ -731,22 +718,7 @@ namespace YouTube_downloader
 						if (video != null)
 						{
 							videos.Add(video);
-
-							FrameYouTubeVideo frameVideo = new FrameYouTubeVideo(video, panelSearchResults);
-							frameVideo.SetMenusFontSize(config.MenusFontSize);
-							frameVideo.FavoriteChannelChanged += (s, vidId, newState) =>
-							{
-								for (int j = 0; j < framesVideo.Count; ++j)
-								{
-									if (framesVideo[j].VideoInfo.OwnerChannelId == vidId)
-									{
-										framesVideo[j].IsFavoriteChannel = newState;
-									}
-								}
-							};
-							frameVideo.Activated += event_FrameActivated;
-							frameVideo.OpenChannel += event_OpenChannel;
-							framesVideo.Add(frameVideo);
+							CreateAndAddNewVideoFrame(video);
 						}
 					}
 				}
@@ -767,7 +739,7 @@ namespace YouTube_downloader
 					return false;
 				}
 
-				CreateAndAddNewFrame(video);
+				CreateAndAddNewVideoFrame(video);
 				StackFrames();
 
 				tabPageSearchResults.Text = $"Результаты поиска: {framesVideo.Count + framesChannel.Count}";
@@ -785,7 +757,7 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		private void CreateAndAddNewFrame(YouTubeVideo video, YouTubeVideoWebPage webPage = null)
+		private void CreateAndAddNewVideoFrame(YouTubeVideo video, YouTubeVideoWebPage webPage = null)
 		{
 			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, panelSearchResults);
 			frame.SetMenusFontSize(config.MenusFontSize);
@@ -894,7 +866,7 @@ namespace YouTube_downloader
 			{
 				foreach (YouTubeVideo video in list)
 				{
-					CreateAndAddNewFrame(video);
+					CreateAndAddNewVideoFrame(video);
 				}
 				StackFrames();
 				tabControlMain.SelectedTab = tabPageSearchResults;
@@ -963,24 +935,14 @@ namespace YouTube_downloader
 			StackFrames();
 		}
 
-		private void DisableControls()
+		private void EnableControls(bool enabled)
 		{
-			btnSearchByWebPage.Enabled = false;
-			btnSearchByVideoUrlOrId.Enabled = false;
-			btnSearchByQuery.Enabled = false;
-			textBoxSearchQuery.Enabled = false;
-			textBoxVideoUrlOrId.Enabled = false;
-			btnWtfWebPageCode.Enabled = false;
-		}
-
-		private void EnableControls()
-		{
-			btnSearchByWebPage.Enabled = true;
-			btnSearchByVideoUrlOrId.Enabled = true;
-			btnSearchByQuery.Enabled = true;
-			textBoxSearchQuery.Enabled = true;
-			textBoxVideoUrlOrId.Enabled = true;
-			btnWtfWebPageCode.Enabled = true;
+			btnSearchByWebPage.Enabled =
+			btnSearchByVideoUrlOrId.Enabled =
+			btnSearchByQuery.Enabled =
+			textBoxSearchQuery.Enabled =
+			textBoxVideoUrlOrId.Enabled =
+			btnWtfWebPageCode.Enabled = enabled;
 		}
 	}
 }

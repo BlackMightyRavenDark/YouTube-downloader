@@ -7,7 +7,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -19,9 +18,9 @@ namespace YouTube_downloader
 {
 	public static class Utils
 	{
-		public const string YOUTUBE_SEARCH_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
+		public const string YOUTUBE_ENDPOINT_WATCH_URL = "https://www.youtube.com/watch";
+		public const string YOUTUBE_ENDPOINT_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
 		public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
-		public const string YOUTUBE_WATCH_URL_BASE = "https://www.youtube.com/watch";
 
 		public static List<YouTubeChannelInfo> channelInfos = new List<YouTubeChannelInfo>();
 		public static List<YouTubeVideo> videos = new List<YouTubeVideo>();
@@ -42,9 +41,9 @@ namespace YouTube_downloader
 
 		public static int DownloadString(string url, out string responseString, bool useRequestSender = false)
 		{
-			if (useRequestSender)
+			try
 			{
-				try
+				if (useRequestSender)
 				{
 					using (HttpRequestResult requestResult = HttpRequestSender.Send(url))
 					{
@@ -56,21 +55,24 @@ namespace YouTube_downloader
 						responseString = requestResult.ErrorMessage;
 						return requestResult.ErrorCode;
 					}
-				} catch (Exception ex)
+				}
+				else
 				{
-					responseString = ex.Message;
-					return ex.HResult;
+					FileDownloader d = new FileDownloader() { Url = url };
+					return d.DownloadString(out responseString);
 				}
 			}
-
-			FileDownloader d = new FileDownloader() { Url = url };
-			return d.DownloadString(out responseString);
+			catch (Exception ex)
+			{
+				responseString = ex.Message;
+				return ex.HResult;
+			}
 		}
 
-		public static int DownloadData(string url, Stream stream)
+		public static int DownloadData(string url, Stream outputStream)
 		{
 			FileDownloader d = new FileDownloader() { Url = url };
-			return d.Download(stream);
+			return d.Download(outputStream);
 		}
 
 		public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos,
@@ -94,7 +96,7 @@ namespace YouTube_downloader
 				query.Add("publishedBefore", dateBefore);
 			}
 
-			string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
+			string url = $"{YOUTUBE_ENDPOINT_SEARCH_URL}?{query}";
 			return url;
 		}
 
@@ -123,7 +125,7 @@ namespace YouTube_downloader
 				query.Add("publishedBefore", dateBefore);
 			}
 
-			string url = $"{YOUTUBE_SEARCH_BASE_URL}?{query}";
+			string url = $"{YOUTUBE_ENDPOINT_SEARCH_URL}?{query}";
 			return url;
 		}
 
@@ -153,49 +155,25 @@ namespace YouTube_downloader
 		public static IEnumerable<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
 			Type typeOfTrack = typeof(YouTubeMediaTrackVideo);
-			foreach (YouTubeMediaTrack track in mediaTracks)
-			{
-				if (track.GetType() == typeOfTrack)
-				{
-					yield return track as YouTubeMediaTrackVideo;
-				}
-			}
+			return mediaTracks.Where(track => track.GetType() == typeOfTrack).Cast<YouTubeMediaTrackVideo>();
 		}
 
 		public static IEnumerable<YouTubeMediaTrackHlsStream> FilterHlsTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
 			Type typeOfTrack = typeof(YouTubeMediaTrackHlsStream);
-			foreach (YouTubeMediaTrack track in mediaTracks)
-			{
-				if (track.GetType() == typeOfTrack)
-				{
-					yield return track as YouTubeMediaTrackHlsStream;
-				}
-			}
+			return mediaTracks.Where(track => track.GetType() == typeOfTrack).Cast<YouTubeMediaTrackHlsStream>();
 		}
 
 		public static IEnumerable<YouTubeMediaTrackContainer> FilterContainerTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
 			Type typeOfTrack = typeof(YouTubeMediaTrackContainer);
-			foreach (YouTubeMediaTrack track in mediaTracks)
-			{
-				if (track.GetType() == typeOfTrack)
-				{
-					yield return track as YouTubeMediaTrackContainer;
-				}
-			}
+			return mediaTracks.Where(track => track.GetType() == typeOfTrack).Cast<YouTubeMediaTrackContainer>();
 		}
 
 		public static IEnumerable<YouTubeMediaTrackAudio> FilterAudioTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
 			Type typeOfTrack = typeof(YouTubeMediaTrackAudio);
-			foreach (YouTubeMediaTrack track in mediaTracks)
-			{
-				if (track.GetType() == typeOfTrack)
-				{
-					yield return track as YouTubeMediaTrackAudio;
-				}
-			}
+			return mediaTracks.Where(track => track.GetType() == typeOfTrack).Cast<YouTubeMediaTrackAudio>();
 		}
 
 		public static string GetTrackShortInfo(YouTubeMediaTrack track)
@@ -258,8 +236,7 @@ namespace YouTube_downloader
 
 		private static FavoriteItem FindItemWithId(string itemId, FavoriteItem root)
 		{
-			if (string.IsNullOrEmpty(itemId) || string.IsNullOrEmpty(itemId)) { return null; }
-
+			if (string.IsNullOrEmpty(itemId) || string.IsNullOrWhiteSpace(itemId)) { return null; }
 			if (string.CompareOrdinal(root.ID, itemId) == 0) { return root; }
 
 			for (int i = 0; i < root.Children.Count; ++i)
@@ -292,108 +269,129 @@ namespace YouTube_downloader
 
 		public static bool IsEnoughDiskSpace(IEnumerable<char> driveLetters, long contentLength)
 		{
-			foreach (char letter in driveLetters)
+			try
 			{
-				DriveInfo driveInfo = new DriveInfo(letter.ToString());
-				if (driveInfo.AvailableFreeSpace < contentLength)
+				foreach (char letter in driveLetters)
 				{
-					return false;
+					DriveInfo driveInfo = new DriveInfo(letter.ToString());
+					if (driveInfo.AvailableFreeSpace < contentLength)
+					{
+						return false;
+					}
 				}
 			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
 			return true;
 		}
 
-		public static bool AdvancedFreeSpaceCheck(long totalFilesSize)
+		public static bool AdvancedFreeDiskSpaceCheckPassed(long totalFileSize)
 		{
-			//TODO: Double-check this code for mistakes
+			//TODO: Find mistakes in this code
+			try
+			{
+				long minimumFreeSpaceRequired = (long)(totalFileSize * 1.1);
 
-			long minimumFreeSpaceRequired = (long)(totalFilesSize * 1.1);
-
-			char chunkMergingDirDriveLetter;
-			if (!string.IsNullOrEmpty(config.ChunkMergerDirectory) && !string.IsNullOrWhiteSpace(config.ChunkMergerDirectory))
-			{
-				chunkMergingDirDriveLetter = config.ChunkMergerDirectory[0];
-			}
-			else if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
-			{
-				chunkMergingDirDriveLetter = config.TemporaryDirectory[0];
-			}
-			else
-			{
-				chunkMergingDirDriveLetter = config.DownloadDirectory[0];
-			}
-
-			char tempDirDriveLetter;
-			if (!config.UseRamToStoreTemporaryFiles)
-			{
-				if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
+				char chunkMergerDirectoryDriveLetter;
+				if (!string.IsNullOrEmpty(config.ChunkMergerDirectory) && !string.IsNullOrWhiteSpace(config.ChunkMergerDirectory))
 				{
-					tempDirDriveLetter = config.TemporaryDirectory[0];
+					chunkMergerDirectoryDriveLetter = config.ChunkMergerDirectory[0];
+				}
+				else if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
+				{
+					chunkMergerDirectoryDriveLetter = config.TemporaryDirectory[0];
 				}
 				else
 				{
-					tempDirDriveLetter = config.DownloadDirectory[0];
-				}
-			}
-			else
-			{
-				tempDirDriveLetter = chunkMergingDirDriveLetter;
-			}
-
-			char downloadingDirDriveLetter = config.DownloadDirectory[0];
-
-			DriveInfo driveInfoTempDir = new DriveInfo(tempDirDriveLetter.ToString());
-			if (tempDirDriveLetter == chunkMergingDirDriveLetter)
-			{
-				if (config.AutomaticallyMergeToContainer && downloadingDirDriveLetter == chunkMergingDirDriveLetter)
-				{
-					minimumFreeSpaceRequired += totalFilesSize;
-				}
-				if (driveInfoTempDir.AvailableFreeSpace < minimumFreeSpaceRequired)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				if (!config.UseRamToStoreTemporaryFiles &&
-					driveInfoTempDir.AvailableFreeSpace < minimumFreeSpaceRequired)
-				{
-					return false;
+					chunkMergerDirectoryDriveLetter = config.DownloadDirectory[0];
 				}
 
-				DriveInfo driveInfoMergingDir = new DriveInfo(chunkMergingDirDriveLetter.ToString());
-				if (driveInfoMergingDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+				char tempDirectoryDriveLetter;
+				if (!config.UseRamToStoreTemporaryFiles)
 				{
-					return false;
-				}
-
-				if (downloadingDirDriveLetter == chunkMergingDirDriveLetter)
-				{
-					if (config.AutomaticallyMergeToContainer)
+					if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 					{
-						minimumFreeSpaceRequired += totalFilesSize;
+						tempDirectoryDriveLetter = config.TemporaryDirectory[0];
 					}
-					if (!config.UseRamToStoreTemporaryFiles && tempDirDriveLetter == downloadingDirDriveLetter)
+					else
 					{
-						minimumFreeSpaceRequired += totalFilesSize;
+						tempDirectoryDriveLetter = config.DownloadDirectory[0];
 					}
-					if (driveInfoMergingDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+				}
+				else
+				{
+					tempDirectoryDriveLetter = chunkMergerDirectoryDriveLetter;
+				}
+
+				char downloadDirectoryDriveLetter = config.DownloadDirectory[0];
+				DriveInfo driveInfoTempDirectory = new DriveInfo(tempDirectoryDriveLetter.ToString());
+				if (tempDirectoryDriveLetter == chunkMergerDirectoryDriveLetter)
+				{
+					if (config.AutomaticallyMergeToContainer && downloadDirectoryDriveLetter == chunkMergerDirectoryDriveLetter)
+					{
+						minimumFreeSpaceRequired += totalFileSize;
+					}
+					if (driveInfoTempDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
 					{
 						return false;
 					}
 				}
 				else
 				{
-					DriveInfo driveInfoDownloadingDir = new DriveInfo(downloadingDirDriveLetter.ToString());
-					if (driveInfoDownloadingDir.AvailableFreeSpace < minimumFreeSpaceRequired)
+					if (!config.UseRamToStoreTemporaryFiles &&
+						driveInfoTempDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
 					{
 						return false;
 					}
-				}
-			}
 
-			return true;
+					DriveInfo driveInfoMergerDirectory = new DriveInfo(chunkMergerDirectoryDriveLetter.ToString());
+					if (driveInfoMergerDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
+					{
+						return false;
+					}
+
+					if (downloadDirectoryDriveLetter == chunkMergerDirectoryDriveLetter)
+					{
+						if (config.AutomaticallyMergeToContainer)
+						{
+							minimumFreeSpaceRequired += totalFileSize;
+						}
+						if (!config.UseRamToStoreTemporaryFiles && tempDirectoryDriveLetter == downloadDirectoryDriveLetter)
+						{
+							minimumFreeSpaceRequired += totalFileSize;
+						}
+						if (driveInfoMergerDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
+						{
+							return false;
+						}
+					}
+					else
+					{
+						DriveInfo driveInfoDownloadDirectory = new DriveInfo(downloadDirectoryDriveLetter.ToString());
+						if (driveInfoDownloadDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
+						{
+							return false;
+						}
+					}
+				}
+
+				return true;
+			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
+			return false;
 		}
 
 		public static string FormatFileName(string fmt, YouTubeVideo videoInfo)
@@ -629,22 +627,19 @@ namespace YouTube_downloader
 			return null;
 		}
 
-		public static void SetClipboardText(string text)
+		public static bool SetClipboardText(string text)
 		{
-			bool res;
-			do
+			for (int i = 0; i < 100; ++i)
 			{
 				try
 				{
 					Clipboard.SetText(text);
-					res = true;
-					return;
+					return true;
 				}
-				catch
-				{
-					res = false;
-				}
-			} while (!res);
+				catch { }
+			}
+
+			return false;
 		}
 
 		public static string FormatSize(long n)
@@ -677,50 +672,67 @@ namespace YouTube_downloader
 			return config.UseUniversalTime ? $"{t} GMT" : t;
 		}
 
+		public static string GetContainerFileExtension(IEnumerable<YouTubeMediaTrack> tracks)
+		{
+			if (config.AlwaysUseMkvContainerIfPossible) { return ".mkv"; }
+
+			bool hasWebmOrWeba = tracks.Any(track => track.MimeExt == "webm" || track.MimeExt == "weba");
+			return hasWebmOrWeba ? ".mkv" : ".mp4";
+		}
+
 		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
 			string destinationFileName, bool wait, int delayAfterCompletion)
 		{
-			bool success = await Task.Run(() =>
+			try
 			{
 				Process process = new Process();
 				process.StartInfo.UseShellExecute = true;
 				process.StartInfo.FileName = "cmd.exe";
 				string t = Path.GetFileName(config.FfmpegExeFilePath);
-				string ffmpegName = t.Contains(" ") ? $"\"{t}\"" : t;
-				string ffmpegPath = Path.GetDirectoryName(config.FfmpegExeFilePath);
-				if (!string.IsNullOrEmpty(config.FfmpegExeFilePath))
+				string ffmpegFileName = t.Contains(" ") ? $"\"{t}\"" : t;
+				string ffmpegDirectory = Path.GetDirectoryName(config.FfmpegExeFilePath);
+				if (!string.IsNullOrEmpty(ffmpegDirectory))
 				{
-					process.StartInfo.WorkingDirectory = ffmpegPath;
+					process.StartInfo.WorkingDirectory = ffmpegDirectory;
 				}
 
-				string cmdArgs = $"/k {ffmpegName} ";
+				string cmdArgs = $"/k {ffmpegFileName} ";
 				foreach (DownloadResult file in files)
 				{
-					cmdArgs += $"-i \"{file.FileName}\" ";
+					cmdArgs += $"-i \"{file.OutputFilePath}\" ";
 				}
-				int iter = 0;
+
+				int idx = 0;
 				foreach (DownloadResult file in files)
 				{
-					cmdArgs += $"-map {iter}:0 ";
-					++iter;
+					cmdArgs += $"-map {idx}:0 ";
+					++idx;
 				}
 
 				cmdArgs += $"-c copy \"{destinationFileName}\"";
 				process.StartInfo.Arguments = cmdArgs;
-				bool res = process.Start();
-				if (res && wait)
+				bool success = process.Start();
+				if (success && wait)
 				{
 					process.WaitForExit();
 				}
-				return res;
-			});
 
-			if (success && delayAfterCompletion > 0)
-			{
-				await Task.Run(() => Thread.Sleep(delayAfterCompletion));
+				if (success && wait && delayAfterCompletion > 0)
+				{
+					await Task.Delay(delayAfterCompletion);
+				}
+
+				return success;
 			}
-
-			return success;
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
+			return false;
 		}
 
 		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
@@ -735,22 +747,33 @@ namespace YouTube_downloader
 			return await MergeYouTubeMediaTracks(files, destinationFileName, true, 0);
 		}
 
-		public static bool GrabHls(string hlsUrl, string destinationFileName)
+		public static bool GrabHls(string hlsUrl, string outputFileName)
 		{
-			Process process = new Process();
-			process.StartInfo.UseShellExecute = true;
-			process.StartInfo.FileName = "cmd.exe";
-			string t = Path.GetFileName(config.FfmpegExeFilePath);
-			string ffmpegName = t;
-			string ffmpegPath = Path.GetDirectoryName(config.FfmpegExeFilePath);
-			if (!string.IsNullOrEmpty(config.FfmpegExeFilePath))
+			try
 			{
-				process.StartInfo.WorkingDirectory = ffmpegPath;
-			}
-			string cmdArgs = $"/k {ffmpegName} -i \"{hlsUrl}\" -c copy \"{destinationFileName}\"";
+				Process process = new Process();
+				process.StartInfo.UseShellExecute = true;
+				process.StartInfo.FileName = "cmd.exe";
+				string ffmpegFileName = Path.GetFileName(config.FfmpegExeFilePath);
+				string ffmpegDirectory = Path.GetDirectoryName(config.FfmpegExeFilePath);
+				if (!string.IsNullOrEmpty(config.FfmpegExeFilePath))
+				{
+					process.StartInfo.WorkingDirectory = ffmpegDirectory;
+				}
+				string cmdArgs = $"/k {ffmpegFileName} -i \"{hlsUrl}\" -c copy \"{outputFileName}\"";
 
-			process.StartInfo.Arguments = cmdArgs;
-			return process.Start();
+				process.StartInfo.Arguments = cmdArgs;
+				return process.Start();
+			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
+			return false;
 		}
 
 		public static int ClampValue(int value, int min, int max)
@@ -761,21 +784,32 @@ namespace YouTube_downloader
 
 		public static void OpenUrlInBrowser(string url)
 		{
-			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
+			try
 			{
-				Process process = new Process();
-				if (!string.IsNullOrEmpty(config.WebBrowserExeFilePath) &&
-					!string.IsNullOrWhiteSpace(config.WebBrowserExeFilePath))
+				if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
 				{
-					process.StartInfo.FileName = config.WebBrowserExeFilePath;
-					process.StartInfo.Arguments = url;
+					Process process = new Process();
+					if (!string.IsNullOrEmpty(config.WebBrowserExeFilePath) &&
+						!string.IsNullOrWhiteSpace(config.WebBrowserExeFilePath))
+					{
+						process.StartInfo.FileName = config.WebBrowserExeFilePath;
+						process.StartInfo.Arguments = url;
+					}
+					else
+					{
+						process.StartInfo.FileName = url;
+					}
+					process.Start();
 				}
-				else
-				{
-					process.StartInfo.FileName = url;
-				}
-				process.Start();
 			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
 		}
 
 		public static bool IsFfmpegAvailable()

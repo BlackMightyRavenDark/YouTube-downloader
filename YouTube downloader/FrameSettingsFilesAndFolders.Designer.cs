@@ -38,7 +38,7 @@ namespace YouTube_downloader
 			this.label14 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
 			this.btnBrowseFfmpegFilePath = new System.Windows.Forms.Button();
-			this.textBoxFfmpegFilePath = new System.Windows.Forms.TextBox();
+			this.textBoxFfmpegExeFilePath = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.textBoxOutputFileNameFormatWithoutDate = new System.Windows.Forms.TextBox();
 			this.btnResetFileNameFormatWithoutDate = new System.Windows.Forms.Button();
@@ -143,15 +143,15 @@ namespace YouTube_downloader
 			this.btnBrowseFfmpegFilePath.UseVisualStyleBackColor = true;
 			this.btnBrowseFfmpegFilePath.Click += new System.EventHandler(this.btnBrowseFfmpegFilePath_Click);
 			// 
-			// textBoxFfmpegFilePath
+			// textBoxFfmpegExeFilePath
 			// 
-			this.textBoxFfmpegFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.textBoxFfmpegExeFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxFfmpegFilePath.Location = new System.Drawing.Point(6, 258);
-			this.textBoxFfmpegFilePath.Name = "textBoxFfmpegFilePath";
-			this.textBoxFfmpegFilePath.Size = new System.Drawing.Size(420, 20);
-			this.textBoxFfmpegFilePath.TabIndex = 38;
-			this.textBoxFfmpegFilePath.Leave += new System.EventHandler(this.textBoxFfmpegFilePath_Leave);
+			this.textBoxFfmpegExeFilePath.Location = new System.Drawing.Point(6, 258);
+			this.textBoxFfmpegExeFilePath.Name = "textBoxFfmpegExeFilePath";
+			this.textBoxFfmpegExeFilePath.Size = new System.Drawing.Size(420, 20);
+			this.textBoxFfmpegExeFilePath.TabIndex = 38;
+			this.textBoxFfmpegExeFilePath.Leave += new System.EventHandler(this.textBoxFfmpegFilePath_Leave);
 			// 
 			// label8
 			// 
@@ -285,7 +285,7 @@ namespace YouTube_downloader
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.btnBrowseFfmpegFilePath);
-			this.Controls.Add(this.textBoxFfmpegFilePath);
+			this.Controls.Add(this.textBoxFfmpegExeFilePath);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.textBoxOutputFileNameFormatWithoutDate);
 			this.Controls.Add(this.btnResetFileNameFormatWithoutDate);
@@ -316,7 +316,7 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Button btnBrowseFfmpegFilePath;
-		private System.Windows.Forms.TextBox textBoxFfmpegFilePath;
+		private System.Windows.Forms.TextBox textBoxFfmpegExeFilePath;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox textBoxOutputFileNameFormatWithoutDate;
 		private System.Windows.Forms.Button btnResetFileNameFormatWithoutDate;

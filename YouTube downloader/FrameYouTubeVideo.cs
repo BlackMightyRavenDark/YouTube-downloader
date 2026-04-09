@@ -16,44 +16,41 @@ namespace YouTube_downloader
 {
 	public partial class FrameYouTubeVideo : UserControl
 	{
-		private MultiThreadedDownloader _multiThreadedDownloader;
-		private ConcurrentDictionary<int, DownloadableTask> _contentChunks;
 		public YouTubeVideo VideoInfo { get; private set; }
 		public List<VideoThumbnailWrapper> Thumbnails { get; private set; }
 		public VideoThumbnailWrapper ActiveThumbnail { get; private set; }
 		public bool IsThumbnailLoading { get; private set; }
+		public YouTubeVideoWebPage WebPage { get; }
+		public YouTubeStreamingData LastReceivedStreamingData { get; private set; }
+		public DateTime StreamingDataExpirationDate { get; private set; } = DateTime.MinValue;
+		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
+		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
+		public bool IsDownloadInProgress { get; private set; }
 
-		private bool _ciphered;
+		private MultiThreadedDownloader _multiThreadedDownloader;
+		private ConcurrentDictionary<int, DownloadableTask> _contentChunks;
+		private bool _isCiphered;
 		private bool _isFavoriteVideo = false;
 		private bool _isFavoriteChannel = false;
 		private bool _isVideo = true;
 		private bool _isContainer = false;
 		private YouTubeMediaTrack _mediaTrack;
 		private Image _thumbnail;
+		private List<YouTubeMediaTrackAudio> _audioFormats = new List<YouTubeMediaTrackAudio>();
+		private List<YouTubeMediaTrackVideo> _videoFormats = new List<YouTubeMediaTrackVideo>();
+		private List<YouTubeMediaTrackHlsStream> _hlsFormats = new List<YouTubeMediaTrackHlsStream>();
+		private List<YouTubeMediaTrackContainer> _containerFormats = new List<YouTubeMediaTrackContainer>();
 
-		public YouTubeVideoWebPage WebPage { get; }
-		public YouTubeStreamingData LastReceivedStreamingData { get; private set; }
-		public DateTime StreamingDataExpirationDate { get; private set; } = DateTime.MinValue;
-		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
-		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
-
-		public bool IsDownloadInProgress { get; private set; }
-
-		private List<YouTubeMediaTrackAudio> audioFormats = new List<YouTubeMediaTrackAudio>();
-		private List<YouTubeMediaTrackVideo> videoFormats = new List<YouTubeMediaTrackVideo>();
-		private List<YouTubeMediaTrackHlsStream> hlsFormats = new List<YouTubeMediaTrackHlsStream>();
-		private List<YouTubeMediaTrackContainer> containerFormats = new List<YouTubeMediaTrackContainer>();
-
-		public delegate void BtnDownloadClickedDelegate(object sender, EventArgs e);
+		public delegate void DownloadButtonClickedDelegate(object sender, EventArgs e);
 		public delegate void FavoriteChannelChangedDelegate(object sender, string channelId, bool newState);
 		public delegate void ActivatedDelegate(object sender);
 		public delegate void OpenChannelDelegate(object sender, string channelName, string channelId);
-		public BtnDownloadClickedDelegate BtnDownloadClicked;
+		public DownloadButtonClickedDelegate DownloadButtonClicked;
 		public FavoriteChannelChangedDelegate FavoriteChannelChanged;
 		public ActivatedDelegate Activated;
 		public OpenChannelDelegate OpenChannel;
 
-		private bool _cancelRequired;
+		private bool _isCancelRequired;
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage, Control parent)
 		{
@@ -72,7 +69,7 @@ namespace YouTube_downloader
 		private void FrameYouTubeVideo_Load(object sender, EventArgs e)
 		{
 			lblStatus.Text = null;
-			lblProgress.Text = null;
+			lblDowndloadProgress.Text = null;
 		}
 
 		private void pictureBoxVideoThumbnail_MouseDown(object sender, MouseEventArgs e)
@@ -86,44 +83,47 @@ namespace YouTube_downloader
 
 		private void pictureBoxVideoThumbnail_Paint(object sender, PaintEventArgs e)
 		{
-			Image image = ActiveThumbnail?.Image ?? _thumbnail;
-			if (image != null)
+			try
 			{
-				Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
-				Rectangle resizedRect = imageRect.ResizeTo(pictureBoxVideoThumbnail.Size).CenterIn(pictureBoxVideoThumbnail.ClientRectangle);
-				e.Graphics.DrawImage(image, resizedRect);
-			}
-			Font fnt = new Font("Lucida Console", 10.0f);
-			if (fnt != null)
-			{
-				if (VideoInfo.Duration > TimeSpan.Zero)
+				Image image = ActiveThumbnail?.Image ?? _thumbnail;
+				if (image != null)
 				{
-					TimeSpan hour = TimeSpan.FromHours(1);
-					string videoLength = VideoInfo.Duration.ToString(VideoInfo.Duration >= hour ? "h':'mm':'ss" : "m':'ss");
-					SizeF sz = e.Graphics.MeasureString(videoLength, fnt);
-					float x = pictureBoxVideoThumbnail.Width - sz.Width;
-					float y = pictureBoxVideoThumbnail.Height - sz.Height;
-					e.Graphics.FillRectangle(Brushes.Black, new RectangleF(x, y, sz.Width, sz.Height));
-					e.Graphics.DrawString(videoLength, fnt, Brushes.White, new PointF(x, y));
+					Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
+					Rectangle resizedRect = imageRect.ResizeTo(pictureBoxVideoThumbnail.Size).CenterIn(pictureBoxVideoThumbnail.ClientRectangle);
+					e.Graphics.DrawImage(image, resizedRect);
 				}
 
-				if (_ciphered || VideoInfo.IsDashed)
+				using (Font font = new Font("Lucida Console", 10.0f))
 				{
-					string t = VideoInfo.IsDashed ? "dash" : "cipher";
-					SizeF sz = e.Graphics.MeasureString(t, fnt);
-					RectangleF rect = new RectangleF(0, pictureBoxVideoThumbnail.Height - sz.Height, sz.Width, sz.Height);
-					e.Graphics.FillRectangle(Brushes.Black, rect);
-					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
-				}
-				if (VideoInfo.IsLiveNow)
-				{
-					string t = "hls";
-					SizeF sz = e.Graphics.MeasureString(t, fnt);
-					float y = (_ciphered || VideoInfo.IsDashed) ?
-						pictureBoxVideoThumbnail.Height - sz.Height * 2 : pictureBoxVideoThumbnail.Height - sz.Height;
-					RectangleF rect = new RectangleF(0, y, sz.Width, sz.Height);
-					e.Graphics.FillRectangle(Brushes.Black, rect);
-					e.Graphics.DrawString(t, fnt, Brushes.White, new PointF(rect.X, rect.Y));
+					if (VideoInfo.Duration > TimeSpan.Zero)
+					{
+						TimeSpan hour = TimeSpan.FromHours(1);
+						string videoLength = VideoInfo.Duration.ToString(VideoInfo.Duration >= hour ? "h':'mm':'ss" : "m':'ss");
+						SizeF sz = e.Graphics.MeasureString(videoLength, font);
+						float x = pictureBoxVideoThumbnail.Width - sz.Width;
+						float y = pictureBoxVideoThumbnail.Height - sz.Height;
+						e.Graphics.FillRectangle(Brushes.Black, x, y, sz.Width, sz.Height);
+						e.Graphics.DrawString(videoLength, font, Brushes.White, x, y);
+					}
+
+					if (_isCiphered || VideoInfo.IsDashed)
+					{
+						string t = VideoInfo.IsDashed ? "dash" : "cipher";
+						SizeF sz = e.Graphics.MeasureString(t, font);
+						RectangleF rect = new RectangleF(0f, pictureBoxVideoThumbnail.Height - sz.Height, sz.Width, sz.Height);
+						e.Graphics.FillRectangle(Brushes.Black, rect);
+						e.Graphics.DrawString(t, font, Brushes.White, rect.X, rect.Y);
+					}
+					if (VideoInfo.IsLiveNow)
+					{
+						string t = "hls";
+						SizeF sz = e.Graphics.MeasureString(t, font);
+						float y = (_isCiphered || VideoInfo.IsDashed) ?
+							(pictureBoxVideoThumbnail.Height - sz.Height * 2f) : (pictureBoxVideoThumbnail.Height - sz.Height);
+						RectangleF rect = new RectangleF(0f, y, sz.Width, sz.Height);
+						e.Graphics.FillRectangle(Brushes.Black, rect);
+						e.Graphics.DrawString(t, font, Brushes.White, new PointF(rect.X, rect.Y));
+					}
 				}
 
 				bool isAdultVideo = VideoInfo.Status != null ? VideoInfo.Status.IsAdult : !VideoInfo.IsFamilySafe;
@@ -135,8 +135,15 @@ namespace YouTube_downloader
 				{
 					e.Graphics.DrawImage(Resources.unlisted, 0, 0, 40, 40);
 				}
-				fnt.Dispose();
 			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
 		}
 
 		private void pictureBoxFavoriteVideo_Paint(object sender, PaintEventArgs e)
@@ -207,10 +214,10 @@ namespace YouTube_downloader
 		{
 			if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
 			{
-				Point pt = PointToScreen(new Point(
+				Point point = PointToScreen(new Point(
 					lblBtnOpenFrameContextMenu.Left + lblBtnOpenFrameContextMenu.Width,
 					lblBtnOpenFrameContextMenu.Top));
-				contextMenuFrameActions.Show(pt);
+				contextMenuFrameActions.Show(point);
 			}
 		}
 
@@ -243,12 +250,14 @@ namespace YouTube_downloader
 
 		private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenUrlInBrowser($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
+			string url = YouTubeApiLib.Utils.GetYouTubeVideoUrl(VideoInfo.Id);
+			OpenUrlInBrowser(url);
 		}
 
 		private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SetClipboardText($"{YOUTUBE_WATCH_URL_BASE}?v={VideoInfo.Id}");
+			string url = YouTubeApiLib.Utils.GetYouTubeVideoUrl(VideoInfo.Id);
+			SetClipboardText(url);
 		}
 
 		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
@@ -257,8 +266,7 @@ namespace YouTube_downloader
 				string.IsNullOrEmpty(WebPage.WebPageCode) ||
 				string.IsNullOrWhiteSpace(WebPage.WebPageCode))
 			{
-				MessageBox.Show("Ошибка!\nПолучить ссылку на плеер можно только если видео было найдено через поиск по веб-странице!",
-					"Ошибатор ошибок",
+				MessageBox.Show("Ошибка!\nНе удалось получить ссылку на плеер!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
@@ -303,9 +311,9 @@ namespace YouTube_downloader
 
 		private void miSaveThumbnailImageAssToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
+			try
 			{
-				try
+				if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
 				{
 					using (SaveFileDialog sfd = new SaveFileDialog())
 					{
@@ -324,14 +332,19 @@ namespace YouTube_downloader
 						}
 					}
 				}
-				catch (Exception ex)
+				else
 				{
-#if DEBUG
-					System.Diagnostics.Debug.WriteLine(ex.Message);
-#endif
-					MessageBox.Show(ex.Message, "Ошибатор ошибок",
-						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
+					MessageBox.Show("Невозможно сохранить изображение!", "Ошибатор ошибок",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
+			}
+			catch (Exception ex)
+			{
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
 			}
 		}
 
@@ -427,7 +440,7 @@ namespace YouTube_downloader
 
 		private void miCopyVideoPublishedDateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DateTime date = config.UseUniversalTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished;
+			DateTime date = config.UseUniversalTime ? VideoInfo.DatePublished.ToGmt() : VideoInfo.DatePublished.ToLocalTime();
 			string datePublishedString = date.ToString("yyyy-MM-dd HH-mm-ss");
 			if (config.UseUniversalTime) { datePublishedString += " GMT"; }
 
@@ -760,12 +773,14 @@ namespace YouTube_downloader
 			favoriteItem.DisplayName = VideoInfo.Title;
 			favoriteItem.ID = VideoInfo.OwnerChannelId;
 			_isFavoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
-			_ciphered = VideoInfo.IsCiphered();
+			_isCiphered = VideoInfo.IsCiphered();
 			RecreateThumbnailsContextMenu();
 			if (ActiveThumbnail != null)
 			{
 				IsThumbnailLoading = true;
+				miThumbnailsToolStripMenuItem.Enabled = false;
 				await DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
+				miThumbnailsToolStripMenuItem.Enabled = true;
 				IsThumbnailLoading = false;
 			}
 		}
@@ -871,8 +886,10 @@ namespace YouTube_downloader
 			{
 				FavoriteItem favoriteItem = new FavoriteItem(
 					VideoInfo.Title, VideoInfo.Title, VideoInfo.Id,
-					VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId, favoritesRootNode);
-				favoriteItem.ItemType = FavoriteItemType.Video;
+					VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId, favoritesRootNode)
+				{
+					ItemType = FavoriteItemType.Video
+				};
 				if (FindInFavorites(favoriteItem, favoritesRootNode) == null)
 				{
 					favoritesRootNode.Children.Add(favoriteItem);
@@ -905,8 +922,10 @@ namespace YouTube_downloader
 				{
 					FavoriteItem favoriteItem = new FavoriteItem(
 						VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
-						null, null, favoritesRootNode);
-					favoriteItem.ItemType = FavoriteItemType.Channel;
+						null, null, favoritesRootNode)
+					{
+						ItemType = FavoriteItemType.Channel
+					};
 					favoritesRootNode.Children.Add(favoriteItem);
 					treeFavorites.RefreshObject(favoriteItem.Parent);
 
@@ -952,14 +971,14 @@ namespace YouTube_downloader
 			}
 
 			btnDownload.Enabled = false;
-			BtnDownloadClicked?.Invoke(this, e);
+			DownloadButtonClicked?.Invoke(this, e);
 
 			lblStatus.Text = "Состояние: Поиск доступных форматов...";
 
-			videoFormats.Clear();
-			hlsFormats.Clear();
-			containerFormats.Clear();
-			audioFormats.Clear();
+			_videoFormats.Clear();
+			_hlsFormats.Clear();
+			_containerFormats.Clear();
+			_audioFormats.Clear();
 			contextMenuDownloadFormats.Items.Clear();
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
@@ -967,18 +986,18 @@ namespace YouTube_downloader
 				LastReceivedStreamingData == null || (LastReceivedStreamingData != null &&
 				StreamingDataExpirationDate < DateTime.UtcNow))
 			{
-				bool isExternalVideoInfoServerNeeded = config.UseExternalRestApiServerToGetDownloadUrls ||
+				bool isExternalRestApiServerNeeded = config.UseExternalRestApiServerToGetDownloadUrls ||
 					(config.UseExternalRestApiServerToGetAdultVideos && !VideoInfo.IsFamilySafe) ||
 					VideoInfo.IsPrivate;
-				string externalVideoInfoServerUrl = config.ExternalRestApiServerUrl;
-				ushort externalVideoInfoServerPort = config.ExternalRestApiServerPort;
-				int serverTimeout = config.ConnectionTimeoutExternalRestApiServer;
+				string externalRestApiServerUrl = config.ExternalRestApiServerUrl;
+				ushort externalRestApiServerPort = config.ExternalRestApiServerPort;
+				int timeout = config.ConnectionTimeoutExternalRestApiServer;
 				await Task.Run(() =>
 				{
-					IYouTubeClient client = isExternalVideoInfoServerNeeded ?
+					IYouTubeClient client = isExternalRestApiServerNeeded ?
 						new YouTubeClientRestApi(
-							externalVideoInfoServerUrl, externalVideoInfoServerPort,
-							serverTimeout, true, WebPage) :
+							externalRestApiServerUrl, externalRestApiServerPort,
+							timeout, true, WebPage) :
 						(IYouTubeClient)new YouTubeClientAndroidVr();
 					YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
 					if (streamingDataResult.ErrorCode == 200)
@@ -1034,8 +1053,8 @@ namespace YouTube_downloader
 				return;
 			}
 
-			videoFormats = FilterVideoTracks(mediaTracks).ToList();
-			audioFormats = FilterAudioTracks(mediaTracks).ToList();
+			_videoFormats = FilterVideoTracks(mediaTracks).ToList();
+			_audioFormats = FilterAudioTracks(mediaTracks).ToList();
 			if (VideoInfo.IsDashed)
 			{
 				if (config.SortDashFormatsByBitrate)
@@ -1046,8 +1065,8 @@ namespace YouTube_downloader
 						return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
 					}
 
-					videoFormats.Sort(SorterFunc);
-					audioFormats.Sort(SorterFunc);
+					_videoFormats.Sort(SorterFunc);
+					_audioFormats.Sort(SorterFunc);
 				}
 			}
 			else if (config.SortFormatsByFileSize)
@@ -1062,14 +1081,14 @@ namespace YouTube_downloader
 					return x.ContentLength < y.ContentLength ? 1 : -1;
 				}
 
-				videoFormats.Sort(SorterFunc);
-				audioFormats.Sort(SorterFunc);
+				_videoFormats.Sort(SorterFunc);
+				_audioFormats.Sort(SorterFunc);
 			}
 
-			hlsFormats = FilterHlsTracks(mediaTracks).ToList();
-			if (hlsFormats.Count > 0)
+			_hlsFormats = FilterHlsTracks(mediaTracks).ToList();
+			if (_hlsFormats.Count > 1)
 			{
-				hlsFormats.Sort((x, y) =>
+				_hlsFormats.Sort((x, y) =>
 				{
 					if (x.VideoHeight <= 0 || y.VideoHeight <= 0 ||
 						(x.AverageBitrate == 0 && y.AverageBitrate == 0))
@@ -1086,15 +1105,15 @@ namespace YouTube_downloader
 				});
 			}
 
-			if (config.AlwaysMoveAudioId140ToTopOfList)
+			if (config.AlwaysMoveAudioId140ToTopOfList && _audioFormats.Count > 1)
 			{
-				for (int i = 0; i < audioFormats.Count; ++i)
+				for (int i = 0; i < _audioFormats.Count; ++i)
 				{
-					if (audioFormats[i].FormatId == 140)
+					if (_audioFormats[i].FormatId == 140)
 					{
 						if (i != 0)
 						{
-							(audioFormats[i], audioFormats[0]) = (audioFormats[0], audioFormats[i]);
+							(_audioFormats[i], _audioFormats[0]) = (_audioFormats[0], _audioFormats[i]);
 						}
 
 						break;
@@ -1116,30 +1135,30 @@ namespace YouTube_downloader
 				new TableColumn(TableColumnAlignment.Right)
 			};
 
-			bool showHls = hlsFormats.Count > 0 &&
+			bool showHls = _hlsFormats.Count > 0 &&
 				((!config.ShowHlsTracksOnlyForStreams ||
 				(config.ShowHlsTracksOnlyForStreams && VideoInfo.IsLiveNow)) ||
-				(videoFormats.Count + containerFormats.Count == 0));
+				(_videoFormats.Count + _containerFormats.Count == 0));
 			if (showHls)
 			{
-				foreach (YouTubeMediaTrackHlsStream trackHls in hlsFormats)
+				foreach (YouTubeMediaTrackHlsStream trackHls in _hlsFormats)
 				{
 					tableRows.Add(trackHls.ToTableRow());
 				}
 			}
 
-			foreach (YouTubeMediaTrackVideo trackVideo in videoFormats)
+			foreach (YouTubeMediaTrackVideo trackVideo in _videoFormats)
 			{
 				tableRows.Add(trackVideo.ToTableRow());
 			}
 
-			containerFormats = FilterContainerTracks(mediaTracks).ToList();
-			foreach (YouTubeMediaTrackContainer trackContainer in containerFormats)
+			_containerFormats = FilterContainerTracks(mediaTracks).ToList();
+			foreach (YouTubeMediaTrackContainer trackContainer in _containerFormats)
 			{
 				tableRows.Add(trackContainer.ToTableRow());
 			}
 
-			foreach (YouTubeMediaTrackAudio trackAudio in audioFormats)
+			foreach (YouTubeMediaTrackAudio trackAudio in _audioFormats)
 			{
 				tableRows.Add(trackAudio.ToTableRow());
 			}
@@ -1177,8 +1196,8 @@ namespace YouTube_downloader
 
 				lblStatus.Text = null;
 
-				Point pt = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
-				contextMenuDownloadFormats.Show(pt.X, pt.Y);
+				Point point = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
+				contextMenuDownloadFormats.Show(point);
 			}
 			else
 			{
@@ -1196,6 +1215,8 @@ namespace YouTube_downloader
 		/// </summary>
 		private DownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
 		{
+			_isCancelRequired = false;
+
 			YouTubeDashUrlList dashUrlList = config.AlwaysDownloadAsDash ?
 				mediaTrack.MakeDashUrlList(config.DashManualFragmentationChunkSize) : mediaTrack.DashUrls;
 			if (dashUrlList == null || dashUrlList.Count == 0)
@@ -1209,122 +1230,144 @@ namespace YouTube_downloader
 				progressBarDownload.ClearItems();
 				mediaType = mediaTrack is YouTubeMediaTrackAudio ? "аудио" : "видео";
 				lblStatus.Text = $"Скачивание чанков {mediaType}:";
-				lblProgress.Left = lblStatus.Left + lblStatus.Width;
-				lblProgress.Text = $"0 / {dashUrlList.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
+				lblDowndloadProgress.Left = lblStatus.Left + lblStatus.Width;
+				lblDowndloadProgress.Text = $"0 / {dashUrlList.Count} (0.00%), {GetTrackShortInfo(mediaTrack)}";
 			}));
 
-			bool canMerge = !audioOnly && config.AutomaticallyMergeToContainer && IsFfmpegAvailable();
-			string fnDash = fnDash = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-				(canMerge ? config.TemporaryDirectory : config.DownloadDirectory) +
-				$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
-			string fnDashFinal = fnDash;
-			string fnDashTmp = fnDash + ".tmp";
-
-			_cancelRequired = false;
-
-			if (File.Exists(fnDashTmp))
+			try
 			{
-				File.Delete(fnDashTmp);
-			}
+				bool canMerge = !audioOnly && config.AutomaticallyMergeToContainer && IsFfmpegAvailable();
+				string fnDash = fnDash = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
+					(canMerge ? config.TemporaryDirectory : config.DownloadDirectory) +
+					$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
+				string fnDashFinal = fnDash;
+				string fnDashTmp = fnDash + ".tmp";
 
-			Stream fileStream = File.OpenWrite(fnDashTmp);
-			FileDownloader _singleThreadedDownloader = new FileDownloader();
-			WebHeaderCollection headers = new WebHeaderCollection()
-			{
-				{ "Accept", "*/*" },
-				{ "User-Agent", config.UserAgent }
-			};
-			_singleThreadedDownloader.Headers = headers;
-			int retryCountMax;
-			lock (config) { retryCountMax = config.DashChunkDownloadTryCountLimit; }
-			int errorCode = 400;
-			for (int i = 0; i < dashUrlList.Count; ++i)
-			{
-				int tryNumber = 0;
-				do
+				if (File.Exists(fnDashTmp)) { File.Delete(fnDashTmp); }
+				if (File.Exists(fnDashTmp))
 				{
-					Stream memChunk = new MemoryStream();
-					_singleThreadedDownloader.Url = dashUrlList[i];
-					if (i == 0)
-					{
-						_singleThreadedDownloader.Connected += (object s, string url, long contentLength,
-							WebHeaderCollection _headers, int _tryNumber, int tryCountLimit, int errCode) =>
-						{
-							Invoke(new MethodInvoker(() =>
-							{
-								int chunkNumber = i + 1;
-								progressBarDownload.SetItem(0, dashUrlList.Count, chunkNumber);
-								double percent = 100.0 / dashUrlList.Count * chunkNumber;
-								lblStatus.Text = $"[{tryNumber + 1}/{retryCountMax}] Скачивание чанков {mediaType}:";
-								lblProgress.Left = lblStatus.Left + lblStatus.Width;
-								lblProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
-									$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
-							}));
+					return new DownloadResult(
+						FileDownloader.DOWNLOAD_ERROR_OUTPUT_STREAM_NOT_ASSIGNED,
+						"Unable to delete existed temporary file", null);
+				}
 
-							if (errCode == 200 || errCode == 206)
+				int errorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_UNDEFINED;
+				string errorMessage = null;
+				using (Stream outputStream = File.OpenWrite(fnDashTmp))
+				{
+					using (FileDownloader downloader = new FileDownloader()
+					{
+						Headers = new WebHeaderCollection()
+						{
+							{ "Accept", "*/*" },
+							{ "User-Agent", config.UserAgent }
+						}
+					})
+					{
+						int tryCountLimit;
+						lock (config) { tryCountLimit = config.DashChunkDownloadTryCountLimit; }
+						for (int i = 0; i < dashUrlList.Count; ++i)
+						{
+							int tryNumber = 0;
+							do
 							{
-								if (contentLength > 0L)
+								Stream memChunk = new MemoryStream();
+								downloader.Url = dashUrlList[i];
+								if (i == 0)
 								{
-									char driveLetter = fnDashTmp[0];
-									if (driveLetter != '\\')
+									downloader.Connected += (object s, string url, long contentLength,
+										WebHeaderCollection _headers, int _tryNumber, int _tryCountLimit, int errCode) =>
 									{
-										DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
-										if (!driveInfo.IsReady)
+										Invoke(new MethodInvoker(() =>
 										{
-											return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
-										}
-										long minimumFreeSpaceRequired = contentLength * 10;
-										if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
+											int chunkNumber = i + 1;
+											progressBarDownload.SetItem(0, dashUrlList.Count, chunkNumber);
+											double percent = 100.0 / dashUrlList.Count * chunkNumber;
+											lblStatus.Text = $"[{tryNumber + 1}/{tryCountLimit}] Скачивание чанков {mediaType}:";
+											lblDowndloadProgress.Left = lblStatus.Left + lblStatus.Width;
+											lblDowndloadProgress.Text = $"{chunkNumber} / {dashUrlList.Count}" +
+												$" ({string.Format("{0:F2}", percent)}%), {GetTrackShortInfo(mediaTrack)}";
+										}));
+
+										if (errCode == 200 || errCode == 206)
 										{
-											return FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
+											if (contentLength > 0L)
+											{
+												try
+												{
+													char driveLetter = fnDashTmp[0];
+													if (driveLetter != '\\')
+													{
+														DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
+														if (!driveInfo.IsReady)
+														{
+															return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
+														}
+														long minimumFreeSpaceRequired = contentLength * 10;
+														if (driveInfo.AvailableFreeSpace <= minimumFreeSpaceRequired)
+														{
+															return FileDownloader.DOWNLOAD_ERROR_INSUFFICIENT_DISK_SPACE;
+														}
+													}
+												}
+#if DEBUG
+												catch (Exception ex)
+												{
+													System.Diagnostics.Debug.WriteLine(ex.Message);
+#else
+												catch
+												{
+#endif
+													return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
+												}
+											}
 										}
-									}
+
+										return errCode;
+									};
+								}
+
+								errorCode = downloader.Download(memChunk);
+								if (errorCode != 200)
+								{
+									memChunk.Dispose();
+									continue;
+								}
+								memChunk.Position = 0L;
+								bool appended = StreamAppender.Append(memChunk, outputStream);
+								memChunk.Dispose();
+								if (!appended)
+								{
+									return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, fnDashTmp);
 								}
 							}
+							while (errorCode != 200 && ++tryNumber < tryCountLimit && !_isCancelRequired);
 
-							return errCode;
-						};
-					}
+							if (_isCancelRequired)
+							{
+								errorCode = FileDownloader.DOWNLOAD_ERROR_CANCELED;
+							}
 
-					errorCode = _singleThreadedDownloader.Download(memChunk);
-					if (errorCode != 200)
-					{
-						memChunk.Dispose();
-						continue;
+							if (errorCode != 200) { break; }
+						}
+						errorMessage = downloader.LastErrorMessage;
 					}
-					memChunk.Position = 0L;
-					bool appended = StreamAppender.Append(memChunk, fileStream);
-					memChunk.Dispose();
-					if (!appended)
-					{
-						fileStream.Dispose();
-						return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, null);
-					}
-				} while (errorCode != 200 && ++tryNumber < retryCountMax && !_cancelRequired);
-
-				if (_cancelRequired)
-				{
-					errorCode = FileDownloader.DOWNLOAD_ERROR_CANCELED;
 				}
 
-				if (errorCode != 200)
+				if (errorCode == 200)
 				{
-					break;
+					fnDashFinal = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(fnDash);
+					File.Move(fnDashTmp, fnDashFinal);
 				}
+				return new DownloadResult(errorCode, errorMessage, fnDashFinal);
 			}
-			fileStream.Dispose();
-
-			if (errorCode == 200)
+			catch (Exception ex)
 			{
-				fnDashFinal = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(fnDash);
-				File.Move(fnDashTmp, fnDashFinal);
+#if DEBUG
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+#endif
+				return new DownloadResult(ex.HResult, ex.Message, null);
 			}
-
-			DownloadResult downloadResult =
-				new DownloadResult(errorCode, _singleThreadedDownloader.LastErrorMessage, fnDashFinal);
-			_singleThreadedDownloader.Dispose();
-			_singleThreadedDownloader = null;
-			return downloadResult;
 		}
 
 		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
@@ -1336,90 +1379,89 @@ namespace YouTube_downloader
 			}
 			else
 			{
-				YouTubeMediaTrackVideo videoTrack = mediaTrack as YouTubeMediaTrackVideo;
-				bool isVideo = videoTrack != null;
-				if (isVideo)
-				{
-					audioOnly = false;
-				}
-				bool isContainer = mediaTrack is YouTubeMediaTrackContainer;
-				string mediaTypeString = isVideo || isContainer ? "видео" : "аудио";
-
-				string fileUrl = mediaTrack.FileUrl.Url;
-
-				#region Расшифровка Cipher
-				//TODO: Вынести это в отдельный метод.
-				if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadUrls)
-				{
-					if (string.IsNullOrEmpty(config.CipherDecryptionAlgorythm) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
-					{
-						return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
-					}
-
-					#region Внимание! Непротестированный код!
-					IYouTubeMediaTrackUrlDecryptor decryptor = new TrackUrlDecryptor(config.CipherDecryptionAlgorythm);
-					decryptor.Decrypt(mediaTrack.FileUrl);
-					if (audioFormats.Count > 0)
-					{
-						foreach (YouTubeMediaTrack track in audioFormats)
-						{
-							decryptor.Decrypt(audioFormats[0].FileUrl);
-						}
-					}
-
-					int timeout = config.ConnectionTimeout;
-					bool allOk = await Task.Run(() =>
-					{
-						bool ok = MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders(
-							"HEAD", mediaTrack.FileUrl.Url, null, null, null, timeout, out _, out _) == 200;
-						if (ok && audioFormats.Count > 0)
-						{
-							int[] errorCodes = GetTrackAccessibilityHttpStatusCodes(audioFormats, timeout);
-							ok &= errorCodes.All(code => code == 200);
-						}
-
-						return ok;
-					});
-
-					if (!allOk)
-					{
-						return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
-					}
-					#endregion
-				}
-				#endregion
-
-				bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
-
 				try
 				{
+					YouTubeMediaTrackVideo videoTrack = mediaTrack as YouTubeMediaTrackVideo;
+					bool isVideo = videoTrack != null;
+					if (isVideo) { audioOnly = false; }
+					bool isContainer = mediaTrack is YouTubeMediaTrackContainer;
+					string mediaTypeString = isVideo || isContainer ? "видео" : "аудио";
+
+					string fileUrl = mediaTrack.FileUrl.Url;
+
+					#region Расшифровка Cipher
+					//TODO: Вынести это в отдельный метод.
+					if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadUrls)
+					{
+						if (string.IsNullOrEmpty(config.CipherDecryptionAlgorythm) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
+						{
+							return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
+						}
+
+						#region Внимание! Непротестированный код!
+						IYouTubeMediaTrackUrlDecryptor decryptor = new TrackUrlDecryptor(config.CipherDecryptionAlgorythm);
+						decryptor.Decrypt(mediaTrack.FileUrl);
+						if (_audioFormats.Count > 0)
+						{
+							foreach (YouTubeMediaTrack track in _audioFormats)
+							{
+								decryptor.Decrypt(_audioFormats[0].FileUrl);
+							}
+						}
+
+						int timeout = config.ConnectionTimeout;
+						bool allOk = await Task.Run(() =>
+						{
+							bool ok = MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders(
+								"HEAD", mediaTrack.FileUrl.Url, null, null, null, timeout, out _, out _) == 200;
+							if (ok && _audioFormats.Count > 0)
+							{
+								int[] errorCodes = GetTrackAccessibilityHttpStatusCodes(_audioFormats, timeout);
+								ok &= errorCodes.All(code => code == 200);
+							}
+
+							return ok;
+						});
+
+						if (!allOk)
+						{
+							return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+						}
+						#endregion
+					}
+					#endregion
+
+					bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
 					WebHeaderCollection requestHeaders = new WebHeaderCollection()
 					{
 						{ "Accept", "*/*" },
 						{ "User-Agent", config.UserAgent }
 					};
-					_multiThreadedDownloader = new MultiThreadedDownloader();
-					_multiThreadedDownloader.Headers = requestHeaders;
-					_multiThreadedDownloader.ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio;
-					_multiThreadedDownloader.TryCountLimitPerThread = config.ChunkDownloadTryCountLimit;
-					_multiThreadedDownloader.TryCountLimitInsideThread = config.ChunkDownloadInnerErrorCountLimit;
-					_multiThreadedDownloader.Url = fileUrl;
+
+					string outputFilePath = Path.Combine(isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,
+						isContainer ? $"{formattedFileName}.{mediaTrack.FileExtension}" :
+						$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
+					_multiThreadedDownloader = new MultiThreadedDownloader()
+					{
+						Url = fileUrl,
+						Headers = requestHeaders,
+						ThreadCount = isVideo ? config.ThreadCountVideo : config.ThreadCountAudio,
+						TryCountLimitPerThread = config.ChunkDownloadTryCountLimit,
+						TryCountLimitInsideThread = config.ChunkDownloadInnerErrorCountLimit,
+						UseRamForTempFiles = useRamToStoreTemporaryFiles,
+						OutputFileName = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(outputFilePath)
+					};
 					if (!useRamToStoreTemporaryFiles)
 					{
 						_multiThreadedDownloader.TempDirectory = config.TemporaryDirectory;
 					}
-					_multiThreadedDownloader.UseRamForTempFiles = useRamToStoreTemporaryFiles;
-					string outputFilePath = Path.Combine(isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,
-						isContainer ? $"{formattedFileName}.{mediaTrack.FileExtension}" :
-						$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
-					_multiThreadedDownloader.OutputFileName = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(outputFilePath);
-					_multiThreadedDownloader.Preparing += (s) =>
+					_multiThreadedDownloader.Preparing += s =>
 					{
 						Invoke(new MethodInvoker(() =>
 						{
 							progressBarDownload.ClearItems();
 							lblStatus.Text = "Состояние: Подготовка к скачиванию...";
-							lblProgress.Text = null;
+							lblDowndloadProgress.Text = null;
 						}));
 					};
 					_multiThreadedDownloader.Connecting += (s, url, tryNumber, tryCountLimit) =>
@@ -1428,7 +1470,7 @@ namespace YouTube_downloader
 						{
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
 							lblStatus.Text = $"Состояние: Подключение... {shortInfo}";
-							lblProgress.Text = null;
+							lblDowndloadProgress.Text = null;
 						}));
 					};
 					_multiThreadedDownloader.Connected += (object s, string url, long contentLength,
@@ -1475,8 +1517,8 @@ namespace YouTube_downloader
 							progressBarDownload.ClearItems();
 							lblStatus.Text = $"Скачивание {mediaTypeString}:";
 							string shortInfo = isVideo || isContainer ? GetTrackShortInfo(videoTrack) : GetTrackShortInfo(mediaTrack as YouTubeMediaTrackAudio);
-							lblProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
-							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+							lblDowndloadProgress.Text = $"0 / {FormatSize(size)} (0.00%), {shortInfo}";
+							lblDowndloadProgress.Left = lblStatus.Left + lblStatus.Width;
 						}));
 					};
 					_multiThreadedDownloader.DownloadProgress += (object s, ConcurrentDictionary<int, DownloadableTask> contentChunks) =>
@@ -1498,8 +1540,8 @@ namespace YouTube_downloader
 							progressBarDownload.ClearItems();
 
 							lblStatus.Text = $"Объединение чанков {mediaTypeString}:";
-							lblProgress.Text = $"0 / {chunkCount}";
-							lblProgress.Left = lblStatus.Left + lblStatus.Width;
+							lblDowndloadProgress.Text = $"0 / {chunkCount}";
+							lblDowndloadProgress.Left = lblStatus.Left + lblStatus.Width;
 						}));
 					};
 					_multiThreadedDownloader.ChunkMergingProgress += (s, chunkId, chunkCount, chunkPosition, chunkSize) =>
@@ -1508,13 +1550,14 @@ namespace YouTube_downloader
 						{
 							double percent = 100.0 / chunkSize * chunkPosition;
 							string percentString = string.Format("{0:F2}", percent);
-							lblProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
+							lblDowndloadProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
 								$"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
 
 							MultipleProgressBarItem[] items = GenerateChunkMergingProgressVisualizationItems(chunkCount, chunkId, percent);
 							progressBarDownload.SetItems(items);
 						}));
 					};
+
 					int res = await Task.Run(() => _multiThreadedDownloader.Download(config.UseAccurateMultithreading));
 					if (useRamToStoreTemporaryFiles)
 					{
@@ -1527,16 +1570,19 @@ namespace YouTube_downloader
 					_multiThreadedDownloader.Dispose();
 					_multiThreadedDownloader = null;
 					return downloadResult;
-				} catch (Exception ex)
+				}
+				catch (Exception ex)
 				{
 #if DEBUG
 					System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
-					DownloadResult downloadResult =
-						new DownloadResult(ex.HResult, ex.Message,
-						_multiThreadedDownloader.OutputFileName);
-					_multiThreadedDownloader.Dispose();
-					_multiThreadedDownloader = null;
+					DownloadResult downloadResult = new DownloadResult(
+						ex.HResult, ex.Message, _multiThreadedDownloader?.OutputFileName);
+					if (_multiThreadedDownloader != null)
+					{
+						_multiThreadedDownloader.Dispose();
+						_multiThreadedDownloader = null;
+					}
 					return downloadResult;
 				}
 			}
@@ -1548,7 +1594,7 @@ namespace YouTube_downloader
 				_multiThreadedDownloader.ContentLength : (_mediaTrack as YouTubeMediaTrackVideo).ContentLength;
 			if (fileSize <= 0L)
 			{
-				//Don't do it!
+				// Don't do it!
 				fileSize = _contentChunks.Where(chunk => chunk.Value.ChunkFileSize > 0L).Sum(chunk => chunk.Value.ChunkFileSize);
 			}
 
@@ -1558,7 +1604,7 @@ namespace YouTube_downloader
 			string shortInfo = _isVideo || _isContainer ?
 				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackVideo) :
 				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackAudio);
-			lblProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
+			lblDowndloadProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
 				$" ({percentString}%), {shortInfo}";
 
 			if (miMultipleToolStripMenuItem.Checked)
@@ -1618,11 +1664,11 @@ namespace YouTube_downloader
 			}
 
 			IsDownloadInProgress = true;
-			_cancelRequired = false;
+			_isCancelRequired = false;
 
 			progressBarDownload.ClearItems();
 			lblStatus.Text = null;
-			lblProgress.Text = null;
+			lblDowndloadProgress.Text = null;
 
 			string formattedFileName = FixFileName(FormatFileName(
 				IsVideoDateAvailable(VideoInfo) ?
@@ -1637,8 +1683,8 @@ namespace YouTube_downloader
 			{
 				lblStatus.Text = "Состояние: Выбор форматов...";
 				List<YouTubeMediaTrack> formats = new List<YouTubeMediaTrack>();
-				formats.AddRange(videoFormats);
-				formats.AddRange(audioFormats);
+				formats.AddRange(_videoFormats);
+				formats.AddRange(_audioFormats);
 				FormTrackSelector trackSelector = new FormTrackSelector(formats);
 				DialogResult dialogResult = trackSelector.ShowDialog();
 				lblStatus.Text = null;
@@ -1673,8 +1719,8 @@ namespace YouTube_downloader
 				}
 				else
 				{
-					lblStatus.Text = "Состояние: Не удалось запустить FFMPEG!";
 					string ffmpegMsg = "Не удалось запустить FFMPEG!";
+					lblStatus.Text = $"Состояние: {ffmpegMsg}";
 					MessageBox.Show(ffmpegMsg, "Ошибка!",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
@@ -1687,7 +1733,7 @@ namespace YouTube_downloader
 			{
 				if (config.AutomaticallyDownloadAllAdaptiveVideoTracks)
 				{
-					foreach (YouTubeMediaTrack videoFormat in videoFormats)
+					foreach (YouTubeMediaTrack videoFormat in _videoFormats)
 					{
 						if (videoFormat.GetType() == typeof(YouTubeMediaTrackVideo))
 						{
@@ -1700,11 +1746,11 @@ namespace YouTube_downloader
 					tracksToDownload.Add(mi.Tag as YouTubeMediaTrackVideo);
 				}
 
-				if (audioFormats.Count > 0)
+				if (_audioFormats.Count > 0)
 				{
 					if (config.AutomaticallyDownloadAllAdaptiveAudioTracks)
 					{
-						foreach (YouTubeMediaTrack audioFormat in audioFormats)
+						foreach (YouTubeMediaTrack audioFormat in _audioFormats)
 						{
 							if (audioFormat.GetType() == typeof(YouTubeMediaTrackAudio))
 							{
@@ -1716,24 +1762,24 @@ namespace YouTube_downloader
 					{
 						if (config.AutomaticallyDownloadFirstAudioTrack)
 						{
-							tracksToDownload.Add(audioFormats[0]);
+							tracksToDownload.Add(_audioFormats[0]);
 						}
-						if (config.AutomaticallyDownloadSecondAudioTrack && audioFormats.Count > 1)
+						if (config.AutomaticallyDownloadSecondAudioTrack && _audioFormats.Count > 1)
 						{
 							if (config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger)
 							{
-								if (audioFormats[1].ContentLength > audioFormats[0].ContentLength)
+								if (_audioFormats[1].ContentLength > _audioFormats[0].ContentLength)
 								{
-									tracksToDownload.Add(audioFormats[1]);
+									tracksToDownload.Add(_audioFormats[1]);
 								}
 								else if (!config.AutomaticallyDownloadFirstAudioTrack)
 								{
-									tracksToDownload.Add(audioFormats[0]);
+									tracksToDownload.Add(_audioFormats[0]);
 								}
 							}
 							else
 							{
-								tracksToDownload.Add(audioFormats[1]);
+								tracksToDownload.Add(_audioFormats[1]);
 							}
 						}
 					}
@@ -1748,24 +1794,23 @@ namespace YouTube_downloader
 				tracksToDownload.Add(mi.Tag as YouTubeMediaTrackAudio);
 			}
 
-			//Подсчёт общего размера файлов.
-			long summaryFilesSize = 0L;
-			foreach (YouTubeMediaTrack ytmt in tracksToDownload)
-			{
-				if (ytmt.ContentLength > 0L)
-				{
-					summaryFilesSize += ytmt.ContentLength;
-				}
-			}
-
-			long minimumFreeSpaceRequired = summaryFilesSize > 0L ? (long)(summaryFilesSize * 1.1) : 0L;
+			long summaryFileSize = tracksToDownload.Sum(track => track.ContentLength);
+			long minimumFreeSpaceRequired = summaryFileSize > 0L ? (long)(summaryFileSize * 1.1) : 0L;
 			if (minimumFreeSpaceRequired > 0L)
 			{
-				MultiThreadedDownloader tempDownloader = new MultiThreadedDownloader();
-				tempDownloader.OutputFileName = Path.Combine(config.DownloadDirectory, "temp.tmp");
-				tempDownloader.TempDirectory = config.TemporaryDirectory;
+				MultiThreadedDownloader tempDownloader = new MultiThreadedDownloader()
+				{
+					OutputFileName = Path.Combine(config.DownloadDirectory, "temp.tmp"),
+					UseRamForTempFiles = config.UseRamToStoreTemporaryFiles
+				};
+				if (config.UseRamToStoreTemporaryFiles)
+				{
+					tempDownloader.TempDirectory = config.TemporaryDirectory;
+				}
 
 				List<char> driveLetters = tempDownloader.GetUsedDriveLetters();
+				tempDownloader.Dispose();
+
 				if (driveLetters.Count > 0 && !IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired))
 				{
 					lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
@@ -1778,10 +1823,10 @@ namespace YouTube_downloader
 				}
 
 				if (tracksToDownload.Count > 1 && !(tracksToDownload[0] is YouTubeMediaTrackContainer) &&
-					!AdvancedFreeSpaceCheck(summaryFilesSize))
+					!AdvancedFreeDiskSpaceCheckPassed(summaryFileSize))
 				{
 					lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
-					MessageBox.Show("Недостаточно места на диске!", "Ошибка!",
+					MessageBox.Show("Недостаточно места на диске или произошла ошибка при обращении к одному из указанных дисков!", "Ошибка!",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 					IsDownloadInProgress = false;
@@ -1834,7 +1879,7 @@ namespace YouTube_downloader
 				}
 			}
 
-			if (_cancelRequired)
+			if (_isCancelRequired)
 			{
 				string msg = "Скачивание отменено!";
 				lblStatus.Text = $"Состояние: {msg}";
@@ -1852,8 +1897,8 @@ namespace YouTube_downloader
 			bool audioOnly = IsAudioOnly(tracksToDownload);
 			DownloadResult downloadResult = await Task.Run(() =>
 				DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults));
-			lblProgress.Text = null;
-			lblProgress.Refresh();
+			lblDowndloadProgress.Text = null;
+			lblDowndloadProgress.Refresh();
 
 			if (downloadResult.ErrorCode == 200)
 			{
@@ -1862,56 +1907,69 @@ namespace YouTube_downloader
 					btnDownload.Enabled = false;
 					if (minimumFreeSpaceRequired > 0L)
 					{
-						DriveInfo driveInfo = new DriveInfo(config.DownloadDirectory[0].ToString());
-						if (driveInfo.AvailableFreeSpace < minimumFreeSpaceRequired)
+						try
 						{
-							lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
-							string dir = config.ChunkMergerDirectory;
-							string msg = "Недостаточно места на диске для сборки контейнера! " +
-								$"Оригинальные файлы сохранены в папку\n{dir}";
-							MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-							IsDownloadInProgress = false;
-							btnDownload.Text = "Скачать";
-							btnDownload.Enabled = true;
-							return;
-						}
-					}
-
-					string ext = "mkv";
-					if (!config.AlwaysUseMkvContainerIfPossible)
-					{
-						ext = "mp4";
-						foreach (YouTubeMediaTrack mediaTrack in tracksToDownload)
-						{
-							if (mediaTrack.MimeExt != "mp4")
+							DriveInfo driveInfo = new DriveInfo(config.DownloadDirectory[0].ToString());
+							if (driveInfo.AvailableFreeSpace < minimumFreeSpaceRequired)
 							{
-								ext = "mkv";
-								break;
+								lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
+								string msg = "Недостаточно места на диске для сборки контейнера! " +
+									$"Оригинальные файлы сохранены в папку\n{config.ChunkMergerDirectory}";
+								MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+								IsDownloadInProgress = false;
+								btnDownload.Text = "Скачать";
+								btnDownload.Enabled = true;
+								return;
 							}
 						}
+#if DEBUG
+						catch (Exception ex)
+						{
+							System.Diagnostics.Debug.WriteLine(ex.Message);
+#else
+						catch
+						{
+#endif
+							string msg = "Внимание (ахтунг)! Произошла ошибка при проверке свободного места! " +
+								$"Будьте бдительны! Сейчас места на диске {char.ToUpper(config.DownloadDirectory[0])}: может не хватить!";
+							MessageBox.Show(msg, "Обращатор на себя внимания",
+								MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						}
 					}
 
-					lblStatus.Text = $"Состояние: Создание контейнера {ext.ToUpper()}...";
+					string ext = GetContainerFileExtension(tracksToDownload);
+					lblStatus.Text = $"Состояние: Создание контейнера {ext.Substring(1).ToUpper()}...";
 					lblStatus.Refresh();
 
 					string containerFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadDirectory, $"{formattedFileName}.{ext}"));
-					await MergeYouTubeMediaTracks(downloadResults, containerFilePath, config.ExtraDelayAfterContainerWasBuilt);
+						Path.Combine(config.DownloadDirectory, formattedFileName + ext));
+					await Task.Run(() => MergeYouTubeMediaTracks(downloadResults, containerFilePath, config.ExtraDelayAfterContainerWasBuilt));
 
 					if (config.DeleteSourceFilesWhenMerged)
 					{
 						foreach (DownloadResult dr in downloadResults)
 						{
-							if (File.Exists(dr.FileName))
+							try
 							{
-								File.Delete(dr.FileName);
+								if (File.Exists(dr.OutputFilePath))
+								{
+									File.Delete(dr.OutputFilePath);
+								}
 							}
+#if DEBUG
+							catch (Exception ex)
+							{
+								System.Diagnostics.Debug.WriteLine(ex.Message);
+							}
+#else
+							catch { }
+#endif
 						}
 					}
 				}
 
-				//сохранение картинки
+				// Сохранение эскиза видео.
 				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsOk)
 				{
 					SaveThumbnailToFile(ActiveThumbnail, formattedFileName);
@@ -1952,7 +2010,7 @@ namespace YouTube_downloader
 								"для расшифровки которого вам требуется ввести специальную последовательность чисел, " +
 								"известную одному лишь дьяволу.";
 							MessageBox.Show($"{VideoInfo.Title}\nОшибка ERROR_NO_CIPHER_DECRYPTION_ALGORITHM!\n{t}", "Ошибка!",
-							   MessageBoxButtons.OK, MessageBoxIcon.Error);
+								MessageBoxButtons.OK, MessageBoxIcon.Error);
 							break;
 						}
 
@@ -2044,7 +2102,7 @@ namespace YouTube_downloader
 
 		public void StopDownload()
 		{
-			_cancelRequired = true;
+			_isCancelRequired = true;
 			_multiThreadedDownloader?.Stop();
 		}
 

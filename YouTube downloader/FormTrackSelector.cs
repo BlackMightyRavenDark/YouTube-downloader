@@ -8,11 +8,12 @@ namespace YouTube_downloader
 {
 	public partial class FormTrackSelector : Form
 	{
-		public List<YouTubeMediaTrack> SelectedTracks { get; private set; } = new List<YouTubeMediaTrack>();
+		public List<YouTubeMediaTrack> SelectedTracks { get; }
 
 		public FormTrackSelector(List<YouTubeMediaTrack> mediaTracks)
 		{
 			InitializeComponent();
+			SelectedTracks = new List<YouTubeMediaTrack>();
 
 			SetupListView();
 
@@ -55,42 +56,39 @@ namespace YouTube_downloader
 
 		private void SetupListView()
 		{
-			olvColumnVideoFrameRate.AspectToStringConverter = (obj) =>
+			olvColumnVideoFrameRate.AspectToStringConverter = obj =>
 			{
 				int n = (int)obj;
 				return n > 0 ? $"{n} fps" : null;
 			};
-			olvColumnFormalBitrate.AspectToStringConverter = (obj) =>
+			olvColumnFormalBitrate.AspectToStringConverter = obj =>
 			{
 				int n = (int)obj;
 				return n > 0 ? $"~{n / 1024} kbps" : "Неизвестно";
 			};
-			olvColumnAverageBitrate.AspectToStringConverter = (obj) =>
+			olvColumnAverageBitrate.AspectToStringConverter = obj =>
 			{
 				int n = (int)obj;
 				return n > 0 ? $"~{n / 1024} kbps" : "Неизвестно";
 			};
-			olvColumnFileExtension.AspectToStringConverter = (obj) =>
+			olvColumnFileExtension.AspectToStringConverter = obj =>
 			{
-				if (obj == null)
-				{
-					return null;
-				}
+				if (obj == null || !(obj is string)) { return null; }
 				return (obj as string).ToUpper();
 			};
-			olvColumnFileSize.AspectToStringConverter = (obj) =>
+			olvColumnFileSize.AspectToStringConverter = obj =>
 			{
 				long n = (long)obj;
 				return n > 0L ? Utils.FormatSize(n) : "Неизвестно";
 			};
-			olvColumnChunkCount.AspectToStringConverter = (obj) =>
+			olvColumnChunkCount.AspectToStringConverter = obj =>
 			{
 				int n = (int)obj;
 				return n >= 0 ? n.ToString() : null;
 			};
 		}
 
-		private void btnDownload_Click(object sender, System.EventArgs e)
+		private void btnDownload_Click(object sender, EventArgs e)
 		{
 			var items = listViewTrackSelector.CheckedObjects;
 			if (items == null || items.Count == 0)
@@ -100,6 +98,7 @@ namespace YouTube_downloader
 				return;
 			}
 
+			SelectedTracks.Clear();
 			foreach (TrackSelectorItem item in items)
 			{
 				SelectedTracks.Add(item.Tag as YouTubeMediaTrack);
