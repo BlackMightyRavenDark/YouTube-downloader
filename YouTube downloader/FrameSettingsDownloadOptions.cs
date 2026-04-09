@@ -17,7 +17,7 @@ namespace YouTube_downloader
 				json["automaticallyDownloadSecondAudioTrack"] = config.AutomaticallyDownloadSecondAudioTrack;
 				json["automaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger"] = config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
 				json["automaticallyDownloadAllAdaptiveAudioTracks"] = config.AutomaticallyDownloadAllAdaptiveAudioTracks;
-				json["alwaysUseMkvContainerIfPossible"] = config.AlwaysUseMkvContainerIfPossible;
+				json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainer;
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
 				json["checkUrlsAccessibilityBeforeDownloadStarted"] = config.CheckUrlsAccessibilityBeforeDownloadStarted;
 				json["chunkDownloadTryCountLimit"] = config.ChunkDownloadTryCountLimit;
@@ -56,10 +56,10 @@ namespace YouTube_downloader
 					}
 				}
 				{
-					JToken jt = json.Value<JToken>("alwaysUseMkvContainerIfPossible");
+					JToken jt = json.Value<JToken>("alwaysUseMkvContainer");
 					if (jt != null)
 					{
-						config.AlwaysUseMkvContainerIfPossible = jt.Value<bool>();
+						config.AlwaysUseMkvContainer = jt.Value<bool>();
 					}
 				}
 				{
@@ -106,7 +106,7 @@ namespace YouTube_downloader
 				numericUpDownChunkDownloadErrorCountLimit.Value = config.ChunkDownloadInnerErrorCountLimit;
 				checkBoxAutomaticallyMergeAdaptiveTracks.Checked = config.AutomaticallyMergeToContainer;
 				checkBoxDeleteSourceFilesWhenMerged.Checked = config.DeleteSourceFilesWhenMerged;
-				if (config.AlwaysUseMkvContainerIfPossible)
+				if (config.AlwaysUseMkvContainer)
 				{
 					radioButtonContainerTypeMkv.Checked = true;
 				}
@@ -231,12 +231,12 @@ namespace YouTube_downloader
 
 		private void radioButtonContainerTypeMp4_CheckedChanged(object sender, EventArgs e)
 		{
-			config.AlwaysUseMkvContainerIfPossible = !radioButtonContainerTypeMp4.Checked;
+			config.AlwaysUseMkvContainer = !radioButtonContainerTypeMp4.Checked;
 		}
 
 		private void radioButtonContainerTypeMkv_CheckedChanged(object sender, EventArgs e)
 		{
-			config.AlwaysUseMkvContainerIfPossible = radioButtonContainerTypeMkv.Checked;
+			config.AlwaysUseMkvContainer = radioButtonContainerTypeMkv.Checked;
 		}
 	}
 }

@@ -674,7 +674,7 @@ namespace YouTube_downloader
 
 		public static string GetContainerFileExtension(IEnumerable<YouTubeMediaTrack> tracks)
 		{
-			if (config.AlwaysUseMkvContainerIfPossible) { return ".mkv"; }
+			if (config.AlwaysUseMkvContainer) { return ".mkv"; }
 
 			bool hasWebmOrWeba = tracks.Any(track => track.MimeExt == "webm" || track.MimeExt == "weba");
 			return hasWebmOrWeba ? ".mkv" : ".mp4";

@@ -48,7 +48,7 @@ namespace YouTube_downloader
 		public bool AutomaticallyDownloadAllAdaptiveAudioTracks { get; set; }
 		public bool AutomaticallyMergeToContainer { get; set; }
 		public bool DeleteSourceFilesWhenMerged { get; set; }
-		public bool AlwaysUseMkvContainerIfPossible { get; set; }
+		public bool AlwaysUseMkvContainer { get; set; }
 		public int ExtraDelayAfterContainerWasBuilt { get; set; }
 		public bool CheckUrlsAccessibilityBeforeDownloadStarted { get; set; }
 		public int ChunkDownloadTryCountLimit { get; set; }
@@ -165,7 +165,7 @@ namespace YouTube_downloader
 			AutomaticallyDownloadAllAdaptiveAudioTracks = false;
 			AutomaticallyMergeToContainer = true;
 			DeleteSourceFilesWhenMerged = true;
-			AlwaysUseMkvContainerIfPossible = false;
+			AlwaysUseMkvContainer = false;
 			ExtraDelayAfterContainerWasBuilt = 300;
 			CheckUrlsAccessibilityBeforeDownloadStarted = true;
 			ChunkDownloadTryCountLimit = 5;
