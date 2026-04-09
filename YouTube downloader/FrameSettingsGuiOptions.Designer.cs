@@ -205,7 +205,7 @@ namespace YouTube_downloader
 			0,
 			0});
 			this.numericUpDownMenusFontSize.Minimum = new decimal(new int[] {
-			9,
+			8,
 			0,
 			0,
 			0});
@@ -213,7 +213,7 @@ namespace YouTube_downloader
 			this.numericUpDownMenusFontSize.Size = new System.Drawing.Size(45, 20);
 			this.numericUpDownMenusFontSize.TabIndex = 0;
 			this.numericUpDownMenusFontSize.Value = new decimal(new int[] {
-			9,
+			8,
 			0,
 			0,
 			0});

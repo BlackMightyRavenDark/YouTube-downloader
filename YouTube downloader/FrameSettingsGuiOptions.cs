@@ -35,7 +35,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("menusFontSize");
 					if (jt != null)
 					{
-						config.MenusFontSize = ClampValue(jt.Value<int>(), 9, 16);
+						config.MenusFontSize = ClampValue(jt.Value<int>(), 8, 16);
 					}
 				}
 				{
