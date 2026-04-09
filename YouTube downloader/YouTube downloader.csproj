@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="DownloadResult.cs" />
     <Compile Include="FavoriteItem.cs" />
+    <Compile Include="FormatListContextMenuRenderer.cs" />
     <Compile Include="FrameSettingsDownloadOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>

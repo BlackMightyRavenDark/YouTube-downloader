@@ -55,6 +55,7 @@ namespace YouTube_downloader
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage, Control parent)
 		{
 			InitializeComponent();
+			contextMenuDownloadFormats.Renderer = new FormatListContextMenuRenderer();
 
 			if (parent != null) { Parent = parent; }
 			WebPage = webPage;
@@ -1169,26 +1170,20 @@ namespace YouTube_downloader
 
 			if (table.Rows.Count > 0)
 			{
-				Type previousObjectType = table.Rows[0].Tag.GetType();
-
 				foreach (TableRow row in table.Rows)
 				{
-					Type objectType = row.Tag.GetType();
-					if (objectType != previousObjectType)
-					{
-						contextMenuDownloadFormats.Items.Add("-");
-						previousObjectType = objectType;
-					}
-
 					string title = row.Join(columnSeparator);
-					ToolStripMenuItem mi = new ToolStripMenuItem(title) { Tag = row.Tag };
+					ToolStripMenuItem mi = new ToolStripMenuItem(title)
+					{
+						Padding = new Padding(0, 4, 0, 4),
+						Tag = row.Tag
+					};
 					mi.Click += MenuItemDownloadClick;
 					contextMenuDownloadFormats.Items.Add(mi);
 				}
 
 				if (contextMenuDownloadFormats.Items.Count > 0)
 				{
-					contextMenuDownloadFormats.Items.Add("-");
 					ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...") { Tag = null };
 					mi.Click += MenuItemDownloadClick;
 					contextMenuDownloadFormats.Items.Add(mi);
