@@ -596,8 +596,10 @@ namespace YouTube_downloader
 			int[] results = new int[tracks.Count()];
 			var testTasks = tracks.Select((track, taskId) => Task.Run(() =>
 			{
-				int errorCode = MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders("HEAD",
-					track.FileUrl.Url, headers, null, null, connectionTimeout, out _, out _);
+				string url = track.FileUrl?.Url;
+				int errorCode = !string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url) ?
+					MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders("HEAD",
+					url, headers, null, null, connectionTimeout, out _, out _) : 400;
 				results[taskId] = errorCode;
 			}));
 			Task.WhenAll(testTasks).Wait();
