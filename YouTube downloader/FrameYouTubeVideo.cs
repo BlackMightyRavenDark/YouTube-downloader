@@ -1967,7 +1967,11 @@ namespace YouTube_downloader
 				// Сохранение эскиза видео.
 				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsOk)
 				{
-					SaveThumbnailToFile(ActiveThumbnail, formattedFileName);
+					if (!SaveThumbnailToFile(ActiveThumbnail, formattedFileName))
+					{
+						MessageBox.Show("Внимание! Не удалось сохранить картинку от видео!", "Обращатор на себя внимания",
+							MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					}
 				}
 
 				lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
@@ -2113,7 +2117,7 @@ namespace YouTube_downloader
 			return true;
 		}
 
-		private void SaveThumbnailToFile(VideoThumbnailWrapper thumbnail, string formattedFileName)
+		private bool SaveThumbnailToFile(VideoThumbnailWrapper thumbnail, string formattedFileName)
 		{
 			try
 			{
@@ -2122,6 +2126,7 @@ namespace YouTube_downloader
 					string suffix = thumbnail.Image != null ? $"_image_{thumbnail.Image.Width}x{thumbnail.Image.Height}.jpg" : "_image.dat";
 					string outputFilePath = Path.Combine(config.DownloadDirectory, formattedFileName + suffix);
 					thumbnail.ImageData.SaveToFile(outputFilePath);
+					return true;
 				}
 			}
 #if DEBUG
@@ -2132,6 +2137,7 @@ namespace YouTube_downloader
 #else
 			catch { }
 #endif
+			return false;
 		}
 
 		public void SetVideoTitleFontSize(int fontSize)
