@@ -676,6 +676,41 @@ namespace YouTube_downloader
 			return null;
 		}
 
+		public static bool IsAudioOnly(IEnumerable<YouTubeMediaTrack> mediaTracks)
+		{
+			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
+			{
+				if (!(mediaTrack is YouTubeMediaTrackAudio))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		internal static bool SaveThumbnailToFile(VideoThumbnailWrapper thumbnail, string formattedFileName)
+		{
+			try
+			{
+				if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName) && thumbnail.IsOk)
+				{
+					string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
+						Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
+					thumbnail.ImageData.SaveToFile(outputFilePath);
+					return true;
+				}
+			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
+			return false;
+		}
+
 		public static bool SetClipboardText(string text)
 		{
 			for (int i = 0; i < 100; ++i)

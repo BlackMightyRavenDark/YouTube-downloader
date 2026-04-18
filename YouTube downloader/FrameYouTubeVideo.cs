@@ -2104,41 +2104,6 @@ namespace YouTube_downloader
 			_multiThreadedDownloader?.Stop();
 		}
 
-		private bool IsAudioOnly(IEnumerable<YouTubeMediaTrack> mediaTracks)
-		{
-			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
-			{
-				if (!(mediaTrack is YouTubeMediaTrackAudio))
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		private bool SaveThumbnailToFile(VideoThumbnailWrapper thumbnail, string formattedFileName)
-		{
-			try
-			{
-				if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName) && thumbnail.IsOk)
-				{
-					string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
-					thumbnail.ImageData.SaveToFile(outputFilePath);
-					return true;
-				}
-			}
-#if DEBUG
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
-#endif
-			return false;
-		}
-
 		public void SetVideoTitleFontSize(int fontSize)
 		{
 			lblVideoTitle.Font = new Font(lblVideoTitle.Font.FontFamily, fontSize);
