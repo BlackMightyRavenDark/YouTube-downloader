@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -606,6 +607,60 @@ namespace YouTube_downloader
 			return results;
 		}
 
+		public static string GetNumberedFixedOutputFileNameWithotExtension(
+			YouTubeVideo video, string containerFileExtension, VideoThumbnailWrapper thumbnailWrapper = null)
+		{
+			string fixedFileName = FixFileName(FormatFileName(IsVideoDateAvailable(video) ?
+				config.OutputFileNameFormatWithDate : config.OutputFileNameFormatWithoutDate, video));
+			if (thumbnailWrapper == null || string.IsNullOrEmpty(containerFileExtension)) { return fixedFileName; }
+			string numberedVideoFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(Path.Combine(config.DownloadDirectory, fixedFileName + containerFileExtension));
+			int int1 = ExtractNumberFromVideoFileName(numberedVideoFilePath);
+			int int2 = GetThumbnailNextFreeFileNameNumber(thumbnailWrapper, Path.Combine(config.DownloadDirectory, fixedFileName), int1);
+			int max = Math.Max(int1, int2);
+			return max > 0 ? $"{fixedFileName}_{max}" : fixedFileName;
+		}
+
+		private static int ExtractNumberFromVideoFileName(string fileName)
+		{
+			string numbered = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(fileName);
+			if (!string.IsNullOrEmpty(numbered))
+			{
+				string t = FindRegExp(numbered, @"_(\d+)(?:\.[\w\d]+)$");
+				if (!string.IsNullOrEmpty(t) && int.TryParse(t, out int n)) { return n; }
+			}
+
+			return 0;
+		}
+
+		private static int GetThumbnailNextFreeFileNameNumber(VideoThumbnailWrapper thumbnailWrapper,
+			string filePath, int startNumber)
+		{
+			try
+			{
+				if (startNumber < 0) { startNumber = 0; }
+				string suffix = thumbnailWrapper.GetThumbnailFileNameSuffix();
+				string fn = startNumber == 0 ? (filePath + suffix) : $"{filePath}_{startNumber}{suffix}";
+				if (File.Exists(fn))
+				{
+					int i = startNumber == 0 ? 1 : startNumber;
+					while (true)
+					{
+						string t = $"{filePath}_{++i}{suffix}";
+						if (!File.Exists(t)) { return i; }
+					}
+				}
+			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+#else
+			catch { }
+#endif
+			return startNumber;
+		}
+
 		public static string ExtractPlayerUrlFromWebPageCode(string webPageCode)
 		{
 			int n = webPageCode.IndexOf("\"jsUrl\":\"");
@@ -805,6 +860,13 @@ namespace YouTube_downloader
 			return !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
 				!string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
 				File.Exists(config.FfmpegExeFilePath);
+		}
+
+		internal static string FindRegExp(string inputString, string pattern)
+		{
+			Regex regex = new Regex(pattern);
+			MatchCollection matches = regex.Matches(inputString);
+			return matches.Count > 0 && matches[0].Groups.Count > 1 ? matches[0].Groups[1].Value : null;
 		}
 
 		internal static JObject TryParseJson(string jsonString, out string errorText)

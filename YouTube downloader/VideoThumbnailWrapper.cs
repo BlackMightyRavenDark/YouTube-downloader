@@ -42,5 +42,11 @@ namespace YouTube_downloader
 			Image = errorCode == 200 ? Utils.TryGetImageFromStream(ImageData, out _, out _) : null;
 			return errorCode;
 		}
+
+		public string GetThumbnailFileNameSuffix()
+		{
+			string t = Image != null ? $"_{Image.Width}x{Image.Height}.jpg" : ".dat";
+			return $"_image{t}";
+		}
 	}
 }

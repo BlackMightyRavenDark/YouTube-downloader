@@ -1665,11 +1665,6 @@ namespace YouTube_downloader
 			lblStatus.Text = null;
 			lblDowndloadProgress.Text = null;
 
-			string formattedFileName = FixFileName(FormatFileName(
-				IsVideoDateAvailable(VideoInfo) ?
-				config.OutputFileNameFormatWithDate :
-				config.OutputFileNameFormatWithoutDate, VideoInfo));
-
 			List<YouTubeMediaTrack> tracksToDownload = new List<YouTubeMediaTrack>();
 
 			ToolStripMenuItem mi = sender as ToolStripMenuItem;
@@ -1706,8 +1701,9 @@ namespace YouTube_downloader
 					lblStatus.Text = "Состояние: Запуск FFMPEG...";
 					lblStatus.Refresh();
 
+					string fn = GetNumberedFixedOutputFileNameWithotExtension(VideoInfo, null);
 					string filePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadDirectory, formattedFileName + ".ts"));
+						Path.Combine(config.DownloadDirectory, fn + ".ts"));
 					YouTubeMediaTrackHlsStream stream = mi.Tag as YouTubeMediaTrackHlsStream;
 					GrabHls(stream.FileUrl.Url, filePath);
 					lblStatus.Text = null;
@@ -1890,8 +1886,12 @@ namespace YouTube_downloader
 
 			List<DownloadResult> downloadResults = new List<DownloadResult>();
 			bool audioOnly = IsAudioOnly(tracksToDownload);
+			string containerFileExtension = GetContainerFileExtension(tracksToDownload);
+			string formattedFileName = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
+				GetNumberedFixedOutputFileNameWithotExtension(VideoInfo, containerFileExtension, ActiveThumbnail));
 			DownloadResult downloadResult = await Task.Run(() =>
 				DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults));
+
 			lblDowndloadProgress.Text = null;
 			lblDowndloadProgress.Refresh();
 
@@ -1933,12 +1933,11 @@ namespace YouTube_downloader
 						}
 					}
 
-					string ext = GetContainerFileExtension(tracksToDownload);
-					lblStatus.Text = $"Состояние: Создание контейнера {ext.Substring(1).ToUpper()}...";
+					lblStatus.Text = $"Состояние: Создание контейнера {containerFileExtension.Substring(1).ToUpper()}...";
 					lblStatus.Refresh();
 
 					string containerFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadDirectory, formattedFileName + ext));
+						Path.Combine(config.DownloadDirectory, formattedFileName + containerFileExtension));
 					await Task.Run(() => MergeYouTubeMediaTracks(downloadResults, containerFilePath, config.ExtraDelayAfterContainerWasBuilt));
 
 					if (config.DeleteSourceFilesWhenMerged)
@@ -2123,8 +2122,8 @@ namespace YouTube_downloader
 			{
 				if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName) && thumbnail.IsOk)
 				{
-					string suffix = thumbnail.Image != null ? $"_image_{thumbnail.Image.Width}x{thumbnail.Image.Height}.jpg" : "_image.dat";
-					string outputFilePath = Path.Combine(config.DownloadDirectory, formattedFileName + suffix);
+					string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
+						Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
 					thumbnail.ImageData.SaveToFile(outputFilePath);
 					return true;
 				}
