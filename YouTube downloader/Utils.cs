@@ -443,7 +443,7 @@ namespace YouTube_downloader
 			return null;
 		}
 
-		public static Bitmap GenerateVideoThumbnailFailed(int width, int height)
+		public static Bitmap GenerateVideoThumbnailFailed(int width, int height, VideoThumbnailWrapper thumbnail)
 		{
 			try
 			{
@@ -454,13 +454,22 @@ namespace YouTube_downloader
 
 				string t = $"Ошибка!";
 				SizeF sz = g.MeasureString(t, font);
-				PointF center = new PointF(width / 2f - sz.Width / 2f, height / 2f - sz.Height / 2f);
-				g.DrawString(t, font, Brushes.Lime, center);
+				float xCenter = width / 2.0f;
+				float yCenter = height / 2.0f;
+				bool isWebP = thumbnail != null && thumbnail.IsWebP;
+				float y = isWebP ? (yCenter - sz.Height) : (yCenter - sz.Height / 2.0f);
+				g.DrawString(t, font, Brushes.Lime, xCenter - sz.Width / 2.0f, y);
+
+				if (isWebP)
+				{
+					t = "WEBP";
+					sz = g.MeasureString(t, font);
+					g.DrawString(t, font, Brushes.Orange, xCenter - sz.Width / 2.0f, yCenter + sz.Height / 2.0f);
+				}
 
 				return bitmap;
 			}
 #if DEBUG
-
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);

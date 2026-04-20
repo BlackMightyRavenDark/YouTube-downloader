@@ -871,12 +871,12 @@ namespace YouTube_downloader
 				catch
 				{
 #endif
-					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height);
+					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
 				}
 			}
 			else
 			{
-				_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height);
+				_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
 			}
 			pictureBoxVideoThumbnail.Refresh();
 
