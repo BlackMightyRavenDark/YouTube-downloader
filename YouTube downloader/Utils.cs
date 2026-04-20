@@ -696,8 +696,7 @@ namespace YouTube_downloader
 				{
 					string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
 						Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
-					thumbnail.ImageData.SaveToFile(outputFilePath);
-					return true;
+					return thumbnail.ImageData.SaveToFile(outputFilePath);
 				}
 			}
 #if DEBUG

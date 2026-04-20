@@ -12,7 +12,7 @@ namespace YouTube_downloader
 {
 	public static class ExtensionMethods
 	{
-		public static void SaveToFile(this Stream stream, string filePath)
+		public static bool SaveToFile(this Stream stream, string filePath)
 		{
 			try
 			{
@@ -21,6 +21,8 @@ namespace YouTube_downloader
 					stream.Position = 0L;
 					StreamAppender.Append(stream, fileStream);
 				}
+
+				return true;
 			}
 #if DEBUG
 			catch (Exception ex)
@@ -30,6 +32,7 @@ namespace YouTube_downloader
 #else
 			catch { }
 #endif
+			return false;
 		}
 
 		public static bool IsSucceed(this YouTubeVideo video)
