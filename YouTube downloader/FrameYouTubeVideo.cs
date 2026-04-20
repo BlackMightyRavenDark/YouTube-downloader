@@ -314,26 +314,29 @@ namespace YouTube_downloader
 		{
 			try
 			{
+				bool ok = false;
 				if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
 				{
 					using (SaveFileDialog sfd = new SaveFileDialog())
 					{
+						string fileNameSuffix = ActiveThumbnail.GetThumbnailFileNameSuffix();
+						string fileExtension = Path.GetExtension(fileNameSuffix);
+
 						sfd.Title = "Сохранить изображение";
-						sfd.Filter = "jpg|*.jpg";
-						sfd.DefaultExt = ".jpg";
+						sfd.Filter = $"{fileExtension.Substring(1)}|*{fileExtension}";
+						sfd.DefaultExt = fileExtension;
 						sfd.AddExtension = true;
 						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
-						string fileNameSuffix = $"_image_{ActiveThumbnail.Image.Width}x{ActiveThumbnail.Image.Height}";
-						string fileName = FixFileName(FormatFileName(
+						sfd.FileName = FixFileName(FormatFileName(
 							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
-						sfd.FileName = fileName;
 						if (sfd.ShowDialog() == DialogResult.OK)
 						{
-							ActiveThumbnail.ImageData.SaveToFile(sfd.FileName);
+							ok = ActiveThumbnail.ImageData.SaveToFile(sfd.FileName);
 						}
 					}
 				}
-				else
+
+				if (!ok)
 				{
 					MessageBox.Show("Невозможно сохранить изображение!", "Ошибатор ошибок",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
