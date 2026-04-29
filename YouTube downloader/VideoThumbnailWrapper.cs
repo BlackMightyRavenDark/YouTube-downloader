@@ -70,8 +70,8 @@ namespace YouTube_downloader
 			{
 				ImageData.Position = 0L;
 				byte[] bytes = new byte[32];
-				ImageData.Read(bytes, 0, bytes.Length);
-				for (int i = 0; i < bytes.Length - 4; ++i)
+				int read = ImageData.Read(bytes, 0, bytes.Length);
+				for (int i = 0; i < read - 4; ++i)
 				{
 					if (bytes[i] == 'W' && bytes[i + 1] == 'E' && bytes[i + 2] == 'B' && bytes[i + 3] == 'P')
 					{
