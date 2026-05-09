@@ -75,10 +75,15 @@ namespace YouTube_downloader
 			this.checkBoxAlwaysDownloadAsDash = new System.Windows.Forms.CheckBox();
 			this.checkBoxUseUniversalTime = new System.Windows.Forms.CheckBox();
 			this.groupBoxRamUsage = new System.Windows.Forms.GroupBox();
+			this.panelImageRamIsUnusable = new System.Windows.Forms.Panel();
 			this.btnWtfUseRam = new System.Windows.Forms.Button();
 			this.checkBoxUseRamForTempFiles = new System.Windows.Forms.CheckBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.panelImageRamIsUnusable = new System.Windows.Forms.Panel();
+			this.groupBoxThumbnailsDownloadOptions = new System.Windows.Forms.GroupBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds = new System.Windows.Forms.NumericUpDown();
 			this.groupBoxApi.SuspendLayout();
 			this.groupBoxExternalRestApiServer.SuspendLayout();
 			this.groupBoxERASUsage.SuspendLayout();
@@ -96,6 +101,9 @@ namespace YouTube_downloader
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadTryCountLimit)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).BeginInit();
 			this.groupBoxRamUsage.SuspendLayout();
+			this.groupBoxThumbnailsDownloadOptions.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownSimultaneousLoadThumbnailGroupSize)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// groupBoxApi
@@ -683,7 +691,7 @@ namespace YouTube_downloader
 			this.checkBoxUseUniversalTime.AutoSize = true;
 			this.checkBoxUseUniversalTime.Checked = true;
 			this.checkBoxUseUniversalTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseUniversalTime.Location = new System.Drawing.Point(3, 772);
+			this.checkBoxUseUniversalTime.Location = new System.Drawing.Point(3, 851);
 			this.checkBoxUseUniversalTime.Name = "checkBoxUseUniversalTime";
 			this.checkBoxUseUniversalTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseUniversalTime.TabIndex = 21;
@@ -702,6 +710,17 @@ namespace YouTube_downloader
 			this.groupBoxRamUsage.TabIndex = 20;
 			this.groupBoxRamUsage.TabStop = false;
 			this.groupBoxRamUsage.Text = "Оперативная память (RAM)";
+			// 
+			// panelImageRamIsUnusable
+			// 
+			this.panelImageRamIsUnusable.BackgroundImage = global::YouTube_downloader.Properties.Resources.warning;
+			this.panelImageRamIsUnusable.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+			this.panelImageRamIsUnusable.Location = new System.Drawing.Point(310, 19);
+			this.panelImageRamIsUnusable.Name = "panelImageRamIsUnusable";
+			this.panelImageRamIsUnusable.Size = new System.Drawing.Size(32, 32);
+			this.panelImageRamIsUnusable.TabIndex = 17;
+			this.toolTip1.SetToolTip(this.panelImageRamIsUnusable, "Доступно только в версии x64!");
+			this.panelImageRamIsUnusable.Visible = false;
 			// 
 			// btnWtfUseRam
 			// 
@@ -725,22 +744,89 @@ namespace YouTube_downloader
 			this.checkBoxUseRamForTempFiles.UseVisualStyleBackColor = true;
 			this.checkBoxUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.checkBoxUseRamForTempFiles_CheckedChanged);
 			// 
-			// panelImageRamIsUnusable
+			// groupBoxThumbnailsDownloadOptions
 			// 
-			this.panelImageRamIsUnusable.BackgroundImage = global::YouTube_downloader.Properties.Resources.warning;
-			this.panelImageRamIsUnusable.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-			this.panelImageRamIsUnusable.Location = new System.Drawing.Point(310, 19);
-			this.panelImageRamIsUnusable.Name = "panelImageRamIsUnusable";
-			this.panelImageRamIsUnusable.Size = new System.Drawing.Size(32, 32);
-			this.panelImageRamIsUnusable.TabIndex = 17;
-			this.toolTip1.SetToolTip(this.panelImageRamIsUnusable, "Доступно только в версии x64!");
-			this.panelImageRamIsUnusable.Visible = false;
+			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.label2);
+			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.label1);
+			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.numericUpDownSimultaneousLoadThumbnailGroupSize);
+			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds);
+			this.groupBoxThumbnailsDownloadOptions.Location = new System.Drawing.Point(3, 772);
+			this.groupBoxThumbnailsDownloadOptions.Name = "groupBoxThumbnailsDownloadOptions";
+			this.groupBoxThumbnailsDownloadOptions.Size = new System.Drawing.Size(467, 73);
+			this.groupBoxThumbnailsDownloadOptions.TabIndex = 23;
+			this.groupBoxThumbnailsDownloadOptions.TabStop = false;
+			this.groupBoxThumbnailsDownloadOptions.Text = "Скачивание эскизов";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(12, 47);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(236, 13);
+			this.label2.TabIndex = 3;
+			this.label2.Text = "Задержка между загрузками групп эскизов:";
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(12, 21);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(263, 13);
+			this.label1.TabIndex = 2;
+			this.label1.Text = "Количество одновременно загружаемых эскизов:";
+			// 
+			// numericUpDownSimultaneousLoadThumbnailGroupSize
+			// 
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.Location = new System.Drawing.Point(281, 19);
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.Maximum = new decimal(new int[] {
+			10,
+			0,
+			0,
+			0});
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.Minimum = new decimal(new int[] {
+			1,
+			0,
+			0,
+			0});
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.Name = "numericUpDownSimultaneousLoadThumbnailGroupSize";
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.Size = new System.Drawing.Size(54, 20);
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.TabIndex = 1;
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.Value = new decimal(new int[] {
+			2,
+			0,
+			0,
+			0});
+			this.numericUpDownSimultaneousLoadThumbnailGroupSize.ValueChanged += new System.EventHandler(this.numericUpDownSimultaneousLoadThumbnailGroupSize_ValueChanged);
+			// 
+			// numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds
+			// 
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Increment = new decimal(new int[] {
+			100,
+			0,
+			0,
+			0});
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Location = new System.Drawing.Point(281, 45);
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Maximum = new decimal(new int[] {
+			10000,
+			0,
+			0,
+			0});
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Name = "numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds";
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Size = new System.Drawing.Size(53, 20);
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.TabIndex = 0;
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Value = new decimal(new int[] {
+			500,
+			0,
+			0,
+			0});
+			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.ValueChanged += new System.EventHandler(this.numericUpDownIntervalBetweenThumbnailGroupsLoad_ValueChanged);
 			// 
 			// FrameSettingsSystemOptions
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoScroll = true;
+			this.Controls.Add(this.groupBoxThumbnailsDownloadOptions);
 			this.Controls.Add(this.groupBoxChunkedDownload);
 			this.Controls.Add(this.checkBoxUseUniversalTime);
 			this.Controls.Add(this.groupBoxRamUsage);
@@ -774,6 +860,10 @@ namespace YouTube_downloader
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkDownloadTryCountLimit)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDashChunkSize)).EndInit();
 			this.groupBoxRamUsage.ResumeLayout(false);
+			this.groupBoxThumbnailsDownloadOptions.ResumeLayout(false);
+			this.groupBoxThumbnailsDownloadOptions.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownSimultaneousLoadThumbnailGroupSize)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -830,5 +920,10 @@ namespace YouTube_downloader
 		private System.Windows.Forms.CheckBox checkBoxUseRamForTempFiles;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Panel panelImageRamIsUnusable;
+		private System.Windows.Forms.GroupBox groupBoxThumbnailsDownloadOptions;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.NumericUpDown numericUpDownSimultaneousLoadThumbnailGroupSize;
+		private System.Windows.Forms.NumericUpDown numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds;
+		private System.Windows.Forms.Label label2;
 	}
 }

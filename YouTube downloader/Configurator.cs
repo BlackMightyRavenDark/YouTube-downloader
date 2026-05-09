@@ -75,6 +75,8 @@ namespace YouTube_downloader
 		public bool AlwaysDownloadAsDash { get; set; }
 		public long DashManualFragmentationChunkSize { get; set; }
 		public int DashChunkDownloadTryCountLimit { get; set; }
+		public int SimultaneousLoadThumbnailGroupSize { get; set; }
+		public int IntervalBetweenThumbnailGroupsLoadMilliseconds { get; set; }
 		public bool UseUniversalTime { get; set; }
 		#endregion
 
@@ -192,6 +194,8 @@ namespace YouTube_downloader
 			AlwaysDownloadAsDash = false;
 			DashManualFragmentationChunkSize = 50000L;
 			DashChunkDownloadTryCountLimit = 8;
+			SimultaneousLoadThumbnailGroupSize = 2;
+			IntervalBetweenThumbnailGroupsLoadMilliseconds = 500;
 			UseUniversalTime = true;
 			#endregion
 

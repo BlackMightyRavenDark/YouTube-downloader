@@ -13,9 +13,10 @@ namespace YouTube_downloader
 		public ActivatedDelegate Activated;
 		public OpenChannelDelegate OpenChannel;
 
-		public FrameYouTubeChannel()
+		public FrameYouTubeChannel(Control parent)
 		{
 			InitializeComponent();
+			if (parent != null) { Parent = parent; }
 		}
 
 		public void SetChannelInfo(YouTubeChannelInfo channelInfo)

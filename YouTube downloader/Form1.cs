@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using YouTubeApiLib;
+using MultiThreadedDownloaderLib;
 using static YouTubeApiLib.Utils;
 using static YouTube_downloader.Utils;
 
@@ -232,24 +233,74 @@ namespace YouTube_downloader
 			tabPageSearchResults.Text = "Результаты поиска";
 			scrollBarSearchResults.Value = 0;
 
-			ushort maxResultsCount = (ushort)(radioButtonSearchResultCountLimitUserDefinedNumber.Checked ? numericUpDownSearchResultCountLimit.Value : 500);
-
-			IYouTubeSearcher searcher = new YouTubeQuerySearcher(
-				textBoxSearchQuery.Text, maxResultsCount, dateTimePickerSearchAfter.Value, dateTimePickerSearchBefore.Value,
-				checkBoxSearchVideos.Checked, checkBoxSearchChannels.Checked, config.YouTubeApiV3Key);
-			JObject json = await Task.Run(() => (JObject)searcher.Search());
-			if (json == null)
+			try
 			{
-				tabPageSearchResults.Text = "Результаты поиска: 0";
-				MessageBox.Show("Ничего не найдено!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
+				ushort resultCountLimit = (ushort)(radioButtonSearchResultCountLimitUserDefinedNumber.Checked ? numericUpDownSearchResultCountLimit.Value : 500);
+				string searchQuery = UrlEncode(textBoxSearchQuery.Text);
+				List<string> strings = new List<string>();
+				if (checkBoxSearchVideos.Checked) { strings.Add("video"); }
+				if (checkBoxSearchChannels.Checked) { strings.Add("channel"); }
+				string types = string.Join(",", strings);
+				DateTime after = checkBoxSearchRangePublishedAfter.Checked ? dateTimePickerSearchAfter.Value.ToUniversalTime() : DateTime.MaxValue;
+				DateTime before = checkBoxSearchRangePublishedBefore.Checked ? dateTimePickerSearchBefore.Value.ToUniversalTime() : DateTime.MaxValue;
+				FileDownloader d = new FileDownloader();
+				d.Headers.Add("User-Agent", config.UserAgent);
+				YouTubeQuerySearcherV3 searcher = new YouTubeQuerySearcherV3(config.YouTubeApiV3Key, searchQuery,
+					after, before, types, null, resultCountLimit, null, d);
+				int totalFound = await Task.Run(() => (int)searcher.Search());
+				tabPageSearchResults.Text = $"Результаты поиска: {totalFound}";
+				if (totalFound > 0)
+				{
+					foreach (YouTubeSearcherV3ResultVideo v3Video in searcher.FoundVideos)
+					{
+						CreateAndAddNewFrame(v3Video.ToVideo(), null, false);
+					}
 
-			int count = await ParseList(json);
-			if (count > 0) { StackFrames(); }
-			tabControlMain.SelectedTab = tabPageSearchResults;
-			tabPageSearchResults.Text = $"Результаты поиска: {count}";
+					foreach (YouTubeSearcherV3ResultChannel v3Channel in searcher.FoundChannels)
+					{
+						YouTubeChannelInfo channelInfo = new YouTubeChannelInfo()
+						{
+							Id = v3Channel.Id,
+							Title = v3Channel.Title,
+							ImageUrl = v3Channel.Thumbnails[0].Url,
+							ImageData = new MemoryStream()
+						};
+						await Task.Run(() => DownloadData(channelInfo.ImageUrl, channelInfo.ImageData));
+						CreateAndAddNewFrame(channelInfo);
+					}
+
+					StackFrames();
+					tabControlMain.SelectedTab = tabPageSearchResults;
+
+					if (framesVideo.Count > 0)
+					{
+						int remaining = framesVideo.Count;
+						while (remaining > 0)
+						{
+							List<FrameYouTubeVideo> group = framesVideo.GetRange(framesVideo.Count - remaining,
+								remaining > config.SimultaneousLoadThumbnailGroupSize ? config.SimultaneousLoadThumbnailGroupSize : remaining);
+							var tasks = group.Select(item => Task.Run(() => item.DownloadAndSetVideoThumbnail()));
+							await Task.Run(async () =>
+							{
+								await Task.WhenAll(tasks);
+								remaining -= group.Count;
+								if (remaining > 0 && config.IntervalBetweenThumbnailGroupsLoadMilliseconds > 0)
+								{
+									await Task.Delay(config.IntervalBetweenThumbnailGroupsLoadMilliseconds);
+								}
+							});
+						}
+					}
+				}
+				else
+				{
+					MessageBox.Show("Ничего не найдено!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 
 			EnableControls(true);
 		}
@@ -324,7 +375,7 @@ namespace YouTube_downloader
 				if (video != null)
 				{
 					YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
-					CreateAndAddNewVideoFrame(video, webPageResult.VideoWebPage);
+					CreateAndAddNewFrame(video, webPageResult.VideoWebPage, true);
 					StackFrames();
 
 					tabPageSearchResults.Text = "Результаты поиска: 1";
@@ -666,67 +717,6 @@ namespace YouTube_downloader
 			return true;
 		}
 
-		private async Task<int> ParseList(JObject json)
-		{
-			JArray jaChannels = json.Value<JArray>("channels");
-			if (jaChannels != null)
-			{
-				foreach (JObject jChannel in jaChannels.Cast<JObject>())
-				{
-					YouTubeChannelInfo channelInfo = new YouTubeChannelInfo();
-					JObject jSnippet = jChannel.Value<JObject>("snippet");
-					if (jSnippet != null)
-					{
-						channelInfo.Title = jSnippet.Value<string>("title");
-						channelInfo.Id = jSnippet.Value<string>("channelId");
-						channelInfo.ImageUrl =
-							jSnippet.Value<JObject>("thumbnails")?.Value<JObject>("high")?.Value<string>("url");
-						if (!string.IsNullOrEmpty(channelInfo.ImageUrl) && !string.IsNullOrWhiteSpace(channelInfo.ImageUrl))
-						{
-							channelInfo.ImageData = new MemoryStream();
-							await Task.Run(() => DownloadData(channelInfo.ImageUrl, channelInfo.ImageData));
-						}
-
-						FrameYouTubeChannel frame = new FrameYouTubeChannel()
-						{
-							Parent = panelSearchResults
-						};
-						frame.SetChannelInfo(channelInfo);
-						framesChannel.Add(frame);
-					}
-				}
-			}
-
-			IYouTubeClient client = YouTubeApi.GetYouTubeClient("video_info");
-			if (client == null) { return framesChannel.Count; }
-
-			JArray jaVideos = json.Value<JArray>("videos");
-			if (jaVideos != null)
-			{
-				foreach (JObject jVideo in jaVideos.Cast<JObject>())
-				{
-					string id = jVideo.Value<JObject>("id")?.Value<string>("videoId");
-
-					if (!string.IsNullOrEmpty(id))
-					{
-						YouTubeVideo video = await Task.Run(() =>
-						{
-							int errorCode = client.GetRawVideoInfo(id, out YouTubeRawVideoInfo rawVideoInfo, out _);
-							return errorCode == 200 ? rawVideoInfo.ToVideo() : null;
-						});
-
-						if (video != null)
-						{
-							videos.Add(video);
-							CreateAndAddNewVideoFrame(video);
-						}
-					}
-				}
-			}
-
-			return framesChannel.Count + framesVideo.Count;
-		}
-
 		private async Task<bool> FindVideoById(YouTubeVideoId videoId)
 		{
 			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out _));
@@ -739,13 +729,15 @@ namespace YouTube_downloader
 					return false;
 				}
 
-				CreateAndAddNewVideoFrame(video);
+				CreateAndAddNewFrame(video, null, true);
 				StackFrames();
 
 				tabPageSearchResults.Text = $"Результаты поиска: {framesVideo.Count + framesChannel.Count}";
 				tabControlMain.SelectedTab = tabPageSearchResults;
 				textBoxVideoUrlOrId.Text = null;
 
+				FrameYouTubeVideo frame = framesVideo[framesVideo.Count - 1];
+				await Task.Run(() => frame.DownloadAndSetVideoThumbnail());
 				return true;
 			}
 			else
@@ -757,9 +749,9 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		private void CreateAndAddNewVideoFrame(YouTubeVideo video, YouTubeVideoWebPage webPage = null)
+		private void CreateAndAddNewFrame(YouTubeVideo video, YouTubeVideoWebPage webPage, bool updateThumbnail)
 		{
-			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, panelSearchResults);
+			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, updateThumbnail, panelSearchResults);
 			frame.SetMenusFontSize(config.MenusFontSize);
 			frame.FavoriteChannelChanged += (s, id, newState) =>
 			{
@@ -774,6 +766,15 @@ namespace YouTube_downloader
 			frame.Activated += event_FrameActivated;
 			frame.OpenChannel += event_OpenChannel;
 			framesVideo.Add(frame);
+		}
+
+		private void CreateAndAddNewFrame(YouTubeChannelInfo channel)
+		{
+			FrameYouTubeChannel frame = new FrameYouTubeChannel(panelSearchResults);
+			frame.SetChannelInfo(channel);
+			frame.Activated += event_FrameActivated;
+			frame.OpenChannel += event_OpenChannel;
+			framesChannel.Add(frame);
 		}
 
 		private void ClearChannelInfos()
@@ -848,32 +849,61 @@ namespace YouTube_downloader
 
 		private async void OpenChannel(YouTubeChannel channel)
 		{
-			ClearChannelInfos();
-			ClearFramesChannel();
-			ClearVideos();
-			ClearFramesVideo();
-
-			tabPageSearchResults.Text = "Результаты поиска";
-			scrollBarSearchResults.Value = 0;
-
-			ushort maxResultsCount = (ushort)(radioButtonSearchResultCountLimitUserDefinedNumber.Checked ? numericUpDownSearchResultCountLimit.Value : 500);
-			IYouTubeSearcher searcher = new YouTubeChannelSearcher(channel, dateTimePickerSearchAfter.Value, dateTimePickerSearchBefore.Value,
-				maxResultsCount, config.YouTubeApiV3Key);
-			List<YouTubeVideo> list = await Task.Run(() => (List<YouTubeVideo>)searcher.Search());
-			int count = list != null ? list.Count : 0;
-			tabPageSearchResults.Text = $"Результаты поиска: {count}";
-			if (count > 0)
+			try
 			{
-				foreach (YouTubeVideo video in list)
+				ClearChannelInfos();
+				ClearFramesChannel();
+				ClearVideos();
+				ClearFramesVideo();
+
+				tabPageSearchResults.Text = "Результаты поиска";
+				scrollBarSearchResults.Value = 0;
+
+				ushort resultCountLimit = (ushort)(radioButtonSearchResultCountLimitUserDefinedNumber.Checked ? numericUpDownSearchResultCountLimit.Value : 500);
+				DateTime after = checkBoxSearchRangePublishedAfter.Checked ? dateTimePickerSearchAfter.Value.ToUniversalTime() : DateTime.MaxValue;
+				DateTime before = checkBoxSearchRangePublishedBefore.Checked ? dateTimePickerSearchBefore.Value.ToUniversalTime() : DateTime.MaxValue;
+				FileDownloader d = new FileDownloader();
+				d.Headers.Add("User-Agent", config.UserAgent);
+				YouTubeChannelSearcherV3 searcher = new YouTubeChannelSearcherV3(
+					config.YouTubeApiV3Key, channel.Id, after, before, resultCountLimit, null, d);
+				int totalFound = await Task.Run(() => (int)searcher.Search());
+				tabPageSearchResults.Text = $"Результаты поиска: {totalFound}";
+				if (totalFound > 0)
 				{
-					CreateAndAddNewVideoFrame(video);
+					foreach (YouTubeSearcherV3ResultVideo v3Video in searcher.FoundVideos)
+					{
+						CreateAndAddNewFrame(v3Video.ToVideo(), null, false);
+					}
+
+					StackFrames();
+					tabControlMain.SelectedTab = tabPageSearchResults;
+
+					int remaining = framesVideo.Count;
+					while (remaining > 0)
+					{
+						List<FrameYouTubeVideo> group = framesVideo.GetRange(framesVideo.Count - remaining,
+							remaining > config.SimultaneousLoadThumbnailGroupSize ? config.SimultaneousLoadThumbnailGroupSize : remaining);
+						var tasks = group.Select(item => Task.Run(() => item.DownloadAndSetVideoThumbnail()));
+						await Task.Run(async () =>
+						{
+							await Task.WhenAll(tasks);
+							remaining -= group.Count;
+							if (remaining > 0 && config.IntervalBetweenThumbnailGroupsLoadMilliseconds > 0)
+							{
+								await Task.Delay(config.IntervalBetweenThumbnailGroupsLoadMilliseconds);
+							}
+						});
+					}
 				}
-				StackFrames();
-				tabControlMain.SelectedTab = tabPageSearchResults;
+				else
+				{
+					MessageBox.Show("Ничего не найдено!", "Ошибка!",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				MessageBox.Show("Ничего не найдено!", "Ошибка!",
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}

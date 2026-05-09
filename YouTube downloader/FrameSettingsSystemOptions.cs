@@ -32,6 +32,8 @@ namespace YouTube_downloader
 				json["alwaysDownloadAsDash"] = config.AlwaysDownloadAsDash;
 				json["dashManualFragmentationChunkSize"] = config.DashManualFragmentationChunkSize;
 				json["dashChunkDownloadTryCountLimit"] = config.DashChunkDownloadTryCountLimit;
+				json["simultaneousLoadThumbnailGroupSize"] = config.SimultaneousLoadThumbnailGroupSize;
+				json["intervalBetweenThumbnailGroupsLoadMilliseconds"] = config.IntervalBetweenThumbnailGroupsLoadMilliseconds;
 				json["useUniversalTime"] = config.UseUniversalTime;
 			};
 
@@ -171,6 +173,24 @@ namespace YouTube_downloader
 						config.UseUniversalTime = jt.Value<bool>();
 					}
 				}
+				{
+					JToken jt = json.Value<JToken>("simultaneousLoadThumbnailGroupSize");
+					if (jt != null)
+					{
+						int min = (int)numericUpDownSimultaneousLoadThumbnailGroupSize.Minimum;
+						int max = (int)numericUpDownSimultaneousLoadThumbnailGroupSize.Maximum;
+						config.SimultaneousLoadThumbnailGroupSize = ClampValue(jt.Value<int>(), min, max);
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("intervalBetweenThumbnailGroupsLoadMilliseconds");
+					if (jt != null)
+					{
+						int min = (int)numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Minimum;
+						int max = (int)numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Maximum;
+						config.IntervalBetweenThumbnailGroupsLoadMilliseconds = ClampValue(jt.Value<int>(), min, max);
+					}
+				}
 			};
 
 			config.Loaded += s =>
@@ -207,7 +227,8 @@ namespace YouTube_downloader
 					textBoxCipherDecryptionAlgorythm.Enabled = false;
 					textBoxYouTubeApiV3Key.Enabled = false;
 				}
-
+				numericUpDownSimultaneousLoadThumbnailGroupSize.Value = config.SimultaneousLoadThumbnailGroupSize;
+				numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Value = config.IntervalBetweenThumbnailGroupsLoadMilliseconds;
 				checkBoxUseUniversalTime.Checked = config.UseUniversalTime;
 			};
 		}
@@ -431,6 +452,16 @@ namespace YouTube_downloader
 		private void numericUpDownConnectionTimeoutExternalRestApiServer_ValueChanged(object sender, EventArgs e)
 		{
 			config.ConnectionTimeoutExternalRestApiServer = (int)numericUpDownConnectionTimeoutExternalRestApiServer.Value;
+		}
+
+		private void numericUpDownSimultaneousLoadThumbnailGroupSize_ValueChanged(object sender, EventArgs e)
+		{
+			config.SimultaneousLoadThumbnailGroupSize = (int)numericUpDownSimultaneousLoadThumbnailGroupSize.Value;
+		}
+
+		private void numericUpDownIntervalBetweenThumbnailGroupsLoad_ValueChanged(object sender, EventArgs e)
+		{
+			config.IntervalBetweenThumbnailGroupsLoadMilliseconds = (int)numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Value;
 		}
 	}
 }

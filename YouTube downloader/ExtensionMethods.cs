@@ -47,7 +47,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				JArray jsonArr = video.InitialSimplifiedInfo.SimplifiedVideoInfo.Value<JArray>("download_urls");
+				JArray jsonArr = video.InitialSimplifiedInfo?.SimplifiedVideoInfo.Value<JArray>("download_urls");
 				if (jsonArr != null && jsonArr.Count > 0)
 				{
 					JObject j = jsonArr[0] as JObject;

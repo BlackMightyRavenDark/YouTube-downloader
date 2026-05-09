@@ -541,9 +541,7 @@ namespace YouTube_downloader
 
 		public static bool IsVideoDateAvailable(YouTubeVideo video)
 		{
-			return video.InitialSimplifiedInfo != null &&
-				video.InitialSimplifiedInfo.IsMicroformatInfoAvailable &&
-				video.DatePublished < DateTime.MaxValue;
+			return video.DatePublished < DateTime.MaxValue;
 		}
 
 		public static IEnumerable<MultipleProgressBarItem> ContentChunksToMultipleProgressBarItems(

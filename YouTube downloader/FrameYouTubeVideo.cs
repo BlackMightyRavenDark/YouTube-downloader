@@ -26,6 +26,7 @@ namespace YouTube_downloader
 		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
 		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
 		public bool IsDownloadInProgress { get; private set; }
+		public bool IsVideoInfoFoundBySearch { get; private set; }
 
 		private MultiThreadedDownloader _multiThreadedDownloader;
 		private ConcurrentDictionary<int, DownloadableTask> _contentChunks;
@@ -52,7 +53,8 @@ namespace YouTube_downloader
 
 		private bool _isCancelRequired;
 
-		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage, Control parent)
+		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage,
+			bool automaticallyDownloadThumbnail, Control parent)
 		{
 			InitializeComponent();
 			contextMenuDownloadFormats.Renderer = new FormatListContextMenuRenderer();
@@ -61,11 +63,11 @@ namespace YouTube_downloader
 			WebPage = webPage;
 
 			SetVideoTitleFontSize(config.VideoTitleFontSize);
-			SetVideoInfo(videoInfo);
+			SetVideoInfo(videoInfo, automaticallyDownloadThumbnail);
 		}
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
-			: this(videoInfo, null, parent) { }
+			: this(videoInfo, null, true, parent) { }
 
 		private void FrameYouTubeVideo_Load(object sender, EventArgs e)
 		{
@@ -76,7 +78,7 @@ namespace YouTube_downloader
 		private void pictureBoxVideoThumbnail_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+			if (e.Button == MouseButtons.Right && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
 			{
 				contextMenuThumnailImage.Show(Cursor.Position);
 			}
@@ -164,7 +166,7 @@ namespace YouTube_downloader
 		private void pictureBoxFavoriteVideo_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
 			{
 				SetFavoriteVideo(!IsFavoriteVideo);
 			}
@@ -173,7 +175,7 @@ namespace YouTube_downloader
 		private void pictureBoxFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (isFavoritesLoaded && e.Button == MouseButtons.Left && VideoInfo.IsInfoAvailable)
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
 			{
 				if (FavoriteChannelChanged != null)
 				{
@@ -225,7 +227,7 @@ namespace YouTube_downloader
 		private void lblVideoTitle_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+			if (e.Button == MouseButtons.Right && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
 			{
 				contextMenuVideoTitle.Show(Cursor.Position);
 			}
@@ -243,7 +245,7 @@ namespace YouTube_downloader
 		private void lblDatePublished_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && VideoInfo.IsInfoAvailable)
+			if (e.Button == MouseButtons.Right && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
 			{
 				contextMenuDate.Show(Cursor.Position);
 			}
@@ -453,7 +455,7 @@ namespace YouTube_downloader
 
 		private async void miGetVideoWebPageCodeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -488,7 +490,7 @@ namespace YouTube_downloader
 
 		private async void miGetVideoInfoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -540,7 +542,7 @@ namespace YouTube_downloader
 
 		private async void miGetDownloadUrlsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -572,7 +574,7 @@ namespace YouTube_downloader
 
 		private async void miGetDashManifestToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -608,7 +610,7 @@ namespace YouTube_downloader
 
 		private async void miGetHlsManifestToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -644,7 +646,7 @@ namespace YouTube_downloader
 
 		private async void miGetPlayerCodeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -745,11 +747,12 @@ namespace YouTube_downloader
 			}
 		}
 
-		private async void SetVideoInfo(YouTubeVideo videoInfo)
+		private async void SetVideoInfo(YouTubeVideo videoInfo, bool updateThumbnail = true)
 		{
 			VideoInfo = videoInfo;
+			IsVideoInfoFoundBySearch = videoInfo is YouTubeVideoWrapper;
 
-			if (!videoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !videoInfo.IsInfoAvailable)
 			{
 				lblChannelTitle.Text = "Имя канала: Недоступно";
 				lblDatePublished.Text = "Дата публикации: Недоступно";
@@ -779,13 +782,9 @@ namespace YouTube_downloader
 			_isFavoriteChannel = FindInFavorites(favoriteItem, favoritesRootNode) != null;
 			_isCiphered = VideoInfo.IsCiphered();
 			RecreateThumbnailsContextMenu();
-			if (ActiveThumbnail != null)
+			if (updateThumbnail)
 			{
-				IsThumbnailLoading = true;
-				miThumbnailsToolStripMenuItem.Enabled = false;
-				await DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
-				miThumbnailsToolStripMenuItem.Enabled = true;
-				IsThumbnailLoading = false;
+				await Task.Run(() => DownloadAndSetVideoThumbnail());
 			}
 		}
 
@@ -809,18 +808,14 @@ namespace YouTube_downloader
 					{
 						if (!IsThumbnailLoading)
 						{
-							IsThumbnailLoading = true;
 							foreach (ToolStripMenuItem item in miThumbnailsToolStripMenuItem.DropDownItems)
 							{
 								item.Checked = false;
 							}
 							ToolStripMenuItem mi = s as ToolStripMenuItem;
 							mi.Checked = true;
-							miThumbnailsToolStripMenuItem.Enabled = false;
 							ActiveThumbnail = mi.Tag as VideoThumbnailWrapper;
-							await DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
-							miThumbnailsToolStripMenuItem.Enabled = true;
-							IsThumbnailLoading = false;
+							await Task.Run(() => DownloadAndSetVideoThumbnail());
 						}
 					};
 					miThumbnailsToolStripMenuItem.DropDownItems.Add(menuItem);
@@ -831,17 +826,19 @@ namespace YouTube_downloader
 			}
 		}
 
-		private async Task<bool> DownloadAndSetVideoThumbnail(VideoThumbnailWrapper thumbnail, int tryCountLimit)
+		public bool DownloadAndSetVideoThumbnail(VideoThumbnailWrapper thumbnail, int tryCountLimit)
 		{
-			FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
+			if (!IsThumbnailLoading)
+			{
+				pre();
+				FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
 #if DEBUG
-			d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, _tryCountLimit) =>
-			{
-				System.Diagnostics.Debug.WriteLine($"Video thumbnail loading error: {errorCode} | {tryNumber} / {_tryCountLimit} | {errorMessage}");
-			};
+				d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, _tryCountLimit) =>
+				{
+					System.Diagnostics.Debug.WriteLine($"Video thumbnail loading error: {errorCode} | {tryNumber} / {_tryCountLimit} | {errorMessage}");
+				};
 #endif
-			bool ok = await Task.Run(() =>
-			{
+				bool ok = false;
 				for (int i = 0; i < tryCountLimit; ++i)
 				{
 					Invoke(new MethodInvoker(() =>
@@ -851,36 +848,83 @@ namespace YouTube_downloader
 					}));
 
 					if (!thumbnail.IsOk) { thumbnail.DownloadThumbnail(d); }
-					if (thumbnail.IsOk) { return true; }
+					if (thumbnail.IsOk)
+					{
+						ok = true;
+						break;
+					}
 				}
 
-				return false;
-			});
-
-			if (ok)
-			{
-				try
+				if (ok)
 				{
-					_thumbnail = Image.FromStream(thumbnail.ImageData);
-				}
+					try
+					{
+						_thumbnail = Image.FromStream(thumbnail.ImageData);
+					}
 #if DEBUG
-				catch (Exception ex)
-				{
-					System.Diagnostics.Debug.WriteLine(ex.Message);
+					catch (Exception ex)
+					{
+						System.Diagnostics.Debug.WriteLine(ex.Message);
 #else
-				catch
-				{
+					catch
+					{
 #endif
+						_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
+					}
+				}
+				else
+				{
 					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
 				}
-			}
-			else
-			{
-				_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
-			}
-			pictureBoxVideoThumbnail.Refresh();
 
-			return ok;
+				post();
+				return ok;
+			}
+
+			return false;
+
+			#region Helper functions
+			void pre()
+			{
+				if (InvokeRequired)
+				{
+					Invoke(new MethodInvoker(() =>
+					{
+						IsThumbnailLoading = true;
+						miThumbnailsToolStripMenuItem.Enabled = false;
+					}));
+				}
+				else
+				{
+					IsThumbnailLoading = true;
+					miThumbnailsToolStripMenuItem.Enabled = false;
+				}
+			}
+
+			void post()
+			{
+				if (InvokeRequired)
+				{
+					Invoke(new MethodInvoker(() =>
+					{
+						pictureBoxVideoThumbnail.Refresh();
+						miThumbnailsToolStripMenuItem.Enabled = true;
+						IsThumbnailLoading = false;
+					}));
+				}
+				else
+				{
+					pictureBoxVideoThumbnail.Refresh();
+					miThumbnailsToolStripMenuItem.Enabled = true;
+					IsThumbnailLoading = false;
+				}
+			}
+			#endregion
+		}
+
+		public bool DownloadAndSetVideoThumbnail()
+		{
+			return DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
 		}
 
 		public void SetFavoriteVideo(bool fav)
@@ -960,7 +1004,7 @@ namespace YouTube_downloader
 
 		private async void btnDownload_Click(object sender, EventArgs e)
 		{
-			if (!VideoInfo.IsInfoAvailable)
+			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -984,6 +1028,10 @@ namespace YouTube_downloader
 			_containerFormats.Clear();
 			_audioFormats.Clear();
 			contextMenuDownloadFormats.Items.Clear();
+			if (IsVideoInfoFoundBySearch)
+			{
+				miActionsToolStripMenuItem.Enabled = false;
+			}
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = null;
 			if (!miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
@@ -1003,16 +1051,25 @@ namespace YouTube_downloader
 							externalRestApiServerUrl, externalRestApiServerPort,
 							timeout, true, WebPage) :
 						(IYouTubeClient)new YouTubeClientAndroidVr();
-					YouTubeStreamingDataResult streamingDataResult = YouTubeStreamingData.Get(VideoInfo.Id, client);
-					if (streamingDataResult.ErrorCode == 200)
+					YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _);
+					if (rawVideoInfoResult.ErrorCode == 200)
 					{
-						LastReceivedStreamingData = streamingDataResult.Data;
-						StreamingDataExpirationDate = streamingDataResult.Data.DateReceived.AddSeconds(streamingDataResult.Data.GetLifeTimeSeconds());
-
-						mediaTracks = new LinkedList<YouTubeMediaTrack>();
-						foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+						if (IsVideoInfoFoundBySearch)
 						{
-							mediaTracks.AddLast(track);
+							Invoke(new MethodInvoker(() => SetVideoInfo(client.WebPage.GetVideo())));
+						}
+
+						YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
+						if (streamingDataResult.ErrorCode == 200)
+						{
+							LastReceivedStreamingData = streamingDataResult.Data;
+							StreamingDataExpirationDate = streamingDataResult.Data.DateReceived.AddSeconds(streamingDataResult.Data.GetLifeTimeSeconds());
+
+							mediaTracks = new LinkedList<YouTubeMediaTrack>();
+							foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
+							{
+								mediaTracks.AddLast(track);
+							}
 						}
 					}
 				});
@@ -1036,6 +1093,7 @@ namespace YouTube_downloader
 					"Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				btnDownload.Enabled = true;
+				miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
 				return;
 			}
 
@@ -1054,6 +1112,7 @@ namespace YouTube_downloader
 				}
 				MessageBox.Show(t, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				btnDownload.Enabled = true;
+				miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
 				return;
 			}
 
@@ -1206,6 +1265,7 @@ namespace YouTube_downloader
 			}
 
 			btnDownload.Enabled = true;
+			miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
 		}
 
 		/// <summary>
