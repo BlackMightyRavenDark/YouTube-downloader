@@ -830,8 +830,11 @@ namespace YouTube_downloader
 		{
 			if (!IsThumbnailLoading)
 			{
+				int pictureBoxVideoThumbnailWidth = 0;
+				int pictureBoxVideoThumbnailHeight = 0;
 				pre();
 				FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
+				d.Headers.Add("User-Agent", config.UserAgent);
 #if DEBUG
 				d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, _tryCountLimit) =>
 				{
@@ -841,12 +844,7 @@ namespace YouTube_downloader
 				bool ok = false;
 				for (int i = 0; i < tryCountLimit; ++i)
 				{
-					Invoke(new MethodInvoker(() =>
-					{
-						_thumbnail = GenerateVideoThumbnailLoadingIndicator(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, i + 1, tryCountLimit);
-						pictureBoxVideoThumbnail.Refresh();
-					}));
-
+					generateAndShowLoadingIndicator(i);
 					if (!thumbnail.IsOk) { thumbnail.DownloadThumbnail(d); }
 					if (thumbnail.IsOk)
 					{
@@ -869,57 +867,64 @@ namespace YouTube_downloader
 					catch
 					{
 #endif
-						_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
+						_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnailWidth, pictureBoxVideoThumbnailHeight, thumbnail);
 					}
 				}
 				else
 				{
-					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnail.Width, pictureBoxVideoThumbnail.Height, thumbnail);
+					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnailWidth, pictureBoxVideoThumbnailHeight, thumbnail);
 				}
 
 				post();
 				return ok;
-			}
 
-			return false;
-
-			#region Helper functions
-			void pre()
-			{
-				if (InvokeRequired)
+				#region Helper functions
+				void pre()
 				{
-					Invoke(new MethodInvoker(() =>
+					if (InvokeRequired)
+					{
+						Invoke(new MethodInvoker(() => pre()));
+					}
+					else
 					{
 						IsThumbnailLoading = true;
 						miThumbnailsToolStripMenuItem.Enabled = false;
-					}));
+						pictureBoxVideoThumbnailWidth = pictureBoxVideoThumbnail.Width;
+						pictureBoxVideoThumbnailHeight = pictureBoxVideoThumbnail.Height;
+					}
 				}
-				else
-				{
-					IsThumbnailLoading = true;
-					miThumbnailsToolStripMenuItem.Enabled = false;
-				}
-			}
 
-			void post()
-			{
-				if (InvokeRequired)
+				void post()
 				{
-					Invoke(new MethodInvoker(() =>
+					if (InvokeRequired)
+					{
+						Invoke(new MethodInvoker(() => post()));
+					}
+					else
 					{
 						pictureBoxVideoThumbnail.Refresh();
 						miThumbnailsToolStripMenuItem.Enabled = true;
 						IsThumbnailLoading = false;
-					}));
+					}
 				}
-				else
+
+				void generateAndShowLoadingIndicator(int tryNumber)
 				{
-					pictureBoxVideoThumbnail.Refresh();
-					miThumbnailsToolStripMenuItem.Enabled = true;
-					IsThumbnailLoading = false;
+					if (InvokeRequired)
+					{
+						Invoke(new MethodInvoker(() => generateAndShowLoadingIndicator(tryNumber)));
+					}
+					else
+					{
+						_thumbnail = GenerateVideoThumbnailLoadingIndicator(
+							pictureBoxVideoThumbnailWidth, pictureBoxVideoThumbnailHeight, tryNumber + 1, tryCountLimit);
+						pictureBoxVideoThumbnail.Refresh();
+					}
 				}
+				#endregion
 			}
-			#endregion
+
+			return false;
 		}
 
 		public bool DownloadAndSetVideoThumbnail()
