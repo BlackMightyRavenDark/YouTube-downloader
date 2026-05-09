@@ -501,6 +501,7 @@
 			this.progressBarDownload.Size = new System.Drawing.Size(416, 23);
 			this.progressBarDownload.TabIndex = 18;
 			this.progressBarDownload.Text = "multipleProgressBar1";
+			this.progressBarDownload.MouseDown += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseDown);
 			this.progressBarDownload.MouseUp += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseUp);
 			// 
 			// FrameYouTubeVideo
