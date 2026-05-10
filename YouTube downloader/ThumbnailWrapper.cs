@@ -6,7 +6,7 @@ using MultiThreadedDownloaderLib;
 
 namespace YouTube_downloader
 {
-	public class VideoThumbnailWrapper : IDisposable
+	public class ThumbnailWrapper : IDisposable
 	{
 		public YouTubeVideoThumbnail Thumbnail { get; }
 		public Stream ImageData { get; private set; }
@@ -24,7 +24,7 @@ namespace YouTube_downloader
 		private bool _isWebP;
 		public bool _isFileExtensionDetermined;
 
-		public VideoThumbnailWrapper(YouTubeVideoThumbnail thumbnail)
+		public ThumbnailWrapper(YouTubeVideoThumbnail thumbnail)
 		{
 			Thumbnail = thumbnail;
 		}

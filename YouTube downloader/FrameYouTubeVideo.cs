@@ -17,8 +17,8 @@ namespace YouTube_downloader
 	public partial class FrameYouTubeVideo : UserControl
 	{
 		public YouTubeVideo VideoInfo { get; private set; }
-		public List<VideoThumbnailWrapper> Thumbnails { get; private set; }
-		public VideoThumbnailWrapper ActiveThumbnail { get; private set; }
+		public List<ThumbnailWrapper> Thumbnails { get; private set; }
+		public ThumbnailWrapper ActiveThumbnail { get; private set; }
 		public bool IsThumbnailLoading { get; private set; }
 		public YouTubeVideoWebPage WebPage { get; }
 		public YouTubeStreamingData LastReceivedStreamingData { get; private set; }
@@ -812,7 +812,7 @@ namespace YouTube_downloader
 		private void RecreateThumbnailsContextMenu()
 		{
 			miThumbnailsToolStripMenuItem.DropDownItems.Clear();
-			Thumbnails = new List<VideoThumbnailWrapper>();
+			Thumbnails = new List<ThumbnailWrapper>();
 			ActiveThumbnail = null;
 			if (VideoInfo.Thumbnails != null && VideoInfo.Thumbnails.Count > 0)
 			{
@@ -820,7 +820,7 @@ namespace YouTube_downloader
 				int maxFileNameLength = GetMaximalThumbnailFileNameLength(VideoInfo.Thumbnails);
 				foreach (YouTubeVideoThumbnail thumbnail in VideoInfo.Thumbnails)
 				{
-					VideoThumbnailWrapper thumbnailWrapper = new VideoThumbnailWrapper(thumbnail);
+					ThumbnailWrapper thumbnailWrapper = new ThumbnailWrapper(thumbnail);
 					Thumbnails.Add(thumbnailWrapper);
 					string fn = (!string.IsNullOrEmpty(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg").PadRight(maxFileNameLength);
 					string menuItemTitle = $"{fn} | {thumbnail.Width}x{thumbnail.Height}";
@@ -835,7 +835,7 @@ namespace YouTube_downloader
 							}
 							ToolStripMenuItem mi = s as ToolStripMenuItem;
 							mi.Checked = true;
-							ActiveThumbnail = mi.Tag as VideoThumbnailWrapper;
+							ActiveThumbnail = mi.Tag as ThumbnailWrapper;
 							await Task.Run(() => DownloadAndSetVideoThumbnail());
 						}
 					};
@@ -847,7 +847,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		public bool DownloadAndSetVideoThumbnail(VideoThumbnailWrapper thumbnail, int tryCountLimit)
+		public bool DownloadAndSetVideoThumbnail(ThumbnailWrapper thumbnail, int tryCountLimit)
 		{
 			if (!IsThumbnailLoading)
 			{

@@ -443,7 +443,7 @@ namespace YouTube_downloader
 			return null;
 		}
 
-		public static Bitmap GenerateVideoThumbnailFailed(int width, int height, VideoThumbnailWrapper thumbnail)
+		public static Bitmap GenerateVideoThumbnailFailed(int width, int height, ThumbnailWrapper thumbnail)
 		{
 			try
 			{
@@ -615,7 +615,7 @@ namespace YouTube_downloader
 		}
 
 		public static string GetNumberedFixedOutputFileNameWithotExtension(
-			YouTubeVideo video, string containerFileExtension, VideoThumbnailWrapper thumbnailWrapper = null)
+			YouTubeVideo video, string containerFileExtension, ThumbnailWrapper thumbnailWrapper = null)
 		{
 			string fixedFileName = FixFileName(FormatFileName(IsVideoDateAvailable(video) ?
 				config.OutputFileNameFormatWithDate : config.OutputFileNameFormatWithoutDate, video));
@@ -639,7 +639,7 @@ namespace YouTube_downloader
 			return 0;
 		}
 
-		private static int GetThumbnailNextFreeFileNameNumber(VideoThumbnailWrapper thumbnailWrapper,
+		private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
 			string filePath, int startNumber)
 		{
 			try
@@ -695,7 +695,7 @@ namespace YouTube_downloader
 			return true;
 		}
 
-		internal static bool SaveThumbnailToFile(VideoThumbnailWrapper thumbnail, string formattedFileName)
+		internal static bool SaveThumbnailToFile(ThumbnailWrapper thumbnail, string formattedFileName)
 		{
 			try
 			{
