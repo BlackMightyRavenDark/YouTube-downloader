@@ -11,7 +11,7 @@ namespace YouTube_downloader
 		public YouTubeVideoThumbnail Thumbnail { get; }
 		public Stream ImageData { get; private set; }
 		public Image Image { get; private set; }
-		public bool IsOk => ImageData != null && ImageData.Length > 0L;
+		public bool IsImageDataOk => ImageData != null && ImageData.Length > 0L;
 		public bool IsWebP
 		{
 			get
@@ -54,7 +54,7 @@ namespace YouTube_downloader
 
 		private bool GetIsWebpImage()
 		{
-			if (!_isFileExtensionDetermined && IsOk)
+			if (!_isFileExtensionDetermined && IsImageDataOk)
 			{
 				ImageData.Position = 0L;
 				byte[] bytes = new byte[32];

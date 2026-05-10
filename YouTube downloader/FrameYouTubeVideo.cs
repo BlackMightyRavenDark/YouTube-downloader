@@ -317,7 +317,7 @@ namespace YouTube_downloader
 			try
 			{
 				bool ok = false;
-				if (ActiveThumbnail != null && ActiveThumbnail.IsOk)
+				if (ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk)
 				{
 					using (SaveFileDialog sfd = new SaveFileDialog())
 					{
@@ -866,8 +866,8 @@ namespace YouTube_downloader
 				for (int i = 0; i < tryCountLimit; ++i)
 				{
 					generateAndShowLoadingIndicator(i);
-					if (!thumbnail.IsOk) { thumbnail.DownloadThumbnail(d); }
-					if (thumbnail.IsOk)
+					if (!thumbnail.IsImageDataOk) { thumbnail.DownloadThumbnail(d); }
+					if (thumbnail.IsImageDataOk)
 					{
 						ok = true;
 						break;
@@ -2055,7 +2055,7 @@ namespace YouTube_downloader
 				}
 
 				// Сохранение эскиза видео.
-				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsOk)
+				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk)
 				{
 					if (!SaveThumbnailToFile(ActiveThumbnail, formattedFileName))
 					{
