@@ -88,7 +88,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				Image image = ActiveThumbnail?.Image ?? _thumbnail;
+				Image image = ActiveThumbnail != null && ActiveThumbnail.IsImageOk ? ActiveThumbnail.Image : _thumbnail;
 				if (image != null)
 				{
 					Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
@@ -869,29 +869,12 @@ namespace YouTube_downloader
 					if (!thumbnail.IsImageDataOk) { thumbnail.DownloadThumbnail(d); }
 					if (thumbnail.IsImageDataOk)
 					{
-						ok = true;
+						ok = thumbnail.IsImageOk;
 						break;
 					}
 				}
 
-				if (ok)
-				{
-					try
-					{
-						_thumbnail = Image.FromStream(thumbnail.ImageData);
-					}
-#if DEBUG
-					catch (Exception ex)
-					{
-						System.Diagnostics.Debug.WriteLine(ex.Message);
-#else
-					catch
-					{
-#endif
-						_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnailWidth, pictureBoxVideoThumbnailHeight, thumbnail);
-					}
-				}
-				else
+				if (!ok)
 				{
 					_thumbnail = GenerateVideoThumbnailFailed(pictureBoxVideoThumbnailWidth, pictureBoxVideoThumbnailHeight, thumbnail);
 				}

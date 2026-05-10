@@ -12,6 +12,7 @@ namespace YouTube_downloader
 		public Stream ImageData { get; private set; }
 		public Image Image { get; private set; }
 		public bool IsImageDataOk => ImageData != null && ImageData.Length > 0L;
+		public bool IsImageOk => Image != null && Image.Width > 0 && Image.Height > 0;
 		public bool IsWebP
 		{
 			get
@@ -48,7 +49,7 @@ namespace YouTube_downloader
 		public string GetThumbnailFileNameSuffix()
 		{
 			string ext = GetFileExtension();
-			string t = Image != null ? $"_{Image.Width}x{Image.Height}{ext}" : ext;
+			string t = IsImageOk ? $"_{Image.Width}x{Image.Height}{ext}" : ext;
 			return $"_image{t}";
 		}
 
