@@ -354,6 +354,27 @@ namespace YouTube_downloader
 			}
 		}
 
+		private async void miReloadActiveThumbnailToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (ActiveThumbnail != null)
+			{
+				if (MessageBox.Show("Перезагрузить текущий эскиз?", "Перезагружатор текущих эскизов",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+				{
+					await Task.Run(() =>
+					{
+						ActiveThumbnail.Reset();
+						DownloadAndSetVideoThumbnail();
+					});
+				}
+			}
+			else
+			{
+				MessageBox.Show("Невозможно перезагрузить эскиз!", "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
 		private void miCopyChannelNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SetClipboardText($"{VideoInfo.OwnerChannelTitle} [{VideoInfo.OwnerChannelId}]");
@@ -888,6 +909,7 @@ namespace YouTube_downloader
 					else
 					{
 						IsThumbnailLoading = true;
+						miReloadActiveThumbnailToolStripMenuItem.Enabled =
 						miThumbnailsToolStripMenuItem.Enabled = false;
 						pictureBoxVideoThumbnailWidth = pictureBoxVideoThumbnail.Width;
 						pictureBoxVideoThumbnailHeight = pictureBoxVideoThumbnail.Height;
@@ -903,6 +925,7 @@ namespace YouTube_downloader
 					else
 					{
 						pictureBoxVideoThumbnail.Refresh();
+						miReloadActiveThumbnailToolStripMenuItem.Enabled =
 						miThumbnailsToolStripMenuItem.Enabled = true;
 						IsThumbnailLoading = false;
 					}

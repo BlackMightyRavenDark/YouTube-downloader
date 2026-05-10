@@ -79,6 +79,7 @@
 			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
+			this.miReloadActiveThumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteChannel)).BeginInit();
@@ -210,9 +211,10 @@
 			this.miCopyThumbnailUrlToolStripMenuItem,
 			this.miSaveThumbnailImageAssToolStripMenuItem,
 			this.toolStripMenuItem3,
+			this.miReloadActiveThumbnailToolStripMenuItem,
 			this.miThumbnailsToolStripMenuItem});
 			this.contextMenuThumnailImage.Name = "contextMenuImage";
-			this.contextMenuThumnailImage.Size = new System.Drawing.Size(302, 192);
+			this.contextMenuThumnailImage.Size = new System.Drawing.Size(302, 236);
 			// 
 			// miOpenVideoInBrowserToolStripMenuItem
 			// 
@@ -504,6 +506,13 @@
 			this.progressBarDownload.MouseDown += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseDown);
 			this.progressBarDownload.MouseUp += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseUp);
 			// 
+			// miReloadActiveThumbnailToolStripMenuItem
+			// 
+			this.miReloadActiveThumbnailToolStripMenuItem.Name = "miReloadActiveThumbnailToolStripMenuItem";
+			this.miReloadActiveThumbnailToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
+			this.miReloadActiveThumbnailToolStripMenuItem.Text = "Перезагрузить эскиз";
+			this.miReloadActiveThumbnailToolStripMenuItem.Click += new System.EventHandler(this.miReloadActiveThumbnailToolStripMenuItem_Click);
+			// 
 			// FrameYouTubeVideo
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -589,5 +598,6 @@
 		private System.Windows.Forms.ToolStripMenuItem miOptimizeFormatListReceivingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
 		private System.Windows.Forms.ToolStripMenuItem miThumbnailsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miReloadActiveThumbnailToolStripMenuItem;
 	}
 }

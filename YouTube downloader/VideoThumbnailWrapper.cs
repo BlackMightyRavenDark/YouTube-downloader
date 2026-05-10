@@ -31,19 +31,7 @@ namespace YouTube_downloader
 
 		public void Dispose()
 		{
-			if (ImageData != null)
-			{
-				ImageData.Dispose();
-				ImageData = null;
-			}
-
-			if (Image != null)
-			{
-				Image.Dispose();
-				Image = null;
-			}
-
-			_isWebP = _isFileExtensionDetermined = false;
+			Reset();
 		}
 
 		public int DownloadThumbnail(FileDownloader downloader = null)
@@ -87,6 +75,23 @@ namespace YouTube_downloader
 		public string GetFileExtension()
 		{
 			return IsWebP ? ".webp" : ".jpg";
+		}
+
+		public void Reset()
+		{
+			if (ImageData != null)
+			{
+				ImageData.Dispose();
+				ImageData = null;
+			}
+
+			if (Image != null)
+			{
+				Image.Dispose();
+				Image = null;
+			}
+
+			_isWebP = _isFileExtensionDetermined = false;
 		}
 	}
 }
