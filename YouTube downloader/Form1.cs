@@ -737,8 +737,6 @@ namespace YouTube_downloader
 				tabControlMain.SelectedTab = tabPageSearchResults;
 				textBoxVideoUrlOrId.Text = null;
 
-				FrameYouTubeVideo frame = framesVideo[framesVideo.Count - 1];
-				await Task.Run(() => frame.DownloadAndSetVideoThumbnail());
 				return true;
 			}
 			else
