@@ -27,6 +27,7 @@ namespace YouTube_downloader
 		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
 		public bool IsDownloadInProgress { get; private set; }
 		public bool IsVideoInfoFoundBySearch { get; private set; }
+		public bool IsVideoInfoFoundByWebPage { get; }
 
 		private MultiThreadedDownloader _multiThreadedDownloader;
 		private ConcurrentDictionary<int, DownloadableTask> _contentChunks;
@@ -37,6 +38,7 @@ namespace YouTube_downloader
 		private bool _isContainer = false;
 		private YouTubeMediaTrack _mediaTrack;
 		private Image _thumbnail;
+		private string _playerUrl;
 		private List<YouTubeMediaTrackAudio> _audioFormats = new List<YouTubeMediaTrackAudio>();
 		private List<YouTubeMediaTrackVideo> _videoFormats = new List<YouTubeMediaTrackVideo>();
 		private List<YouTubeMediaTrackHlsStream> _hlsFormats = new List<YouTubeMediaTrackHlsStream>();
@@ -54,6 +56,7 @@ namespace YouTube_downloader
 		private bool _isCancelRequired;
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, YouTubeVideoWebPage webPage,
+			bool isVideoInfoFoundByWebPage,
 			bool automaticallyDownloadThumbnail, Control parent)
 		{
 			InitializeComponent();
@@ -61,13 +64,15 @@ namespace YouTube_downloader
 
 			if (parent != null) { Parent = parent; }
 			WebPage = webPage;
+			_playerUrl = webPage?.ExtractYouTubeConfig()?.PlayerUrl;
+			IsVideoInfoFoundByWebPage = false;
 
 			SetVideoTitleFontSize(config.VideoTitleFontSize);
 			SetVideoInfo(videoInfo, automaticallyDownloadThumbnail);
 		}
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
-			: this(videoInfo, null, true, parent) { }
+			: this(videoInfo, null, false, true, parent) { }
 
 		private void FrameYouTubeVideo_Load(object sender, EventArgs e)
 		{
@@ -265,24 +270,14 @@ namespace YouTube_downloader
 
 		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (WebPage == null ||
-				string.IsNullOrEmpty(WebPage.WebPageCode) ||
-				string.IsNullOrWhiteSpace(WebPage.WebPageCode))
-			{
-				MessageBox.Show("Ошибка!\nНе удалось получить ссылку на плеер!", "Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			string playerUrl = WebPage.ExtractYouTubeConfig()?.PlayerUrl;
-			if (string.IsNullOrEmpty(playerUrl) || string.IsNullOrWhiteSpace(playerUrl))
+			if (string.IsNullOrEmpty(_playerUrl) || string.IsNullOrWhiteSpace(_playerUrl))
 			{
 				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 
-			SetClipboardText(playerUrl);
+			SetClipboardText(_playerUrl);
 		}
 
 		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1067,7 +1062,11 @@ namespace YouTube_downloader
 					{
 						if (IsVideoInfoFoundBySearch)
 						{
-							Invoke(new MethodInvoker(() => SetVideoInfo(client.WebPage.GetVideo())));
+							Invoke(new MethodInvoker(() =>
+							{
+								SetVideoInfo(client.WebPage.GetVideo());
+								_playerUrl = client.WebPage.ExtractYouTubeConfig()?.PlayerUrl;
+							}));
 						}
 
 						YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;

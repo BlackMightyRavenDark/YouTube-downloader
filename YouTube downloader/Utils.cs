@@ -130,7 +130,7 @@ namespace YouTube_downloader
 			return url;
 		}
 
-		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out string errorMessage)
+		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out YouTubeVideoWebPage webPage, out string errorMessage)
 		{
 			const string clientId = "web_page";
 			IYouTubeClient client = config.UseExternalRestApiServerToGetBasicVideoInfo ?
@@ -142,6 +142,7 @@ namespace YouTube_downloader
 				YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(videoId, out errorMessage);
 				if (rawVideoInfoResult.ErrorCode == 200)
 				{
+					webPage = client.WebPage;
 					return rawVideoInfoResult.RawVideoInfo.ToVideo();
 				}
 			}
@@ -150,6 +151,7 @@ namespace YouTube_downloader
 				errorMessage = $"The client with ID '{clientId}' is not found! The default client was also failed! Let's cry, baby :'(";
 			}
 
+			webPage = null;
 			return null;
 		}
 

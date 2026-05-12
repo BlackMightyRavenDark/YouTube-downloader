@@ -253,7 +253,7 @@ namespace YouTube_downloader
 				{
 					foreach (YouTubeSearcherV3ResultVideo v3Video in searcher.FoundVideos)
 					{
-						CreateAndAddNewFrame(v3Video.ToVideo(), null, false);
+						CreateAndAddNewFrame(v3Video.ToVideo(), null, false, false);
 					}
 
 					foreach (YouTubeSearcherV3ResultChannel v3Channel in searcher.FoundChannels)
@@ -375,7 +375,7 @@ namespace YouTube_downloader
 				if (video != null)
 				{
 					YouTubeVideoWebPageResult webPageResult = YouTubeVideoWebPage.FromCode(webPageCode);
-					CreateAndAddNewFrame(video, webPageResult.VideoWebPage, true);
+					CreateAndAddNewFrame(video, webPageResult.VideoWebPage, true, true);
 					StackFrames();
 
 					tabPageSearchResults.Text = "Результаты поиска: 1";
@@ -719,7 +719,8 @@ namespace YouTube_downloader
 
 		private async Task<bool> FindVideoById(YouTubeVideoId videoId)
 		{
-			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out _));
+			YouTubeVideoWebPage webPage = null;
+			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out webPage, out _));
 			if (video != null)
 			{
 				if (!video.IsSucceed())
@@ -729,7 +730,7 @@ namespace YouTube_downloader
 					return false;
 				}
 
-				CreateAndAddNewFrame(video, null, true);
+				CreateAndAddNewFrame(video, webPage, true, true);
 				StackFrames();
 
 				tabPageSearchResults.Text = $"Результаты поиска: {framesVideo.Count + framesChannel.Count}";
@@ -749,9 +750,11 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		private void CreateAndAddNewFrame(YouTubeVideo video, YouTubeVideoWebPage webPage, bool updateThumbnail)
+		private void CreateAndAddNewFrame(YouTubeVideo video, YouTubeVideoWebPage webPage,
+			bool isVideoInfoFoundByWebPage, bool updateThumbnail)
 		{
-			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, updateThumbnail, panelSearchResults);
+			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, isVideoInfoFoundByWebPage,
+				updateThumbnail, panelSearchResults);
 			frame.SetMenusFontSize(config.MenusFontSize);
 			frame.FavoriteChannelChanged += (s, id, newState) =>
 			{
@@ -872,7 +875,7 @@ namespace YouTube_downloader
 				{
 					foreach (YouTubeSearcherV3ResultVideo v3Video in searcher.FoundVideos)
 					{
-						CreateAndAddNewFrame(v3Video.ToVideo(), null, false);
+						CreateAndAddNewFrame(v3Video.ToVideo(), null, false, false);
 					}
 
 					StackFrames();
