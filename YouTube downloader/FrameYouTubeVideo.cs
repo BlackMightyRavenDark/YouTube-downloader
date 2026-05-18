@@ -1104,6 +1104,7 @@ namespace YouTube_downloader
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 				btnDownload.Enabled = true;
 				miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
+				miActionsToolStripMenuItem.Enabled = true;
 				return;
 			}
 
@@ -1123,6 +1124,7 @@ namespace YouTube_downloader
 				MessageBox.Show(t, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				btnDownload.Enabled = true;
 				miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
+				miActionsToolStripMenuItem.Enabled = true;
 				return;
 			}
 
@@ -1276,6 +1278,7 @@ namespace YouTube_downloader
 
 			btnDownload.Enabled = true;
 			miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
+			miActionsToolStripMenuItem.Enabled = true;
 		}
 
 		/// <summary>
