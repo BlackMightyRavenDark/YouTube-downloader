@@ -356,10 +356,10 @@ namespace YouTube_downloader
 				if (MessageBox.Show("Перезагрузить текущий эскиз?", "Перезагружатор текущих эскизов",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 				{
-					await Task.Run(() =>
+					await Task.Run(async () =>
 					{
 						ActiveThumbnail.Reset();
-						DownloadAndSetVideoThumbnail();
+						await DownloadAndSetVideoThumbnail();
 					});
 				}
 			}
@@ -842,7 +842,7 @@ namespace YouTube_downloader
 			}
 		}
 
-		public bool DownloadAndSetVideoThumbnail(ThumbnailWrapper thumbnail, int tryCountLimit)
+		public async Task<bool> DownloadAndSetVideoThumbnail(ThumbnailWrapper thumbnail, int tryCountLimit)
 		{
 			if (!IsThumbnailLoading)
 			{
@@ -867,6 +867,7 @@ namespace YouTube_downloader
 						ok = thumbnail.IsImageOk;
 						break;
 					}
+					if (i < tryCountLimit - 1) { await Task.Delay(1000); }
 				}
 
 				if (!ok)
@@ -928,9 +929,9 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		public bool DownloadAndSetVideoThumbnail()
+		public async Task<bool> DownloadAndSetVideoThumbnail()
 		{
-			return DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
+			return await DownloadAndSetVideoThumbnail(ActiveThumbnail, 5);
 		}
 
 		public void SetFavoriteVideo(bool fav)
