@@ -51,6 +51,9 @@ namespace YouTube_downloader
 			this.textBoxTempDirectory = new System.Windows.Forms.TextBox();
 			this.btnBrowseTempDirectory = new System.Windows.Forms.Button();
 			this.label4 = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this.textBoxYtdlExeFilePath = new System.Windows.Forms.TextBox();
+			this.btnBrowseYtdlExeFilePath = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// label18
@@ -272,10 +275,42 @@ namespace YouTube_downloader
 			this.label4.TabIndex = 31;
 			this.label4.Text = "Папка для временных файлов:";
 			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(3, 281);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(95, 13);
+			this.label1.TabIndex = 48;
+			this.label1.Text = "Путь к youtube-dl:";
+			// 
+			// textBoxYtdlExeFilePath
+			// 
+			this.textBoxYtdlExeFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxYtdlExeFilePath.Location = new System.Drawing.Point(3, 297);
+			this.textBoxYtdlExeFilePath.Name = "textBoxYtdlExeFilePath";
+			this.textBoxYtdlExeFilePath.Size = new System.Drawing.Size(423, 20);
+			this.textBoxYtdlExeFilePath.TabIndex = 49;
+			// 
+			// btnBrowseYtdlExeFilePath
+			// 
+			this.btnBrowseYtdlExeFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnBrowseYtdlExeFilePath.Location = new System.Drawing.Point(432, 297);
+			this.btnBrowseYtdlExeFilePath.Name = "btnBrowseYtdlExeFilePath";
+			this.btnBrowseYtdlExeFilePath.Size = new System.Drawing.Size(32, 23);
+			this.btnBrowseYtdlExeFilePath.TabIndex = 50;
+			this.btnBrowseYtdlExeFilePath.Text = "...";
+			this.btnBrowseYtdlExeFilePath.UseVisualStyleBackColor = true;
+			this.btnBrowseYtdlExeFilePath.Click += new System.EventHandler(this.btnBrowseYtdlExeFilePath_Click);
+			// 
 			// FrameSettingsFilesAndFolders
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.btnBrowseYtdlExeFilePath);
+			this.Controls.Add(this.textBoxYtdlExeFilePath);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label18);
 			this.Controls.Add(this.textBoxOutputFileNameFormatWithDate);
 			this.Controls.Add(this.btnResetFileNameFormatWithDate);
@@ -299,7 +334,7 @@ namespace YouTube_downloader
 			this.Controls.Add(this.btnBrowseTempDirectory);
 			this.Controls.Add(this.label4);
 			this.Name = "FrameSettingsFilesAndFolders";
-			this.Size = new System.Drawing.Size(467, 286);
+			this.Size = new System.Drawing.Size(467, 326);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -329,5 +364,8 @@ namespace YouTube_downloader
 		private System.Windows.Forms.TextBox textBoxTempDirectory;
 		private System.Windows.Forms.Button btnBrowseTempDirectory;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.TextBox textBoxYtdlExeFilePath;
+		private System.Windows.Forms.Button btnBrowseYtdlExeFilePath;
 	}
 }

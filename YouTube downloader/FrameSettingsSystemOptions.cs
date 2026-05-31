@@ -22,6 +22,9 @@ namespace YouTube_downloader
 				json["useExternalRestApiServerToGetBasicVideoInfo"] = config.UseExternalRestApiServerToGetBasicVideoInfo;
 				json["useExternalRestApiServerToGetDownloadUrls"] = config.UseExternalRestApiServerToGetDownloadUrls;
 				json["useExternalRestApiServerToGetAdultVideos"] = config.UseExternalRestApiServerToGetAdultVideos;
+				json["useYtdl"] = config.UseYtdl;
+				json["ytdlParameters"] = config.YtdlParameters;
+				json["showYtdlConsoleWindow"] = config.ShowYtdlConsoleWindow;
 				json["userAgent"] = config.UserAgent;
 				json["threadCountVideo"] = config.ThreadCountVideo;
 				json["threadCountAudio"] = config.ThreadCountAudio;
@@ -95,6 +98,21 @@ namespace YouTube_downloader
 					if (jt != null)
 					{
 						config.UseExternalRestApiServerToGetAdultVideos = jt.Value<bool>();
+					}
+				}
+				{
+					JToken jt = json.Value<JToken>("useYtdl");
+					config.UseYtdl = jt != null && jt.Value<bool>();
+				}
+				{
+					string t = json.Value<string>("ytdlParameters");
+					config.YtdlParameters = string.IsNullOrEmpty(t) || string.IsNullOrWhiteSpace(t) ? Configurator.DEFAULT_YTDL_PARAMETERS : t;
+				}
+				{
+					JToken jt = json.Value<JToken>("showYtdlConsoleWindow");
+					if (jt != null)
+					{
+						config.ShowYtdlConsoleWindow = jt.Value<bool>();
 					}
 				}
 				{
@@ -203,6 +221,9 @@ namespace YouTube_downloader
 				checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Checked = config.UseExternalRestApiServerToGetBasicVideoInfo;
 				checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked = config.UseExternalRestApiServerToGetDownloadUrls;
 				checkBoxUseExternalRestApiServerToGetAdultVideos.Checked = config.UseExternalRestApiServerToGetAdultVideos;
+				checkBoxUseYtdl.Checked = config.UseYtdl;
+				textBoxYtdlParameters.Text = config.YtdlParameters;
+				checkBoxShowYtdlConsoleWindow.Checked = config.ShowYtdlConsoleWindow;
 				textBoxUserAgent.Text = config.UserAgent;
 				numericUpDownThreadCountVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadCountAudio.Value = config.ThreadCountAudio;
@@ -231,6 +252,11 @@ namespace YouTube_downloader
 				numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Value = config.IntervalBetweenThumbnailGroupsLoadMilliseconds;
 				checkBoxUseUniversalTime.Checked = config.UseUniversalTime;
 			};
+		}
+
+		private void buttonRestoreYtdlDefaultParameters_Click(object sender, EventArgs e)
+		{
+			textBoxYtdlParameters.Text = config.YtdlParameters = Configurator.DEFAULT_YTDL_PARAMETERS;
 		}
 
 		private void btnRestoreDefaultUserAgent_Click(object sender, EventArgs e)
@@ -310,9 +336,19 @@ namespace YouTube_downloader
 			config.ExternalRestApiServerUrl = textBoxExternalRestApiServerUrl.Text;
 		}
 
+		private void textBoxYtdlParameters_TextChanged(object sender, EventArgs e)
+		{
+			config.YtdlParameters = textBoxYtdlParameters.Text;
+		}
+
 		private void textBoxUserAgent_Leave(object sender, EventArgs e)
 		{
 			config.UserAgent = textBoxUserAgent.Text.Trim();
+		}
+
+		private void checkBoxShowYtdlConsoleWindow_CheckedChanged(object sender, EventArgs e)
+		{
+			config.ShowYtdlConsoleWindow = checkBoxShowYtdlConsoleWindow.Checked;
 		}
 
 		private void checkBoxUseRamForTempFiles_CheckedChanged(object sender, EventArgs e)
@@ -363,6 +399,11 @@ namespace YouTube_downloader
 		private void checkBoxUseAccurateMultithreading_CheckedChanged(object sender, EventArgs e)
 		{
 			config.UseAccurateMultithreading = checkBoxUseAccurateMultithreading.Checked;
+		}
+
+		private void checkBoxUseYtdl_CheckedChanged(object sender, EventArgs e)
+		{
+			config.UseYtdl = checkBoxUseYtdl.Checked;
 		}
 
 		private void numericUpDownThreadCountAudio_ValueChanged(object sender, EventArgs e)

@@ -132,27 +132,59 @@ namespace YouTube_downloader
 
 		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out YouTubeVideoWebPage webPage, out string errorMessage)
 		{
-			const string clientId = "web_page";
-			IYouTubeClient client = config.UseExternalRestApiServerToGetBasicVideoInfo ?
-				new YouTubeClientRestApi(config.ExternalRestApiServerUrl, config.ExternalRestApiServerPort,
-					config.ConnectionTimeoutExternalRestApiServer, false) :
-				YouTubeApi.GetYouTubeClient(clientId);
+			IYouTubeClient client = GetYouTubeClient(false, out errorMessage);
 			if (client != null)
 			{
 				YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(videoId, out errorMessage);
 				if (rawVideoInfoResult.ErrorCode == 200)
 				{
+					if (client is YouTubeClientYtdl)
+					{
+						webPage = null;
+						return (client as YouTubeClientYtdl).Video;
+					}
+
 					webPage = client.WebPage;
 					return rawVideoInfoResult.RawVideoInfo.ToVideo();
 				}
 			}
-			else
+			else if (string.IsNullOrEmpty(errorMessage) || string.IsNullOrWhiteSpace(errorMessage))
 			{
-				errorMessage = $"The client with ID '{clientId}' is not found! The default client was also failed! Let's cry, baby :'(";
+				errorMessage = "Can't load any YouTube client! Let's cry, baby, it's over! :'(";
 			}
 
 			webPage = null;
 			return null;
+		}
+
+		public static IYouTubeClient GetYouTubeClient(bool getDownloadUrls, out string errorMessage)
+		{
+			try
+			{
+				errorMessage = null;
+				if (config.UseExternalRestApiServerToGetBasicVideoInfo)
+				{
+					return new YouTubeClientRestApi(config.ExternalRestApiServerUrl, config.ExternalRestApiServerPort,
+						config.ConnectionTimeoutExternalRestApiServer, getDownloadUrls);
+				}
+				else if (config.UseYtdl)
+				{
+					if (string.IsNullOrEmpty(config.YtdlExeFilePath) || string.IsNullOrWhiteSpace(config.YtdlExeFilePath) || !File.Exists(config.YtdlExeFilePath))
+					{
+						errorMessage = "Внимание! Включена опция \"Использовать youtube-dl вместо API YouTube\", " +
+							"но путь к youtube-dl не указан в настройках или файл не найден!";
+						return null;
+					}
+
+					return new YouTubeClientYtdl(config.YtdlExeFilePath, config.YtdlParameters, config.ShowYtdlConsoleWindow);
+				}
+
+				return YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());
+			} catch (Exception ex)
+			{
+				errorMessage = ex.Message;
+				return null;
+			}
 		}
 
 		public static IEnumerable<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
@@ -639,6 +671,12 @@ namespace YouTube_downloader
 			}
 
 			return 0;
+		}
+
+		public static string ExtractFileNameFromThumbnailUrl(string url, string expression = @"\w/.{11}/([^\&\?]*)")
+		{
+			string fileName = YouTubeApiLib.Utils.FindRegexp(url, expression);
+			return !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
 		}
 
 		private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,

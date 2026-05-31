@@ -21,6 +21,7 @@ namespace YouTube_downloader
 				json["outputFileNameFormatWithoutDate"] = config.OutputFileNameFormatWithoutDate;
 				json["webBrowserExeFilePath"] = config.WebBrowserExeFilePath;
 				json["ffmpegExeFilePath"] = config.FfmpegExeFilePath;
+				json["ytdlExeFilePath"] = config.YtdlExeFilePath;
 			};
 
 			config.Loading += (s, json) =>
@@ -74,6 +75,13 @@ namespace YouTube_downloader
 						config.FfmpegExeFilePath = jt.Value<string>();
 					}
 				}
+				{
+					JToken jt = json.Value<JToken>("ytdlExeFilePath");
+					if (jt != null)
+					{
+						config.YtdlExeFilePath = jt.Value<string>();
+					}
+				}
 			};
 
 			config.Loaded += s =>
@@ -85,6 +93,7 @@ namespace YouTube_downloader
 				textBoxOutputFileNameFormatWithoutDate.Text = config.OutputFileNameFormatWithoutDate;
 				textBoxWebBrowserFilePath.Text = config.WebBrowserExeFilePath;
 				textBoxFfmpegExeFilePath.Text = config.FfmpegExeFilePath;
+				textBoxYtdlExeFilePath.Text = config.YtdlExeFilePath;
 			};
 		}
 
@@ -222,6 +231,30 @@ namespace YouTube_downloader
 					{
 						textBoxFfmpegExeFilePath.Text =
 						config.FfmpegExeFilePath = openFileDialog.FileName;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void btnBrowseYtdlExeFilePath_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				using (OpenFileDialog openFileDialog = new OpenFileDialog()
+				{
+					Title = "Выберите EXE-файл youtube-dl или ytdlp",
+					Filter = "EXE-файлы|*.exe"
+				})
+				{
+					if (openFileDialog.ShowDialog() == DialogResult.OK)
+					{
+						textBoxYtdlExeFilePath.Text =
+						config.YtdlExeFilePath = openFileDialog.FileName;
 					}
 				}
 			}

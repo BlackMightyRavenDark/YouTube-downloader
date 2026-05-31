@@ -83,7 +83,8 @@ namespace YouTube_downloader
 		private void pictureBoxVideoThumbnail_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
+			if (e.Button == MouseButtons.Right && (VideoInfo is YtdlVideo ||
+				(!(VideoInfo is YtdlVideo) && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))))
 			{
 				contextMenuThumnailImage.Show(Cursor.Position);
 			}
@@ -171,7 +172,8 @@ namespace YouTube_downloader
 		private void pictureBoxFavoriteVideo_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (isFavoritesLoaded && e.Button == MouseButtons.Left && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && (VideoInfo is YtdlVideo ||
+				(!(VideoInfo is YtdlVideo) && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))))
 			{
 				SetFavoriteVideo(!IsFavoriteVideo);
 			}
@@ -180,7 +182,8 @@ namespace YouTube_downloader
 		private void pictureBoxFavoriteChannel_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (isFavoritesLoaded && e.Button == MouseButtons.Left && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
+			if (isFavoritesLoaded && e.Button == MouseButtons.Left && (VideoInfo is YtdlVideo ||
+				(!(VideoInfo is YtdlVideo) && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))))
 			{
 				if (FavoriteChannelChanged != null)
 				{
@@ -232,7 +235,8 @@ namespace YouTube_downloader
 		private void lblVideoTitle_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
+			if (e.Button == MouseButtons.Right && (VideoInfo is YtdlVideo ||
+				(!(VideoInfo is YtdlVideo) && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))))
 			{
 				contextMenuVideoTitle.Show(Cursor.Position);
 			}
@@ -250,7 +254,8 @@ namespace YouTube_downloader
 		private void lblDatePublished_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
-			if (e.Button == MouseButtons.Right && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))
+			if (e.Button == MouseButtons.Right && (VideoInfo is YtdlVideo ||
+				(!(VideoInfo is YtdlVideo) && (IsVideoInfoFoundBySearch || VideoInfo.IsInfoAvailable))))
 			{
 				contextMenuDate.Show(Cursor.Position);
 			}
@@ -768,7 +773,7 @@ namespace YouTube_downloader
 			VideoInfo = videoInfo;
 			IsVideoInfoFoundBySearch = videoInfo is YouTubeVideoWrapper;
 
-			if (!IsVideoInfoFoundBySearch && !videoInfo.IsInfoAvailable)
+			if (!(videoInfo is YtdlVideo) && !IsVideoInfoFoundBySearch && !videoInfo.IsInfoAvailable)
 			{
 				lblChannelTitle.Text = "Имя канала: Недоступно";
 				lblDatePublished.Text = "Дата публикации: Недоступно";
@@ -844,7 +849,7 @@ namespace YouTube_downloader
 
 		public async Task<bool> DownloadAndSetVideoThumbnail(ThumbnailWrapper thumbnail, int tryCountLimit)
 		{
-			if (!IsThumbnailLoading)
+			if (!IsThumbnailLoading && thumbnail != null)
 			{
 				int pictureBoxVideoThumbnailWidth = 0;
 				int pictureBoxVideoThumbnailHeight = 0;
@@ -1011,7 +1016,7 @@ namespace YouTube_downloader
 
 		private async void btnDownload_Click(object sender, EventArgs e)
 		{
-			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
+			if (!(VideoInfo is YtdlVideo) && !IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1040,34 +1045,69 @@ namespace YouTube_downloader
 				miActionsToolStripMenuItem.Enabled = false;
 			}
 
-			LinkedList<YouTubeMediaTrack> mediaTracks = null;
-			if (!miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
-				LastReceivedStreamingData == null || (LastReceivedStreamingData != null &&
-				StreamingDataExpirationDate < DateTime.UtcNow))
+			bool isYtdlVideo = VideoInfo is YtdlVideo;
+			bool isYtdlUrlsExpired = isYtdlVideo && (VideoInfo as YtdlVideo).IsUrlsExpired;
+			bool isUrlsExpired;
+			if (isYtdlVideo)
 			{
-				bool isExternalRestApiServerNeeded = config.UseExternalRestApiServerToGetDownloadUrls ||
-					(config.UseExternalRestApiServerToGetAdultVideos && !VideoInfo.IsFamilySafe) ||
-					VideoInfo.IsPrivate;
-				string externalRestApiServerUrl = config.ExternalRestApiServerUrl;
-				ushort externalRestApiServerPort = config.ExternalRestApiServerPort;
-				int timeout = config.ConnectionTimeoutExternalRestApiServer;
+				isUrlsExpired = !miOptimizeFormatListReceivingToolStripMenuItem.Checked || isYtdlUrlsExpired;
+			}
+			else
+			{
+				isUrlsExpired = !miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
+					LastReceivedStreamingData == null || (LastReceivedStreamingData != null &&
+					StreamingDataExpirationDate < DateTime.UtcNow);
+			}
+
+			LinkedList<YouTubeMediaTrack> mediaTracks = isYtdlVideo && !isYtdlUrlsExpired ?
+				new LinkedList<YouTubeMediaTrack>((VideoInfo as YtdlVideo).TrackList) : null;
+			if (config.UseYtdl && isYtdlVideo && isYtdlUrlsExpired)
+			{
+				lblStatus.Text = "Состояние: Обновление списка форматов...";
+				if (await Task.Run(() => (VideoInfo as YtdlVideo).UpdateTrackList()))
+				{
+					mediaTracks = new LinkedList<YouTubeMediaTrack>((VideoInfo as YtdlVideo).TrackList);
+				}
+				isUrlsExpired = mediaTracks != null || mediaTracks.Count == 0;
+				lblStatus.Text = null;
+			}
+
+			if (mediaTracks == null || mediaTracks.Count == 0 || isUrlsExpired)
+			{
 				await Task.Run(() =>
 				{
-					IYouTubeClient client = isExternalRestApiServerNeeded ?
-						new YouTubeClientRestApi(
-							externalRestApiServerUrl, externalRestApiServerPort,
-							timeout, true, WebPage) :
-						(IYouTubeClient)new YouTubeClientAndroidVr();
+					IYouTubeClient client = GetYouTubeClient(true, out string msg);
+					if (client == null)
+					{
+						if (!string.IsNullOrEmpty(msg))
+						{
+							Invoke(new MethodInvoker(() => MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+						}
+						return;
+					}
+
 					YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _);
 					if (rawVideoInfoResult.ErrorCode == 200)
 					{
+						bool isYtdlClient = client is YouTubeClientYtdl;
 						if (IsVideoInfoFoundBySearch)
 						{
-							Invoke(new MethodInvoker(() =>
+							YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video : client.WebPage.GetVideo();
+							if (video != null && ((isYtdlClient || video.IsPlayable) || (!isYtdlClient && video.IsPlayable)))
 							{
-								SetVideoInfo(client.WebPage.GetVideo());
-								_playerUrl = client.WebPage.ExtractYouTubeConfig()?.PlayerUrl;
-							}));
+								Invoke(new MethodInvoker(() =>
+								{
+									SetVideoInfo(video);
+									_playerUrl = !isYtdlClient ? client.WebPage.ExtractYouTubeConfig()?.PlayerUrl : null;
+								}));
+							}
+						}
+
+						if (client is YouTubeClientYtdl)
+						{
+							mediaTracks = (client as YouTubeClientYtdl).Video?.TrackList != null ?
+								new LinkedList<YouTubeMediaTrack>((client as YouTubeClientYtdl).Video.TrackList) : null;
+							return;
 						}
 
 						YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
@@ -1093,7 +1133,7 @@ namespace YouTube_downloader
 					mediaTracks.AddLast(track);
 				}
 			}
-			else
+			else if (!isYtdlVideo)
 			{
 				LastReceivedStreamingData = null;
 				StreamingDataExpirationDate = DateTime.MinValue;

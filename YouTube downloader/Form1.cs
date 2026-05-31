@@ -720,13 +720,15 @@ namespace YouTube_downloader
 		private async Task<bool> FindVideoById(YouTubeVideoId videoId)
 		{
 			YouTubeVideoWebPage webPage = null;
-			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out webPage, out _));
+			string errorMessage = null;
+			YouTubeVideo video = await Task.Run(() => GetSingleVideo(videoId, out webPage, out errorMessage));
 			if (video != null)
 			{
-				if (!video.IsSucceed())
+				if (!(video is YtdlVideo) && !video.IsSucceed())
 				{
-					MessageBox.Show("Ошибка поиска видео! Что-то где-то пошло не так!", "Ошибатор ошибок",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					string msg = "Ошибка поиска видео!" + Environment.NewLine +
+						(!string.IsNullOrEmpty(errorMessage) ? errorMessage : "Что-то где-то пошло не так или не пошло вообще!");
+					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return false;
 				}
 
@@ -741,8 +743,12 @@ namespace YouTube_downloader
 			}
 			else
 			{
-				MessageBox.Show("Ошибка поиска видео!", "Ошибка!",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				string msg = "Ошибка поиска видео!";
+				if (!string.IsNullOrEmpty(errorMessage) && !string.IsNullOrWhiteSpace(errorMessage))
+				{
+					msg += Environment.NewLine + errorMessage;
+				}
+				MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			return false;

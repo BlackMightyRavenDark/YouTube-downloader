@@ -167,11 +167,13 @@
     <Compile Include="Utils.cs" />
     <Compile Include="YouTubeChannelInfo.cs" />
     <Compile Include="YouTubeClientAndroidVr.cs" />
+    <Compile Include="YouTubeClientYtdl.cs" />
     <Compile Include="YouTubeQuerySearcherV3.cs" />
     <Compile Include="YouTubeSearcherV3Result.cs" />
     <Compile Include="YouTubeSearcherV3ResultChannel.cs" />
     <Compile Include="YouTubeSearcherV3ResultVideo.cs" />
     <Compile Include="YouTubeVideoWrapper.cs" />
+    <Compile Include="YtdlVideo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

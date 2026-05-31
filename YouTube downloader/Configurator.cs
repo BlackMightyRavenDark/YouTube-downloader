@@ -20,6 +20,7 @@ namespace YouTube_downloader
 		public string OutputFileNameFormatWithoutDate { get; set; }
 		public string WebBrowserExeFilePath { get; set; }
 		public string FfmpegExeFilePath { get; set; }
+		public string YtdlExeFilePath { get; set; }
 		#endregion
 
 		#region GUI options
@@ -65,6 +66,9 @@ namespace YouTube_downloader
 		public bool UseExternalRestApiServerToGetBasicVideoInfo { get; set; }
 		public bool UseExternalRestApiServerToGetDownloadUrls { get; set; }
 		public bool UseExternalRestApiServerToGetAdultVideos { get; set; }
+		public bool UseYtdl { get; set; }
+		public string YtdlParameters { get; set; }
+		public bool ShowYtdlConsoleWindow { get; set; }
 		public string UserAgent { get; set; }
 		public int ThreadCountVideo { get; set; }
 		public int ThreadCountAudio { get; set; }
@@ -91,6 +95,7 @@ namespace YouTube_downloader
 		public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
 			"[<year>-<month>-<day> <hour>-<minute>-<second><GMT>] <video_title> (id_<video_id>)";
 		public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
+		public const string DEFAULT_YTDL_PARAMETERS = "<video_url> --dump-json --js-runtimes node --remote-components ejs:github";
 
 		public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
@@ -184,6 +189,9 @@ namespace YouTube_downloader
 			UseExternalRestApiServerToGetBasicVideoInfo = false;
 			UseExternalRestApiServerToGetDownloadUrls = false;
 			UseExternalRestApiServerToGetAdultVideos = false;
+			UseYtdl = false;
+			YtdlExeFilePath = "ytdlp.exe";
+			ShowYtdlConsoleWindow = false;
 			UserAgent = DEFAULT_USER_AGENT;
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;

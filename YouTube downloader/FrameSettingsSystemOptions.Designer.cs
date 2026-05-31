@@ -31,6 +31,11 @@ namespace YouTube_downloader
 		{
 			this.components = new System.ComponentModel.Container();
 			this.groupBoxApi = new System.Windows.Forms.GroupBox();
+			this.groupBoxYouTubeDlOptions = new System.Windows.Forms.GroupBox();
+			this.buttonRestoreYtdlDefaultParameters = new System.Windows.Forms.Button();
+			this.textBoxYtdlParameters = new System.Windows.Forms.TextBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.checkBoxUseYtdl = new System.Windows.Forms.CheckBox();
 			this.groupBoxExternalRestApiServer = new System.Windows.Forms.GroupBox();
 			this.groupBoxERASUsage = new System.Windows.Forms.GroupBox();
 			this.checkBoxUseExternalRestApiServerToGetDownloadUrls = new System.Windows.Forms.CheckBox();
@@ -84,7 +89,9 @@ namespace YouTube_downloader
 			this.label1 = new System.Windows.Forms.Label();
 			this.numericUpDownSimultaneousLoadThumbnailGroupSize = new System.Windows.Forms.NumericUpDown();
 			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds = new System.Windows.Forms.NumericUpDown();
+			this.checkBoxShowYtdlConsoleWindow = new System.Windows.Forms.CheckBox();
 			this.groupBoxApi.SuspendLayout();
+			this.groupBoxYouTubeDlOptions.SuspendLayout();
 			this.groupBoxExternalRestApiServer.SuspendLayout();
 			this.groupBoxERASUsage.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownConnectionTimeoutExternalRestApiServer)).BeginInit();
@@ -108,15 +115,68 @@ namespace YouTube_downloader
 			// 
 			// groupBoxApi
 			// 
+			this.groupBoxApi.Controls.Add(this.groupBoxYouTubeDlOptions);
 			this.groupBoxApi.Controls.Add(this.groupBoxExternalRestApiServer);
 			this.groupBoxApi.Controls.Add(this.groupBoxCipher);
 			this.groupBoxApi.Controls.Add(this.groupBoxApiV3Key);
 			this.groupBoxApi.Location = new System.Drawing.Point(3, 3);
 			this.groupBoxApi.Name = "groupBoxApi";
-			this.groupBoxApi.Size = new System.Drawing.Size(467, 352);
+			this.groupBoxApi.Size = new System.Drawing.Size(467, 472);
 			this.groupBoxApi.TabIndex = 0;
 			this.groupBoxApi.TabStop = false;
 			this.groupBoxApi.Text = "API";
+			// 
+			// groupBoxYouTubeDlOptions
+			// 
+			this.groupBoxYouTubeDlOptions.Controls.Add(this.checkBoxShowYtdlConsoleWindow);
+			this.groupBoxYouTubeDlOptions.Controls.Add(this.buttonRestoreYtdlDefaultParameters);
+			this.groupBoxYouTubeDlOptions.Controls.Add(this.textBoxYtdlParameters);
+			this.groupBoxYouTubeDlOptions.Controls.Add(this.label3);
+			this.groupBoxYouTubeDlOptions.Controls.Add(this.checkBoxUseYtdl);
+			this.groupBoxYouTubeDlOptions.Location = new System.Drawing.Point(0, 351);
+			this.groupBoxYouTubeDlOptions.Name = "groupBoxYouTubeDlOptions";
+			this.groupBoxYouTubeDlOptions.Size = new System.Drawing.Size(467, 116);
+			this.groupBoxYouTubeDlOptions.TabIndex = 21;
+			this.groupBoxYouTubeDlOptions.TabStop = false;
+			this.groupBoxYouTubeDlOptions.Text = "YouTube-DL";
+			// 
+			// buttonRestoreYtdlDefaultParameters
+			// 
+			this.buttonRestoreYtdlDefaultParameters.Location = new System.Drawing.Point(333, 85);
+			this.buttonRestoreYtdlDefaultParameters.Name = "buttonRestoreYtdlDefaultParameters";
+			this.buttonRestoreYtdlDefaultParameters.Size = new System.Drawing.Size(128, 23);
+			this.buttonRestoreYtdlDefaultParameters.TabIndex = 3;
+			this.buttonRestoreYtdlDefaultParameters.Text = "Вернуть как было";
+			this.buttonRestoreYtdlDefaultParameters.UseVisualStyleBackColor = true;
+			this.buttonRestoreYtdlDefaultParameters.Click += new System.EventHandler(this.buttonRestoreYtdlDefaultParameters_Click);
+			// 
+			// textBoxYtdlParameters
+			// 
+			this.textBoxYtdlParameters.Location = new System.Drawing.Point(14, 59);
+			this.textBoxYtdlParameters.Name = "textBoxYtdlParameters";
+			this.textBoxYtdlParameters.Size = new System.Drawing.Size(447, 20);
+			this.textBoxYtdlParameters.TabIndex = 2;
+			this.textBoxYtdlParameters.TextChanged += new System.EventHandler(this.textBoxYtdlParameters_TextChanged);
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(11, 43);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(121, 13);
+			this.label3.TabIndex = 1;
+			this.label3.Text = "Параметры youtube-dl:";
+			// 
+			// checkBoxUseYtdl
+			// 
+			this.checkBoxUseYtdl.AutoSize = true;
+			this.checkBoxUseYtdl.Location = new System.Drawing.Point(14, 23);
+			this.checkBoxUseYtdl.Name = "checkBoxUseYtdl";
+			this.checkBoxUseYtdl.Size = new System.Drawing.Size(258, 17);
+			this.checkBoxUseYtdl.TabIndex = 0;
+			this.checkBoxUseYtdl.Text = "Использовать youtube-dl вместо API YouTube";
+			this.checkBoxUseYtdl.UseVisualStyleBackColor = true;
+			this.checkBoxUseYtdl.CheckedChanged += new System.EventHandler(this.checkBoxUseYtdl_CheckedChanged);
 			// 
 			// groupBoxExternalRestApiServer
 			// 
@@ -351,7 +411,7 @@ namespace YouTube_downloader
 			this.groupBoxUserAgent.Controls.Add(this.btnWtfUserAgent);
 			this.groupBoxUserAgent.Controls.Add(this.btnRestoreDefaultUserAgent);
 			this.groupBoxUserAgent.Controls.Add(this.textBoxUserAgent);
-			this.groupBoxUserAgent.Location = new System.Drawing.Point(3, 361);
+			this.groupBoxUserAgent.Location = new System.Drawing.Point(3, 481);
 			this.groupBoxUserAgent.Name = "groupBoxUserAgent";
 			this.groupBoxUserAgent.Size = new System.Drawing.Size(467, 77);
 			this.groupBoxUserAgent.TabIndex = 18;
@@ -402,7 +462,7 @@ namespace YouTube_downloader
 			this.groupBoxThreads.Controls.Add(this.label9);
 			this.groupBoxThreads.Controls.Add(this.numericUpDownThreadCountAudio);
 			this.groupBoxThreads.Controls.Add(this.numericUpDownThreadCountVideo);
-			this.groupBoxThreads.Location = new System.Drawing.Point(3, 444);
+			this.groupBoxThreads.Location = new System.Drawing.Point(3, 564);
 			this.groupBoxThreads.Name = "groupBoxThreads";
 			this.groupBoxThreads.Size = new System.Drawing.Size(350, 142);
 			this.groupBoxThreads.TabIndex = 19;
@@ -582,7 +642,7 @@ namespace YouTube_downloader
 			this.groupBoxChunkedDownload.Controls.Add(this.numericUpDownDashChunkSize);
 			this.groupBoxChunkedDownload.Controls.Add(this.label22);
 			this.groupBoxChunkedDownload.Controls.Add(this.checkBoxAlwaysDownloadAsDash);
-			this.groupBoxChunkedDownload.Location = new System.Drawing.Point(3, 664);
+			this.groupBoxChunkedDownload.Location = new System.Drawing.Point(3, 784);
 			this.groupBoxChunkedDownload.Name = "groupBoxChunkedDownload";
 			this.groupBoxChunkedDownload.Size = new System.Drawing.Size(467, 102);
 			this.groupBoxChunkedDownload.TabIndex = 22;
@@ -691,7 +751,7 @@ namespace YouTube_downloader
 			this.checkBoxUseUniversalTime.AutoSize = true;
 			this.checkBoxUseUniversalTime.Checked = true;
 			this.checkBoxUseUniversalTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBoxUseUniversalTime.Location = new System.Drawing.Point(3, 851);
+			this.checkBoxUseUniversalTime.Location = new System.Drawing.Point(3, 971);
 			this.checkBoxUseUniversalTime.Name = "checkBoxUseUniversalTime";
 			this.checkBoxUseUniversalTime.Size = new System.Drawing.Size(101, 17);
 			this.checkBoxUseUniversalTime.TabIndex = 21;
@@ -704,7 +764,7 @@ namespace YouTube_downloader
 			this.groupBoxRamUsage.Controls.Add(this.panelImageRamIsUnusable);
 			this.groupBoxRamUsage.Controls.Add(this.btnWtfUseRam);
 			this.groupBoxRamUsage.Controls.Add(this.checkBoxUseRamForTempFiles);
-			this.groupBoxRamUsage.Location = new System.Drawing.Point(3, 592);
+			this.groupBoxRamUsage.Location = new System.Drawing.Point(3, 712);
 			this.groupBoxRamUsage.Name = "groupBoxRamUsage";
 			this.groupBoxRamUsage.Size = new System.Drawing.Size(467, 66);
 			this.groupBoxRamUsage.TabIndex = 20;
@@ -750,7 +810,7 @@ namespace YouTube_downloader
 			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.label1);
 			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.numericUpDownSimultaneousLoadThumbnailGroupSize);
 			this.groupBoxThumbnailsDownloadOptions.Controls.Add(this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds);
-			this.groupBoxThumbnailsDownloadOptions.Location = new System.Drawing.Point(3, 772);
+			this.groupBoxThumbnailsDownloadOptions.Location = new System.Drawing.Point(3, 892);
 			this.groupBoxThumbnailsDownloadOptions.Name = "groupBoxThumbnailsDownloadOptions";
 			this.groupBoxThumbnailsDownloadOptions.Size = new System.Drawing.Size(467, 73);
 			this.groupBoxThumbnailsDownloadOptions.TabIndex = 23;
@@ -821,6 +881,17 @@ namespace YouTube_downloader
 			0});
 			this.numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.ValueChanged += new System.EventHandler(this.numericUpDownIntervalBetweenThumbnailGroupsLoad_ValueChanged);
 			// 
+			// checkBoxShowYtdlConsoleWindow
+			// 
+			this.checkBoxShowYtdlConsoleWindow.AutoSize = true;
+			this.checkBoxShowYtdlConsoleWindow.Location = new System.Drawing.Point(15, 89);
+			this.checkBoxShowYtdlConsoleWindow.Name = "checkBoxShowYtdlConsoleWindow";
+			this.checkBoxShowYtdlConsoleWindow.Size = new System.Drawing.Size(213, 17);
+			this.checkBoxShowYtdlConsoleWindow.TabIndex = 4;
+			this.checkBoxShowYtdlConsoleWindow.Text = "Показывать окно консоли youtube-dl";
+			this.checkBoxShowYtdlConsoleWindow.UseVisualStyleBackColor = true;
+			this.checkBoxShowYtdlConsoleWindow.CheckedChanged += new System.EventHandler(this.checkBoxShowYtdlConsoleWindow_CheckedChanged);
+			// 
 			// FrameSettingsSystemOptions
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -837,6 +908,8 @@ namespace YouTube_downloader
 			this.Name = "FrameSettingsSystemOptions";
 			this.Size = new System.Drawing.Size(473, 257);
 			this.groupBoxApi.ResumeLayout(false);
+			this.groupBoxYouTubeDlOptions.ResumeLayout(false);
+			this.groupBoxYouTubeDlOptions.PerformLayout();
 			this.groupBoxExternalRestApiServer.ResumeLayout(false);
 			this.groupBoxExternalRestApiServer.PerformLayout();
 			this.groupBoxERASUsage.ResumeLayout(false);
@@ -925,5 +998,11 @@ namespace YouTube_downloader
 		private System.Windows.Forms.NumericUpDown numericUpDownSimultaneousLoadThumbnailGroupSize;
 		private System.Windows.Forms.NumericUpDown numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.GroupBox groupBoxYouTubeDlOptions;
+		private System.Windows.Forms.CheckBox checkBoxUseYtdl;
+		private System.Windows.Forms.TextBox textBoxYtdlParameters;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Button buttonRestoreYtdlDefaultParameters;
+		private System.Windows.Forms.CheckBox checkBoxShowYtdlConsoleWindow;
 	}
 }

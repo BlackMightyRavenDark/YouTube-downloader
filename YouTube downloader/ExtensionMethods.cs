@@ -47,7 +47,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				JArray jsonArr = video.InitialSimplifiedInfo?.SimplifiedVideoInfo.Value<JArray>("download_urls");
+				JArray jsonArr = video.InitialSimplifiedInfo?.SimplifiedVideoInfo?.Value<JArray>("download_urls");
 				if (jsonArr != null && jsonArr.Count > 0)
 				{
 					JObject j = jsonArr[0] as JObject;
@@ -190,13 +190,14 @@ namespace YouTube_downloader
 			string trackId = $"ID {track.FormatId,3}";
 			string resolution = track.GetFormattedResolution();
 			string fps = track.GetFormattedFrameRate();
-			string bitrate = track.AverageBitrate > 0 ? $"~{track.AverageBitrate / 1024} kbps" : string.Empty;
+			int bitrate = track.AverageBitrate > 0 ? track.AverageBitrate : track.Bitrate;
+			string formattedBitrate = bitrate > 0 ? $"~{bitrate / 1024} kbps" : string.Empty;
 			string formattedFileSize = track.ContentLength > 0 ? FormatSize(track.ContentLength) : string.Empty;
 			string chunkCount = track.GetFormattedDashChunkCount();
 
 			string[] data = new string[]
 			{
-				trackType, trackId, resolution, fps, bitrate,
+				trackType, trackId, resolution, fps, formattedBitrate,
 				track.FileExtension, track.MimeCodecs, formattedFileSize, chunkCount
 			};
 
