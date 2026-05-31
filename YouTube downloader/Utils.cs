@@ -179,7 +179,7 @@ namespace YouTube_downloader
 					return new YouTubeClientYtdl(config.YtdlExeFilePath, config.YtdlParameters, config.ShowYtdlConsoleWindow);
 				}
 
-				return YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());
+				return getDownloadUrls ? new YouTubeClientAndroidVr() : YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());
 			} catch (Exception ex)
 			{
 				errorMessage = ex.Message;
@@ -673,13 +673,13 @@ namespace YouTube_downloader
 			return 0;
 		}
 
-		public static string ExtractFileNameFromThumbnailUrl(string url, string expression = @"\w/.{11}/([^\&\?]*)")
-		{
-			string fileName = YouTubeApiLib.Utils.FindRegexp(url, expression);
-			return !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
-		}
+        public static string ExtractFileNameFromThumbnailUrl(string url, string expression = @"\w/.{11}/([^\&\?]*)")
+        {
+            string fileName = YouTubeApiLib.Utils.FindRegexp(url, expression);
+            return !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
+        }
 
-		private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
+        private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
 			string filePath, int startNumber)
 		{
 			try

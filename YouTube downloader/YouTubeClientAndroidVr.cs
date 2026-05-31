@@ -11,7 +11,8 @@ namespace YouTube_downloader
 		public YouTubeVideoWebPage WebPage { get; private set; }
 		public FileDownloader Downloader { get; set; }
 
-		public const string CLIENT_VERSION = "1.71.26";
+		public const string CLIENT_VERSION = "1.65.10";
+		private readonly string _userAgent = $"com.google.android.apps.youtube.vr.oculus/{CLIENT_VERSION} (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip";
 
 		public JObject GenerateRequestBody(string videoId, YouTubeConfig youTubeConfig = null)
 		{
@@ -34,7 +35,7 @@ namespace YouTube_downloader
 				["deviceMake"] = "Oculus",
 				["deviceModel"] = "Quest 3",
 				["androidSdkVersion"] = 32,
-				["userAgent"] = $"com.google.android.apps.youtube.vr.oculus/{CLIENT_VERSION} (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+				["userAgent"] = _userAgent,
 				["osName"] = "Android",
 				["osVersion"] = "12L"
 			};
@@ -60,7 +61,8 @@ namespace YouTube_downloader
 				{ "Origin", YouTubeApiLib.Utils.YOUTUBE_URL },
 				{ "X-Goog-Visitor-Id", youTubeConfig.VisitorData },
 				{ "X-YouTube-Client-Name", "28" },
-				{ "X-YouTube-Client-Version", CLIENT_VERSION }
+				{ "X-YouTube-Client-Version", CLIENT_VERSION },
+				{ "User-Agent", _userAgent }
 			};
 		}
 

@@ -1060,7 +1060,9 @@ namespace YouTube_downloader
 			}
 
 			LinkedList<YouTubeMediaTrack> mediaTracks = isYtdlVideo && !isYtdlUrlsExpired ?
-				new LinkedList<YouTubeMediaTrack>((VideoInfo as YtdlVideo).TrackList) : null;
+				new LinkedList<YouTubeMediaTrack>((VideoInfo as YtdlVideo).TrackList) :
+				(!isYtdlVideo && !isUrlsExpired && LastReceivedStreamingData != null ?
+				new LinkedList<YouTubeMediaTrack>(LastReceivedStreamingData.Parse().Tracks) : null);
 			if (config.UseYtdl && isYtdlVideo && isYtdlUrlsExpired)
 			{
 				lblStatus.Text = "Состояние: Обновление списка форматов...";
