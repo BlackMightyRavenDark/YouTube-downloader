@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace YouTube_downloader
 {
 	public static class MemoryWatcher
@@ -23,7 +22,7 @@ namespace YouTube_downloader
 				return true;
 			}
 #if DEBUG
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 			}
