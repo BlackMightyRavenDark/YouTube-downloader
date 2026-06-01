@@ -35,6 +35,7 @@ namespace YouTube_downloader
 			this.tabPageSettings = new System.Windows.Forms.TabPage();
 			this.tabControlSettings = new System.Windows.Forms.TabControl();
 			this.tabPageFilesAndFolders = new System.Windows.Forms.TabPage();
+			this.frameSettingsFilesAndFolders1 = new YouTube_downloader.FrameSettingsFilesAndFolders();
 			this.tabPageGUI = new System.Windows.Forms.TabPage();
 			this.frameSettingsGuiOptions1 = new YouTube_downloader.FrameSettingsGuiOptions();
 			this.tabPageDownloadSettings = new System.Windows.Forms.TabPage();
@@ -63,6 +64,7 @@ namespace YouTube_downloader
 			this.checkBoxSearchVideos = new System.Windows.Forms.CheckBox();
 			this.checkBoxSearchChannels = new System.Windows.Forms.CheckBox();
 			this.groupBoxQuerySearch = new System.Windows.Forms.GroupBox();
+			this.btnWtfSearchApiV3 = new System.Windows.Forms.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.btnSearchByQuery = new System.Windows.Forms.Button();
 			this.textBoxSearchQuery = new System.Windows.Forms.TextBox();
@@ -88,7 +90,6 @@ namespace YouTube_downloader
 			this.miCopyVideoIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyChannelIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miCopyDisplayNameWithIdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.frameSettingsFilesAndFolders1 = new YouTube_downloader.FrameSettingsFilesAndFolders();
 			this.tabControlMain.SuspendLayout();
 			this.tabPageSettings.SuspendLayout();
 			this.tabControlSettings.SuspendLayout();
@@ -162,6 +163,17 @@ namespace YouTube_downloader
 			this.tabPageFilesAndFolders.TabIndex = 0;
 			this.tabPageFilesAndFolders.Text = "Файлы и папки";
 			// 
+			// frameSettingsFilesAndFolders1
+			// 
+			this.frameSettingsFilesAndFolders1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.frameSettingsFilesAndFolders1.AutoScroll = true;
+			this.frameSettingsFilesAndFolders1.Location = new System.Drawing.Point(6, 6);
+			this.frameSettingsFilesAndFolders1.Name = "frameSettingsFilesAndFolders1";
+			this.frameSettingsFilesAndFolders1.Size = new System.Drawing.Size(515, 345);
+			this.frameSettingsFilesAndFolders1.TabIndex = 0;
+			// 
 			// tabPageGUI
 			// 
 			this.tabPageGUI.BackColor = System.Drawing.SystemColors.Control;
@@ -202,6 +214,7 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.frameSettingsDownloadOptions1.AutoScroll = true;
 			this.frameSettingsDownloadOptions1.Location = new System.Drawing.Point(6, 6);
+			this.frameSettingsDownloadOptions1.MinimumSize = new System.Drawing.Size(490, 0);
 			this.frameSettingsDownloadOptions1.Name = "frameSettingsDownloadOptions1";
 			this.frameSettingsDownloadOptions1.Size = new System.Drawing.Size(515, 333);
 			this.frameSettingsDownloadOptions1.TabIndex = 0;
@@ -451,6 +464,7 @@ namespace YouTube_downloader
 			// 
 			// groupBoxQuerySearch
 			// 
+			this.groupBoxQuerySearch.Controls.Add(this.btnWtfSearchApiV3);
 			this.groupBoxQuerySearch.Controls.Add(this.label2);
 			this.groupBoxQuerySearch.Controls.Add(this.btnSearchByQuery);
 			this.groupBoxQuerySearch.Controls.Add(this.textBoxSearchQuery);
@@ -460,6 +474,16 @@ namespace YouTube_downloader
 			this.groupBoxQuerySearch.TabIndex = 0;
 			this.groupBoxQuerySearch.TabStop = false;
 			this.groupBoxQuerySearch.Text = "Поиск по запросу";
+			// 
+			// btnWtfSearchApiV3
+			// 
+			this.btnWtfSearchApiV3.Location = new System.Drawing.Point(15, 61);
+			this.btnWtfSearchApiV3.Name = "btnWtfSearchApiV3";
+			this.btnWtfSearchApiV3.Size = new System.Drawing.Size(20, 23);
+			this.btnWtfSearchApiV3.TabIndex = 3;
+			this.btnWtfSearchApiV3.Text = "!";
+			this.btnWtfSearchApiV3.UseVisualStyleBackColor = true;
+			this.btnWtfSearchApiV3.Click += new System.EventHandler(this.btnWtfSearchApiV3_Click);
 			// 
 			// label2
 			// 
@@ -719,17 +743,6 @@ namespace YouTube_downloader
 			this.miCopyDisplayNameWithIdToolStripMenuItem.Text = "Скопировать отображаемое имя и ID";
 			this.miCopyDisplayNameWithIdToolStripMenuItem.Click += new System.EventHandler(this.miCopyDisplayNameWithIdToolStripMenuItem_Click);
 			// 
-			// frameSettingsFilesAndFolders1
-			// 
-			this.frameSettingsFilesAndFolders1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-			| System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.frameSettingsFilesAndFolders1.AutoScroll = true;
-			this.frameSettingsFilesAndFolders1.Location = new System.Drawing.Point(6, 6);
-			this.frameSettingsFilesAndFolders1.Name = "frameSettingsFilesAndFolders1";
-			this.frameSettingsFilesAndFolders1.Size = new System.Drawing.Size(515, 345);
-			this.frameSettingsFilesAndFolders1.TabIndex = 0;
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -833,6 +846,7 @@ namespace YouTube_downloader
 		private FrameSettingsDownloadOptions frameSettingsDownloadOptions1;
 		private FrameSettingsGuiOptions frameSettingsGuiOptions1;
 		private FrameSettingsFilesAndFolders frameSettingsFilesAndFolders1;
+		private System.Windows.Forms.Button btnWtfSearchApiV3;
 	}
 }
 

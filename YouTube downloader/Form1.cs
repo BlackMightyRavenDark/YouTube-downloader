@@ -197,6 +197,12 @@ namespace YouTube_downloader
 			EnableControls(true);
 		}
 
+		private void btnWtfSearchApiV3_Click(object sender, EventArgs e)
+		{
+			string msg = "Обратите внимание, что поиск через YouTube API V3 глючный! Иногда он пропускает некоторые видео!";
+			MessageBox.Show(msg, "Обращатор на себя внимания", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
+
 		private async void btnSearchByQuery_Click(object sender, EventArgs e)
 		{
 			EnableControls(false);
