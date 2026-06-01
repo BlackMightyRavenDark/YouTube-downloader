@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -40,94 +39,10 @@ namespace YouTube_downloader
 		internal static bool isFavoritesLoaded = false;
 		internal static bool isFavoritesChanged = false;
 
-		public static int DownloadString(string url, out string responseString, bool useRequestSender = false)
-		{
-			try
-			{
-				if (useRequestSender)
-				{
-					using (HttpRequestResult requestResult = HttpRequestSender.Send(url))
-					{
-						if (requestResult.ErrorCode == 200)
-						{
-							return requestResult.WebContent.ContentToString(out responseString);
-						}
-
-						responseString = requestResult.ErrorMessage;
-						return requestResult.ErrorCode;
-					}
-				}
-				else
-				{
-					FileDownloader d = new FileDownloader() { Url = url };
-					return d.DownloadString(out responseString);
-				}
-			}
-			catch (Exception ex)
-			{
-				responseString = ex.Message;
-				return ex.HResult;
-			}
-		}
-
 		public static int DownloadData(string url, Stream outputStream)
 		{
 			FileDownloader d = new FileDownloader() { Url = url };
 			return d.Download(outputStream);
-		}
-
-		public static string GetYouTubeChannelVideosRequestUrl(string channelId, int maxVideos,
-			DateTime publishedAfter, DateTime publishedBefore)
-		{
-			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
-			query.Add("part", "snippet");
-			query.Add("type", "video");
-			query.Add("order", "date");
-			query.Add("key", config.YouTubeApiV3Key);
-			query.Add("channelId", channelId);
-			query.Add("maxResults", maxVideos.ToString());
-			if (publishedAfter < DateTime.MaxValue)
-			{
-				string dateAfter = publishedAfter.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-				query.Add("publishedAfter", dateAfter);
-			}
-			if (publishedBefore < DateTime.MaxValue)
-			{
-				string dateBefore = publishedBefore.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-				query.Add("publishedBefore", dateBefore);
-			}
-
-			string url = $"{YOUTUBE_ENDPOINT_SEARCH_URL}?{query}";
-			return url;
-		}
-
-		public static string GetYouTubeSearchQueryRequestUrl(
-			string searchingPhrase, string resultTypes, int maxResults,
-			DateTime publishedAfter, DateTime publishedBefore)
-		{
-			NameValueCollection query = System.Web.HttpUtility.ParseQueryString(string.Empty);
-			query.Add("part", "snippet");
-			query.Add("order", "date");
-			query.Add("key", config.YouTubeApiV3Key);
-			query.Add("q", searchingPhrase);
-			query.Add("maxResults", maxResults.ToString());
-			if (!string.IsNullOrEmpty(resultTypes))
-			{
-				query.Add("type", resultTypes);
-			}
-			if (publishedAfter < DateTime.MaxValue)
-			{
-				string dateAfter = publishedAfter.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-				query.Add("publishedAfter", dateAfter);
-			}
-			if (publishedBefore < DateTime.MaxValue)
-			{
-				string dateBefore = publishedBefore.ToString("yyyy-MM-dd\"T\"HH:mm:ss\"Z\"");
-				query.Add("publishedBefore", dateBefore);
-			}
-
-			string url = $"{YOUTUBE_ENDPOINT_SEARCH_URL}?{query}";
-			return url;
 		}
 
 		public static YouTubeVideo GetSingleVideo(YouTubeVideoId videoId, out YouTubeVideoWebPage webPage, out string errorMessage)
@@ -673,13 +588,13 @@ namespace YouTube_downloader
 			return 0;
 		}
 
-        public static string ExtractFileNameFromThumbnailUrl(string url, string expression = @"\w/.{11}/([^\&\?]*)")
-        {
-            string fileName = YouTubeApiLib.Utils.FindRegexp(url, expression);
-            return !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
-        }
+		public static string ExtractFileNameFromThumbnailUrl(string url, string expression = @"\w/.{11}/([^\&\?]*)")
+		{
+			string fileName = YouTubeApiLib.Utils.FindRegexp(url, expression);
+			return !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
+		}
 
-        private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
+		private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
 			string filePath, int startNumber)
 		{
 			try
