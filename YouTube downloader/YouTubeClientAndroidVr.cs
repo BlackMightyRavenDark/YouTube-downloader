@@ -11,8 +11,11 @@ namespace YouTube_downloader
 		public YouTubeVideoWebPage WebPage { get; private set; }
 		public FileDownloader Downloader { get; set; }
 
-		public const string CLIENT_VERSION = "1.65.10";
-		private readonly string _userAgent = $"com.google.android.apps.youtube.vr.oculus/{CLIENT_VERSION} (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip";
+		internal const string CLIENT_VERSION = "1.65.10";
+		internal const string OS_NAME = "Android";
+		internal const string OS_VERSION = "12L";
+
+		private readonly string _userAgent = $"com.google.android.apps.youtube.vr.oculus/{CLIENT_VERSION} (Linux; U; {OS_NAME} {OS_VERSION}; eureka-user Build/SQ3A.220605.009.A1) gzip";
 
 		public JObject GenerateRequestBody(string videoId, YouTubeConfig youTubeConfig = null)
 		{
@@ -23,6 +26,7 @@ namespace YouTube_downloader
 				["html5Preference"] = "HTML5_PREF_WANTS",
 				["signatureTimestamp"] = youTubeConfig.SignatureTimestamp
 			};
+
 			JObject jPlaybackContext = new JObject()
 			{
 				["contentPlaybackContext"] = jContentPlaybackContext
@@ -36,9 +40,10 @@ namespace YouTube_downloader
 				["deviceModel"] = "Quest 3",
 				["androidSdkVersion"] = 32,
 				["userAgent"] = _userAgent,
-				["osName"] = "Android",
-				["osVersion"] = "12L"
+				["osName"] = OS_NAME,
+				["osVersion"] = OS_VERSION
 			};
+
 			JObject jContext = new JObject()
 			{
 				["client"] = jClient
