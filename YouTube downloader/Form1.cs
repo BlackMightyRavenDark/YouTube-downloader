@@ -980,6 +980,7 @@ namespace YouTube_downloader
 
 		private void EnableControls(bool enabled)
 		{
+			btnWtfSearchApiV3.Enabled =
 			btnSearchByWebPage.Enabled =
 			btnSearchByVideoUrlOrId.Enabled =
 			btnSearchByQuery.Enabled =
