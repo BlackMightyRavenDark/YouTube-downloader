@@ -144,7 +144,10 @@ namespace YouTube_downloader
 			BackgroundColor = backgroundColor;
 		}
 
+		public MultipleProgressBarItem(int value, string title, Color backgroundColor)
+			: this(0, 100, value, title, backgroundColor) { }
+
 		public MultipleProgressBarItem(int value, string title)
-			: this(0, 100, value, title, Color.Lime) { }
+			: this(value, title, Color.Lime) { }
 	}
 }

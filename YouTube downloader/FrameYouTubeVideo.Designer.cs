@@ -35,7 +35,7 @@
 			this.lblDatePublished = new System.Windows.Forms.Label();
 			this.pictureBoxFavoriteVideo = new System.Windows.Forms.PictureBox();
 			this.btnDownload = new System.Windows.Forms.Button();
-			this.contextMenuDownloadFormats = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.contextMenuDownloadableFormats = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.lblStatus = new System.Windows.Forms.Label();
 			this.lblDowndloadProgress = new System.Windows.Forms.Label();
 			this.pictureBoxFavoriteChannel = new System.Windows.Forms.PictureBox();
@@ -49,6 +49,7 @@
 			this.miCopyThumbnailUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miSaveThumbnailImageAssToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.miReloadActiveThumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miThumbnailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuChannelTitle = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.miCopyChannelTitleToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,7 +80,6 @@
 			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
-			this.miReloadActiveThumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteChannel)).BeginInit();
@@ -164,11 +164,11 @@
 			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
 			this.btnDownload.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnDownload_MouseDown);
 			// 
-			// contextMenuDownloadFormats
+			// contextMenuDownloadableFormats
 			// 
-			this.contextMenuDownloadFormats.Font = new System.Drawing.Font("Lucida Console", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.contextMenuDownloadFormats.Name = "contextMenuDownloads";
-			this.contextMenuDownloadFormats.Size = new System.Drawing.Size(61, 4);
+			this.contextMenuDownloadableFormats.Font = new System.Drawing.Font("Lucida Console", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.contextMenuDownloadableFormats.Name = "contextMenuDownloads";
+			this.contextMenuDownloadableFormats.Size = new System.Drawing.Size(61, 4);
 			// 
 			// lblStatus
 			// 
@@ -241,7 +241,7 @@
 			// 
 			this.miCopyPlayerUrlToolStripMenuItem.Name = "miCopyPlayerUrlToolStripMenuItem";
 			this.miCopyPlayerUrlToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
-			this.miCopyPlayerUrlToolStripMenuItem.Text = "Скопировать URL плеера";
+			this.miCopyPlayerUrlToolStripMenuItem.Text = "Скопировать ссылку на код плеера";
 			this.miCopyPlayerUrlToolStripMenuItem.Click += new System.EventHandler(this.miCopyPlayerUrlToolStripMenuItem_Click);
 			// 
 			// toolStripMenuItem2
@@ -274,6 +274,13 @@
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
 			this.toolStripMenuItem3.Size = new System.Drawing.Size(298, 6);
+			// 
+			// miReloadActiveThumbnailToolStripMenuItem
+			// 
+			this.miReloadActiveThumbnailToolStripMenuItem.Name = "miReloadActiveThumbnailToolStripMenuItem";
+			this.miReloadActiveThumbnailToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
+			this.miReloadActiveThumbnailToolStripMenuItem.Text = "Перезагрузить эскиз";
+			this.miReloadActiveThumbnailToolStripMenuItem.Click += new System.EventHandler(this.miReloadActiveThumbnailToolStripMenuItem_Click);
 			// 
 			// miThumbnailsToolStripMenuItem
 			// 
@@ -506,13 +513,6 @@
 			this.progressBarDownload.MouseDown += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseDown);
 			this.progressBarDownload.MouseUp += new System.Windows.Forms.MouseEventHandler(this.progressBarDownload_MouseUp);
 			// 
-			// miReloadActiveThumbnailToolStripMenuItem
-			// 
-			this.miReloadActiveThumbnailToolStripMenuItem.Name = "miReloadActiveThumbnailToolStripMenuItem";
-			this.miReloadActiveThumbnailToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
-			this.miReloadActiveThumbnailToolStripMenuItem.Text = "Перезагрузить эскиз";
-			this.miReloadActiveThumbnailToolStripMenuItem.Click += new System.EventHandler(this.miReloadActiveThumbnailToolStripMenuItem_Click);
-			// 
 			// FrameYouTubeVideo
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -531,7 +531,6 @@
 			this.Controls.Add(this.lblVideoTitle);
 			this.Name = "FrameYouTubeVideo";
 			this.Size = new System.Drawing.Size(496, 170);
-			this.Load += new System.EventHandler(this.FrameYouTubeVideo_Load);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteChannel)).EndInit();
@@ -553,7 +552,7 @@
 		private System.Windows.Forms.Label lblChannelTitle;
 		private System.Windows.Forms.Label lblDatePublished;
 		private System.Windows.Forms.PictureBox pictureBoxFavoriteVideo;
-		private System.Windows.Forms.ContextMenuStrip contextMenuDownloadFormats;
+		private System.Windows.Forms.ContextMenuStrip contextMenuDownloadableFormats;
 		private System.Windows.Forms.Label lblStatus;
 		private System.Windows.Forms.Label lblDowndloadProgress;
 		private System.Windows.Forms.PictureBox pictureBoxFavoriteChannel;

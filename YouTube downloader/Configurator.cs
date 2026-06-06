@@ -72,7 +72,7 @@ namespace YouTube_downloader
 		public string UserAgent { get; set; }
 		public int ThreadCountVideo { get; set; }
 		public int ThreadCountAudio { get; set; }
-		public int GlobalThreadCountMaximum { get; set; }
+		public int GlobalThreadCountLimit { get; set; }
 		public bool UseAccurateMultithreading { get; set; }
 		public int ConnectionTimeout { get; set; }
 		public bool UseRamToStoreTemporaryFiles { get; set; }
@@ -85,7 +85,7 @@ namespace YouTube_downloader
 		#endregion
 
 		#region Other options
-		public int MaximumSearchResults { get; set; }
+		public int SearchResultCountLimit { get; set; }
 		#endregion
 
 		private int _menusFontSize;
@@ -195,7 +195,7 @@ namespace YouTube_downloader
 			UserAgent = DEFAULT_USER_AGENT;
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;
-			GlobalThreadCountMaximum = 300;
+			GlobalThreadCountLimit = 300;
 			UseAccurateMultithreading = true;
 			ConnectionTimeout = 5000;
 			UseRamToStoreTemporaryFiles = false;
@@ -208,7 +208,7 @@ namespace YouTube_downloader
 			#endregion
 
 			#region Other options
-			MaximumSearchResults = 50;
+			SearchResultCountLimit = 50;
 			#endregion
 		}
 

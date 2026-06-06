@@ -28,7 +28,7 @@ namespace YouTube_downloader
 				json["userAgent"] = config.UserAgent;
 				json["threadCountVideo"] = config.ThreadCountVideo;
 				json["threadCountAudio"] = config.ThreadCountAudio;
-				json["globalThreadCountLimit"] = config.GlobalThreadCountMaximum;
+				json["globalThreadCountLimit"] = config.GlobalThreadCountLimit;
 				json["useAccurateMultithreading"] = config.UseAccurateMultithreading;
 				json["connectionTimeout"] = config.ConnectionTimeout;
 				json["useRamToStoreTemporaryFiles"] = config.UseRamToStoreTemporaryFiles;
@@ -137,7 +137,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("globalThreadCountLimit");
 					if (jt != null)
 					{
-						config.GlobalThreadCountMaximum = jt.Value<int>();
+						config.GlobalThreadCountLimit = jt.Value<int>();
 					}
 				}
 				{
@@ -227,7 +227,7 @@ namespace YouTube_downloader
 				textBoxUserAgent.Text = config.UserAgent;
 				numericUpDownThreadCountVideo.Value = config.ThreadCountVideo;
 				numericUpDownThreadCountAudio.Value = config.ThreadCountAudio;
-				numericUpDownGlobalThreadCountLimit.Value = config.GlobalThreadCountMaximum;
+				numericUpDownGlobalThreadCountLimit.Value = config.GlobalThreadCountLimit;
 				checkBoxUseAccurateMultithreading.Checked = config.UseAccurateMultithreading;
 				numericUpDownConnectionTimeout.Value = config.ConnectionTimeout;
 				checkBoxAlwaysDownloadAsDash.Checked = config.AlwaysDownloadAsDash;
@@ -279,8 +279,8 @@ namespace YouTube_downloader
 		{
 			btnWtfUserAgent.Enabled = false;
 
-			const string msg = "\"User-Agent\" это специальный идентификатор, отправляемый серверам ютуба. " +
-				"При пустом или неподходящем значении, скачивание может не работать или чаще выдавать ошибки.\n" +
+			string msg = "\"User-Agent\" это специальный идентификатор, отправляемый серверам ютуба. " +
+				$"При пустом или неподходящем значении, скачивание может не работать или чаще выдавать ошибки.{Environment.NewLine}" +
 				"Внимание! Этот параметр используется при скачивании видео / аудио! " +
 				"При обращении к API ютуба (например, при поиске видео) значение этого параметра может быть другим!";
 			MessageBox.Show(msg, "Зачематор зачемок",
@@ -309,13 +309,13 @@ namespace YouTube_downloader
 
 			const string serverSourceCodeUrl = "https://github.com/BlackMightyRavenDark/youtube_rest_api_server_node_js";
 			string msg = "Этот сервер можно использовать в особых случаях. " +
-				"Например, когда другое API не работает.\n" +
-				$"Скачать исходный код сервера (на JavaScript) можно здесь: {serverSourceCodeUrl}\n" +
+				$"Например, когда другое API не работает.{Environment.NewLine}" +
+				$"Скачать исходный код сервера (на JavaScript) можно здесь: {serverSourceCodeUrl}{Environment.NewLine}" +
 				"Открыть ссылку в браузере?";
 			if (MessageBox.Show(msg, "Зачематор зачемок",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 			{
-				OpenUrlInBrowser(serverSourceCodeUrl);
+				OpenUrlInBrowser(serverSourceCodeUrl, out _);
 			}
 
 			btnWtfExternalRestApiServer.Enabled = true;
@@ -465,8 +465,8 @@ namespace YouTube_downloader
 
 		private void numericUpDownGlobalThreadCountLimit_ValueChanged(object sender, EventArgs e)
 		{
-			config.GlobalThreadCountMaximum = (int)numericUpDownGlobalThreadCountLimit.Value;
-			MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountMaximum;
+			config.GlobalThreadCountLimit = (int)numericUpDownGlobalThreadCountLimit.Value;
+			MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountLimit;
 		}
 
 		private void numericUpDownDashChunkDownloadTryCountLimit_ValueChanged(object sender, EventArgs e)

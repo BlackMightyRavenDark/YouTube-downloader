@@ -12,26 +12,31 @@ namespace YouTube_downloader
 {
 	public static class ExtensionMethods
 	{
-		public static bool SaveToFile(this Stream stream, string filePath)
+		public static bool SaveToFile(this Stream stream, string filePath, out string errorMessage)
 		{
 			try
 			{
+				errorMessage = null;
 				using (Stream fileStream = File.OpenWrite(filePath))
 				{
 					stream.Position = 0L;
-					StreamAppender.Append(stream, fileStream);
+					if (!StreamAppender.Append(stream, fileStream))
+					{
+						errorMessage = "Data append failed!";
+						return false;
+					}
 				}
 
 				return true;
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
+				errorMessage = ex.Message;
+#if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
 #endif
+			}
+
 			return false;
 		}
 

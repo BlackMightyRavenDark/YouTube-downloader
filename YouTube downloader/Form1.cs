@@ -24,29 +24,22 @@ namespace YouTube_downloader
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			tabControlMain.SelectedTab = tabPageSearch;
+			SetupListView();
+			dateTimePickerSearchAfter.Value = DateTime.UtcNow - TimeSpan.FromDays(30);
 
-			objectTreeViewFavorites.ChildrenGetter = obj => ((FavoriteItem)obj).Children;
-			objectTreeViewFavorites.ParentGetter = obj => ((FavoriteItem)obj).Parent;
-			objectTreeViewFavorites.CanExpandGetter = obj => ((FavoriteItem)obj).Children.Count > 0;
-			objectTreeViewFavorites.Roots = new List<FavoriteItem>() { new FavoriteItem("Избранное") };
-			favoritesRootNode = objectTreeViewFavorites.Roots.Cast<FavoriteItem>().ToArray()[0];
-			treeFavorites = objectTreeViewFavorites;
-
-			dateTimePickerSearchAfter.Value = DateTime.Now - TimeSpan.FromDays(30);
-
-			config.Saving += (s, json) => json["maximumSearchResults"] = config.MaximumSearchResults;
+			config.Saving += (s, json) => json["maximumSearchResults"] = config.SearchResultCountLimit;
 			config.Loading += (s, json) =>
 			{
 				JToken jt = json.Value<JToken>("maximumSearchResults");
 				if (jt != null)
 				{
-					config.MaximumSearchResults = ClampValue(jt.Value<int>(), 1, 500);
+					config.SearchResultCountLimit = ClampValue(jt.Value<int>(), 1, 500);
 				}
 			};
 			config.Loaded += s =>
 			{
-				numericUpDownSearchResultCountLimit.Value = config.MaximumSearchResults;
-				MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountMaximum;
+				numericUpDownSearchResultCountLimit.Value = config.SearchResultCountLimit;
+				MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountLimit;
 			};
 			config.MenusFontSizeChanged += (s, sz) => SetMenusFontSize(sz);
 			config.FavoritesListFontSizeChanged += (s, sz) => objectTreeViewFavorites.Font = new Font(objectTreeViewFavorites.Font.FontFamily, sz);
@@ -56,23 +49,20 @@ namespace YouTube_downloader
 			{
 				if (File.Exists(config.FavoritesFilePath))
 				{
-					isFavoritesLoaded = LoadFavorites(config.FavoritesFilePath);
-					if (isFavoritesLoaded)
-					{
-						objectTreeViewFavorites.Expand(favoritesRootNode);
-					}
+					LoadFavorites(config.FavoritesFilePath);
 				}
-				else
-				{
-					isFavoritesLoaded = true;
-				}
-			} catch (Exception ex)
+				objectTreeViewFavorites.Expand(favoritesRootNode);
+				isFavoritesLoaded = true;
+			}
+			catch (Exception ex)
 			{
 #if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
 				objectTreeViewFavorites.Enabled = false;
-				string msg = $"Ошибка загрузки избранного! Список избранного недоступен до перезапуска программы!\n{ex.Message}";
+				isFavoritesLoaded = false;
+				string msg = "Ошибка загрузки избранного! " +
+					$"Список избранного недоступен до перезапуска программы!{Environment.NewLine}{ex.Message}";
 				MessageBox.Show(msg, "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -113,6 +103,19 @@ namespace YouTube_downloader
 			}
 		}
 
+		private void SetupListView()
+		{
+			if (favoritesRootNode == null)
+			{
+				objectTreeViewFavorites.ChildrenGetter = obj => (obj as FavoriteItem).Children;
+				objectTreeViewFavorites.ParentGetter = obj => (obj as FavoriteItem).Parent;
+				objectTreeViewFavorites.CanExpandGetter = obj => (obj as FavoriteItem).Children?.Count > 0;
+				favoritesRootNode = new FavoriteItem("Избранное");
+				objectTreeViewFavorites.Roots = new List<FavoriteItem>() { favoritesRootNode };
+				treeFavorites = objectTreeViewFavorites;
+			}
+		}
+
 		private void panelSearchResults_Resize(object sender, EventArgs e)
 		{
 			StackFrames();
@@ -120,8 +123,7 @@ namespace YouTube_downloader
 
 		private void objectTreeViewFavorites_CellRightClick(object sender, BrightIdeasSoftware.CellRightClickEventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null && item.Parent != null)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item && item.Parent != null)
 			{
 				contextMenuFavorites.Show(Cursor.Position);
 			}
@@ -131,8 +133,8 @@ namespace YouTube_downloader
 		{
 			if (e.Button == MouseButtons.Left && objectTreeViewFavorites.SelectedObject != null)
 			{
-				FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-				if (item == null || item.Parent == null) { return; }
+				FavoriteItem item = objectTreeViewFavorites.SelectedObject as FavoriteItem;
+				if (item?.Parent == null) { return; } // Root item or an empty space was clicked.
 
 				if (item.ItemType != FavoriteItemType.Directory)
 				{
@@ -151,7 +153,7 @@ namespace YouTube_downloader
 							tabPageSearchResults.Text = "Результаты поиска";
 							scrollBarSearchResults.Value = 0;
 
-							await FindVideoById(new YouTubeVideoId(item.ID));
+							await FindVideoById(new YouTubeVideoId(item.Id));
 						}
 					}
 					else if (item.ItemType == FavoriteItemType.Channel)
@@ -176,7 +178,8 @@ namespace YouTube_downloader
 								return;
 							}
 
-							YouTubeChannel channel = new YouTubeChannel(item.ID, item.Title);
+							string id = !string.IsNullOrEmpty(item.ChannelId) && !string.IsNullOrWhiteSpace(item.ChannelId) ? item.ChannelId : item.Id;
+							YouTubeChannel channel = new YouTubeChannel(id, item.Title);
 							OpenChannel(channel);
 						}
 					}
@@ -188,13 +191,9 @@ namespace YouTube_downloader
 
 		private void btnWtfWebPageCode_Click(object sender, EventArgs e)
 		{
-			EnableControls(false);
-
 			string msg = "Это позволит скачать скрытое, заблокированное или 18+ видео, " +
-				"если у вас есть к нему доступ из браузера.\nНо это не точно!";
+				$"если у вас есть доступ к нему из браузера.{Environment.NewLine}Но это не точно!";
 			MessageBox.Show(msg, "Зачематор зачемок", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-			EnableControls(true);
 		}
 
 		private void btnWtfSearchApiV3_Click(object sender, EventArgs e)
@@ -215,6 +214,7 @@ namespace YouTube_downloader
 				textBoxSearchQuery.Focus();
 				return;
 			}
+
 			if (string.IsNullOrEmpty(config.YouTubeApiV3Key))
 			{
 				MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
@@ -222,6 +222,7 @@ namespace YouTube_downloader
 				EnableControls(true);
 				return;
 			}
+
 			if (checkBoxSearchRangePublishedAfter.Checked && checkBoxSearchRangePublishedBefore.Checked &&
 				dateTimePickerSearchAfter.Value >= dateTimePickerSearchBefore.Value)
 			{
@@ -425,7 +426,7 @@ namespace YouTube_downloader
 
 		private void numericUpDownSearchResultCountLimit_ValueChanged(object sender, EventArgs e)
 		{
-			config.MaximumSearchResults = (int)numericUpDownSearchResultCountLimit.Value;
+			config.SearchResultCountLimit = (int)numericUpDownSearchResultCountLimit.Value;
 		}
 
 		private void radioButtonSearchResultCountLimitMaxPossible_Click(object sender, EventArgs e)
@@ -458,8 +459,7 @@ namespace YouTube_downloader
 
 		private void contextMenuFavorites_Opening(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item)
 			{
 				switch (item.ItemType)
 				{
@@ -498,8 +498,7 @@ namespace YouTube_downloader
 
 		private void miCopyDisplayNameToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item)
 			{
 				SetClipboardText(item.DisplayName);
 			}
@@ -507,29 +506,29 @@ namespace YouTube_downloader
 
 		private void miCopyDisplayNameWithIdToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null && item.ItemType != FavoriteItemType.Directory)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item &&
+				item.ItemType != FavoriteItemType.Directory)
 			{
-				SetClipboardText($"{item.DisplayName} [{item.ID}]");
+				SetClipboardText($"{item.DisplayName} [{item.Id}]");
 			}
 		}
 
 		private void miCopyVideoUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null && item.ItemType == FavoriteItemType.Video)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item &&
+				item.ItemType == FavoriteItemType.Video)
 			{
-				string url = GetYouTubeVideoUrl(item.ID);
+				string url = GetYouTubeVideoUrl(item.Id);
 				SetClipboardText(url);
 			}
 		}
 
 		private void miCopyChannelUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null && item.ItemType != FavoriteItemType.Directory)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item &&
+				item.ItemType != FavoriteItemType.Directory)
 			{
-				string id = item.ItemType == FavoriteItemType.Video ? item.ChannelId : item.ID;
+				string id = item.ItemType == FavoriteItemType.Video ? item.ChannelId : item.Id;
 				string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, id);
 				SetClipboardText(url);
 			}
@@ -537,46 +536,44 @@ namespace YouTube_downloader
 
 		private void miCopyVideoIdToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null && item.ItemType == FavoriteItemType.Video)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item &&
+				item.ItemType == FavoriteItemType.Video)
 			{
-				SetClipboardText(item.ID);
+				SetClipboardText(item.Id);
 			}
 		}
 
 		private void miCopyChannelIdToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null && item.ItemType != FavoriteItemType.Directory)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item &&
+				item.ItemType != FavoriteItemType.Directory)
 			{
-				string id = item.ItemType == FavoriteItemType.Video ? item.ChannelId : item.ID;
+				string id = item.ItemType == FavoriteItemType.Video ? item.Id : item.ChannelId;
 				SetClipboardText(id);
 			}
 		}
 
 		private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item)
 			{
-				string url = GetYouTubeVideoUrl(item.ID);
-				OpenUrlInBrowser(url);
+				string url = GetYouTubeVideoUrl(item.Id);
+				OpenUrlInBrowser(url, out _);
 			}
 		}
 
 		private void miOpenChannelInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FavoriteItem item = (FavoriteItem)objectTreeViewFavorites.SelectedObject;
-			if (item != null)
+			if (objectTreeViewFavorites.SelectedObject is FavoriteItem item)
 			{
-				OpenUrlInBrowser(string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, item.ID));
+				string url = string.Format(YOUTUBE_CHANNEL_URL_TEMPLATE, item.Id);
+				OpenUrlInBrowser(url, out _);
 			}
 		}
 
 		private void miCutTextToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string t = richTextBoxWebPageCode.SelectedText;
-			if (!string.IsNullOrEmpty(t))
+			if (!string.IsNullOrEmpty(richTextBoxWebPageCode.SelectedText))
 			{
 				richTextBoxWebPageCode.Cut();
 			}
@@ -606,21 +603,23 @@ namespace YouTube_downloader
 			{
 				["displayName"] = root.DisplayName
 			};
-			if (root.Children.Count > 0) //directory
+
+			if (root.Children.Count > 0) // The item is directory (folder).
 			{
-				JArray ja = new JArray();
+				JArray jaSubItems = new JArray();
 				for (int i = 0; i < root.Children.Count; ++i)
 				{
-					SaveNode(root.Children[i], ja);
+					SaveNode(root.Children[i], jaSubItems);
 				}
 				json["type"] = "directory";
-				json["subItems"] = ja;
+				json["subItems"] = jaSubItems;
 			}
-			else
+			else // The item is video or channel.
 			{
 				json["title"] = root.Title;
 				json["type"] = root.ItemType == FavoriteItemType.Video ? "video" : "channel";
-				json["id"] = root.ID;
+				json["id"] = root.Id;
+
 				if (root.ItemType == FavoriteItemType.Video)
 				{
 					if (!string.IsNullOrEmpty(root.ChannelTitle))
@@ -633,45 +632,45 @@ namespace YouTube_downloader
 					}
 				}
 			}
+
 			jsonArr.Add(json);
 		}
 
 		private void SaveFavorites(string fileName)
 		{
-			JArray ja = new JArray();
+			JArray jsonArr = new JArray();
 			for (int i = 0; i < favoritesRootNode.Children.Count; ++i)
 			{
-				SaveNode(favoritesRootNode.Children[i], ja);
+				SaveNode(favoritesRootNode.Children[i], jsonArr);
 			}
 			JObject json = new JObject()
 			{
-				["items"] = ja
+				["items"] = jsonArr
 			};
 			File.WriteAllText(fileName, json.ToString());
 		}
 
-		private void ParseDataItem(JObject item, FavoriteItem root)
+		private void ParseFavoritesItem(JObject item, FavoriteItem root)
 		{
 			string displayName = item.Value<string>("displayName");
 			JToken jt = item.Value<JToken>("title");
 			string title = jt != null ? jt.Value<string>() : displayName;
-			FavoriteItem favoriteItem = new FavoriteItem(title, displayName, null, null, null, root);
-			JArray ja = item.Value<JArray>("subItems");
-			if (ja != null)
+			FavoriteItem favoriteItem = new FavoriteItem(title, displayName, root);
+			JArray jaSubItems = item.Value<JArray>("subItems");
+			if (jaSubItems != null)
 			{
-				if (ja.Count > 0)
+				favoriteItem.ItemType = FavoriteItemType.Directory;
+				if (jaSubItems.Count > 0)
 				{
-					favoriteItem.ItemType = FavoriteItemType.Directory;
-					for (int i = 0; i < ja.Count; ++i)
+					foreach (JObject j in jaSubItems.Cast<JObject>())
 					{
-						JObject j = TryParseJson(ja[i].Value<JObject>().ToString());
-						ParseDataItem(j, favoriteItem);
+						ParseFavoritesItem(j, favoriteItem);
 					}
 				}
 			}
 			else
 			{
-				jt = item.Value<JToken>("type") ?? throw new ArgumentNullException("type = NULL");
+				jt = item.Value<JToken>("type") ?? throw new ArgumentNullException("Favorite item type is undefined!");
 				string t = jt.Value<string>().ToLower();
 				if (t.Equals("video"))
 				{
@@ -683,44 +682,38 @@ namespace YouTube_downloader
 				}
 				else
 				{
-					throw new ArgumentException("Недопустимое значение DataType: " + t);
+					throw new ArgumentException($"Invalid DataType value: {t}");
 				}
-				favoriteItem.ID = item.Value<string>("id");
-				if (favoriteItem.ItemType == FavoriteItemType.Video)
+
+				favoriteItem.Id = item.Value<string>("id");
+
+				jt = item.Value<JToken>("channelTitle");
+				if (jt != null)
 				{
-					jt = item.Value<JToken>("channelTitle");
-					if (jt != null)
+					favoriteItem.ChannelTitle = jt.Value<string>();
+				}
+				jt = item.Value<JToken>("channelId");
+				if (jt != null)
+				{
+					favoriteItem.ChannelId = jt.Value<string>();
+					if (string.IsNullOrEmpty(favoriteItem.ChannelId) || string.IsNullOrWhiteSpace(favoriteItem.ChannelId))
 					{
-						favoriteItem.ChannelTitle = jt.Value<string>();
-					}
-					jt = item.Value<JToken>("channelId");
-					if (jt != null)
-					{
-						favoriteItem.ChannelId = jt.Value<string>();
+						favoriteItem.ChannelId = favoriteItem.Id;
 					}
 				}
 			}
+
 			root.Children.Add(favoriteItem);
 		}
 
-		private bool LoadFavorites(string fileName)
+		private void LoadFavorites(string fileName)
 		{
 			JObject json = JObject.Parse(File.ReadAllText(fileName));
-			JArray jItems = json.Value<JArray>("items");
-			for (int i = 0; i < jItems.Count; ++i)
+			JArray jaItems = json.Value<JArray>("items");
+			foreach (JObject j in jaItems.Cast<JObject>())
 			{
-				JObject j = TryParseJson(jItems[i].Value<JObject>().ToString());
-				if (j != null)
-				{
-					ParseDataItem(j, favoritesRootNode);
-				}
-				else
-				{
-					return false;
-				}
+				ParseFavoritesItem(j, favoritesRootNode);
 			}
-
-			return true;
 		}
 
 		private async Task<bool> FindVideoById(YouTubeVideoId videoId)
@@ -792,10 +785,6 @@ namespace YouTube_downloader
 
 		private void ClearChannelInfos()
 		{
-			foreach (YouTubeChannelInfo channelInfo in channelInfos)
-			{
-				channelInfo.ImageData?.Dispose();
-			}
 			channelInfos.Clear();
 		}
 
@@ -860,6 +849,9 @@ namespace YouTube_downloader
 			}
 		}
 
+		/// <summary>
+		/// Найти и отобразить видео с указанного канала, используя текущие параметры поиска.
+		/// </summary>
 		private async void OpenChannel(YouTubeChannel channel)
 		{
 			try
@@ -947,12 +939,13 @@ namespace YouTube_downloader
 			if (MessageBox.Show($"Перейти на канал {channelName}?", "Переход на канал",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 			{
-				if (string.IsNullOrEmpty(config.YouTubeApiV3Key))
+				if (string.IsNullOrEmpty(config.YouTubeApiV3Key) || string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
 				{
-					MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
+					MessageBox.Show("Для использования этой функции, необходимо ввести ключ от YouTube API V3! Так просто работать не будет!",
 						"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
 					return;
 				}
+
 				if (checkBoxSearchRangePublishedAfter.Checked && checkBoxSearchRangePublishedBefore.Checked &&
 					dateTimePickerSearchAfter.Value >= dateTimePickerSearchBefore.Value)
 				{

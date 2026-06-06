@@ -42,7 +42,7 @@ namespace YouTube_downloader
 			d.Url = Thumbnail.Url;
 			ImageData = new MemoryStream();
 			int errorCode = d.Download(ImageData);
-			Image = errorCode == 200 ? Utils.TryGetImageFromStream(ImageData, out _, out _) : null;
+			Image = errorCode == 200 ? Utils.TryGetImageFromStream(ImageData, out _, out _, out _) : null;
 			return errorCode;
 		}
 

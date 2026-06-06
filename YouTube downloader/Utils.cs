@@ -39,9 +39,9 @@ namespace YouTube_downloader
 		internal static bool isFavoritesLoaded = false;
 		internal static bool isFavoritesChanged = false;
 
-		public static int DownloadData(string url, Stream outputStream)
+		public static int DownloadData(string url, Stream outputStream, FileDownloader downloader = null)
 		{
-			FileDownloader d = new FileDownloader() { Url = url };
+			FileDownloader d = downloader ?? new FileDownloader() { Url = url };
 			return d.Download(outputStream);
 		}
 
@@ -95,7 +95,8 @@ namespace YouTube_downloader
 				}
 
 				return getDownloadUrls ? new YouTubeClientAndroidVr() : YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());
-			} catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				errorMessage = ex.Message;
 				return null;
@@ -154,18 +155,26 @@ namespace YouTube_downloader
 				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
 				res = $"{video.VideoWidth}x{video.VideoHeight}";
 				if (video.FrameRate != 0)
+				{
 					res += $", {video.FrameRate} fps";
+				}
 				if (video.AverageBitrate != 0)
+				{
 					res += $", ~{video.AverageBitrate / 1024} kbps";
+				}
 			}
 			else if (track is YouTubeMediaTrackContainer)
 			{
 				YouTubeMediaTrackContainer container = track as YouTubeMediaTrackContainer;
 				res = $"Video: {container.VideoWidth}x{container.VideoHeight}";
 				if (container.VideoFrameRate != 0)
+				{
 					res += $", {container.VideoFrameRate} fps";
+				}
 				if (container.AverageBitrate != 0)
+				{
 					res += $", ~{container.AverageBitrate / 1024} kbps";
+				}
 			}
 			return res;
 		}
@@ -176,40 +185,52 @@ namespace YouTube_downloader
 			return video != null ? video.DatePublished : DateTime.MaxValue;
 		}
 
-		private static FavoriteItem FindItemWithId(string itemId, FavoriteItem root)
+		public static FavoriteItem FindVideoItemInFavorites(string videoId, FavoriteItem rootNode)
 		{
-			if (string.IsNullOrEmpty(itemId) || string.IsNullOrWhiteSpace(itemId)) { return null; }
-			if (string.CompareOrdinal(root.ID, itemId) == 0) { return root; }
-
-			for (int i = 0; i < root.Children.Count; ++i)
+			if (string.IsNullOrEmpty(videoId) || string.IsNullOrWhiteSpace(videoId)) { return null; }
+			if (rootNode.ItemType == FavoriteItemType.Video && string.CompareOrdinal(videoId, rootNode.Id) == 0)
 			{
-				FavoriteItem favoriteItem = FindItemWithId(itemId, root.Children[i]);
+				return rootNode;
+			}
+
+			for (int i = 0; i < rootNode.Children.Count; ++i)
+			{
+				FavoriteItem favoriteItem = FindVideoItemInFavorites(videoId, rootNode.Children[i]);
 				if (favoriteItem != null) { return favoriteItem; }
 			}
 
 			return null;
 		}
 
-		public static FavoriteItem FindInFavorites(FavoriteItem itemToFind, FavoriteItem root)
+		public static FavoriteItem FindVideoItemInFavorites(string videoId)
 		{
-			if (root != null && !string.IsNullOrEmpty(itemToFind?.ID))
+			return FindVideoItemInFavorites(videoId, favoritesRootNode);
+		}
+
+		public static FavoriteItem FindChannelItemInFavorites(string channelId, FavoriteItem rootNode)
+		{
+			if (string.IsNullOrEmpty(channelId) || string.IsNullOrWhiteSpace(channelId)) { return null; }
+			if (rootNode.ItemType == FavoriteItemType.Channel)
 			{
-				for (int i = 0; i < root.Children.Count; ++i)
-				{
-					FavoriteItem item = FindItemWithId(itemToFind.ID, root.Children[i]);
-					if (item != null) { return item; }
-				}
+				string idRoot = !string.IsNullOrEmpty(rootNode.ChannelId) && !string.IsNullOrWhiteSpace(rootNode.ChannelId) ? rootNode.ChannelId : rootNode.Id;
+				if (string.CompareOrdinal(channelId, idRoot) == 0) { return rootNode; }
+			}
+
+			for (int i = 0; i < rootNode.Children.Count; ++i)
+			{
+				FavoriteItem favoriteItem = FindChannelItemInFavorites(channelId, rootNode.Children[i]);
+				if (favoriteItem != null) { return favoriteItem; }
 			}
 
 			return null;
 		}
 
-		public static FavoriteItem FindInFavorites(string itemId)
+		public static FavoriteItem FindChannelItemInFavorites(string channelId)
 		{
-			return FindItemWithId(itemId, favoritesRootNode);
+			return FindChannelItemInFavorites(channelId, favoritesRootNode);
 		}
 
-		public static bool IsEnoughDiskSpace(IEnumerable<char> driveLetters, long contentLength)
+		public static bool IsEnoughDiskSpace(IEnumerable<char> driveLetters, long contentLength, out string errorMessage)
 		{
 			try
 			{
@@ -218,26 +239,30 @@ namespace YouTube_downloader
 					DriveInfo driveInfo = new DriveInfo(letter.ToString());
 					if (driveInfo.AvailableFreeSpace < contentLength)
 					{
+						errorMessage = null;
 						return false;
 					}
 				}
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
+				errorMessage = ex.Message;
+#if DEBUG
+				Debug.WriteLine(errorMessage);
 #endif
+				return false;
+			}
+
+			errorMessage = null;
 			return true;
 		}
 
-		public static bool AdvancedFreeDiskSpaceCheckPassed(long totalFileSize)
+		public static bool AdvancedFreeDiskSpaceCheckPassed(long totalFileSize, out string errorMessage)
 		{
 			//TODO: Find mistakes in this code
 			try
 			{
+				errorMessage = null;
 				long minimumFreeSpaceRequired = (long)(totalFileSize * 1.1);
 
 				char chunkMergerDirectoryDriveLetter;
@@ -325,14 +350,14 @@ namespace YouTube_downloader
 
 				return true;
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
+				errorMessage = ex.Message;
+#if DEBUG
+				Debug.WriteLine(errorMessage);
 #endif
+			}
+
 			return false;
 		}
 
@@ -355,10 +380,10 @@ namespace YouTube_downloader
 		{
 			return fn.Replace("\\", "\u29F9").Replace("|", "\u2758").Replace("/", "\u2044")
 				.Replace("?", "\u2753").Replace(":", "\uFE55").Replace("<", "\u227A").Replace(">", "\u227B")
-				.Replace("\"", "\u201C").Replace("*", "\uFE61").Replace("^", "\u2303").Replace("\n", " ");
+				.Replace("\"", "\u201C").Replace("*", "\uFE61").Replace("^", "\u2303").Replace("\r", " ").Replace("\n", " ");
 		}
 
-		public static Bitmap GenerateVideoThumbnailLoadingIndicator(int width, int height, int tryNumber, int maxTries)
+		public static Bitmap GenerateVideoThumbnailLoadingIndicator(int width, int height, int tryNumber, int maxTries, out string errorMessage)
 		{
 			try
 			{
@@ -379,20 +404,21 @@ namespace YouTube_downloader
 				sz = g.MeasureString(t, font);
 				g.DrawString(t, font, Brushes.Lime, xCenter - sz.Width / 2f, y);
 
+				errorMessage = null;
 				return bitmap;
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
+				errorMessage = ex.Message;
+#if DEBUG
+				Debug.WriteLine(errorMessage);
 #endif
+			}
+
 			return null;
 		}
 
-		public static Bitmap GenerateVideoThumbnailFailed(int width, int height, ThumbnailWrapper thumbnail)
+		public static Bitmap GenerateVideoThumbnailFailed(int width, int height, ThumbnailWrapper thumbnail, out string errorMessage)
 		{
 			try
 			{
@@ -416,36 +442,38 @@ namespace YouTube_downloader
 					g.DrawString(t, font, Brushes.Orange, xCenter - sz.Width / 2.0f, yCenter + sz.Height / 2.0f);
 				}
 
+				errorMessage = null;
 				return bitmap;
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
+				errorMessage = ex.Message;
+#if DEBUG
 				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
 #endif
+			}
+
 			return null;
 		}
 
-		public static Image TryGetImageFromStream(Stream stream, out int imageWidth, out int imageHeight)
+		public static Image TryGetImageFromStream(Stream stream, out int imageWidth, out int imageHeight, out string errorMessage)
 		{
 			try
 			{
 				Image image = Image.FromStream(stream);
 				imageWidth = image.Width;
 				imageHeight = image.Height;
+				errorMessage = null;
 				return image;
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
+				errorMessage = ex.Message;
+#if DEBUG
+				Debug.WriteLine(errorMessage);
 #endif
+			}
+
 			imageWidth = imageHeight = 0;
 			return null;
 		}
@@ -520,8 +548,7 @@ namespace YouTube_downloader
 						}
 				}
 
-				MultipleProgressBarItem mpi = new MultipleProgressBarItem(
-					0, 100, (int)percent, itemText, Color.Lime);
+				MultipleProgressBarItem mpi = new MultipleProgressBarItem((int)percent, itemText);
 				yield return mpi;
 			}
 		}
@@ -571,7 +598,7 @@ namespace YouTube_downloader
 			if (thumbnailWrapper == null || string.IsNullOrEmpty(containerFileExtension)) { return fixedFileName; }
 			string numberedVideoFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(Path.Combine(config.DownloadDirectory, fixedFileName + containerFileExtension));
 			int int1 = ExtractNumberFromVideoFileName(numberedVideoFilePath);
-			int int2 = GetThumbnailNextFreeFileNameNumber(thumbnailWrapper, Path.Combine(config.DownloadDirectory, fixedFileName), int1);
+			int int2 = GetThumbnailNextFreeFileNameNumber(thumbnailWrapper, Path.Combine(config.DownloadDirectory, fixedFileName), int1, out _);
 			int max = Math.Max(int1, int2);
 			return max > 0 ? $"{fixedFileName}_{max}" : fixedFileName;
 		}
@@ -595,10 +622,11 @@ namespace YouTube_downloader
 		}
 
 		private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
-			string filePath, int startNumber)
+			string filePath, int startNumber, out string errorMessage)
 		{
 			try
 			{
+				errorMessage = null;
 				if (startNumber < 0) { startNumber = 0; }
 				string suffix = thumbnailWrapper.GetThumbnailFileNameSuffix();
 				string fn = startNumber == 0 ? (filePath + suffix) : $"{filePath}_{startNumber}{suffix}";
@@ -612,14 +640,14 @@ namespace YouTube_downloader
 					}
 				}
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
+				errorMessage = ex.Message;
+#if DEBUG
 				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
 #endif
+			}
+
 			return startNumber;
 		}
 
@@ -640,17 +668,10 @@ namespace YouTube_downloader
 
 		public static bool IsAudioOnly(IEnumerable<YouTubeMediaTrack> mediaTracks)
 		{
-			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
-			{
-				if (!(mediaTrack is YouTubeMediaTrackAudio))
-				{
-					return false;
-				}
-			}
-			return true;
+			return mediaTracks.All(track => track is YouTubeMediaTrackAudio);
 		}
 
-		internal static bool SaveThumbnailToFile(ThumbnailWrapper thumbnail, string formattedFileName)
+		internal static bool SaveThumbnailToFile(ThumbnailWrapper thumbnail, string formattedFileName, out string errorMessage)
 		{
 			try
 			{
@@ -658,17 +679,19 @@ namespace YouTube_downloader
 				{
 					string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
 						Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
-					return thumbnail.ImageData.SaveToFile(outputFilePath);
+					return thumbnail.ImageData.SaveToFile(outputFilePath, out errorMessage);
 				}
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
+				errorMessage = ex.Message;
+#if DEBUG
+				Debug.WriteLine(errorMessage);
 #endif
+				return false;
+			}
+
+			errorMessage = "Something went wrong!";
 			return false;
 		}
 
@@ -786,10 +809,11 @@ namespace YouTube_downloader
 			return await MergeYouTubeMediaTracks(files, destinationFileName, true, delayAfterCompletion);
 		}
 
-		public static bool GrabHls(string hlsUrl, string outputFileName)
+		public static bool GrabHls(string hlsUrl, string outputFileName, out string errorMessage)
 		{
 			try
 			{
+				errorMessage = null;
 				Process process = new Process();
 				process.StartInfo.UseShellExecute = true;
 				process.StartInfo.FileName = "cmd.exe";
@@ -804,14 +828,14 @@ namespace YouTube_downloader
 				process.StartInfo.Arguments = cmdArgs;
 				return process.Start();
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
+				errorMessage = ex.Message;
+#if DEBUG
 				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
 #endif
+			}
+
 			return false;
 		}
 
@@ -821,10 +845,11 @@ namespace YouTube_downloader
 			return value >= max ? max : value;
 		}
 
-		public static void OpenUrlInBrowser(string url)
+		public static bool OpenUrlInBrowser(string url, out string errorMessage)
 		{
 			try
 			{
+				errorMessage = null;
 				if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
 				{
 					Process process = new Process();
@@ -838,17 +863,19 @@ namespace YouTube_downloader
 					{
 						process.StartInfo.FileName = url;
 					}
-					process.Start();
+
+					return process.Start();
 				}
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
-			}
-#else
-			catch { }
+				errorMessage = ex.Message;
+#if DEBUG
+				Debug.WriteLine(errorMessage);
 #endif
+			}
+
+			return false;
 		}
 
 		public static bool IsFfmpegAvailable()

@@ -152,6 +152,7 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxFfmpegExeFilePath.Location = new System.Drawing.Point(6, 258);
 			this.textBoxFfmpegExeFilePath.Name = "textBoxFfmpegExeFilePath";
+			this.textBoxFfmpegExeFilePath.ReadOnly = true;
 			this.textBoxFfmpegExeFilePath.Size = new System.Drawing.Size(420, 20);
 			this.textBoxFfmpegExeFilePath.TabIndex = 38;
 			this.textBoxFfmpegExeFilePath.Leave += new System.EventHandler(this.textBoxFfmpegFilePath_Leave);
@@ -233,6 +234,7 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxWebBrowserFilePath.Location = new System.Drawing.Point(6, 219);
 			this.textBoxWebBrowserFilePath.Name = "textBoxWebBrowserFilePath";
+			this.textBoxWebBrowserFilePath.ReadOnly = true;
 			this.textBoxWebBrowserFilePath.Size = new System.Drawing.Size(420, 20);
 			this.textBoxWebBrowserFilePath.TabIndex = 32;
 			// 
@@ -290,6 +292,7 @@ namespace YouTube_downloader
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxYtdlExeFilePath.Location = new System.Drawing.Point(3, 297);
 			this.textBoxYtdlExeFilePath.Name = "textBoxYtdlExeFilePath";
+			this.textBoxYtdlExeFilePath.ReadOnly = true;
 			this.textBoxYtdlExeFilePath.Size = new System.Drawing.Size(423, 20);
 			this.textBoxYtdlExeFilePath.TabIndex = 49;
 			// 

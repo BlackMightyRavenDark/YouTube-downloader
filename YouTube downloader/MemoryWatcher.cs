@@ -6,19 +6,22 @@ namespace YouTube_downloader
 		public static ulong RamTotal { get; private set; } = 0U;
 		public static ulong RamUsed { get; private set; } = 0U;
 		public static ulong RamFree { get; private set; } = 0U;
-		private static Microsoft.VisualBasic.Devices.ComputerInfo computerInfo = null;
+
+		private static Microsoft.VisualBasic.Devices.ComputerInfo _computerInfo = null;
 
 		public static bool Update()
 		{
 			try
 			{
-				if (computerInfo == null)
+				if (_computerInfo == null)
 				{
-					computerInfo = new Microsoft.VisualBasic.Devices.ComputerInfo();
+					_computerInfo = new Microsoft.VisualBasic.Devices.ComputerInfo();
 				}
-				RamTotal = computerInfo.TotalPhysicalMemory;
-				RamFree = computerInfo.AvailablePhysicalMemory;
+
+				RamTotal = _computerInfo.TotalPhysicalMemory;
+				RamFree = _computerInfo.AvailablePhysicalMemory;
 				RamUsed = RamTotal - RamFree;
+
 				return true;
 			}
 #if DEBUG
@@ -29,7 +32,8 @@ namespace YouTube_downloader
 #else
 			catch { }
 #endif
-			computerInfo = null;
+			RamFree = RamUsed = RamTotal = 0L;
+			_computerInfo = null;
 			return false;
 		}
 	}
