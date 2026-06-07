@@ -193,9 +193,9 @@ namespace YouTube_downloader
 				return rootNode;
 			}
 
-			for (int i = 0; i < rootNode.Children.Count; ++i)
+			foreach (FavoriteItem subItem in rootNode.Children)
 			{
-				FavoriteItem favoriteItem = FindVideoItemInFavorites(videoId, rootNode.Children[i]);
+				FavoriteItem favoriteItem = FindVideoItemInFavorites(videoId, subItem);
 				if (favoriteItem != null) { return favoriteItem; }
 			}
 
@@ -216,9 +216,9 @@ namespace YouTube_downloader
 				if (string.CompareOrdinal(channelId, idRoot) == 0) { return rootNode; }
 			}
 
-			for (int i = 0; i < rootNode.Children.Count; ++i)
+			foreach (FavoriteItem subItem in rootNode.Children)
 			{
-				FavoriteItem favoriteItem = FindChannelItemInFavorites(channelId, rootNode.Children[i]);
+				FavoriteItem favoriteItem = FindChannelItemInFavorites(channelId, subItem);
 				if (favoriteItem != null) { return favoriteItem; }
 			}
 
