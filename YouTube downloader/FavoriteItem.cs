@@ -13,15 +13,29 @@ namespace YouTube_downloader
 		public FavoriteItem Parent { get; }
 		public List<FavoriteItem> Children { get; }
 
-		public FavoriteItem(string title, string displayName, FavoriteItem parent = null)
+		/// <summary>
+		/// Creates an sub-element of the existing 'parent' element.
+		/// </summary>
+		public FavoriteItem(string title, string displayName, FavoriteItem parent)
 		{
 			Title = title;
 			DisplayName = displayName;
-			Parent = parent ?? null;
+			Parent = parent;
 			Children = new List<FavoriteItem>();
 		}
 
-		public FavoriteItem(string displayName) : this(displayName, displayName, null) { }
+		/// <summary>
+		/// Creates an element in the root folder.
+		/// </summary>
+		public FavoriteItem(string title, string displayName) : this(title, displayName, Utils.favoritesRootNode) { }
+
+		/// <summary>
+		/// Creates a root folder.
+		/// </summary>
+		public FavoriteItem(string displayName) : this(displayName, displayName, Utils.favoritesRootNode)
+		{
+			ItemType = FavoriteItemType.Directory;
+		}
 	}
 
 	public enum FavoriteItemType { Video, Channel, Directory };
