@@ -21,8 +21,6 @@ namespace YouTube_downloader
 		public ThumbnailWrapper ActiveThumbnail { get; private set; }
 		public bool IsThumbnailLoading { get; private set; }
 		public YouTubeVideoWebPage WebPage { get; }
-		public YouTubeStreamingData LastReceivedStreamingData { get; private set; }
-		public DateTime StreamingDataExpirationDate { get; private set; } = DateTime.MinValue;
 		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
 		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
 		public bool IsDownloadInProgress { get; private set; }
@@ -40,10 +38,7 @@ namespace YouTube_downloader
 		private Image _thumbnail;
 		private string _playerCodeUrl;
 		private bool _isCancelRequired;
-		private List<YouTubeMediaTrackAudio> _audioOnlyFormats;
-		private List<YouTubeMediaTrackVideo> _videoOnlyFormats;
-		private List<YouTubeMediaTrackHlsStream> _hlsFormats;
-		private List<YouTubeMediaTrackContainer> _containerFormats;
+		private DownloadableFormatList _downloadableFormatList;
 
 		public delegate void DownloadButtonClickedDelegate(object sender, EventArgs e);
 		public delegate void FavoriteChannelChangedDelegate(object sender, string channelId, bool newState);
@@ -59,7 +54,6 @@ namespace YouTube_downloader
 			bool automaticallyDownloadThumbnail, Control parent)
 		{
 			InitializeComponent();
-			contextMenuDownloadableFormats.Renderer = new FormatListContextMenuRenderer();
 
 			if (parent != null) { Parent = parent; }
 			WebPage = webPage;
@@ -793,6 +787,11 @@ namespace YouTube_downloader
 			_isFavoriteChannel = FindChannelItemInFavorites(videoInfo.OwnerChannelId) != null;
 			_isCiphered = VideoInfo.IsCiphered();
 
+			if (videoInfo is YtdlVideo)
+			{
+				_downloadableFormatList = new DownloadableFormatList(videoInfo as YtdlVideo);
+			}
+
 			RecreateThumbnailsContextMenu();
 			if (automaticallyUpdateThumbnail)
 			{
@@ -1011,7 +1010,8 @@ namespace YouTube_downloader
 				return;
 			}
 
-			if (!(VideoInfo is YtdlVideo) && !IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
+			bool isYtdlVideo = VideoInfo is YtdlVideo;
+			if (!isYtdlVideo && !IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1022,292 +1022,129 @@ namespace YouTube_downloader
 			DownloadButtonClicked?.Invoke(this, e);
 
 			lblStatus.Text = "Состояние: Поиск доступных форматов...";
-
-			contextMenuDownloadableFormats.Items.Clear();
 			if (IsVideoInfoFoundBySearch)
 			{
 				miActionsToolStripMenuItem.Enabled = false;
 			}
 
-			bool isYtdlVideo = VideoInfo is YtdlVideo;
-			YtdlVideo ytdlVideo = isYtdlVideo ? VideoInfo as YtdlVideo : null;
-			bool isYtdlUrlsExpired = isYtdlVideo && ytdlVideo.IsUrlsExpired;
-			bool isUrlsExpired = isYtdlVideo ? (!miOptimizeFormatListReceivingToolStripMenuItem.Checked || isYtdlUrlsExpired) :
-				(!miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
-				LastReceivedStreamingData == null || (LastReceivedStreamingData != null &&
-				StreamingDataExpirationDate < DateTime.UtcNow));
+			bool isUrlsExpired = !miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
+				(_downloadableFormatList == null || (_downloadableFormatList != null && _downloadableFormatList.IsExpired));
 
-			LinkedList<YouTubeMediaTrack> mediaTracks = isYtdlVideo && !isYtdlUrlsExpired ?
-				new LinkedList<YouTubeMediaTrack>(ytdlVideo.TrackList) :
-				(!isYtdlVideo && !isUrlsExpired && LastReceivedStreamingData != null ?
-				new LinkedList<YouTubeMediaTrack>(LastReceivedStreamingData.Parse().Tracks) : null);
-			if (config.UseYtdl && isYtdlVideo && isYtdlUrlsExpired)
+			if (config.UseYtdl && isYtdlVideo && isUrlsExpired)
 			{
 				lblStatus.Text = "Состояние: Обновление списка форматов...";
-				if (await Task.Run(() => ytdlVideo.UpdateTrackList()))
+				bool letsWait = config.ShowYtdlConsoleWindow;
+				isUrlsExpired = !(await Task.Run(() => (VideoInfo as YtdlVideo).UpdateTrackList()));
+				if (!isUrlsExpired)
 				{
-					mediaTracks = new LinkedList<YouTubeMediaTrack>(ytdlVideo.TrackList);
+					_downloadableFormatList = new DownloadableFormatList(VideoInfo as YtdlVideo);
+
+					// Don't ask me why!
+					if (letsWait) { await Task.Delay(500); }
 				}
-				isUrlsExpired = mediaTracks == null || mediaTracks.Count == 0;
+				else
+				{
+					_downloadableFormatList = null;
+				}
 				lblStatus.Text = null;
 			}
 
-			if (mediaTracks == null || mediaTracks.Count == 0 || isUrlsExpired)
+			if (isUrlsExpired)
 			{
-				await Task.Run(() =>
+				string msg = null;
+				if (!await Task.Run(() => GetDownloadUrls(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
+					!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
 				{
-					IYouTubeClient client = GetYouTubeClient(true, out string msg);
-					if (client == null)
-					{
-						if (!string.IsNullOrEmpty(msg))
-						{
-							Invoke(new MethodInvoker(() => MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error)));
-						}
-						return;
-					}
-
-					YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _);
-					if (rawVideoInfoResult.ErrorCode == 200)
-					{
-						bool isYtdlClient = client is YouTubeClientYtdl;
-						if (IsVideoInfoFoundBySearch)
-						{
-							YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video : client.WebPage.GetVideo();
-							if (video != null && ((isYtdlClient || video.IsPlayable) || (!isYtdlClient && video.IsPlayable)))
-							{
-								Invoke(new MethodInvoker(() =>
-								{
-									SetVideoInfo(video);
-									_playerCodeUrl = !isYtdlClient ? client.WebPage.ExtractYouTubeConfig()?.PlayerUrl : null;
-								}));
-							}
-						}
-
-						if (isYtdlClient)
-						{
-							mediaTracks = (client as YouTubeClientYtdl).Video?.TrackList != null ?
-								new LinkedList<YouTubeMediaTrack>((client as YouTubeClientYtdl).Video.TrackList) : null;
-							return;
-						}
-
-						YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
-						if (streamingDataResult.ErrorCode == 200)
-						{
-							LastReceivedStreamingData = streamingDataResult.Data;
-							StreamingDataExpirationDate = streamingDataResult.Data.DateReceived.AddSeconds(streamingDataResult.Data.GetLifeTimeSeconds());
-
-							mediaTracks = new LinkedList<YouTubeMediaTrack>();
-							foreach (YouTubeMediaTrack track in streamingDataResult.Data.Parse().Tracks)
-							{
-								mediaTracks.AddLast(track);
-							}
-						}
-					}
-				});
-			}
-			else if (LastReceivedStreamingData != null)
-			{
-				mediaTracks = new LinkedList<YouTubeMediaTrack>();
-				foreach (YouTubeMediaTrack track in LastReceivedStreamingData.Parse().Tracks)
-				{
-					mediaTracks.AddLast(track);
+					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
-			else if (!isYtdlVideo)
-			{
-				LastReceivedStreamingData = null;
-				StreamingDataExpirationDate = DateTime.MinValue;
 
-				lblStatus.Text = "Состояние: Ошибка поиска доступных форматов!";
-				MessageBox.Show($"Не удалось получить список форматов! Попытайтесь ещё раз!{Environment.NewLine}" +
-					"Если это не помогает, попробуйте отключить галочку \"Оптимизировать получение списка форматов\" в меню \"Меню\".",
-					"Ошибатор ошибок",
-					MessageBoxButtons.OK, MessageBoxIcon.Error);
-				endFunc();
-				return;
-			}
-
-			if (mediaTracks == null || mediaTracks.Count == 0)
+			if (_downloadableFormatList != null)
 			{
-				string msg = "Ссылки для скачивания не найдены!";
-				lblStatus.Text = $"Состояние: Ошибка! {msg}";
-				if (!VideoInfo.IsFamilySafe)
+				ContextMenuStrip menu = _downloadableFormatList.BuildContextMenu(MenuItemDownloadClick);
+				if (menu != null && menu.Items.Count > 0)
 				{
-					msg += $"{Environment.NewLine}Для этого видео установлено ограничение по возрасту. " +
-						"Чтобы его скачать, вам необходимо запустить специальный локальный " +
-						$"веб-сервер на JavaScript и включить его использование в настройках.{Environment.NewLine}" +
-						$"Скачать код сервера можно здесь:{Environment.NewLine}" +
-						$"https://github.com/BlackMightyRavenDark/youtube_rest_api_server_node_js{Environment.NewLine}" +
-						"Если это не помогло, можно попробовать воспользоваться поиском по коду веб-страницы с видео.";
+					lblStatus.Text = null;
+					Point point = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
+					menu.Show(point);
 				}
-				MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			else if (RebuildDownloadableFormatsContextMenu(mediaTracks))
-			{
-				lblStatus.Text = null;
-				Point point = PointToScreen(new Point(btnDownload.Left + btnDownload.Width, btnDownload.Top));
-				contextMenuDownloadableFormats.Show(point);
+				else
+				{
+					const string msg = "Ошибка построения списка форматов для скачивания!";
+					lblStatus.Text = $"Состояние: {msg}";
+					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 			}
 			else
 			{
-				const string msg = "Ошибка построения списка форматов для скачивания!";
-				lblStatus.Text = $"Состояние: {msg}";
-				MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				string msg = "Ссылки для скачивания не найдены!";
+				lblStatus.Text = $"Состояние: Ошибка! {msg}";
+				msg += VideoInfo.IsFamilySafe ? $" Попытайтесь ещё раз!{Environment.NewLine}" +
+					"Если это не помогает, попробуйте отключить галочку \"Оптимизировать получение списка форматов\" в меню \"Меню\"." :
+					$"{Environment.NewLine}Для этого видео установлено ограничение по возрасту. " +
+					"Чтобы его скачать, вам необходимо запустить специальный локальный " +
+					$"веб-сервер на JavaScript и включить его использование в настройках.{Environment.NewLine}" +
+					$"Скачать код сервера можно здесь:{Environment.NewLine}" +
+					$"https://github.com/BlackMightyRavenDark/youtube_rest_api_server_node_js{Environment.NewLine}" +
+					"Если это не помогло, можно попробовать воспользоваться поиском по коду веб-страницы с видео.";
+				MessageBox.Show(msg, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			endFunc();
-
-			void endFunc()
-			{
-				btnDownload.Enabled = true;
-				miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
-				miActionsToolStripMenuItem.Enabled = true;
-			}
+			btnDownload.Enabled = true;
+			miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
+			miActionsToolStripMenuItem.Enabled = true;
 		}
 
-		private bool RebuildDownloadableFormatsContextMenu(IEnumerable<YouTubeMediaTrack> mediaTracks)
+		private bool GetDownloadUrls(string videoId, out DownloadableFormatList formatList, out string errorMessage)
 		{
-			contextMenuDownloadableFormats.Items.Clear();
-
-			_videoOnlyFormats = FilterVideoTracks(mediaTracks).ToList();
-			_audioOnlyFormats = FilterAudioTracks(mediaTracks).ToList();
-
-			if (VideoInfo.IsDashed)
+			IYouTubeClient client = GetYouTubeClient(true, out errorMessage);
+			if (client == null)
 			{
-				if (config.SortDashFormatsByBitrate)
+				formatList = null;
+				return false;
+			}
+
+			YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(new YouTubeVideoId(videoId), out errorMessage);
+			if (rawVideoInfoResult.ErrorCode == 200)
+			{
+				bool isYtdlClient = client is YouTubeClientYtdl;
+				YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video : rawVideoInfoResult.RawVideoInfo.ToVideo();
+				if (video != null)
 				{
-					int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
+					if (IsVideoInfoFoundBySearch)
 					{
-						if ((x.AverageBitrate <= 0 && y.AverageBitrate <= 0) || x.AverageBitrate == y.AverageBitrate)
+						if ((isYtdlClient || video.IsPlayable) || (!isYtdlClient && video.IsPlayable))
 						{
-							return 0;
+							Invoke(new MethodInvoker(() =>
+							{
+								SetVideoInfo(video);
+								_playerCodeUrl = !isYtdlClient ? client.WebPage.ExtractYouTubeConfig()?.PlayerUrl : null;
+							}));
 						}
-						return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
 					}
 
-					_videoOnlyFormats.Sort(SorterFunc);
-					_audioOnlyFormats.Sort(SorterFunc);
-				}
-			}
-			else if (config.SortFormatsByFileSize)
-			{
-				int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
-				{
-					if ((x.ContentLength <= 0L && y.ContentLength <= 0L) || x.ContentLength == y.ContentLength)
+					if (isYtdlClient)
 					{
-						return 0;
+						formatList = new DownloadableFormatList(video as YtdlVideo);
+
+						// Don't ask me why!
+						if ((client as YouTubeClientYtdl).ShowConsoleWindow) { System.Threading.Thread.Sleep(500); }
+
+						return true;
 					}
-					return x.ContentLength < y.ContentLength ? 1 : -1;
-				}
-
-				_videoOnlyFormats.Sort(SorterFunc);
-				_audioOnlyFormats.Sort(SorterFunc);
-			}
-
-			_hlsFormats = FilterHlsTracks(mediaTracks).ToList();
-			if (_hlsFormats.Count > 1)
-			{
-				_hlsFormats.Sort((x, y) =>
-				{
-					if (x.VideoHeight > 0 || y.VideoHeight > 0)
+					else
 					{
-						if (x.VideoHeight == y.VideoHeight)
+						YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
+						if (streamingDataResult.ErrorCode == 200)
 						{
-							return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
+							formatList = new DownloadableFormatList(VideoInfo, streamingDataResult.Data);
+							return true;
 						}
-
-						return x.VideoHeight < y.VideoHeight ? 1 : -1;
-					}
-
-					if (x.AverageBitrate == y.AverageBitrate) { return 0; }
-					return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
-				});
-			}
-
-			if (config.AlwaysMoveAudioId140ToTopOfList && _audioOnlyFormats.Count > 1)
-			{
-				for (int i = 0; i < _audioOnlyFormats.Count; ++i)
-				{
-					if (_audioOnlyFormats[i].FormatId == 140)
-					{
-						if (i != 0)
-						{
-							(_audioOnlyFormats[i], _audioOnlyFormats[0]) = (_audioOnlyFormats[0], _audioOnlyFormats[i]);
-						}
-
-						break;
 					}
 				}
 			}
 
-			List<TableRow> tableRows = new List<TableRow>();
-			List<TableColumn> tableColumns = new List<TableColumn>()
-			{
-				new TableColumn(TableColumnAlignment.Left),
-				new TableColumn(TableColumnAlignment.Left),
-				new TableColumn(TableColumnAlignment.Right),
-				new TableColumn(TableColumnAlignment.Right),
-				new TableColumn(TableColumnAlignment.Right),
-				new TableColumn(TableColumnAlignment.Left),
-				new TableColumn(TableColumnAlignment.Left),
-				new TableColumn(TableColumnAlignment.Right),
-				new TableColumn(TableColumnAlignment.Right)
-			};
-
-			bool showHls = _hlsFormats.Count > 0 && (!config.ShowHlsTracksOnlyForStreams ||
-				(config.ShowHlsTracksOnlyForStreams && VideoInfo.IsLiveNow) || _videoOnlyFormats.Count == 0);
-			if (showHls)
-			{
-				foreach (YouTubeMediaTrackHlsStream trackHls in _hlsFormats)
-				{
-					tableRows.Add(trackHls.ToTableRow());
-				}
-			}
-
-			foreach (YouTubeMediaTrackVideo trackVideo in _videoOnlyFormats)
-			{
-				tableRows.Add(trackVideo.ToTableRow());
-			}
-
-			_containerFormats = FilterContainerTracks(mediaTracks).ToList();
-			foreach (YouTubeMediaTrackContainer trackContainer in _containerFormats)
-			{
-				tableRows.Add(trackContainer.ToTableRow());
-			}
-
-			foreach (YouTubeMediaTrackAudio trackAudio in _audioOnlyFormats)
-			{
-				tableRows.Add(trackAudio.ToTableRow());
-			}
-
-			Table table = new Table(tableRows, tableColumns);
-			table.Format();
-			const string columnSeparator = " | ";
-
-			if (table.Rows.Count > 0)
-			{
-				foreach (TableRow row in table.Rows)
-				{
-					string rowText = row.Join(columnSeparator);
-					ToolStripMenuItem mi = new ToolStripMenuItem(rowText)
-					{
-						Padding = new Padding(0, 4, 0, 4),
-						Tag = row.Tag
-					};
-					mi.Click += MenuItemDownloadClick;
-					contextMenuDownloadableFormats.Items.Add(mi);
-				}
-
-				if (_videoOnlyFormats.Count + _audioOnlyFormats.Count > 0)
-				{
-					ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...") { Tag = null };
-					mi.Click += MenuItemDownloadClick;
-					contextMenuDownloadableFormats.Items.Add(mi);
-				}
-
-				return true;
-			}
-
+			formatList = null;
 			return false;
 		}
 
@@ -1500,30 +1337,28 @@ namespace YouTube_downloader
 
 						#region Внимание! Непротестированный код!
 						IYouTubeMediaTrackUrlDecryptor decryptor = new TrackUrlDecryptor(config.CipherDecryptionAlgorythm);
-						decryptor.Decrypt(mediaTrack.FileUrl);
-						if (_audioOnlyFormats.Count > 0)
+						var decryptionResult = decryptor.Decrypt(mediaTrack.FileUrl);
+						if (decryptionResult.Item1) // Is Cipher decrypted?
 						{
-							foreach (YouTubeMediaTrack track in _audioOnlyFormats)
+							int timeout = config.ConnectionTimeout;
+							string userAgent = config.UserAgent;
+							bool isUrlOk = await Task.Run(() =>
 							{
-								decryptor.Decrypt(_audioOnlyFormats[0].FileUrl);
+								WebHeaderCollection headers = new WebHeaderCollection()
+								{
+									{ "Accept", "*/*" },
+									{ "User-Agent", userAgent }
+								};
+								return MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders(
+									"HEAD", mediaTrack.FileUrl.Url, headers, null, null, timeout, out _, out _) == 200;
+							});
+
+							if (!isUrlOk)
+							{
+								return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
 							}
 						}
-
-						int timeout = config.ConnectionTimeout;
-						bool allOk = await Task.Run(() =>
-						{
-							bool ok = MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders(
-								"HEAD", mediaTrack.FileUrl.Url, null, null, null, timeout, out _, out _) == 200;
-							if (ok && _audioOnlyFormats.Count > 0)
-							{
-								int[] errorCodes = GetTrackAccessibilityHttpStatusCodes(_audioOnlyFormats, timeout);
-								ok &= errorCodes.All(code => code == 200);
-							}
-
-							return ok;
-						});
-
-						if (!allOk)
+						else
 						{
 							return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
 						}
@@ -1778,8 +1613,8 @@ namespace YouTube_downloader
 			{
 				lblStatus.Text = "Состояние: Выбор форматов...";
 				List<YouTubeMediaTrack> formats = new List<YouTubeMediaTrack>();
-				formats.AddRange(_videoOnlyFormats);
-				formats.AddRange(_audioOnlyFormats);
+				formats.AddRange(_downloadableFormatList.VideoOnlyTracks);
+				formats.AddRange(_downloadableFormatList.AudioOnlyTracks);
 				FormTrackSelector trackSelector = new FormTrackSelector(formats);
 				DialogResult dialogResult = trackSelector.ShowDialog();
 				lblStatus.Text = null;
@@ -1829,12 +1664,9 @@ namespace YouTube_downloader
 			{
 				if (config.AutomaticallyDownloadAllAdaptiveVideoTracks)
 				{
-					foreach (YouTubeMediaTrack videoFormat in _videoOnlyFormats)
+					foreach (YouTubeMediaTrackVideo videoTrack in _downloadableFormatList.VideoOnlyTracks)
 					{
-						if (videoFormat.GetType() == typeof(YouTubeMediaTrackVideo))
-						{
-							tracksToDownload.Add(videoFormat);
-						}
+						tracksToDownload.Add(videoTrack);
 					}
 				}
 				else
@@ -1842,40 +1674,37 @@ namespace YouTube_downloader
 					tracksToDownload.Add(mi.Tag as YouTubeMediaTrackVideo);
 				}
 
-				if (_audioOnlyFormats.Count > 0)
+				if (_downloadableFormatList.AudioOnlyTracks.Count > 0)
 				{
 					if (config.AutomaticallyDownloadAllAdaptiveAudioTracks)
 					{
-						foreach (YouTubeMediaTrack audioFormat in _audioOnlyFormats)
+						foreach (YouTubeMediaTrackAudio audioTrack in _downloadableFormatList.AudioOnlyTracks)
 						{
-							if (audioFormat.GetType() == typeof(YouTubeMediaTrackAudio))
-							{
-								tracksToDownload.Add(audioFormat);
-							}
+							tracksToDownload.Add(audioTrack);
 						}
 					}
 					else
 					{
 						if (config.AutomaticallyDownloadFirstAudioTrack)
 						{
-							tracksToDownload.Add(_audioOnlyFormats[0]);
+							tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[0]);
 						}
-						if (config.AutomaticallyDownloadSecondAudioTrack && _audioOnlyFormats.Count > 1)
+						if (config.AutomaticallyDownloadSecondAudioTrack && _downloadableFormatList.AudioOnlyTracks.Count > 1)
 						{
 							if (config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger)
 							{
-								if (_audioOnlyFormats[1].ContentLength > _audioOnlyFormats[0].ContentLength)
+								if (_downloadableFormatList.AudioOnlyTracks[1].ContentLength > _downloadableFormatList.AudioOnlyTracks[0].ContentLength)
 								{
-									tracksToDownload.Add(_audioOnlyFormats[1]);
+									tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[1]);
 								}
 								else if (!config.AutomaticallyDownloadFirstAudioTrack)
 								{
-									tracksToDownload.Add(_audioOnlyFormats[0]);
+									tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[0]);
 								}
 							}
 							else
 							{
-								tracksToDownload.Add(_audioOnlyFormats[1]);
+								tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[1]);
 							}
 						}
 					}
@@ -2225,7 +2054,6 @@ namespace YouTube_downloader
 			contextMenuVideoTitle.SetFontSize(fontSize);
 			contextMenuChannelTitle.SetFontSize(fontSize);
 			contextMenuDate.SetFontSize(fontSize);
-			contextMenuDownloadableFormats.SetFontSize(fontSize);
 		}
 	}
 }

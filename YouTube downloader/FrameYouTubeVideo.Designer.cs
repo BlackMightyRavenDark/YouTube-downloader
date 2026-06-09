@@ -35,7 +35,6 @@
 			this.lblDatePublished = new System.Windows.Forms.Label();
 			this.pictureBoxFavoriteVideo = new System.Windows.Forms.PictureBox();
 			this.btnDownload = new System.Windows.Forms.Button();
-			this.contextMenuDownloadableFormats = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.lblStatus = new System.Windows.Forms.Label();
 			this.lblDowndloadProgress = new System.Windows.Forms.Label();
 			this.pictureBoxFavoriteChannel = new System.Windows.Forms.PictureBox();
@@ -164,12 +163,6 @@
 			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
 			this.btnDownload.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnDownload_MouseDown);
 			// 
-			// contextMenuDownloadableFormats
-			// 
-			this.contextMenuDownloadableFormats.Font = new System.Drawing.Font("Lucida Console", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.contextMenuDownloadableFormats.Name = "contextMenuDownloads";
-			this.contextMenuDownloadableFormats.Size = new System.Drawing.Size(61, 4);
-			// 
 			// lblStatus
 			// 
 			this.lblStatus.AutoSize = true;
@@ -214,7 +207,7 @@
 			this.miReloadActiveThumbnailToolStripMenuItem,
 			this.miThumbnailsToolStripMenuItem});
 			this.contextMenuThumnailImage.Name = "contextMenuImage";
-			this.contextMenuThumnailImage.Size = new System.Drawing.Size(302, 236);
+			this.contextMenuThumnailImage.Size = new System.Drawing.Size(302, 214);
 			// 
 			// miOpenVideoInBrowserToolStripMenuItem
 			// 
@@ -552,7 +545,6 @@
 		private System.Windows.Forms.Label lblChannelTitle;
 		private System.Windows.Forms.Label lblDatePublished;
 		private System.Windows.Forms.PictureBox pictureBoxFavoriteVideo;
-		private System.Windows.Forms.ContextMenuStrip contextMenuDownloadableFormats;
 		private System.Windows.Forms.Label lblStatus;
 		private System.Windows.Forms.Label lblDowndloadProgress;
 		private System.Windows.Forms.PictureBox pictureBoxFavoriteChannel;

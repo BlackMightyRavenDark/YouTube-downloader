@@ -99,6 +99,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DownloadableFormatList.cs" />
     <Compile Include="DownloadResult.cs" />
     <Compile Include="FavoriteItem.cs" />
     <Compile Include="FormatListContextMenuRenderer.cs" />
