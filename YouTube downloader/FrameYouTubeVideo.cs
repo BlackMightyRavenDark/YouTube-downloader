@@ -1108,7 +1108,7 @@ namespace YouTube_downloader
 			if (rawVideoInfoResult.ErrorCode == 200)
 			{
 				bool isYtdlClient = client is YouTubeClientYtdl;
-				YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video : rawVideoInfoResult.RawVideoInfo.ToVideo();
+				YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video : client.WebPage.GetVideo();
 				if (video != null)
 				{
 					if (IsVideoInfoFoundBySearch)
