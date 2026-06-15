@@ -1052,7 +1052,7 @@ namespace YouTube_downloader
 			if (isUrlsExpired)
 			{
 				string msg = null;
-				if (!await Task.Run(() => GetDownloadUrls(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
+				if (!await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
 					!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
 				{
 					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1095,7 +1095,7 @@ namespace YouTube_downloader
 			miActionsToolStripMenuItem.Enabled = true;
 		}
 
-		private bool GetDownloadUrls(string videoId, out DownloadableFormatList formatList, out string errorMessage)
+		private bool GetDownloadableFormatList(string videoId, out DownloadableFormatList formatList, out string errorMessage)
 		{
 			IYouTubeClient client = GetYouTubeClient(true, out errorMessage);
 			if (client == null)
