@@ -1151,7 +1151,7 @@ namespace YouTube_downloader
 		/// <summary>
 		/// Downloads a DASH video. Warning! This method must be run in a separate thread!
 		/// </summary>
-		private DownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
+		private YouTubeDownloadResult DownloadDash(YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
 		{
 			_isCancelRequired = false;
 
@@ -1159,7 +1159,7 @@ namespace YouTube_downloader
 				mediaTrack.MakeDashUrlList(config.DashManualFragmentationChunkSize) : mediaTrack.DashUrls;
 			if (dashUrlList == null || dashUrlList.Count == 0)
 			{
-				return new DownloadResult(404, "Ссылки DASH не найдены!", null);
+				return new YouTubeDownloadResult(404, "Ссылки DASH не найдены!", null);
 			}
 
 			string mediaType = null;
@@ -1184,7 +1184,7 @@ namespace YouTube_downloader
 				if (File.Exists(fnDashTmp)) { File.Delete(fnDashTmp); }
 				if (File.Exists(fnDashTmp))
 				{
-					return new DownloadResult(
+					return new YouTubeDownloadResult(
 						FileDownloader.DOWNLOAD_ERROR_OUTPUT_STREAM_NOT_ASSIGNED,
 						"Unable to delete existed temporary file", null);
 				}
@@ -1276,7 +1276,7 @@ namespace YouTube_downloader
 								memChunk.Dispose();
 								if (!appended)
 								{
-									return new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, fnDashTmp);
+									return new YouTubeDownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_MERGING_CHUNKS, null, fnDashTmp);
 								}
 							}
 							while (errorCode != 200 && ++tryNumber < tryCountLimit && !_isCancelRequired);
@@ -1297,18 +1297,18 @@ namespace YouTube_downloader
 					fnDashFinal = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(fnDash);
 					File.Move(fnDashTmp, fnDashFinal);
 				}
-				return new DownloadResult(errorCode, errorMessage, fnDashFinal);
+				return new YouTubeDownloadResult(errorCode, errorMessage, fnDashFinal);
 			}
 			catch (Exception ex)
 			{
 #if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
-				return new DownloadResult(ex.HResult, ex.Message, null);
+				return new YouTubeDownloadResult(ex.HResult, ex.Message, null);
 			}
 		}
 
-		private async Task<DownloadResult> DownloadYouTubeMediaTrack(
+		private async Task<YouTubeDownloadResult> DownloadYouTubeMediaTrack(
 			YouTubeMediaTrack mediaTrack, string formattedFileName, bool audioOnly)
 		{
 			if (config.AlwaysDownloadAsDash || mediaTrack.IsDashManifestPresent)
@@ -1332,7 +1332,7 @@ namespace YouTube_downloader
 					{
 						if (string.IsNullOrEmpty(config.CipherDecryptionAlgorythm) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
 						{
-							return new DownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
+							return new YouTubeDownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
 						}
 
 						#region Внимание! Непротестированный код!
@@ -1355,12 +1355,12 @@ namespace YouTube_downloader
 
 							if (!isUrlOk)
 							{
-								return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+								return new YouTubeDownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
 							}
 						}
 						else
 						{
-							return new DownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
+							return new YouTubeDownloadResult(ERROR_CIPHER_DECRYPTION, null, null);
 						}
 						#endregion
 					}
@@ -1499,26 +1499,26 @@ namespace YouTube_downloader
 						GC.Collect();
 					}
 
-					DownloadResult downloadResult = new DownloadResult(res,
+					YouTubeDownloadResult youTubeDownloadResult = new YouTubeDownloadResult(res,
 						_multiThreadedDownloader.LastErrorMessage,
 						_multiThreadedDownloader.OutputFileName);
 					_multiThreadedDownloader.Dispose();
 					_multiThreadedDownloader = null;
-					return downloadResult;
+					return youTubeDownloadResult;
 				}
 				catch (Exception ex)
 				{
 #if DEBUG
 					System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
-					DownloadResult downloadResult = new DownloadResult(
+					YouTubeDownloadResult youTubeDownloadResult = new YouTubeDownloadResult(
 						ex.HResult, ex.Message, _multiThreadedDownloader?.OutputFileName);
 					if (_multiThreadedDownloader != null)
 					{
 						_multiThreadedDownloader.Dispose();
 						_multiThreadedDownloader = null;
 					}
-					return downloadResult;
+					return youTubeDownloadResult;
 				}
 			}
 		}
@@ -1821,12 +1821,12 @@ namespace YouTube_downloader
 
 			lblStatus.Text = "Скачивание...";
 
-			List<DownloadResult> downloadResults = new List<DownloadResult>();
+			List<YouTubeDownloadResult> downloadResults = new List<YouTubeDownloadResult>();
 			bool audioOnly = IsAudioOnly(tracksToDownload);
 			string containerFileExtension = GetContainerFileExtension(tracksToDownload);
 			string formattedFileName = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
 				GetNumberedFixedOutputFileNameWithotExtension(VideoInfo, containerFileExtension, ActiveThumbnail));
-			DownloadResult downloadResult = await Task.Run(() =>
+			YouTubeDownloadResult downloadResult = await Task.Run(() =>
 				DownloadTracks(tracksToDownload, formattedFileName, audioOnly, downloadResults));
 
 			lblDowndloadProgress.Text = null;
@@ -1880,7 +1880,7 @@ namespace YouTube_downloader
 
 					if (config.DeleteSourceFilesWhenMerged)
 					{
-						foreach (DownloadResult dr in downloadResults)
+						foreach (YouTubeDownloadResult dr in downloadResults)
 						{
 							try
 							{
@@ -2021,10 +2021,10 @@ namespace YouTube_downloader
 			IsDownloadInProgress = false;
 		}
 
-		private async Task<DownloadResult> DownloadTracks(IEnumerable<YouTubeMediaTrack> tracks,
-			string formattedFileName, bool audioOnly, List<DownloadResult> results)
+		private async Task<YouTubeDownloadResult> DownloadTracks(IEnumerable<YouTubeMediaTrack> tracks,
+			string formattedFileName, bool audioOnly, List<YouTubeDownloadResult> results)
 		{
-			DownloadResult result = null;
+			YouTubeDownloadResult result = null;
 			foreach (YouTubeMediaTrack track in tracks)
 			{
 				result = await DownloadYouTubeMediaTrack(track, formattedFileName, audioOnly);
@@ -2032,7 +2032,7 @@ namespace YouTube_downloader
 				results.Add(result);
 			}
 
-			return result ?? new DownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
+			return result ?? new YouTubeDownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
 				"Список ссылок для скачивания пуст!", null);
 		}
 

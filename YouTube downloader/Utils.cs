@@ -748,7 +748,7 @@ namespace YouTube_downloader
 			return hasWebmOrWeba ? ".mkv" : ".mp4";
 		}
 
-		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
+		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<YouTubeDownloadResult> files,
 			string destinationFileName, bool wait, int delayAfterCompletion)
 		{
 			try
@@ -765,13 +765,13 @@ namespace YouTube_downloader
 				}
 
 				string cmdArgs = $"/k {ffmpegFileName} ";
-				foreach (DownloadResult file in files)
+				foreach (YouTubeDownloadResult file in files)
 				{
 					cmdArgs += $"-i \"{file.OutputFilePath}\" ";
 				}
 
 				int idx = 0;
-				foreach (DownloadResult file in files)
+				foreach (YouTubeDownloadResult file in files)
 				{
 					cmdArgs += $"-map {idx}:0 ";
 					++idx;
@@ -803,7 +803,7 @@ namespace YouTube_downloader
 			return false;
 		}
 
-		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<DownloadResult> files,
+		public static async Task<bool> MergeYouTubeMediaTracks(IEnumerable<YouTubeDownloadResult> files,
 			string destinationFileName, int delayAfterCompletion)
 		{
 			return await MergeYouTubeMediaTracks(files, destinationFileName, true, delayAfterCompletion);

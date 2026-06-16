@@ -1,13 +1,13 @@
 ﻿
 namespace YouTube_downloader
 {
-	public sealed class DownloadResult
+	public sealed class YouTubeDownloadResult
 	{
 		public int ErrorCode { get; }
 		public string ErrorMessage { get; }
 		public string OutputFilePath { get; }
 
-		public DownloadResult(int errorCode, string errorMessage, string outputFilePath)
+		public YouTubeDownloadResult(int errorCode, string errorMessage, string outputFilePath)
 		{
 			ErrorCode = errorCode;
 			ErrorMessage = errorMessage;
