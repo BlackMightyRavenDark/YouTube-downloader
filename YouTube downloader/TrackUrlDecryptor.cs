@@ -15,11 +15,11 @@ namespace YouTube_downloader
 		{
 			if (mediaTrackUrl.SplitCipher() && mediaTrackUrl.QueryCipher.ContainsKey("s"))
 			{
-				bool cipherDecripted = DecryptCipherSignature(mediaTrackUrl.QueryCipher["s"], out string decryptedCipher);
-				if (cipherDecripted)
+				bool isCipherDecrypted = DecryptCipherSignature(mediaTrackUrl.QueryCipher["s"], out string decryptedCipher);
+				if (isCipherDecrypted)
 				{
 					mediaTrackUrl.MergeCipherUrl(decryptedCipher);
-					return (cipherDecripted, false);
+					return (isCipherDecrypted, false);
 				}
 			}
 
