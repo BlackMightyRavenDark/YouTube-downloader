@@ -91,11 +91,8 @@ namespace YouTube_downloader
 					{
 						int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
 						{
-							if ((x.AverageBitrate <= 0 && y.AverageBitrate <= 0) || x.AverageBitrate == y.AverageBitrate)
-							{
-								return 0;
-							}
-							return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
+							return ((x.AverageBitrate <= 0 && y.AverageBitrate <= 0) || x.AverageBitrate == y.AverageBitrate) ? 0 :
+								(x.AverageBitrate < y.AverageBitrate ? 1 : -1);
 						}
 
 						VideoOnlyTracks.Sort(SorterFunc);
@@ -106,11 +103,8 @@ namespace YouTube_downloader
 				{
 					int SorterFunc(YouTubeMediaTrack x, YouTubeMediaTrack y)
 					{
-						if ((x.ContentLength <= 0L && y.ContentLength <= 0L) || x.ContentLength == y.ContentLength)
-						{
-							return 0;
-						}
-						return x.ContentLength < y.ContentLength ? 1 : -1;
+						return ((x.ContentLength <= 0L && y.ContentLength <= 0L) || x.ContentLength == y.ContentLength) ? 0 :
+							(x.ContentLength < y.ContentLength ? 1 : -1);
 					}
 
 					VideoOnlyTracks.Sort(SorterFunc);
@@ -131,8 +125,7 @@ namespace YouTube_downloader
 							return x.VideoHeight < y.VideoHeight ? 1 : -1;
 						}
 
-						if (x.AverageBitrate == y.AverageBitrate) { return 0; }
-						return x.AverageBitrate < y.AverageBitrate ? 1 : -1;
+						return (x.AverageBitrate == y.AverageBitrate) ? 0 : (x.AverageBitrate < y.AverageBitrate ? 1 : -1);
 					});
 				}
 
@@ -197,8 +190,12 @@ namespace YouTube_downloader
 
 				if (table.Rows.Count > 0)
 				{
-					ContextMenuStrip menu = new ContextMenuStrip();
-					menu.Font = new System.Drawing.Font("Lucida Console", config.MenusFontSize);
+					ContextMenuStrip menu = new ContextMenuStrip()
+					{
+						Font = new System.Drawing.Font("Lucida Console", config.MenusFontSize),
+						Renderer = new FormatListContextMenuRenderer()
+					};
+
 					foreach (TableRow row in table.Rows)
 					{
 						string rowText = row.Join(columnSeparator);
@@ -216,7 +213,7 @@ namespace YouTube_downloader
 
 					if (VideoOnlyTracks.Count + AudioOnlyTracks.Count > 0)
 					{
-						ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...") { Tag = null };
+						ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...");
 						if (menuItemClickHandler != null)
 						{
 							mi.Click += menuItemClickHandler;
@@ -224,7 +221,6 @@ namespace YouTube_downloader
 						menu.Items.Add(mi);
 					}
 
-					menu.Renderer = new FormatListContextMenuRenderer();
 					return menu;
 				}
 			}
