@@ -528,6 +528,7 @@ namespace YouTube_downloader
 			{
 				double percent = 0.0;
 				string itemText;
+				Color itemColor = Color.Lime;
 				switch (chunk.Value.State)
 				{
 					case DownloadableTaskState.Preparing:
@@ -538,18 +539,31 @@ namespace YouTube_downloader
 						itemText = "Подключение...";
 						break;
 
+					case DownloadableTaskState.Errored:
+						{
+							getPercentage(chunk.Value, out percent, out string percentFormatted);
+							itemText = $"{percentFormatted}% | Error!";
+							itemColor = Color.Orange;
+							break;
+						}
+
 					default:
 						{
-							percent = chunk.Value.ChunkFileSize > 0L && chunk.Value.ProcessedBytes > 0L ?
-								100.0 / chunk.Value.ChunkFileSize * chunk.Value.ProcessedBytes : 0L;
-							string percentFormatted = string.Format("{0:F2}", percent);
+							getPercentage(chunk.Value, out percent, out string percentFormatted);
 							itemText = $"{percentFormatted}%";
 							break;
 						}
 				}
 
-				MultipleProgressBarItem mpi = new MultipleProgressBarItem((int)percent, itemText);
+				MultipleProgressBarItem mpi = new MultipleProgressBarItem((int)percent, itemText, itemColor);
 				yield return mpi;
+			}
+
+			void getPercentage(DownloadableTask task, out double percent, out string percentFormatted)
+			{
+				percent = task.ChunkFileSize > 0L && task.ProcessedBytes > 0L ?
+					100.0 / task.ChunkFileSize * task.ProcessedBytes : 0L;
+				percentFormatted = string.Format("{0:F2}", percent);
 			}
 		}
 
