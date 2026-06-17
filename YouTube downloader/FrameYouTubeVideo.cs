@@ -20,6 +20,7 @@ namespace YouTube_downloader
 		public List<ThumbnailWrapper> Thumbnails { get; private set; }
 		public ThumbnailWrapper ActiveThumbnail { get; private set; }
 		public bool IsThumbnailLoading { get; private set; }
+		public bool IsFormatListUpdating { get; private set; }
 		public YouTubeVideoWebPage WebPage { get; }
 		public bool IsFavoriteVideo { get => _isFavoriteVideo; set { SetFavoriteVideo(value); } }
 		public bool IsFavoriteChannel { get => _isFavoriteChannel; set { SetFavoriteChannel(value); } }
@@ -654,6 +655,41 @@ namespace YouTube_downloader
 			miGetHlsManifestToolStripMenuItem.Enabled = false;
 		}
 
+		private async void miUpdateFormatListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (IsFormatListUpdating || IsDownloadInProgress)
+			{
+				MessageBox.Show("В данный момент невозможно обновить список форматов для скачивания!", "Обновлятор списка форматов",
+					MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
+			if (config.UseYtdl && (VideoInfo is YtdlVideo))
+			{
+				IsFormatListUpdating = true;
+				await UpdateYtdlFormatList();
+				IsFormatListUpdating = false;
+				return;
+			}
+
+			IsFormatListUpdating = true;
+			btnDownload.Enabled =
+			miActionsToolStripMenuItem.Enabled =
+			miUpdateFormatListToolStripMenuItem.Enabled = false;
+
+			string msg = null;
+			if (!await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
+				!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
+			{
+				MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			miUpdateFormatListToolStripMenuItem.Enabled =
+			miActionsToolStripMenuItem.Enabled =
+			btnDownload.Enabled = true;
+			IsFormatListUpdating = false;
+		}
+
 		private async void miGetPlayerCodeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!IsVideoInfoFoundBySearch && !VideoInfo.IsInfoAvailable)
@@ -1003,7 +1039,7 @@ namespace YouTube_downloader
 
 		private async void btnDownload_Click(object sender, EventArgs e)
 		{
-			if (IsDownloadInProgress)
+			if (IsDownloadInProgress || IsFormatListUpdating)
 			{
 				btnDownload.Enabled = false;
 				StopDownload();
@@ -1015,6 +1051,7 @@ namespace YouTube_downloader
 			{
 				MessageBox.Show("Видео недоступно!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				miUpdateFormatListToolStripMenuItem.Enabled = true;
 				return;
 			}
 
@@ -1027,36 +1064,30 @@ namespace YouTube_downloader
 				miActionsToolStripMenuItem.Enabled = false;
 			}
 
+			miUpdateFormatListToolStripMenuItem.Enabled = false;
+
 			bool isUrlsExpired = !miOptimizeFormatListReceivingToolStripMenuItem.Checked ||
 				(_downloadableFormatList == null || (_downloadableFormatList != null && _downloadableFormatList.IsExpired));
-
+			
 			if (config.UseYtdl && isYtdlVideo && isUrlsExpired)
 			{
-				lblStatus.Text = "Состояние: Обновление списка форматов...";
-				bool letsWait = config.ShowYtdlConsoleWindow;
-				isUrlsExpired = !(await Task.Run(() => (VideoInfo as YtdlVideo).UpdateTrackList()));
-				if (!isUrlsExpired)
-				{
-					_downloadableFormatList = new DownloadableFormatList(VideoInfo as YtdlVideo);
-
-					// Don't ask me why!
-					if (letsWait) { await Task.Delay(500); }
-				}
-				else
-				{
-					_downloadableFormatList = null;
-				}
-				lblStatus.Text = null;
+				IsFormatListUpdating = true;
+				isUrlsExpired = !(await UpdateYtdlFormatList());
+				IsFormatListUpdating = false;
 			}
 
 			if (isUrlsExpired)
 			{
+				IsFormatListUpdating = true;
+
 				string msg = null;
-				if (!await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
+				if (!(await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg))) &&
 					!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
 				{
 					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
+
+				IsFormatListUpdating = false;
 			}
 
 			if (_downloadableFormatList != null)
@@ -1080,7 +1111,8 @@ namespace YouTube_downloader
 				string msg = "Ссылки для скачивания не найдены!";
 				lblStatus.Text = $"Состояние: Ошибка! {msg}";
 				msg += VideoInfo.IsFamilySafe ? $" Попытайтесь ещё раз!{Environment.NewLine}" +
-					"Если это не помогает, попробуйте отключить галочку \"Оптимизировать получение списка форматов\" в меню \"Меню\"." :
+					"Если это не помогает, попробуйте отключить галочку \"Оптимизировать получение списка форматов\" " +
+					"или выбрать пункт \"Обновить список форматов\" в меню \"Меню\"." :
 					$"{Environment.NewLine}Для этого видео установлено ограничение по возрасту. " +
 					"Чтобы его скачать, вам необходимо запустить специальный локальный " +
 					$"веб-сервер на JavaScript и включить его использование в настройках.{Environment.NewLine}" +
@@ -1093,6 +1125,7 @@ namespace YouTube_downloader
 			btnDownload.Enabled = true;
 			miThumbnailsToolStripMenuItem.Enabled = miThumbnailsToolStripMenuItem.DropDownItems.Count > 0;
 			miActionsToolStripMenuItem.Enabled = true;
+			miUpdateFormatListToolStripMenuItem.Enabled = true;
 		}
 
 		private bool GetDownloadableFormatList(string videoId, out DownloadableFormatList formatList, out string errorMessage)
@@ -1145,6 +1178,30 @@ namespace YouTube_downloader
 			}
 
 			formatList = null;
+			return false;
+		}
+
+		private async Task<bool> UpdateYtdlFormatList()
+		{
+			if (!IsDownloadInProgress && VideoInfo is YtdlVideo ytdlVideo)
+			{
+				lblStatus.Text = "Состояние: Обновление списка форматов (youtube-dl)...";
+				bool letsWait = config.ShowYtdlConsoleWindow;
+				if (!(await Task.Run(() => ytdlVideo.UpdateTrackList())))
+				{
+					_downloadableFormatList = new DownloadableFormatList(ytdlVideo);
+
+					// Don't ask me why!
+					if (letsWait) { await Task.Delay(500); }
+				}
+				else
+				{
+					_downloadableFormatList = null;
+				}
+				lblStatus.Text = null;
+				return true;
+			}
+
 			return false;
 		}
 
@@ -1600,6 +1657,7 @@ namespace YouTube_downloader
 
 			IsDownloadInProgress = true;
 			_isCancelRequired = false;
+			miUpdateFormatListToolStripMenuItem.Enabled = false;
 
 			progressBarDownload.ClearItems();
 			lblStatus.Text = null;
@@ -1631,6 +1689,7 @@ namespace YouTube_downloader
 						MessageBoxButtons.OK, MessageBoxIcon.Stop);
 					IsDownloadInProgress = false;
 					btnDownload.Enabled = true;
+					miUpdateFormatListToolStripMenuItem.Enabled = true;
 					return;
 				}
 			}
@@ -1658,6 +1717,7 @@ namespace YouTube_downloader
 
 				IsDownloadInProgress = false;
 				btnDownload.Enabled = true;
+				miUpdateFormatListToolStripMenuItem.Enabled = true;
 				return;
 			}
 			else if (typeOfTag == typeof(YouTubeMediaTrackVideo))
@@ -1746,6 +1806,7 @@ namespace YouTube_downloader
 
 					IsDownloadInProgress = false;
 					btnDownload.Enabled = true;
+					miUpdateFormatListToolStripMenuItem.Enabled = true;
 					return;
 				}
 
@@ -1758,6 +1819,7 @@ namespace YouTube_downloader
 
 					IsDownloadInProgress = false;
 					btnDownload.Enabled = true;
+					miUpdateFormatListToolStripMenuItem.Enabled = true;
 					return;
 				}
 			}
@@ -1781,6 +1843,7 @@ namespace YouTube_downloader
 				{
 					IsDownloadInProgress = false;
 					btnDownload.Enabled = true;
+					miUpdateFormatListToolStripMenuItem.Enabled = true;
 					return;
 				}
 			}
@@ -1803,6 +1866,7 @@ namespace YouTube_downloader
 					btnDownload.Text = "Скачать";
 					btnDownload.Enabled = true;
 					IsDownloadInProgress = false;
+					miUpdateFormatListToolStripMenuItem.Enabled = true;
 					return;
 				}
 			}
@@ -1816,6 +1880,7 @@ namespace YouTube_downloader
 				btnDownload.Text = "Скачать";
 				btnDownload.Enabled = true;
 				IsDownloadInProgress = false;
+				miUpdateFormatListToolStripMenuItem.Enabled = true;
 				return;
 			}
 
@@ -1852,6 +1917,7 @@ namespace YouTube_downloader
 								IsDownloadInProgress = false;
 								btnDownload.Text = "Скачать";
 								btnDownload.Enabled = true;
+								miUpdateFormatListToolStripMenuItem.Enabled = true;
 								return;
 							}
 						}
@@ -2018,6 +2084,7 @@ namespace YouTube_downloader
 
 			btnDownload.Text = "Скачать";
 			btnDownload.Enabled = true;
+			miUpdateFormatListToolStripMenuItem.Enabled = true;
 			IsDownloadInProgress = false;
 		}
 

@@ -78,6 +78,7 @@
 			this.miOptimizeFormatListReceivingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.miUpdateFormatListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).BeginInit();
@@ -413,9 +414,10 @@
 			// 
 			this.contextMenuFrameActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.miActionsToolStripMenuItem,
-			this.miOptimizeFormatListReceivingToolStripMenuItem});
+			this.miOptimizeFormatListReceivingToolStripMenuItem,
+			this.miUpdateFormatListToolStripMenuItem});
 			this.contextMenuFrameActions.Name = "contextMenuFrameActions";
-			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 48);
+			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 92);
 			// 
 			// miActionsToolStripMenuItem
 			// 
@@ -493,6 +495,13 @@
 			this.lblBtnOpenFrameContextMenu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip1.SetToolTip(this.lblBtnOpenFrameContextMenu, "Меню");
 			this.lblBtnOpenFrameContextMenu.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseUp);
+			// 
+			// miUpdateFormatListToolStripMenuItem
+			// 
+			this.miUpdateFormatListToolStripMenuItem.Name = "miUpdateFormatListToolStripMenuItem";
+			this.miUpdateFormatListToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
+			this.miUpdateFormatListToolStripMenuItem.Text = "Обновить список форматов";
+			this.miUpdateFormatListToolStripMenuItem.Click += new System.EventHandler(this.miUpdateFormatListToolStripMenuItem_Click);
 			// 
 			// progressBarDownload
 			// 
@@ -590,5 +599,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
 		private System.Windows.Forms.ToolStripMenuItem miThumbnailsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem miReloadActiveThumbnailToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem miUpdateFormatListToolStripMenuItem;
 	}
 }
