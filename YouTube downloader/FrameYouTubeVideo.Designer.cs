@@ -76,9 +76,9 @@
 			this.miGetHlsManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miGetPlayerCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.miOptimizeFormatListReceivingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.miUpdateFormatListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lblBtnOpenFrameContextMenu = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.miUpdateFormatListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.progressBarDownload = new YouTube_downloader.MultipleProgressBar();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).BeginInit();
@@ -148,6 +148,7 @@
 			this.pictureBoxFavoriteVideo.Size = new System.Drawing.Size(25, 25);
 			this.pictureBoxFavoriteVideo.TabIndex = 4;
 			this.pictureBoxFavoriteVideo.TabStop = false;
+			this.toolTip1.SetToolTip(this.pictureBoxFavoriteVideo, "Избранное видео");
 			this.pictureBoxFavoriteVideo.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBoxFavoriteVideo_Paint);
 			this.pictureBoxFavoriteVideo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxFavoriteVideo_MouseDown);
 			// 
@@ -189,6 +190,7 @@
 			this.pictureBoxFavoriteChannel.Size = new System.Drawing.Size(25, 25);
 			this.pictureBoxFavoriteChannel.TabIndex = 11;
 			this.pictureBoxFavoriteChannel.TabStop = false;
+			this.toolTip1.SetToolTip(this.pictureBoxFavoriteChannel, "Избранный канал");
 			this.pictureBoxFavoriteChannel.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBoxFavoriteChannel_Paint);
 			this.pictureBoxFavoriteChannel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxFavoriteChannel_MouseDown);
 			// 
@@ -417,7 +419,7 @@
 			this.miOptimizeFormatListReceivingToolStripMenuItem,
 			this.miUpdateFormatListToolStripMenuItem});
 			this.contextMenuFrameActions.Name = "contextMenuFrameActions";
-			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 92);
+			this.contextMenuFrameActions.Size = new System.Drawing.Size(331, 70);
 			// 
 			// miActionsToolStripMenuItem
 			// 
@@ -483,6 +485,13 @@
 			this.miOptimizeFormatListReceivingToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
 			this.miOptimizeFormatListReceivingToolStripMenuItem.Text = "Оптимизировать получение списка форматов";
 			// 
+			// miUpdateFormatListToolStripMenuItem
+			// 
+			this.miUpdateFormatListToolStripMenuItem.Name = "miUpdateFormatListToolStripMenuItem";
+			this.miUpdateFormatListToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
+			this.miUpdateFormatListToolStripMenuItem.Text = "Обновить список форматов";
+			this.miUpdateFormatListToolStripMenuItem.Click += new System.EventHandler(this.miUpdateFormatListToolStripMenuItem_Click);
+			// 
 			// lblBtnOpenFrameContextMenu
 			// 
 			this.lblBtnOpenFrameContextMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -495,13 +504,6 @@
 			this.lblBtnOpenFrameContextMenu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip1.SetToolTip(this.lblBtnOpenFrameContextMenu, "Меню");
 			this.lblBtnOpenFrameContextMenu.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseUp);
-			// 
-			// miUpdateFormatListToolStripMenuItem
-			// 
-			this.miUpdateFormatListToolStripMenuItem.Name = "miUpdateFormatListToolStripMenuItem";
-			this.miUpdateFormatListToolStripMenuItem.Size = new System.Drawing.Size(330, 22);
-			this.miUpdateFormatListToolStripMenuItem.Text = "Обновить список форматов";
-			this.miUpdateFormatListToolStripMenuItem.Click += new System.EventHandler(this.miUpdateFormatListToolStripMenuItem_Click);
 			// 
 			// progressBarDownload
 			// 
