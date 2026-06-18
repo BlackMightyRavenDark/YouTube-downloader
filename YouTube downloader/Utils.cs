@@ -522,14 +522,14 @@ namespace YouTube_downloader
 		}
 
 		public static IEnumerable<MultipleProgressBarItem> ContentChunksToMultipleProgressBarItems(
-			ConcurrentDictionary<int, DownloadableTask> chunks)
+			IEnumerable<DownloadableTask> chunks)
 		{
-			foreach (var chunk in chunks)
+			foreach (DownloadableTask downloadableTask in chunks)
 			{
 				double percent = 0.0;
 				string itemText;
 				Color itemColor = Color.Lime;
-				switch (chunk.Value.State)
+				switch (downloadableTask.State)
 				{
 					case DownloadableTaskState.Preparing:
 						itemText = "Подготовка...";
@@ -541,7 +541,7 @@ namespace YouTube_downloader
 
 					case DownloadableTaskState.Errored:
 						{
-							getPercentage(chunk.Value, out percent, out string percentFormatted);
+							getPercentage(downloadableTask, out percent, out string percentFormatted);
 							itemText = $"{percentFormatted}% | Error!";
 							itemColor = Color.Orange;
 							break;
@@ -549,7 +549,7 @@ namespace YouTube_downloader
 
 					default:
 						{
-							getPercentage(chunk.Value, out percent, out string percentFormatted);
+							getPercentage(downloadableTask, out percent, out string percentFormatted);
 							itemText = $"{percentFormatted}%";
 							break;
 						}

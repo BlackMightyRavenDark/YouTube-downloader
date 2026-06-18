@@ -1582,31 +1582,32 @@ namespace YouTube_downloader
 
 		private void UpdateDownloadProgress()
 		{
-			long fileSize = _multiThreadedDownloader.ContentLength != 0L ?
+			DownloadableTask[] downloadableTasks = _contentChunks.Select(item => item.Value).ToArray();
+			long fileSize = _multiThreadedDownloader.ContentLength > 0L ?
 				_multiThreadedDownloader.ContentLength : _mediaTrack.ContentLength;
 			if (fileSize <= 0L)
 			{
 				// Don't do it!
-				fileSize = _contentChunks.Where(chunk => chunk.Value.ChunkFileSize > 0L).Sum(chunk => chunk.Value.ChunkFileSize);
+				fileSize = downloadableTasks.Where(task => task.ChunkFileSize > 0L).Sum(task => task.ChunkFileSize);
 			}
 
-			long downloadedBytes = _contentChunks.Where(chunk => chunk.Value.ProcessedBytes > 0L).Sum(chunk => chunk.Value.ProcessedBytes);
+			long downloadedBytes = downloadableTasks.Where(task => task.ProcessedBytes > 0L).Sum(task => task.ProcessedBytes);
 			double percent = 100.0 / fileSize * downloadedBytes;
-			string percentString = string.Format("{0:F2}", percent);
+			string percentFormatted = string.Format("{0:F2}", percent);
 			string shortInfo = _isVideo || _isContainer ?
 				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackVideo) :
 				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackAudio);
 			lblDowndloadProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
-				$" ({percentString}%), {shortInfo}";
+				$" ({percentFormatted}%), {shortInfo}";
 
 			if (miMultipleToolStripMenuItem.Checked)
 			{
-				IEnumerable<MultipleProgressBarItem> progressBarItems = ContentChunksToMultipleProgressBarItems(_contentChunks);
+				IEnumerable<MultipleProgressBarItem> progressBarItems = ContentChunksToMultipleProgressBarItems(downloadableTasks);
 				progressBarDownload.SetItems(progressBarItems);
 			}
 			else if (miSingleToolStripMenuItem.Checked)
 			{
-				progressBarDownload.SetItem((int)percent, $"{percentString}%");
+				progressBarDownload.SetItem((int)percent, $"{percentFormatted}%");
 			}
 		}
 
