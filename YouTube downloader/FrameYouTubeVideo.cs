@@ -1583,7 +1583,7 @@ namespace YouTube_downloader
 		private void UpdateDownloadProgress()
 		{
 			long fileSize = _multiThreadedDownloader.ContentLength != 0L ?
-				_multiThreadedDownloader.ContentLength : (_mediaTrack as YouTubeMediaTrackVideo).ContentLength;
+				_multiThreadedDownloader.ContentLength : _mediaTrack.ContentLength;
 			if (fileSize <= 0L)
 			{
 				// Don't do it!
