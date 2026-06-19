@@ -1429,7 +1429,8 @@ namespace YouTube_downloader
 						{ "User-Agent", config.UserAgent }
 					};
 
-					string outputFilePath = Path.Combine(isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,
+					string outputFilePath = Path.Combine(
+						!config.AutomaticallyMergeToContainer || isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,
 						isContainer ? $"{formattedFileName}.{mediaTrack.FileExtension}" :
 						$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
 					_multiThreadedDownloader = new MultiThreadedDownloader()
