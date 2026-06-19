@@ -97,7 +97,7 @@ namespace YouTube_downloader
 				requestQuery["safeSearch"] = "none";
 				string query = string.Join("&", requestQuery.Select(item => $"{item.Key}={item.Value}"));
 
-				FileDownloader d = Downloader ?? new FileDownloader();
+				FileDownloader d = Downloader ?? Utils.CreateConfiguredDownloader();
 				d.Url = $"{Utils.YOUTUBE_ENDPOINT_SEARCH_URL}?{query}";
 				d.SkipHeaderRequest = true;
 				int errorCode = d.DownloadString(out string response);

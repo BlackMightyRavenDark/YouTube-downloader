@@ -250,8 +250,7 @@ namespace YouTube_downloader
 				string types = string.Join(",", strings);
 				DateTime after = checkBoxSearchRangePublishedAfter.Checked ? dateTimePickerSearchAfter.Value.ToUniversalTime() : DateTime.MaxValue;
 				DateTime before = checkBoxSearchRangePublishedBefore.Checked ? dateTimePickerSearchBefore.Value.ToUniversalTime() : DateTime.MaxValue;
-				FileDownloader d = new FileDownloader();
-				d.Headers.Add("User-Agent", config.UserAgent);
+				FileDownloader d = CreateConfiguredDownloader();
 				YouTubeQuerySearcherV3 searcher = new YouTubeQuerySearcherV3(config.YouTubeApiV3Key, searchQuery,
 					after, before, types, null, resultCountLimit, null, d);
 				int totalFound = await Task.Run(() => (int)searcher.Search());
@@ -867,8 +866,7 @@ namespace YouTube_downloader
 				ushort resultCountLimit = (ushort)(radioButtonSearchResultCountLimitUserDefinedNumber.Checked ? numericUpDownSearchResultCountLimit.Value : 500);
 				DateTime after = checkBoxSearchRangePublishedAfter.Checked ? dateTimePickerSearchAfter.Value.ToUniversalTime() : DateTime.MaxValue;
 				DateTime before = checkBoxSearchRangePublishedBefore.Checked ? dateTimePickerSearchBefore.Value.ToUniversalTime() : DateTime.MaxValue;
-				FileDownloader d = new FileDownloader();
-				d.Headers.Add("User-Agent", config.UserAgent);
+				FileDownloader d = CreateConfiguredDownloader();
 				YouTubeChannelSearcherV3 searcher = new YouTubeChannelSearcherV3(
 					config.YouTubeApiV3Key, channel.Id, after, before, resultCountLimit, null, d);
 				int totalFound = await Task.Run(() => (int)searcher.Search());

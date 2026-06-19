@@ -38,7 +38,7 @@ namespace YouTube_downloader
 		public int DownloadThumbnail(FileDownloader downloader = null)
 		{
 			_isWebP = _isFileExtensionDetermined = false;
-			FileDownloader d = downloader ?? new FileDownloader();
+			FileDownloader d = downloader ?? Utils.CreateConfiguredDownloader();
 			d.Url = Thumbnail.Url;
 			ImageData = new MemoryStream();
 			int errorCode = d.Download(ImageData);

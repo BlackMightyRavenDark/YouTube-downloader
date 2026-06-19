@@ -611,7 +611,8 @@ namespace YouTube_downloader
 				string url = streamingDataResult.Data.GetDashManifestUrl();
 				if (!string.IsNullOrEmpty(url))
 				{
-					FileDownloader d = new FileDownloader() { Url = url };
+					FileDownloader d = CreateConfiguredDownloader();
+					d.Url = url;
 					if (d.DownloadString(out string manifest) == 200)
 					{
 						SetClipboardText(manifest);
@@ -647,7 +648,8 @@ namespace YouTube_downloader
 				string url = streamingDataResult.Data.GetHlsManifestUrl();
 				if (!string.IsNullOrEmpty(url))
 				{
-					FileDownloader d = new FileDownloader() { Url = url };
+					FileDownloader d = CreateConfiguredDownloader();
+					d.Url = url;
 					if (d.DownloadString(out string manifest) == 200)
 					{
 						SetClipboardText(manifest);
@@ -737,7 +739,8 @@ namespace YouTube_downloader
 			string code = null;
 			int errCode = await Task.Run(() =>
 			{
-				FileDownloader d = new FileDownloader() { Url = url };
+				FileDownloader d = CreateConfiguredDownloader();
+				d.Url = url;
 				int errorCode = d.DownloadString(out code);
 				d.Dispose();
 				return errorCode;
@@ -883,8 +886,7 @@ namespace YouTube_downloader
 				int pictureBoxVideoThumbnailWidth = 0;
 				int pictureBoxVideoThumbnailHeight = 0;
 				pre();
-				FileDownloader d = new FileDownloader() { ConnectionTimeout = config.ConnectionTimeout };
-				d.Headers.Add("User-Agent", config.UserAgent);
+				FileDownloader d = CreateConfiguredDownloader();
 #if DEBUG
 				d.WorkError += (s, errorCode, errorMessage, bytesTransferred, contentLength, tryNumber, _tryCountLimit) =>
 				{
@@ -1253,15 +1255,9 @@ namespace YouTube_downloader
 				string errorMessage = null;
 				using (Stream outputStream = File.OpenWrite(fnDashTmp))
 				{
-					using (FileDownloader downloader = new FileDownloader()
+					using (FileDownloader downloader = CreateConfiguredDownloader())
 					{
-						Headers = new WebHeaderCollection()
-						{
-							{ "Accept", "*/*" },
-							{ "User-Agent", config.UserAgent }
-						}
-					})
-					{
+						downloader.TryCountLimit = 1;
 						int tryCountLimit;
 						lock (config) { tryCountLimit = config.DashChunkDownloadTryCountLimit; }
 						for (int i = 0; i < dashUrlList.Count; ++i)

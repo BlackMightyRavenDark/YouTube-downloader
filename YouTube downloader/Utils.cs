@@ -40,7 +40,8 @@ namespace YouTube_downloader
 
 		public static int DownloadData(string url, Stream outputStream, FileDownloader downloader = null)
 		{
-			FileDownloader d = downloader ?? new FileDownloader() { Url = url };
+			FileDownloader d = downloader ?? CreateConfiguredDownloader();
+			d.Url = url;
 			return d.Download(outputStream);
 		}
 
@@ -643,6 +644,28 @@ namespace YouTube_downloader
 
 			errorMessage = "Something went wrong!";
 			return false;
+		}
+
+		public static FileDownloader CreateConfiguredDownloader()
+		{
+			Configurator cfg;
+			lock (config)
+			{
+				cfg = new Configurator(config);
+			}
+
+			WebHeaderCollection headers = new WebHeaderCollection()
+			{
+				{ "Accept", "*/*" },
+				{ "User-Agent", cfg.UserAgent }
+			};
+
+			return new FileDownloader()
+			{
+				Headers = headers,
+				TryCountLimit = cfg.ChunkDownloadInnerErrorCountLimit,
+				ConnectionTimeout = cfg.ConnectionTimeout
+			};
 		}
 
 		public static bool SetClipboardText(string text)
