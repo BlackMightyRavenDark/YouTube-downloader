@@ -7,10 +7,10 @@ namespace YouTube_downloader
 {
 	public sealed class Configurator
 	{
-		public string FilePath { get; private set; }
-		public string SelfDirectory { get; set; }
-		public string HomeDirectory { get; set; }
-		public string FavoritesFilePath { get; set; }
+		public string FilePath { get; }
+		public string SelfDirectory { get; }
+		public string HomeDirectory { get; }
+		public string FavoritesFilePath { get; }
 
 		#region Files and folders options
 		public string DownloadDirectory { get; set; }
