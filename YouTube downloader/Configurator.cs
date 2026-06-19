@@ -131,6 +131,74 @@ namespace YouTube_downloader
 			LoadDefaults();
 		}
 
+		#region Copy constructor
+		public Configurator(Configurator other)
+		{
+			FilePath = other.FilePath;
+			SelfDirectory = other.SelfDirectory;
+			HomeDirectory = other.HomeDirectory;
+			FavoritesFilePath = other.FavoritesFilePath;
+
+			DownloadDirectory = other.DownloadDirectory;
+			TemporaryDirectory = other.TemporaryDirectory;
+			ChunkMergerDirectory = other.ChunkMergerDirectory;
+			OutputFileNameFormatWithDate = other.OutputFileNameFormatWithDate;
+			OutputFileNameFormatWithoutDate = other.OutputFileNameFormatWithoutDate;
+			WebBrowserExeFilePath = other.WebBrowserExeFilePath;
+			FfmpegExeFilePath = other.FfmpegExeFilePath;
+			YtdlExeFilePath = other.YtdlExeFilePath;
+
+			VideoTitleFontSize = other.VideoTitleFontSize;
+			MenusFontSize = other.MenusFontSize;
+			FavoritesListFontSize = other.FavoritesListFontSize;
+			SortFormatsByFileSize = other.SortFormatsByFileSize;
+			SortDashFormatsByBitrate = other.SortDashFormatsByBitrate;
+			AlwaysMoveAudioId140ToTopOfList = other.AlwaysMoveAudioId140ToTopOfList;
+			ShowHlsTracksOnlyForStreams = other.ShowHlsTracksOnlyForStreams;
+
+			AutomaticallyDownloadAllAdaptiveVideoTracks = other.AutomaticallyDownloadAllAdaptiveVideoTracks;
+			AutomaticallyDownloadFirstAudioTrack = other.AutomaticallyDownloadFirstAudioTrack;
+			AutomaticallyDownloadSecondAudioTrack = other.AutomaticallyDownloadSecondAudioTrack;
+			AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = other.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
+			AutomaticallyDownloadAllAdaptiveAudioTracks = other.AutomaticallyDownloadAllAdaptiveAudioTracks;
+			AutomaticallyMergeToContainer = other.AutomaticallyMergeToContainer;
+			DeleteSourceFilesWhenMerged = other.DeleteSourceFilesWhenMerged;
+			AlwaysUseMkvContainer = other.AlwaysUseMkvContainer;
+			ExtraDelayAfterContainerWasBuilt = other.ExtraDelayAfterContainerWasBuilt;
+			CheckUrlsAccessibilityBeforeDownloadStarted = other.CheckUrlsAccessibilityBeforeDownloadStarted;
+			ChunkDownloadTryCountLimit = other.ChunkDownloadTryCountLimit;
+			ChunkDownloadInnerErrorCountLimit = other.ChunkDownloadInnerErrorCountLimit;
+			AutomaticallySaveVideoThumbnailImage = other.AutomaticallySaveVideoThumbnailImage;
+
+			CipherDecryptionAlgorythm = other.CipherDecryptionAlgorythm;
+			YouTubeApiV3Key = other.YouTubeApiV3Key;
+			ExternalRestApiServerUrl = other.ExternalRestApiServerUrl;
+			ExternalRestApiServerPort = other.ExternalRestApiServerPort;
+			ConnectionTimeoutExternalRestApiServer = other.ConnectionTimeoutExternalRestApiServer;
+			UseExternalRestApiServerToGetBasicVideoInfo = other.UseExternalRestApiServerToGetBasicVideoInfo;
+			UseExternalRestApiServerToGetDownloadUrls = other.UseExternalRestApiServerToGetDownloadUrls;
+			UseExternalRestApiServerToGetAdultVideos = other.UseExternalRestApiServerToGetAdultVideos;
+			UseYtdl = other.UseYtdl;
+			YtdlParameters = other.YtdlParameters;
+			ShowYtdlConsoleWindow = other.ShowYtdlConsoleWindow;
+			UserAgent = other.UserAgent;
+			ThreadCountVideo = other.ThreadCountVideo;
+			ThreadCountAudio = other.ThreadCountAudio;
+			GlobalThreadCountLimit = other.GlobalThreadCountLimit;
+			UseAccurateMultithreading = other.UseAccurateMultithreading;
+			ConnectionTimeout = other.ConnectionTimeout;
+			UseRamToStoreTemporaryFiles = other.UseRamToStoreTemporaryFiles;
+			AlwaysDownloadAsDash = other.AlwaysDownloadAsDash;
+			DashManualFragmentationChunkSize = other.DashManualFragmentationChunkSize;
+			DashChunkDownloadTryCountLimit = other.DashChunkDownloadTryCountLimit;
+			SimultaneousLoadThumbnailGroupSize = other.SimultaneousLoadThumbnailGroupSize;
+			IntervalBetweenThumbnailGroupsLoadMilliseconds = other.IntervalBetweenThumbnailGroupsLoadMilliseconds;
+			UseUniversalTime = other.UseUniversalTime;
+
+			SearchResultCountLimit = other.SearchResultCountLimit;
+		}
+		#endregion
+
 		public void Save()
 		{
 			if (File.Exists(FilePath))
