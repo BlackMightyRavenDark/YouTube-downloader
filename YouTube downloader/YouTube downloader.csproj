@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DownloadableFormatList.cs" />
+    <Compile Include="DownloadProgressRenderer.cs" />
     <Compile Include="YouTubeDownloadResult.cs" />
     <Compile Include="FavoriteItem.cs" />
     <Compile Include="FormatListContextMenuRenderer.cs" />

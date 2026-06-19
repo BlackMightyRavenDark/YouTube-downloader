@@ -535,6 +535,7 @@
 			this.Controls.Add(this.lblVideoTitle);
 			this.Name = "FrameYouTubeVideo";
 			this.Size = new System.Drawing.Size(496, 170);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.FrameYouTubeVideo_Paint);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteChannel)).EndInit();

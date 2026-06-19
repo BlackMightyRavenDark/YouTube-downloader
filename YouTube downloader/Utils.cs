@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -519,69 +518,6 @@ namespace YouTube_downloader
 		public static bool IsVideoDateAvailable(YouTubeVideo video)
 		{
 			return video.DatePublished < DateTime.MaxValue;
-		}
-
-		public static IEnumerable<MultipleProgressBarItem> ContentChunksToMultipleProgressBarItems(
-			IEnumerable<DownloadableTask> chunks)
-		{
-			foreach (DownloadableTask downloadableTask in chunks)
-			{
-				double percent = 0.0;
-				string itemText;
-				Color itemColor = Color.Lime;
-				switch (downloadableTask.State)
-				{
-					case DownloadableTaskState.Preparing:
-						itemText = "Подготовка...";
-						break;
-
-					case DownloadableTaskState.Connecting:
-						itemText = "Подключение...";
-						break;
-
-					case DownloadableTaskState.Errored:
-						{
-							getPercentage(downloadableTask, out percent, out string percentFormatted);
-							itemText = $"{percentFormatted}% | Error!";
-							itemColor = Color.Orange;
-							break;
-						}
-
-					default:
-						{
-							getPercentage(downloadableTask, out percent, out string percentFormatted);
-							itemText = $"{percentFormatted}%";
-							break;
-						}
-				}
-
-				MultipleProgressBarItem mpi = new MultipleProgressBarItem((int)percent, itemText, itemColor);
-				yield return mpi;
-			}
-
-			void getPercentage(DownloadableTask task, out double percent, out string percentFormatted)
-			{
-				percent = task.ChunkFileSize > 0L && task.ProcessedBytes > 0L ?
-					100.0 / task.ChunkFileSize * task.ProcessedBytes : 0L;
-				percentFormatted = string.Format("{0:F2}", percent);
-			}
-		}
-
-		public static MultipleProgressBarItem[] GenerateChunkMergingProgressVisualizationItems(
-			int chunkCount, int currentChunkId, double currentChunkProgressPercent)
-		{
-			MultipleProgressBarItem[] items = new MultipleProgressBarItem[chunkCount];
-			for (int i = 0; i < chunkCount; ++i)
-			{
-				if (i < currentChunkId) { items[i] = new MultipleProgressBarItem(100, "100,00%"); }
-				else if (i > currentChunkId) { items[i] = new MultipleProgressBarItem(0, "0,00%"); }
-				else
-				{
-					string percentFormatted = string.Format("{0:F2}", currentChunkProgressPercent);
-					items[i] = new MultipleProgressBarItem((int)currentChunkProgressPercent, $"{percentFormatted}%");
-				}
-			}
-			return items;
 		}
 
 		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks, int connectionTimeout)

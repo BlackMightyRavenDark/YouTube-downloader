@@ -29,17 +29,14 @@ namespace YouTube_downloader
 		public bool IsVideoInfoFoundByWebPage { get; }
 
 		private MultiThreadedDownloader _multiThreadedDownloader;
-		private ConcurrentDictionary<int, DownloadableTask> _contentChunks;
 		private bool _isCiphered;
 		private bool _isFavoriteVideo = false;
 		private bool _isFavoriteChannel = false;
-		private bool _isVideo = true;
-		private bool _isContainer = false;
-		private YouTubeMediaTrack _mediaTrack;
 		private Image _thumbnail;
 		private string _playerCodeUrl;
 		private bool _isCancelRequired;
 		private DownloadableFormatList _downloadableFormatList;
+		private DownloadProgressRenderer _downloadProgressRenderer;
 
 		public delegate void DownloadButtonClickedDelegate(object sender, EventArgs e);
 		public delegate void FavoriteChannelChangedDelegate(object sender, string channelId, bool newState);
@@ -69,6 +66,18 @@ namespace YouTube_downloader
 
 		public FrameYouTubeVideo(YouTubeVideo videoInfo, Control parent)
 			: this(videoInfo, null, false, true, parent) { }
+
+		private void FrameYouTubeVideo_Paint(object sender, PaintEventArgs e)
+		{
+			if (_downloadProgressRenderer != null)
+			{
+				_downloadProgressRenderer.Refresh();
+			}
+			else
+			{
+				progressBarDownload.Refresh();
+			}
+		}
 
 		private void pictureBoxVideoThumbnail_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -777,20 +786,14 @@ namespace YouTube_downloader
 		{
 			miSingleToolStripMenuItem.Checked = true;
 			miMultipleToolStripMenuItem.Checked = false;
-			if (_contentChunks != null && _mediaTrack != null)
-			{
-				UpdateDownloadProgress();
-			}
+			_downloadProgressRenderer?.Render(false, IsDownloadInProgress);
 		}
 
 		private void miMultipleToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			miSingleToolStripMenuItem.Checked = false;
 			miMultipleToolStripMenuItem.Checked = true;
-			if (_contentChunks != null && _mediaTrack != null)
-			{
-				UpdateDownloadProgress();
-			}
+			_downloadProgressRenderer?.Render(true, IsDownloadInProgress);
 		}
 
 		private async void SetVideoInfo(YouTubeVideo videoInfo, bool automaticallyUpdateThumbnail = true)
@@ -1517,12 +1520,9 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
-							_contentChunks = contentChunks;
-							_isVideo = isVideo;
-							_isContainer = isContainer;
-							_mediaTrack = mediaTrack;
-
-							UpdateDownloadProgress();
+							_downloadProgressRenderer = new DownloadProgressRenderer(progressBarDownload, lblDowndloadProgress,
+								contentChunks, mediaTrack, (s as MultiThreadedDownloader).ContentLength);
+							_downloadProgressRenderer.Render(miMultipleToolStripMenuItem.Checked, IsDownloadInProgress);
 						}));
 					};
 					_multiThreadedDownloader.ChunkMergingStarted += (s, chunkCount) =>
@@ -1545,7 +1545,8 @@ namespace YouTube_downloader
 							lblDowndloadProgress.Text = $"{chunkId + 1} / {_multiThreadedDownloader.ThreadCount}: " +
 								$"{FormatSize(chunkPosition)} / {FormatSize(chunkSize)} ({percentString}%)";
 
-							MultipleProgressBarItem[] items = GenerateChunkMergingProgressVisualizationItems(chunkCount, chunkId, percent);
+							MultipleProgressBarItem[] items = DownloadProgressRenderer.
+								GenerateChunkMergingProgressVisualizationItems(chunkCount, chunkId, percent);
 							progressBarDownload.SetItems(items);
 						}));
 					};
@@ -1577,37 +1578,6 @@ namespace YouTube_downloader
 					}
 					return youTubeDownloadResult;
 				}
-			}
-		}
-
-		private void UpdateDownloadProgress()
-		{
-			DownloadableTask[] downloadableTasks = _contentChunks.Select(item => item.Value).ToArray();
-			long fileSize = _multiThreadedDownloader.ContentLength > 0L ?
-				_multiThreadedDownloader.ContentLength : _mediaTrack.ContentLength;
-			if (fileSize <= 0L)
-			{
-				// Don't do it!
-				fileSize = downloadableTasks.Where(task => task.ChunkFileSize > 0L).Sum(task => task.ChunkFileSize);
-			}
-
-			long downloadedBytes = downloadableTasks.Where(task => task.ProcessedBytes > 0L).Sum(task => task.ProcessedBytes);
-			double percent = 100.0 / fileSize * downloadedBytes;
-			string percentFormatted = string.Format("{0:F2}", percent);
-			string shortInfo = _isVideo || _isContainer ?
-				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackVideo) :
-				GetTrackShortInfo(_mediaTrack as YouTubeMediaTrackAudio);
-			lblDowndloadProgress.Text = $"{FormatSize(downloadedBytes)} / {FormatSize(fileSize)}" +
-				$" ({percentFormatted}%), {shortInfo}";
-
-			if (miMultipleToolStripMenuItem.Checked)
-			{
-				IEnumerable<MultipleProgressBarItem> progressBarItems = ContentChunksToMultipleProgressBarItems(downloadableTasks);
-				progressBarDownload.SetItems(progressBarItems);
-			}
-			else if (miSingleToolStripMenuItem.Checked)
-			{
-				progressBarDownload.SetItem((int)percent, $"{percentFormatted}%");
 			}
 		}
 
@@ -2081,7 +2051,7 @@ namespace YouTube_downloader
 				}
 			}
 
-			_contentChunks = null;
+			_downloadProgressRenderer?.DisposeChunkStreams();
 
 			btnDownload.Text = "Скачать";
 			btnDownload.Enabled = true;
