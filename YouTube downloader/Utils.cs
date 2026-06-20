@@ -654,7 +654,7 @@ namespace YouTube_downloader
 				cfg = new Configurator(config);
 			}
 
-			WebHeaderCollection headers = InternetWebPage.GetDefaultHttpHeaders();
+			WebHeaderCollection headers = cfg.HttpHeaders;
 			headers.Remove("Host");
 			headers["User-Agent"] = cfg.UserAgent;
 
@@ -664,6 +664,46 @@ namespace YouTube_downloader
 				TryCountLimit = cfg.ChunkDownloadInnerErrorCountLimit,
 				ConnectionTimeout = cfg.ConnectionTimeout
 			};
+		}
+
+		public static WebHeaderCollection GetHttpHeadersCopy(WebHeaderCollection headers)
+		{
+			WebHeaderCollection result = new WebHeaderCollection();
+			foreach (string name in headers.AllKeys)
+			{
+				result.Add(name, headers[name]);
+			}
+			return result;
+		}
+
+		public static JArray SerializeHttpHeaders(WebHeaderCollection headers)
+		{
+			JArray jaHeaders = new JArray();
+			foreach (string name in headers.AllKeys)
+			{
+				JObject jHeader = new JObject()
+				{
+					["name"] = name,
+					["value"] = headers[name]
+				};
+				jaHeaders.Add(jHeader);
+			}
+			return jaHeaders;
+		}
+
+		public static WebHeaderCollection DeserializeHttpHeaders(JArray jaHeaders)
+		{
+			WebHeaderCollection result = new WebHeaderCollection();
+			foreach (JObject jHeader in jaHeaders.Cast<JObject>())
+			{
+				string name = jHeader.Value<string>("name");
+				if (!string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(name) &&
+					!string.Equals(name, "Range", StringComparison.OrdinalIgnoreCase))
+				{
+					result.Add(name, jHeader.Value<string>("value"));
+				}
+			}
+			return result;
 		}
 
 		public static bool SetClipboardText(string text)

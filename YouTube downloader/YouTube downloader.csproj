@@ -101,6 +101,12 @@
   <ItemGroup>
     <Compile Include="DownloadableFormatList.cs" />
     <Compile Include="DownloadProgressRenderer.cs" />
+    <Compile Include="FormHttpHeadersEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHttpHeadersEditor.Designer.cs">
+      <DependentUpon>FormHttpHeadersEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="YouTubeDownloadResult.cs" />
     <Compile Include="FavoriteItem.cs" />
     <Compile Include="FormatListContextMenuRenderer.cs" />
@@ -178,6 +184,9 @@
     <Compile Include="YtdlVideo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHttpHeadersEditor.resx">
+      <DependentUpon>FormHttpHeadersEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormTrackSelector.resx">
       <DependentUpon>FormTrackSelector.cs</DependentUpon>

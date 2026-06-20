@@ -1423,11 +1423,8 @@ namespace YouTube_downloader
 					#endregion
 
 					bool useRamToStoreTemporaryFiles = config.UseRamToStoreTemporaryFiles;
-					WebHeaderCollection requestHeaders = new WebHeaderCollection()
-					{
-						{ "Accept", "*/*" },
-						{ "User-Agent", config.UserAgent }
-					};
+					WebHeaderCollection requestHeaders = GetHttpHeadersCopy(config.HttpHeaders);
+					requestHeaders["User-Agent"] = config.UserAgent;
 
 					string outputFilePath = Path.Combine(
 						!config.AutomaticallyMergeToContainer || isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,

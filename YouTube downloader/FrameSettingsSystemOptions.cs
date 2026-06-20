@@ -26,6 +26,10 @@ namespace YouTube_downloader
 				json["ytdlParameters"] = config.YtdlParameters;
 				json["showYtdlConsoleWindow"] = config.ShowYtdlConsoleWindow;
 				json["userAgent"] = config.UserAgent;
+				if (config.HttpHeaders != null && config.HttpHeaders.Count > 0)
+				{
+					json["httpRequestHeaders"] = SerializeHttpHeaders(config.HttpHeaders);
+				}
 				json["threadCountVideo"] = config.ThreadCountVideo;
 				json["threadCountAudio"] = config.ThreadCountAudio;
 				json["globalThreadCountLimit"] = config.GlobalThreadCountLimit;
@@ -118,6 +122,13 @@ namespace YouTube_downloader
 				{
 					JToken jt = json.Value<JToken>("userAgent");
 					config.UserAgent = jt != null ? jt.Value<string>()?.Trim() : Configurator.DEFAULT_USER_AGENT;
+				}
+				{
+					JArray jaHeaders = json.Value<JArray>("httpRequestHeaders");
+					if (jaHeaders != null && jaHeaders.Count > 0)
+					{
+						config.HttpHeaders = DeserializeHttpHeaders(jaHeaders);
+					}
 				}
 				{
 					JToken jt = json.Value<JToken>("threadCountVideo");
@@ -263,6 +274,15 @@ namespace YouTube_downloader
 		{
 			config.UserAgent = Configurator.DEFAULT_USER_AGENT;
 			textBoxUserAgent.Text = Configurator.DEFAULT_USER_AGENT;
+		}
+
+		private void btnEditHttpRequestHeaders_Click(object sender, EventArgs e)
+		{
+			FormHttpHeadersEditor editor = new FormHttpHeadersEditor(config.HttpHeaders);
+			if (editor.ShowDialog() == DialogResult.OK)
+			{
+				config.HttpHeaders = editor.Headers;
+			}
 		}
 
 		private void btnWtfUseRam_Click(object sender, EventArgs e)

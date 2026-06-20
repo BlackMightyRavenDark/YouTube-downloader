@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
@@ -70,6 +71,7 @@ namespace YouTube_downloader
 		public string YtdlParameters { get; set; }
 		public bool ShowYtdlConsoleWindow { get; set; }
 		public string UserAgent { get; set; }
+		public WebHeaderCollection HttpHeaders { get; set; }
 		public int ThreadCountVideo { get; set; }
 		public int ThreadCountAudio { get; set; }
 		public int GlobalThreadCountLimit { get; set; }
@@ -182,6 +184,7 @@ namespace YouTube_downloader
 			YtdlParameters = other.YtdlParameters;
 			ShowYtdlConsoleWindow = other.ShowYtdlConsoleWindow;
 			UserAgent = other.UserAgent;
+			HttpHeaders = other.HttpHeaders != null && other.HttpHeaders.Count > 0 ? Utils.GetHttpHeadersCopy(other.HttpHeaders) : new WebHeaderCollection();
 			ThreadCountVideo = other.ThreadCountVideo;
 			ThreadCountAudio = other.ThreadCountAudio;
 			GlobalThreadCountLimit = other.GlobalThreadCountLimit;
@@ -261,6 +264,7 @@ namespace YouTube_downloader
 			YtdlExeFilePath = "ytdlp.exe";
 			ShowYtdlConsoleWindow = false;
 			UserAgent = DEFAULT_USER_AGENT;
+			HttpHeaders = new WebHeaderCollection();
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;
 			GlobalThreadCountLimit = 300;
