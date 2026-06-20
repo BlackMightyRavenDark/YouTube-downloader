@@ -654,11 +654,9 @@ namespace YouTube_downloader
 				cfg = new Configurator(config);
 			}
 
-			WebHeaderCollection headers = new WebHeaderCollection()
-			{
-				{ "Accept", "*/*" },
-				{ "User-Agent", cfg.UserAgent }
-			};
+			WebHeaderCollection headers = InternetWebPage.GetDefaultHttpHeaders();
+			headers.Remove("Host");
+			headers["User-Agent"] = cfg.UserAgent;
 
 			return new FileDownloader()
 			{
