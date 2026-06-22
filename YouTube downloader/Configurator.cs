@@ -98,6 +98,18 @@ namespace YouTube_downloader
 			"[<year>-<month>-<day> <hour>-<minute>-<second><GMT>] <video_title> (id_<video_id>)";
 		public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
 		public const string DEFAULT_YTDL_PARAMETERS = "<video_url> --dump-json --js-runtimes node --remote-components ejs:github";
+		public const string DEFAULT_HTTP_REQUEST_HEADERS =
+			"""
+			Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+			Accept-Language: en-US,en;q=0.9
+			Accept-Encoding: gzip, deflate, br, zstd
+			Upgrade-Insecure-Requests: 1
+			Sec-Fetch-Dest: document
+			Sec-Fetch-Mode: navigate
+			Sec-Fetch-Site: same-origin
+			Sec-Fetch-User: ?1
+			Connection: keep-alive
+			""";
 
 		public delegate void SavingDelegate(object sender, JObject root);
 		public delegate void LoadingDelegate(object sender, JObject root);
@@ -264,7 +276,7 @@ namespace YouTube_downloader
 			YtdlExeFilePath = "ytdlp.exe";
 			ShowYtdlConsoleWindow = false;
 			UserAgent = DEFAULT_USER_AGENT;
-			HttpHeaders = new();
+			HttpHeaders = MultiThreadedDownloaderLib.Utils.ParseHttpHeaderList(DEFAULT_HTTP_REQUEST_HEADERS);
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;
 			GlobalThreadCountLimit = 300;

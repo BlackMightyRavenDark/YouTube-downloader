@@ -125,7 +125,7 @@ namespace YouTube_downloader
 				}
 				{
 					JArray jaHeaders = json.Value<JArray>("httpRequestHeaders");
-					if (jaHeaders != null && jaHeaders.Count > 0)
+					if (jaHeaders != null)
 					{
 						config.HttpHeaders = DeserializeHttpHeaders(jaHeaders);
 					}

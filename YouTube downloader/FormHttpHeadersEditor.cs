@@ -25,5 +25,16 @@ namespace YouTube_downloader
 			DialogResult = DialogResult.OK;
 			Close();
 		}
+
+		private void btnRestoreDefaults_Click(object sender, EventArgs e)
+		{
+			if (MessageBox.Show("Вернуть значения по-умолчанию?", Text,
+				MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+			{
+				Headers?.Clear();
+				Utils.config.HttpHeaders = MultiThreadedDownloaderLib.Utils.ParseHttpHeaderList(Configurator.DEFAULT_HTTP_REQUEST_HEADERS);
+				textBoxHeaders.Text = Configurator.DEFAULT_HTTP_REQUEST_HEADERS;
+			}
+		}
 	}
 }
