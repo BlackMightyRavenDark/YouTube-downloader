@@ -93,19 +93,19 @@ namespace YouTube_downloader
 			{
 				h = (int)(newSize.Width * aspectSource);
 			}
-			return new Rectangle(0, 0, w, h);
+			return new(0, 0, w, h);
 		}
 
 		public static Rectangle CenterIn(this Rectangle source, Rectangle dest)
 		{
 			int x = dest.Width / 2 - source.Width / 2;
 			int y = dest.Height / 2 - source.Height / 2;
-			return new Rectangle(x, y, source.Width, source.Height);
+			return new(x, y, source.Width, source.Height);
 		}
 
 		public static void SetFontSize(this ContextMenuStrip contextMenu, int newSize)
 		{
-			contextMenu.Font = new Font(contextMenu.Font.FontFamily, newSize);
+			contextMenu.Font = new(contextMenu.Font.FontFamily, newSize);
 		}
 
 		public static string GetTypeAsString(this YouTubeMediaTrack track)
@@ -176,7 +176,7 @@ namespace YouTube_downloader
 
 		public static YouTubeDashUrlList MakeDashUrlList(this YouTubeMediaTrack track, long chunkSize)
 		{
-			List<string> list = new List<string>();
+			List<string> list = new();
 			for (long position = 0L; position < track.ContentLength; position += chunkSize)
 			{
 				long endPos = position + chunkSize - 1L;
@@ -185,7 +185,7 @@ namespace YouTube_downloader
 				list.Add($"&range={rangeValue}");
 			}
 
-			YouTubeDashUrlList dashUrlList = new YouTubeDashUrlList(track.FileUrl.Url, list);
+			YouTubeDashUrlList dashUrlList = new(track.FileUrl.Url, list);
 			return dashUrlList;
 		}
 
@@ -200,13 +200,13 @@ namespace YouTube_downloader
 			string formattedFileSize = track.ContentLength > 0 ? FormatSize(track.ContentLength) : string.Empty;
 			string chunkCount = track.GetFormattedDashChunkCount();
 
-			string[] data = new string[]
+			string[] data = new[]
 			{
 				trackType, trackId, resolution, fps, formattedBitrate,
 				track.FileExtension, track.MimeCodecs, formattedFileSize, chunkCount
 			};
 
-			return new TableRow(data, track);
+			return new(data, track);
 		}
 
 		public static int GetLifeTimeSeconds(this YouTubeStreamingData streamingData)
@@ -262,12 +262,12 @@ namespace YouTube_downloader
 
 		public static Rectangle Deflate(this Rectangle rectangle, int width, int height)
 		{
-			return new Rectangle(rectangle.X, rectangle.Y, rectangle.Width - width, rectangle.Height - height);
+			return new(rectangle.X, rectangle.Y, rectangle.Width - width, rectangle.Height - height);
 		}
 
 		public static Rectangle Deflate(this Rectangle rectangle, int left, int top, int right, int bottom)
 		{
-			return new Rectangle(rectangle.Left + left, rectangle.Top + top,
+			return new(rectangle.Left + left, rectangle.Top + top,
 				rectangle.Width - right - left, rectangle.Height - bottom - top);
 		}
 	}

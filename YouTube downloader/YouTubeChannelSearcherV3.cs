@@ -54,7 +54,7 @@ namespace YouTube_downloader
 			ResultCountLimit = resultCountLimit;
 			PageToken = pageToken;
 			Downloader = downloader;
-			FoundVideos = new List<YouTubeSearcherV3ResultVideo>();
+			FoundVideos = new();
 		}
 
 		public object Search()
@@ -64,7 +64,7 @@ namespace YouTube_downloader
 			int exceptionInRowCount = 0;
 			do
 			{
-				Dictionary<string, string> requestQuery = new Dictionary<string, string>()
+				Dictionary<string, string> requestQuery = new()
 				{
 					{ "key", ApiKey },
 					{ "part", "snippet" },
@@ -176,7 +176,7 @@ namespace YouTube_downloader
 			string channelTitle = jSnippet.Value<string>("channelTitle");
 			bool isLiveContent = jSnippet.Value<string>("liveBroadcastContent") == "live";
 
-			List<YouTubeVideoThumbnail> thumbnails = new List<YouTubeVideoThumbnail>();
+			List<YouTubeVideoThumbnail> thumbnails = new();
 			JObject jThumbnails = jSnippet.Value<JObject>("thumbnails");
 			var list = jThumbnails.Properties().Select(item => item.Value as JObject);
 			if (list != null && list.Count() > 0)
@@ -196,7 +196,7 @@ namespace YouTube_downloader
 				}
 			}
 
-			YouTubeSearcherV3ResultVideo v3Video = new YouTubeSearcherV3ResultVideo(
+			YouTubeSearcherV3ResultVideo v3Video = new(
 				id, title, description, publshedAt, channelId, channelTitle,
 				thumbnails, isLiveContent);
 			FoundVideos.Add(v3Video);

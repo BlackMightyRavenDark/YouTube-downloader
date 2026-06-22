@@ -13,10 +13,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				if (_computerInfo == null)
-				{
-					_computerInfo = new Microsoft.VisualBasic.Devices.ComputerInfo();
-				}
+				_computerInfo ??= new();
 
 				RamTotal = _computerInfo.TotalPhysicalMemory;
 				RamFree = _computerInfo.AvailablePhysicalMemory;

@@ -43,7 +43,7 @@ namespace YouTube_downloader
 		public YouTubeRawVideoInfoResult GetRawVideoInfo(YouTubeVideoId videoId, out string errorMessage)
 		{
 			int errorCode = GetRawVideoInfo(videoId.Id, out YouTubeRawVideoInfo rawVideoInfo, out errorMessage);
-			return new YouTubeRawVideoInfoResult(errorCode == 200 ? rawVideoInfo : null, errorCode);
+			return new(errorCode == 200 ? rawVideoInfo : null, errorCode);
 		}
 
 		public int GetRawVideoInfo(string videoId, out YouTubeRawVideoInfo rawVideoInfo, out string errorMessage)

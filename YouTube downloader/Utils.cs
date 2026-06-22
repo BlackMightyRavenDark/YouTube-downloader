@@ -21,14 +21,14 @@ namespace YouTube_downloader
 		public const string YOUTUBE_ENDPOINT_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
 		public const string YOUTUBE_CHANNEL_URL_TEMPLATE = "https://www.youtube.com/channel/{0}/videos";
 
-		public static List<YouTubeChannelInfo> channelInfos = new List<YouTubeChannelInfo>();
-		public static List<YouTubeVideo> videos = new List<YouTubeVideo>();
-		public static List<FrameYouTubeChannel> framesChannel = new List<FrameYouTubeChannel>();
-		public static List<FrameYouTubeVideo> framesVideo = new List<FrameYouTubeVideo>();
+		public static List<YouTubeChannelInfo> channelInfos = new();
+		public static List<YouTubeVideo> videos = new();
+		public static List<FrameYouTubeChannel> framesChannel = new();
+		public static List<FrameYouTubeVideo> framesVideo = new();
 
 		public static TreeListView treeFavorites = null;
 		public static FavoriteItem favoritesRootNode = null;
-		public static readonly Configurator config = new Configurator();
+		public static readonly Configurator config = new();
 
 		public static readonly bool Is64BitProcess = Environment.Is64BitProcess;
 
@@ -236,7 +236,7 @@ namespace YouTube_downloader
 			{
 				foreach (char letter in driveLetters)
 				{
-					DriveInfo driveInfo = new DriveInfo(letter.ToString());
+					DriveInfo driveInfo = new(letter.ToString());
 					if (driveInfo.AvailableFreeSpace < contentLength)
 					{
 						errorMessage = null;
@@ -297,7 +297,7 @@ namespace YouTube_downloader
 				}
 
 				char downloadDirectoryDriveLetter = config.DownloadDirectory[0];
-				DriveInfo driveInfoTempDirectory = new DriveInfo(tempDirectoryDriveLetter.ToString());
+				DriveInfo driveInfoTempDirectory = new(tempDirectoryDriveLetter.ToString());
 				if (tempDirectoryDriveLetter == chunkMergerDirectoryDriveLetter)
 				{
 					if (config.AutomaticallyMergeToContainer && downloadDirectoryDriveLetter == chunkMergerDirectoryDriveLetter)
@@ -317,7 +317,7 @@ namespace YouTube_downloader
 						return false;
 					}
 
-					DriveInfo driveInfoMergerDirectory = new DriveInfo(chunkMergerDirectoryDriveLetter.ToString());
+					DriveInfo driveInfoMergerDirectory = new(chunkMergerDirectoryDriveLetter.ToString());
 					if (driveInfoMergerDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
 					{
 						return false;
@@ -340,7 +340,7 @@ namespace YouTube_downloader
 					}
 					else
 					{
-						DriveInfo driveInfoDownloadDirectory = new DriveInfo(downloadDirectoryDriveLetter.ToString());
+						DriveInfo driveInfoDownloadDirectory = new(downloadDirectoryDriveLetter.ToString());
 						if (driveInfoDownloadDirectory.AvailableFreeSpace < minimumFreeSpaceRequired)
 						{
 							return false;
@@ -387,10 +387,10 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				Bitmap bitmap = new Bitmap(width, height);
+				Bitmap bitmap = new(width, height);
 				Graphics g = Graphics.FromImage(bitmap);
 				g.FillRectangle(Brushes.Black, 0, 0, width, height);
-				Font font = new Font("Lucida Console", 15f);
+				Font font = new("Lucida Console", 15f);
 				float xCenter = width / 2f;
 				float yCenter = height / 2f;
 
@@ -422,10 +422,10 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				Bitmap bitmap = new Bitmap(width, height);
+				Bitmap bitmap = new(width, height);
 				Graphics g = Graphics.FromImage(bitmap);
 				g.FillRectangle(Brushes.Black, 0, 0, width, height);
-				Font font = new Font("Lucida Console", 15f);
+				Font font = new("Lucida Console", 15f);
 
 				string t = $"Ошибка!";
 				SizeF sz = g.MeasureString(t, font);
@@ -523,7 +523,7 @@ namespace YouTube_downloader
 
 		public static int[] GetTrackAccessibilityHttpStatusCodes(IEnumerable<YouTubeMediaTrack> tracks, int connectionTimeout)
 		{
-			WebHeaderCollection headers = new WebHeaderCollection()
+			WebHeaderCollection headers = new()
 			{
 				{ "Accept", "*/*" },
 				{ "User-Agent", config.UserAgent }
@@ -651,14 +651,14 @@ namespace YouTube_downloader
 			Configurator cfg;
 			lock (config)
 			{
-				cfg = new Configurator(config);
+				cfg = new(config);
 			}
 
 			WebHeaderCollection headers = cfg.HttpHeaders;
 			headers.Remove("Host");
 			headers["User-Agent"] = cfg.UserAgent;
 
-			return new FileDownloader()
+			return new()
 			{
 				Headers = headers,
 				TryCountLimit = cfg.ChunkDownloadInnerErrorCountLimit,
@@ -668,7 +668,7 @@ namespace YouTube_downloader
 
 		public static WebHeaderCollection GetHttpHeadersCopy(WebHeaderCollection headers)
 		{
-			WebHeaderCollection result = new WebHeaderCollection();
+			WebHeaderCollection result = new();
 			foreach (string name in headers.AllKeys)
 			{
 				result.Add(name, headers[name]);
@@ -678,10 +678,10 @@ namespace YouTube_downloader
 
 		public static JArray SerializeHttpHeaders(WebHeaderCollection headers)
 		{
-			JArray jaHeaders = new JArray();
+			JArray jaHeaders = new();
 			foreach (string name in headers.AllKeys)
 			{
-				JObject jHeader = new JObject()
+				JObject jHeader = new()
 				{
 					["name"] = name,
 					["value"] = headers[name]
@@ -693,7 +693,7 @@ namespace YouTube_downloader
 
 		public static WebHeaderCollection DeserializeHttpHeaders(JArray jaHeaders)
 		{
-			WebHeaderCollection result = new WebHeaderCollection();
+			WebHeaderCollection result = new();
 			foreach (JObject jHeader in jaHeaders.Cast<JObject>())
 			{
 				string name = jHeader.Value<string>("name");
@@ -764,7 +764,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				Process process = new Process();
+				Process process = new();
 				process.StartInfo.UseShellExecute = true;
 				process.StartInfo.FileName = "cmd.exe";
 				string t = Path.GetFileName(config.FfmpegExeFilePath);
@@ -825,7 +825,7 @@ namespace YouTube_downloader
 			try
 			{
 				errorMessage = null;
-				Process process = new Process();
+				Process process = new();
 				process.StartInfo.UseShellExecute = true;
 				process.StartInfo.FileName = "cmd.exe";
 				string ffmpegFileName = Path.GetFileName(config.FfmpegExeFilePath);
@@ -863,7 +863,7 @@ namespace YouTube_downloader
 				errorMessage = null;
 				if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
 				{
-					Process process = new Process();
+					Process process = new();
 					if (!string.IsNullOrEmpty(config.WebBrowserExeFilePath) &&
 						!string.IsNullOrWhiteSpace(config.WebBrowserExeFilePath))
 					{
@@ -898,7 +898,7 @@ namespace YouTube_downloader
 
 		internal static string FindRegExp(string inputString, string pattern)
 		{
-			Regex regex = new Regex(pattern);
+			Regex regex = new(pattern);
 			MatchCollection matches = regex.Matches(inputString);
 			return matches.Count > 0 && matches[0].Groups.Count > 1 ? matches[0].Groups[1].Value : null;
 		}

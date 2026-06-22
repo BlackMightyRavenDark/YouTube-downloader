@@ -101,7 +101,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+				using (FolderBrowserDialog folderBrowserDialog = new()
 				{
 					Description = "Выберите папку для скачивания",
 					SelectedPath = (!string.IsNullOrEmpty(config.DownloadDirectory) && Directory.Exists(config.DownloadDirectory)) ?
@@ -126,7 +126,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+				using (FolderBrowserDialog folderBrowserDialog = new()
 				{
 					Description = "Выберите папку для временных файлов",
 					SelectedPath = (!string.IsNullOrEmpty(config.TemporaryDirectory) && Directory.Exists(config.TemporaryDirectory)) ?
@@ -160,7 +160,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+				using (FolderBrowserDialog folderBrowserDialog = new()
 				{
 					Description = "Выберите папку для объединения чанков",
 					SelectedPath = !string.IsNullOrEmpty(config.ChunkMergerDirectory) && Directory.Exists(config.ChunkMergerDirectory) ?
@@ -197,7 +197,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				using (OpenFileDialog openFileDialog = new OpenFileDialog()
+				using (OpenFileDialog openFileDialog = new()
 				{
 					Title = "Выберите EXE-файл браузера",
 					Filter = "EXE-файлы|*.exe"
@@ -221,7 +221,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				using (OpenFileDialog openFileDialog = new OpenFileDialog()
+				using (OpenFileDialog openFileDialog = new()
 				{
 					Title = "Выберите EXE-файл FFMPEG",
 					Filter = "EXE-файлы|*.exe"
@@ -245,7 +245,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				using (OpenFileDialog openFileDialog = new OpenFileDialog()
+				using (OpenFileDialog openFileDialog = new()
 				{
 					Title = "Выберите EXE-файл youtube-dl или ytdlp",
 					Filter = "EXE-файлы|*.exe"

@@ -40,12 +40,12 @@ namespace YouTube_downloader
 						float n = (float)Math.Floor(item.Value * itemWidth / item.MaxValue);
 						if (n > 0.0f)
 						{
-							rect = new Rectangle((int)itemPositionX, 0, (int)n, rectangle.Height);
+							rect = new((int)itemPositionX, 0, (int)n, rectangle.Height);
 							Brush brush = new SolidBrush(item.BackgroundColor);
 							e.Graphics.FillRectangle(brush, rect);
 							brush.Dispose();
 						}
-						rect = new Rectangle((int)itemPositionX, 0, (int)itemWidth, rectangle.Height);
+						rect = new((int)itemPositionX, 0, (int)itemWidth, rectangle.Height);
 						e.Graphics.SetClip(rect);
 						e.Graphics.DrawLine(Pens.Black, rect.Left, rect.Top, rect.Left, rect.Bottom);
 
@@ -76,7 +76,7 @@ namespace YouTube_downloader
 
 		public void SetItem(int min, int max, int value, string title, Color backgroundColor)
 		{
-			MultipleProgressBarItem item = new MultipleProgressBarItem(min, max, value, title, backgroundColor);
+			MultipleProgressBarItem item = new(min, max, value, title, backgroundColor);
 			SetItems(new[] { item });
 		}
 

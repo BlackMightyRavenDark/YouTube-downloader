@@ -21,7 +21,7 @@ namespace YouTube_downloader
 			Title = title;
 			DisplayName = displayName;
 			Parent = parent;
-			Children = new List<FavoriteItem>();
+			Children = new();
 		}
 
 		/// <summary>

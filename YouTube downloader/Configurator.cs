@@ -184,7 +184,7 @@ namespace YouTube_downloader
 			YtdlParameters = other.YtdlParameters;
 			ShowYtdlConsoleWindow = other.ShowYtdlConsoleWindow;
 			UserAgent = other.UserAgent;
-			HttpHeaders = other.HttpHeaders != null && other.HttpHeaders.Count > 0 ? Utils.GetHttpHeadersCopy(other.HttpHeaders) : new WebHeaderCollection();
+			HttpHeaders = other.HttpHeaders != null && other.HttpHeaders.Count > 0 ? Utils.GetHttpHeadersCopy(other.HttpHeaders) : new();
 			ThreadCountVideo = other.ThreadCountVideo;
 			ThreadCountAudio = other.ThreadCountAudio;
 			GlobalThreadCountLimit = other.GlobalThreadCountLimit;
@@ -208,7 +208,7 @@ namespace YouTube_downloader
 			{
 				File.Delete(FilePath);
 			}
-			JObject json = new JObject();
+			JObject json = new();
 			Saving?.Invoke(this, json);
 			File.WriteAllText(FilePath, json.ToString());
 		}
@@ -264,7 +264,7 @@ namespace YouTube_downloader
 			YtdlExeFilePath = "ytdlp.exe";
 			ShowYtdlConsoleWindow = false;
 			UserAgent = DEFAULT_USER_AGENT;
-			HttpHeaders = new WebHeaderCollection();
+			HttpHeaders = new();
 			ThreadCountVideo = 8;
 			ThreadCountAudio = 4;
 			GlobalThreadCountLimit = 300;

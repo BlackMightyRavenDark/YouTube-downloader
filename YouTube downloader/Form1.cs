@@ -42,7 +42,7 @@ namespace YouTube_downloader
 				MultiThreadedDownloaderLib.Utils.ConnectionLimit = config.GlobalThreadCountLimit;
 			};
 			config.MenusFontSizeChanged += (s, sz) => SetMenusFontSize(sz);
-			config.FavoritesListFontSizeChanged += (s, sz) => objectTreeViewFavorites.Font = new Font(objectTreeViewFavorites.Font.FontFamily, sz);
+			config.FavoritesListFontSizeChanged += (s, sz) => objectTreeViewFavorites.Font = new(objectTreeViewFavorites.Font.FontFamily, sz);
 			config.Load();
 
 			try
@@ -110,7 +110,7 @@ namespace YouTube_downloader
 				objectTreeViewFavorites.ChildrenGetter = obj => (obj as FavoriteItem).Children;
 				objectTreeViewFavorites.ParentGetter = obj => (obj as FavoriteItem).Parent;
 				objectTreeViewFavorites.CanExpandGetter = obj => (obj as FavoriteItem).Children?.Count > 0;
-				favoritesRootNode = new FavoriteItem("Избранное");
+				favoritesRootNode = new("Избранное");
 				objectTreeViewFavorites.Roots = new List<FavoriteItem>() { favoritesRootNode };
 				treeFavorites = objectTreeViewFavorites;
 			}
@@ -179,7 +179,7 @@ namespace YouTube_downloader
 							}
 
 							string id = !string.IsNullOrEmpty(item.ChannelId) && !string.IsNullOrWhiteSpace(item.ChannelId) ? item.ChannelId : item.Id;
-							YouTubeChannel channel = new YouTubeChannel(id, item.Title);
+							YouTubeChannel channel = new(id, item.Title);
 							OpenChannel(channel);
 						}
 					}
@@ -244,14 +244,14 @@ namespace YouTube_downloader
 			{
 				ushort resultCountLimit = (ushort)(radioButtonSearchResultCountLimitUserDefinedNumber.Checked ? numericUpDownSearchResultCountLimit.Value : 500);
 				string searchQuery = UrlEncode(textBoxSearchQuery.Text);
-				List<string> strings = new List<string>();
+				List<string> strings = new();
 				if (checkBoxSearchVideos.Checked) { strings.Add("video"); }
 				if (checkBoxSearchChannels.Checked) { strings.Add("channel"); }
 				string types = string.Join(",", strings);
 				DateTime after = checkBoxSearchRangePublishedAfter.Checked ? dateTimePickerSearchAfter.Value.ToUniversalTime() : DateTime.MaxValue;
 				DateTime before = checkBoxSearchRangePublishedBefore.Checked ? dateTimePickerSearchBefore.Value.ToUniversalTime() : DateTime.MaxValue;
 				FileDownloader d = CreateConfiguredDownloader();
-				YouTubeQuerySearcherV3 searcher = new YouTubeQuerySearcherV3(config.YouTubeApiV3Key, searchQuery,
+				YouTubeQuerySearcherV3 searcher = new(config.YouTubeApiV3Key, searchQuery,
 					after, before, types, null, resultCountLimit, null, d);
 				int totalFound = await Task.Run(() => (int)searcher.Search());
 				tabPageSearchResults.Text = $"Результаты поиска: {totalFound}";
@@ -264,7 +264,7 @@ namespace YouTube_downloader
 
 					foreach (YouTubeSearcherV3ResultChannel v3Channel in searcher.FoundChannels)
 					{
-						YouTubeChannelInfo channelInfo = new YouTubeChannelInfo()
+						YouTubeChannelInfo channelInfo = new()
 						{
 							Id = v3Channel.Id,
 							Title = v3Channel.Title,
@@ -598,14 +598,14 @@ namespace YouTube_downloader
 
 		private void SaveNode(FavoriteItem root, JArray jsonArr)
 		{
-			JObject json = new JObject()
+			JObject json = new()
 			{
 				["displayName"] = root.DisplayName
 			};
 
 			if (root.Children.Count > 0) // The item is directory (folder).
 			{
-				JArray jaSubItems = new JArray();
+				JArray jaSubItems = new();
 				for (int i = 0; i < root.Children.Count; ++i)
 				{
 					SaveNode(root.Children[i], jaSubItems);
@@ -637,12 +637,12 @@ namespace YouTube_downloader
 
 		private void SaveFavorites(string fileName)
 		{
-			JArray jsonArr = new JArray();
+			JArray jsonArr = new();
 			for (int i = 0; i < favoritesRootNode.Children.Count; ++i)
 			{
 				SaveNode(favoritesRootNode.Children[i], jsonArr);
 			}
-			JObject json = new JObject()
+			JObject json = new()
 			{
 				["items"] = jsonArr
 			};
@@ -654,7 +654,7 @@ namespace YouTube_downloader
 			string displayName = item.Value<string>("displayName");
 			JToken jt = item.Value<JToken>("title");
 			string title = jt != null ? jt.Value<string>() : displayName;
-			FavoriteItem favoriteItem = new FavoriteItem(title, displayName, root);
+			FavoriteItem favoriteItem = new(title, displayName, root);
 			JArray jaSubItems = item.Value<JArray>("subItems");
 			if (jaSubItems != null)
 			{
@@ -755,7 +755,7 @@ namespace YouTube_downloader
 		private void CreateAndAddNewFrame(YouTubeVideo video, YouTubeVideoWebPage webPage,
 			bool isVideoInfoFoundByWebPage, bool updateThumbnail)
 		{
-			FrameYouTubeVideo frame = new FrameYouTubeVideo(video, webPage, isVideoInfoFoundByWebPage,
+			FrameYouTubeVideo frame = new(video, webPage, isVideoInfoFoundByWebPage,
 				updateThumbnail, panelSearchResults);
 			frame.SetMenusFontSize(config.MenusFontSize);
 			frame.FavoriteChannelChanged += (s, id, newState) =>
@@ -775,7 +775,7 @@ namespace YouTube_downloader
 
 		private void CreateAndAddNewFrame(YouTubeChannelInfo channel)
 		{
-			FrameYouTubeChannel frame = new FrameYouTubeChannel(panelSearchResults);
+			FrameYouTubeChannel frame = new(panelSearchResults);
 			frame.SetChannelInfo(channel);
 			frame.Activated += event_FrameActivated;
 			frame.OpenChannel += event_OpenChannel;
@@ -867,7 +867,7 @@ namespace YouTube_downloader
 				DateTime after = checkBoxSearchRangePublishedAfter.Checked ? dateTimePickerSearchAfter.Value.ToUniversalTime() : DateTime.MaxValue;
 				DateTime before = checkBoxSearchRangePublishedBefore.Checked ? dateTimePickerSearchBefore.Value.ToUniversalTime() : DateTime.MaxValue;
 				FileDownloader d = CreateConfiguredDownloader();
-				YouTubeChannelSearcherV3 searcher = new YouTubeChannelSearcherV3(
+				YouTubeChannelSearcherV3 searcher = new(
 					config.YouTubeApiV3Key, channel.Id, after, before, resultCountLimit, null, d);
 				int totalFound = await Task.Run(() => (int)searcher.Search());
 				tabPageSearchResults.Text = $"Результаты поиска: {totalFound}";
@@ -952,7 +952,7 @@ namespace YouTube_downloader
 					return;
 				}
 
-				YouTubeChannel channel = new YouTubeChannel(channelId, channelName);
+				YouTubeChannel channel = new(channelId, channelName);
 				OpenChannel(channel);
 			}
 		}

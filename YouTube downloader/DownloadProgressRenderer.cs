@@ -127,7 +127,7 @@ namespace YouTube_downloader
 						}
 				}
 
-				MultipleProgressBarItem mpi = new MultipleProgressBarItem((int)percent, itemText, itemColor);
+				MultipleProgressBarItem mpi = new((int)percent, itemText, itemColor);
 				yield return mpi;
 			}
 
@@ -145,12 +145,12 @@ namespace YouTube_downloader
 			MultipleProgressBarItem[] items = new MultipleProgressBarItem[chunkCount];
 			for (int i = 0; i < chunkCount; ++i)
 			{
-				if (i < currentChunkId) { items[i] = new MultipleProgressBarItem(100, "100,00%"); }
-				else if (i > currentChunkId) { items[i] = new MultipleProgressBarItem(0, "0,00%"); }
+				if (i < currentChunkId) { items[i] = new(100, "100,00%"); }
+				else if (i > currentChunkId) { items[i] = new(0, "0,00%"); }
 				else
 				{
 					string percentFormatted = string.Format("{0:F2}", currentChunkProgressPercent);
-					items[i] = new MultipleProgressBarItem((int)currentChunkProgressPercent, $"{percentFormatted}%");
+					items[i] = new((int)currentChunkProgressPercent, $"{percentFormatted}%");
 				}
 			}
 			return items;

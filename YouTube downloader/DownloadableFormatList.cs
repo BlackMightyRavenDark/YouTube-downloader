@@ -145,18 +145,18 @@ namespace YouTube_downloader
 					}
 				}
 
-				List<TableRow> tableRows = new List<TableRow>();
-				List<TableColumn> tableColumns = new List<TableColumn>()
+				List<TableRow> tableRows = new();
+				List<TableColumn> tableColumns = new()
 				{
-					new TableColumn(TableColumnAlignment.Left),
-					new TableColumn(TableColumnAlignment.Left),
-					new TableColumn(TableColumnAlignment.Right),
-					new TableColumn(TableColumnAlignment.Right),
-					new TableColumn(TableColumnAlignment.Right),
-					new TableColumn(TableColumnAlignment.Left),
-					new TableColumn(TableColumnAlignment.Left),
-					new TableColumn(TableColumnAlignment.Right),
-					new TableColumn(TableColumnAlignment.Right)
+					new(TableColumnAlignment.Left),
+					new(TableColumnAlignment.Left),
+					new(TableColumnAlignment.Right),
+					new(TableColumnAlignment.Right),
+					new(TableColumnAlignment.Right),
+					new(TableColumnAlignment.Left),
+					new(TableColumnAlignment.Left),
+					new(TableColumnAlignment.Right),
+					new(TableColumnAlignment.Right)
 				};
 
 				bool showHls = Streams.Count > 0 && (!config.ShowHlsTracksOnlyForStreams ||
@@ -184,24 +184,24 @@ namespace YouTube_downloader
 					tableRows.Add(trackAudio.ToTableRow());
 				}
 
-				Table table = new Table(tableRows, tableColumns);
+				Table table = new(tableRows, tableColumns);
 				table.Format();
 				const string columnSeparator = " | ";
 
 				if (table.Rows.Count > 0)
 				{
-					ContextMenuStrip menu = new ContextMenuStrip()
+					ContextMenuStrip menu = new()
 					{
-						Font = new System.Drawing.Font("Lucida Console", config.MenusFontSize),
+						Font = new("Lucida Console", config.MenusFontSize),
 						Renderer = new FormatListContextMenuRenderer()
 					};
 
 					foreach (TableRow row in table.Rows)
 					{
 						string rowText = row.Join(columnSeparator);
-						ToolStripMenuItem mi = new ToolStripMenuItem(rowText)
+						ToolStripMenuItem mi = new(rowText)
 						{
-							Padding = new Padding(0, 4, 0, 4),
+							Padding = new(0, 4, 0, 4),
 							Tag = row.Tag
 						};
 						if (menuItemClickHandler != null)
@@ -213,7 +213,7 @@ namespace YouTube_downloader
 
 					if (VideoOnlyTracks.Count + AudioOnlyTracks.Count > 0)
 					{
-						ToolStripMenuItem mi = new ToolStripMenuItem("Выбрать форматы...");
+						ToolStripMenuItem mi = new("Выбрать форматы...");
 						if (menuItemClickHandler != null)
 						{
 							mi.Click += menuItemClickHandler;

@@ -25,7 +25,7 @@ namespace YouTube_downloader
 
 		internal YouTubeVideoWrapper ToVideo()
 		{
-			return new YouTubeVideoWrapper(this);
+			return new(this);
 		}
 	}
 }

@@ -13,11 +13,11 @@ namespace YouTube_downloader
 		public FormTrackSelector(List<YouTubeMediaTrack> mediaTracks)
 		{
 			InitializeComponent();
-			SelectedTracks = new List<YouTubeMediaTrack>();
+			SelectedTracks = new();
 
 			SetupListView();
 
-			List<TrackSelectorItem> root = new List<TrackSelectorItem>();
+			List<TrackSelectorItem> root = new();
 			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
 			{
 				if (mediaTrack.GetType() == typeof(YouTubeMediaTrackVideo))
@@ -25,7 +25,7 @@ namespace YouTube_downloader
 					YouTubeMediaTrackVideo videoFile = mediaTrack as YouTubeMediaTrackVideo;
 					string resolution = $"{videoFile.VideoWidth}x{videoFile.VideoHeight}";
 					int chunkCount = videoFile.DashUrls != null ? videoFile.DashUrls.Count : -1;
-					TrackSelectorItem trackItem = new TrackSelectorItem("Видео", resolution, videoFile.FrameRate,
+					TrackSelectorItem trackItem = new("Видео", resolution, videoFile.FrameRate,
 						videoFile.Bitrate, videoFile.AverageBitrate, videoFile.FileExtension,
 						videoFile.ContentLength, chunkCount, mediaTrack);
 					root.Add(trackItem);
@@ -37,7 +37,7 @@ namespace YouTube_downloader
 				{
 					YouTubeMediaTrackAudio audioTrack = mediaTrack as YouTubeMediaTrackAudio;
 					int chunkCount = audioTrack.DashUrls != null ? audioTrack.DashUrls.Count : -1;
-					TrackSelectorItem trackItem = new TrackSelectorItem("Аудио", null, -1,
+					TrackSelectorItem trackItem = new("Аудио", null, -1,
 						audioTrack.Bitrate, audioTrack.AverageBitrate, audioTrack.FileExtension,
 						audioTrack.ContentLength, chunkCount, mediaTrack);
 					root.Add(trackItem);

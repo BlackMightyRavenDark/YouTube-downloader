@@ -278,7 +278,7 @@ namespace YouTube_downloader
 
 		private void btnEditHttpRequestHeaders_Click(object sender, EventArgs e)
 		{
-			FormHttpHeadersEditor editor = new FormHttpHeadersEditor(config.HttpHeaders);
+			FormHttpHeadersEditor editor = new(config.HttpHeaders);
 			if (editor.ShowDialog() == DialogResult.OK)
 			{
 				config.HttpHeaders = editor.Headers;

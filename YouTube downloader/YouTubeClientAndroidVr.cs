@@ -21,18 +21,18 @@ namespace YouTube_downloader
 		{
 			if (youTubeConfig == null) { return null; }
 
-			JObject jContentPlaybackContext = new JObject()
+			JObject jContentPlaybackContext = new()
 			{
 				["html5Preference"] = "HTML5_PREF_WANTS",
 				["signatureTimestamp"] = youTubeConfig.SignatureTimestamp
 			};
 
-			JObject jPlaybackContext = new JObject()
+			JObject jPlaybackContext = new()
 			{
 				["contentPlaybackContext"] = jContentPlaybackContext
 			};
 
-			JObject jClient = new JObject()
+			JObject jClient = new()
 			{
 				["clientName"] = "ANDROID_VR",
 				["clientVersion"] = CLIENT_VERSION,
@@ -44,12 +44,12 @@ namespace YouTube_downloader
 				["osVersion"] = OS_VERSION
 			};
 
-			JObject jContext = new JObject()
+			JObject jContext = new()
 			{
 				["client"] = jClient
 			};
 
-			return new JObject()
+			return new()
 			{
 				["context"] = jContext,
 				["playbackContext"] = jPlaybackContext,
@@ -61,7 +61,7 @@ namespace YouTube_downloader
 
 		public WebHeaderCollection GenerateRequestHeaders(string videoId, YouTubeConfig youTubeConfig = null)
 		{
-			return new WebHeaderCollection()
+			return new()
 			{
 				{ "Origin", YouTubeApiLib.Utils.YOUTUBE_URL },
 				{ "X-Goog-Visitor-Id", youTubeConfig.VisitorData },
@@ -74,7 +74,7 @@ namespace YouTube_downloader
 		public YouTubeRawVideoInfoResult GetRawVideoInfo(YouTubeVideoId videoId, out string errorMessage)
 		{
 			int errorCode = GetRawVideoInfo(videoId.Id, out YouTubeRawVideoInfo rawVideoInfo, out errorMessage);
-			return new YouTubeRawVideoInfoResult(rawVideoInfo, errorCode);
+			return new(rawVideoInfo, errorCode);
 		}
 
 		public int GetRawVideoInfo(string videoId, out YouTubeRawVideoInfo rawVideoInfo, out string errorMessage)

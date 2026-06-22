@@ -11,7 +11,7 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				Rectangle rectangle = new Rectangle(0, 0, e.Item.Width, e.Item.Height);
+				Rectangle rectangle = new(0, 0, e.Item.Width, e.Item.Height);
 				Color color = GetItemBackgroundColor(e.Item.Tag, e.Item.BackColor);
 				using (Brush brush = new SolidBrush(color))
 				{
@@ -34,7 +34,7 @@ namespace YouTube_downloader
 
 		protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
 		{
-			e.TextRectangle = new Rectangle(10, 0, e.Item.Width, e.Item.Height);
+			e.TextRectangle = new(10, 0, e.Item.Width, e.Item.Height);
 			e.TextFormat = TextFormatFlags.VerticalCenter;
 			base.OnRenderItemText(e);
 		}

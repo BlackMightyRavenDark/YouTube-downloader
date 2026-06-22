@@ -42,7 +42,7 @@ namespace YouTube_downloader
 
 		internal bool UpdateTrackList()
 		{
-			YouTubeClientYtdl client = new YouTubeClientYtdl(Utils.config.YtdlExeFilePath, Utils.config.YtdlParameters, Utils.config.ShowYtdlConsoleWindow);
+			YouTubeClientYtdl client = new(Utils.config.YtdlExeFilePath, Utils.config.YtdlParameters, Utils.config.ShowYtdlConsoleWindow);
 			YouTubeRawVideoInfoResult raw = client.GetRawVideoInfo(new YouTubeVideoId(Id), out _);
 			if (raw.ErrorCode == 200)
 			{

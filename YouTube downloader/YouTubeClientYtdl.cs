@@ -57,13 +57,13 @@ namespace YouTube_downloader
 		public YouTubeRawVideoInfoResult GetRawVideoInfo(YouTubeVideoId videoId, out string errorMessage)
 		{
 			int errorCode = GetRawVideoInfo(videoId.Id, out YouTubeRawVideoInfo rawVideoInfo, out errorMessage);
-			return new YouTubeRawVideoInfoResult(rawVideoInfo, errorCode);
+			return new(rawVideoInfo, errorCode);
 		}
 
 		public int GetRawVideoInfo(string videoId, out YouTubeRawVideoInfo rawVideoInfo, out string errorMessage)
 		{
 			bool ok = CallYtdl(videoId, out string raw);
-			rawVideoInfo = new YouTubeRawVideoInfo(raw, this, null, DateTime.UtcNow);
+			rawVideoInfo = new(raw, this, null, DateTime.UtcNow);
 			if (ok)
 			{
 				Video = ParseYtdlJson(raw, out errorMessage);
@@ -92,7 +92,7 @@ namespace YouTube_downloader
 
 			try
 			{
-				Process process = new Process();
+				Process process = new();
 				process.StartInfo.FileName = YtdlExeFilePath;
 				process.StartInfo.Arguments = CommandLineArguments.Replace("<video_url>", YouTubeApiLib.Utils.GetYouTubeVideoUrl(videoId));
 				process.StartInfo.UseShellExecute = false;
@@ -144,7 +144,7 @@ namespace YouTube_downloader
 					bool isLiveNow = liveStatus == "live";
 					JArray jaThumbnails = json.Value<JArray>("thumbnails");
 
-					List<YouTubeVideoThumbnail> thumbnails = new List<YouTubeVideoThumbnail>();
+					List<YouTubeVideoThumbnail> thumbnails = new();
 					if (jaThumbnails != null && jaThumbnails.Count > 0)
 					{
 						thumbnails.Capacity = jaThumbnails.Count;
@@ -164,7 +164,7 @@ namespace YouTube_downloader
 					}
 
 					var tracks = ParseYtdlFormats(json.Value<JArray>("formats")).ToList();
-					YouTubeVideoPlayabilityStatus status = new YouTubeVideoPlayabilityStatus("OK", null, null, true, true, isPrivate, false, false, false, false, null, null, null);
+					YouTubeVideoPlayabilityStatus status = new("OK", null, null, true, true, isPrivate, false, false, false, false, null, null, null);
 
 					return new YtdlVideo(title, id, duration, publishDate, channelTitle, channelId,
 						description, viewCount, null, isPrivate, isFamilySafe, isLiveContent, isLiveNow,
@@ -209,13 +209,13 @@ namespace YouTube_downloader
 					long fileSize = TryGetValue<long>(jFormat, "filesize");
 					string[] id = jFormat.Value<string>("format_id").Split('-');
 					if (!int.TryParse(id[0], out int formatId)) { formatId = 0; }
-					YouTubeMediaTrackUrl url = new YouTubeMediaTrackUrl(jFormat.Value<string>("url"), null);
+					YouTubeMediaTrackUrl url = new(jFormat.Value<string>("url"), null);
 					bool isHls = jFormat.ContainsKey("manifest_url");
 					if (isHls)
 					{
 						string manifestUrl = jFormat.Value<string>("manifest_url");
 						string raw = jFormat.ToString();
-						YouTubeBroadcast broadcast = new YouTubeBroadcast(formatId, width, height, frameRate,
+						YouTubeBroadcast broadcast = new(formatId, width, height, frameRate,
 							averageBitrate > 0 ? averageBitrate : bitrate, $"{vcodec},{acodec}", url, raw);
 						yield return new YouTubeMediaTrackHlsStream(broadcast, manifestUrl, raw);
 					}
@@ -245,7 +245,7 @@ namespace YouTube_downloader
 						int audioSampleRate = TryGetValue<int>(jFormat, "asr");
 						int audioChannelCount = TryGetValue<int>(jFormat, "audio_channels");
 						string ext = GetFileExtension(acodec, false, false);
-						YouTubeMediaTrackUrl url = new YouTubeMediaTrackUrl(jFormat.Value<string>("url"), null);
+						YouTubeMediaTrackUrl url = new(jFormat.Value<string>("url"), null);
 						yield return new YouTubeMediaTrackAudio(formatId, bitrate, averageBitrate, null, fileSize,
 							null, null, null, audioSampleRate, audioChannelCount, false, false, null, -1.0,
 							-1, url, ext, ext, acodec, ext, false, false, null, null, jFormat.ToString());

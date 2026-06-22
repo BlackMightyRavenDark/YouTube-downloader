@@ -96,12 +96,12 @@ namespace YouTube_downloader
 				Image image = ActiveThumbnail != null && ActiveThumbnail.IsImageOk ? ActiveThumbnail.Image : _thumbnail;
 				if (image != null)
 				{
-					Rectangle imageRect = new Rectangle(0, 0, image.Width, image.Height);
+					Rectangle imageRect = new(0, 0, image.Width, image.Height);
 					Rectangle resizedRect = imageRect.ResizeTo(pictureBoxVideoThumbnail.Size).CenterIn(pictureBoxVideoThumbnail.ClientRectangle);
 					e.Graphics.DrawImage(image, resizedRect);
 				}
 
-				using (Font font = new Font("Lucida Console", 10.0f))
+				using (Font font = new("Lucida Console", 10.0f))
 				{
 					if (VideoInfo.Duration > TimeSpan.Zero)
 					{
@@ -117,7 +117,7 @@ namespace YouTube_downloader
 					{
 						string t = VideoInfo.IsDashed ? "dash" : "cipher";
 						SizeF sz = e.Graphics.MeasureString(t, font);
-						RectangleF rect = new RectangleF(0f, pictureBoxVideoThumbnail.Height - sz.Height, sz.Width, sz.Height);
+						RectangleF rect = new(0f, pictureBoxVideoThumbnail.Height - sz.Height, sz.Width, sz.Height);
 						e.Graphics.FillRectangle(Brushes.Black, rect);
 						e.Graphics.DrawString(t, font, Brushes.White, rect.X, rect.Y);
 					}
@@ -127,7 +127,7 @@ namespace YouTube_downloader
 						SizeF sz = e.Graphics.MeasureString(t, font);
 						float y = (_isCiphered || VideoInfo.IsDashed) ?
 							(pictureBoxVideoThumbnail.Height - sz.Height * 2f) : (pictureBoxVideoThumbnail.Height - sz.Height);
-						RectangleF rect = new RectangleF(0f, y, sz.Width, sz.Height);
+						RectangleF rect = new(0f, y, sz.Width, sz.Height);
 						e.Graphics.FillRectangle(Brushes.Black, rect);
 						e.Graphics.DrawString(t, font, Brushes.White, new PointF(rect.X, rect.Y));
 					}
@@ -318,7 +318,7 @@ namespace YouTube_downloader
 				bool ok = false;
 				if (ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk)
 				{
-					using (SaveFileDialog sfd = new SaveFileDialog())
+					using (SaveFileDialog sfd = new())
 					{
 						string fileNameSuffix = ActiveThumbnail.GetThumbnailFileNameSuffix();
 						string fileExtension = Path.GetExtension(fileNameSuffix);
@@ -449,7 +449,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			VideoInfo = new YouTubeVideo(VideoInfo.Title, VideoInfo.Id,
+			VideoInfo = new(VideoInfo.Title, VideoInfo.Id,
 				VideoInfo.Duration, VideoInfo.DateUploaded, dateTime,
 				VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId,
 				VideoInfo.Description, VideoInfo.ViewCount, VideoInfo.Category, VideoInfo.IsShortFormat,
@@ -714,7 +714,7 @@ namespace YouTube_downloader
 			string page = WebPage?.WebPageCode;
 			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
 			{
-				YouTubeVideoId youTubeVideoId = new YouTubeVideoId(VideoInfo.Id);
+				YouTubeVideoId youTubeVideoId = new(VideoInfo.Id);
 				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
 				if (webPageResult.ErrorCode != 200)
 				{
@@ -755,7 +755,7 @@ namespace YouTube_downloader
 
 			try
 			{
-				using (SaveFileDialog sfd = new SaveFileDialog())
+				using (SaveFileDialog sfd = new())
 				{
 					sfd.InitialDirectory = config.DownloadDirectory;
 					sfd.Title = "Сохранить код плеера как...";
@@ -831,7 +831,7 @@ namespace YouTube_downloader
 
 			if (videoInfo is YtdlVideo)
 			{
-				_downloadableFormatList = new DownloadableFormatList(videoInfo as YtdlVideo);
+				_downloadableFormatList = new(videoInfo as YtdlVideo);
 			}
 
 			RecreateThumbnailsContextMenu();
@@ -844,7 +844,7 @@ namespace YouTube_downloader
 		private void RecreateThumbnailsContextMenu()
 		{
 			miThumbnailsToolStripMenuItem.DropDownItems.Clear();
-			Thumbnails = new List<ThumbnailWrapper>();
+			Thumbnails = new();
 			ActiveThumbnail = null;
 			if (VideoInfo.Thumbnails != null && VideoInfo.Thumbnails.Count > 0)
 			{
@@ -852,11 +852,11 @@ namespace YouTube_downloader
 				int maxFileNameLength = GetMaximalThumbnailFileNameLength(VideoInfo.Thumbnails);
 				foreach (YouTubeVideoThumbnail thumbnail in VideoInfo.Thumbnails)
 				{
-					ThumbnailWrapper thumbnailWrapper = new ThumbnailWrapper(thumbnail);
+					ThumbnailWrapper thumbnailWrapper = new(thumbnail);
 					Thumbnails.Add(thumbnailWrapper);
 					string fn = (!string.IsNullOrEmpty(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg").PadRight(maxFileNameLength);
 					string menuItemTitle = $"{fn} | {thumbnail.Width}x{thumbnail.Height}";
-					ToolStripMenuItem menuItem = new ToolStripMenuItem(menuItemTitle) { Tag = thumbnailWrapper };
+					ToolStripMenuItem menuItem = new(menuItemTitle) { Tag = thumbnailWrapper };
 					menuItem.Click += async (s, e) =>
 					{
 						if (!IsThumbnailLoading)
@@ -979,7 +979,7 @@ namespace YouTube_downloader
 				FavoriteItem favoriteItem = FindVideoItemInFavorites(VideoInfo.Id);
 				if (isFavoriteVideo && favoriteItem == null)
 				{
-					FavoriteItem item = new FavoriteItem(VideoInfo.Title, VideoInfo.Title)
+					FavoriteItem item = new(VideoInfo.Title, VideoInfo.Title)
 					{
 						Id = VideoInfo.Id,
 						ChannelTitle = VideoInfo.OwnerChannelTitle,
@@ -1012,7 +1012,7 @@ namespace YouTube_downloader
 				FavoriteItem favoriteItem = FindChannelItemInFavorites(VideoInfo.OwnerChannelId);
 				if (isFavoriteChannel && favoriteItem == null)
 				{
-					FavoriteItem item = new FavoriteItem(VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelTitle)
+					FavoriteItem item = new(VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelTitle)
 					{
 						ChannelTitle = VideoInfo.OwnerChannelTitle,
 						ChannelId = VideoInfo.OwnerChannelId,
@@ -1142,7 +1142,7 @@ namespace YouTube_downloader
 				return false;
 			}
 
-			YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(new YouTubeVideoId(videoId), out errorMessage);
+			YouTubeRawVideoInfoResult rawVideoInfoResult = client.GetRawVideoInfo(new(videoId), out errorMessage);
 			if (rawVideoInfoResult.ErrorCode == 200)
 			{
 				bool isYtdlClient = client is YouTubeClientYtdl;
@@ -1163,7 +1163,7 @@ namespace YouTube_downloader
 
 					if (isYtdlClient)
 					{
-						formatList = new DownloadableFormatList(video as YtdlVideo);
+						formatList = new(video as YtdlVideo);
 
 						// Don't ask me why!
 						if ((client as YouTubeClientYtdl).ShowConsoleWindow) { System.Threading.Thread.Sleep(500); }
@@ -1175,7 +1175,7 @@ namespace YouTube_downloader
 						YouTubeStreamingDataResult streamingDataResult = rawVideoInfoResult.RawVideoInfo.StreamingData;
 						if (streamingDataResult.ErrorCode == 200)
 						{
-							formatList = new DownloadableFormatList(VideoInfo, streamingDataResult.Data);
+							formatList = new(VideoInfo, streamingDataResult.Data);
 							return true;
 						}
 					}
@@ -1194,7 +1194,7 @@ namespace YouTube_downloader
 				bool letsWait = config.ShowYtdlConsoleWindow;
 				if (!(await Task.Run(() => ytdlVideo.UpdateTrackList())))
 				{
-					_downloadableFormatList = new DownloadableFormatList(ytdlVideo);
+					_downloadableFormatList = new(ytdlVideo);
 
 					// Don't ask me why!
 					if (letsWait) { await Task.Delay(500); }
@@ -1292,7 +1292,7 @@ namespace YouTube_downloader
 													char driveLetter = fnDashTmp[0];
 													if (driveLetter != '\\')
 													{
-														DriveInfo driveInfo = new DriveInfo(driveLetter.ToString());
+														DriveInfo driveInfo = new(driveLetter.ToString());
 														if (!driveInfo.IsReady)
 														{
 															return FileDownloader.DOWNLOAD_ERROR_DRIVE_NOT_READY;
@@ -1400,7 +1400,7 @@ namespace YouTube_downloader
 							string userAgent = config.UserAgent;
 							bool isUrlOk = await Task.Run(() =>
 							{
-								WebHeaderCollection headers = new WebHeaderCollection()
+								WebHeaderCollection headers = new()
 								{
 									{ "Accept", "*/*" },
 									{ "User-Agent", userAgent }
@@ -1430,7 +1430,7 @@ namespace YouTube_downloader
 						!config.AutomaticallyMergeToContainer || isContainer || audioOnly ? config.DownloadDirectory : config.ChunkMergerDirectory,
 						isContainer ? $"{formattedFileName}.{mediaTrack.FileExtension}" :
 						$"{formattedFileName}_{mediaTrack.FormatId}.{mediaTrack.FileExtension}");
-					_multiThreadedDownloader = new MultiThreadedDownloader()
+					_multiThreadedDownloader = new()
 					{
 						Url = fileUrl,
 						Headers = requestHeaders,
@@ -1514,7 +1514,7 @@ namespace YouTube_downloader
 					{
 						Invoke(new MethodInvoker(() =>
 						{
-							_downloadProgressRenderer = new DownloadProgressRenderer(progressBarDownload, lblDowndloadProgress,
+							_downloadProgressRenderer = new(progressBarDownload, lblDowndloadProgress,
 								contentChunks, mediaTrack, (s as MultiThreadedDownloader).ContentLength);
 							_downloadProgressRenderer.Render(miMultipleToolStripMenuItem.Checked, IsDownloadInProgress);
 						}));
@@ -1551,7 +1551,7 @@ namespace YouTube_downloader
 						GC.Collect();
 					}
 
-					YouTubeDownloadResult youTubeDownloadResult = new YouTubeDownloadResult(res,
+					YouTubeDownloadResult youTubeDownloadResult = new(res,
 						_multiThreadedDownloader.LastErrorMessage,
 						_multiThreadedDownloader.OutputFileName);
 					_multiThreadedDownloader.Dispose();
@@ -1563,7 +1563,7 @@ namespace YouTube_downloader
 #if DEBUG
 					System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
-					YouTubeDownloadResult youTubeDownloadResult = new YouTubeDownloadResult(
+					YouTubeDownloadResult youTubeDownloadResult = new(
 						ex.HResult, ex.Message, _multiThreadedDownloader?.OutputFileName);
 					if (_multiThreadedDownloader != null)
 					{
@@ -1628,17 +1628,17 @@ namespace YouTube_downloader
 			lblStatus.Text = null;
 			lblDowndloadProgress.Text = null;
 
-			List<YouTubeMediaTrack> tracksToDownload = new List<YouTubeMediaTrack>();
+			List<YouTubeMediaTrack> tracksToDownload = new();
 
 			ToolStripMenuItem mi = sender as ToolStripMenuItem;
 			Type typeOfTag = mi.Tag?.GetType();
 			if (typeOfTag == null)
 			{
 				lblStatus.Text = "Состояние: Выбор форматов...";
-				List<YouTubeMediaTrack> formats = new List<YouTubeMediaTrack>();
+				List<YouTubeMediaTrack> formats = new();
 				formats.AddRange(_downloadableFormatList.VideoOnlyTracks);
 				formats.AddRange(_downloadableFormatList.AudioOnlyTracks);
-				FormTrackSelector trackSelector = new FormTrackSelector(formats);
+				FormTrackSelector trackSelector = new(formats);
 				DialogResult dialogResult = trackSelector.ShowDialog();
 				lblStatus.Text = null;
 				if (dialogResult == DialogResult.OK)
@@ -1748,7 +1748,7 @@ namespace YouTube_downloader
 			long minimumFreeSpaceRequired = summaryFileSize > 0L ? (long)(summaryFileSize * 1.1) : 0L;
 			if (minimumFreeSpaceRequired > 0L)
 			{
-				MultiThreadedDownloader tempDownloader = new MultiThreadedDownloader()
+				MultiThreadedDownloader tempDownloader = new()
 				{
 					OutputFileName = Path.Combine(config.DownloadDirectory, "temp.tmp"),
 					UseRamForTempFiles = config.UseRamToStoreTemporaryFiles
@@ -1851,7 +1851,7 @@ namespace YouTube_downloader
 
 			lblStatus.Text = "Скачивание...";
 
-			List<YouTubeDownloadResult> downloadResults = new List<YouTubeDownloadResult>();
+			List<YouTubeDownloadResult> downloadResults = new();
 			bool audioOnly = IsAudioOnly(tracksToDownload);
 			string containerFileExtension = GetContainerFileExtension(tracksToDownload);
 			string formattedFileName = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
@@ -1871,7 +1871,7 @@ namespace YouTube_downloader
 					{
 						try
 						{
-							DriveInfo driveInfo = new DriveInfo(config.DownloadDirectory[0].ToString());
+							DriveInfo driveInfo = new(config.DownloadDirectory[0].ToString());
 							if (driveInfo.AvailableFreeSpace < minimumFreeSpaceRequired)
 							{
 								lblStatus.Text = "Состояние: Ошибка: Недостаточно места на диске!";
@@ -2064,7 +2064,7 @@ namespace YouTube_downloader
 				results.Add(result);
 			}
 
-			return result ?? new YouTubeDownloadResult(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
+			return result ?? new(MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM,
 				"Список ссылок для скачивания пуст!", null);
 		}
 
@@ -2076,7 +2076,7 @@ namespace YouTube_downloader
 
 		public void SetVideoTitleFontSize(int fontSize)
 		{
-			lblVideoTitle.Font = new Font(lblVideoTitle.Font.FontFamily, fontSize);
+			lblVideoTitle.Font = new(lblVideoTitle.Font.FontFamily, fontSize);
 		}
 
 		public void SetMenusFontSize(int fontSize)
