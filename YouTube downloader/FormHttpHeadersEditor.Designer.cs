@@ -48,6 +48,7 @@
 			this.textBoxHeaders.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.textBoxHeaders.Size = new System.Drawing.Size(360, 142);
 			this.textBoxHeaders.TabIndex = 0;
+			this.textBoxHeaders.WordWrap = false;
 			// 
 			// label1
 			// 
