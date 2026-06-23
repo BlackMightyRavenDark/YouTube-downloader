@@ -16,11 +16,11 @@ namespace YouTube_downloader
 			{
 				json["cipherDecryptionAlgorythm"] = config.CipherDecryptionAlgorythm;
 				json["youTubeApiV3Key"] = config.YouTubeApiV3Key;
-				json["externalRestApiServerUrl"] = config.ExternalRestApiServerUrl;
+				json["externalRestApiServerUrl"] = config.ExternalRestApiServerAddress;
 				json["externalRestApiServerPort"] = config.ExternalRestApiServerPort;
 				json["connectionTimeoutExternalRestApiServer"] = config.ConnectionTimeoutExternalRestApiServer;
 				json["useExternalRestApiServerToGetBasicVideoInfo"] = config.UseExternalRestApiServerToGetBasicVideoInfo;
-				json["useExternalRestApiServerToGetDownloadUrls"] = config.UseExternalRestApiServerToGetDownloadUrls;
+				json["useExternalRestApiServerToGetDownloadUrls"] = config.UseExternalRestApiServerToGetDownloadableFormatList;
 				json["useExternalRestApiServerToGetAdultVideos"] = config.UseExternalRestApiServerToGetAdultVideos;
 				json["useYtdl"] = config.UseYtdl;
 				json["ytdlParameters"] = config.YtdlParameters;
@@ -64,7 +64,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("externalRestApiServerUrl");
 					if (jt != null)
 					{
-						config.ExternalRestApiServerUrl = jt.Value<string>();
+						config.ExternalRestApiServerAddress = jt.Value<string>();
 					}
 				}
 				{
@@ -94,7 +94,7 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("useExternalRestApiServerToGetDownloadUrls");
 					if (jt != null)
 					{
-						config.UseExternalRestApiServerToGetDownloadUrls = jt.Value<bool>();
+						config.UseExternalRestApiServerToGetDownloadableFormatList = jt.Value<bool>();
 					}
 				}
 				{
@@ -226,11 +226,11 @@ namespace YouTube_downloader
 			{
 				textBoxCipherDecryptionAlgorythm.Text = config.CipherDecryptionAlgorythm;
 				textBoxYouTubeApiV3Key.Text = config.YouTubeApiV3Key;
-				textBoxExternalRestApiServerUrl.Text = config.ExternalRestApiServerUrl;
+				textBoxExternalRestApiServerUrl.Text = config.ExternalRestApiServerAddress;
 				numericUpDownExternalRestApiServerPort.Value = config.ExternalRestApiServerPort;
 				numericUpDownConnectionTimeoutExternalRestApiServer.Value = config.ConnectionTimeoutExternalRestApiServer;
 				checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Checked = config.UseExternalRestApiServerToGetBasicVideoInfo;
-				checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked = config.UseExternalRestApiServerToGetDownloadUrls;
+				checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked = config.UseExternalRestApiServerToGetDownloadableFormatList;
 				checkBoxUseExternalRestApiServerToGetAdultVideos.Checked = config.UseExternalRestApiServerToGetAdultVideos;
 				checkBoxUseYtdl.Checked = config.UseYtdl;
 				textBoxYtdlParameters.Text = config.YtdlParameters;
@@ -254,7 +254,7 @@ namespace YouTube_downloader
 					checkBoxUseRamForTempFiles.Enabled = false;
 					panelImageRamIsUnusable.Visible = false;
 				}
-				if (config.UseExternalRestApiServerToGetDownloadUrls)
+				if (config.UseExternalRestApiServerToGetDownloadableFormatList)
 				{
 					textBoxCipherDecryptionAlgorythm.Enabled = false;
 					textBoxYouTubeApiV3Key.Enabled = false;
@@ -353,7 +353,7 @@ namespace YouTube_downloader
 
 		private void textBoxExternalRestApiServerUrl_Leave(object sender, EventArgs e)
 		{
-			config.ExternalRestApiServerUrl = textBoxExternalRestApiServerUrl.Text;
+			config.ExternalRestApiServerAddress = textBoxExternalRestApiServerUrl.Text;
 		}
 
 		private void textBoxYtdlParameters_TextChanged(object sender, EventArgs e)
@@ -407,8 +407,8 @@ namespace YouTube_downloader
 
 		private void checkBoxUseExternalRestApiServerToGetDownloadUrls_CheckedChanged(object sender, EventArgs e)
 		{
-			config.UseExternalRestApiServerToGetDownloadUrls = checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked;
-			textBoxYouTubeApiV3Key.Enabled = textBoxCipherDecryptionAlgorythm.Enabled = !config.UseExternalRestApiServerToGetDownloadUrls;
+			config.UseExternalRestApiServerToGetDownloadableFormatList = checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked;
+			textBoxYouTubeApiV3Key.Enabled = textBoxCipherDecryptionAlgorythm.Enabled = !config.UseExternalRestApiServerToGetDownloadableFormatList;
 		}
 
 		private void checkBoxUseExternalRestApiServerToGetAdultVideos_CheckedChanged(object sender, EventArgs e)

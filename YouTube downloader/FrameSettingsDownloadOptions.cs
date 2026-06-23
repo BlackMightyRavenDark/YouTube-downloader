@@ -13,9 +13,9 @@ namespace YouTube_downloader
 
 			config.Saving += (s, json) =>
 			{
-				json["automaticallyDownloadFirstAudioTrack"] = config.AutomaticallyDownloadFirstAudioTrack;
-				json["automaticallyDownloadSecondAudioTrack"] = config.AutomaticallyDownloadSecondAudioTrack;
-				json["automaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger"] = config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
+				json["automaticallyDownloadFirstAudioTrack"] = config.AutomaticallyDownloadFirstAdaptiveAudioTrack;
+				json["automaticallyDownloadSecondAudioTrack"] = config.AutomaticallyDownloadSecondAdaptiveAudioTrack;
+				json["automaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger"] = config.AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger;
 				json["automaticallyDownloadAllAdaptiveAudioTracks"] = config.AutomaticallyDownloadAllAdaptiveAudioTracks;
 				json["alwaysUseMkvContainer"] = config.AlwaysUseMkvContainer;
 				json["extraDelayAfterContainerWasBuilt"] = config.ExtraDelayAfterContainerWasBuilt;
@@ -31,21 +31,21 @@ namespace YouTube_downloader
 					JToken jt = json.Value<JToken>("automaticallyDownloadFirstAudioTrack");
 					if (jt != null)
 					{
-						config.AutomaticallyDownloadFirstAudioTrack = jt.Value<bool>();
+						config.AutomaticallyDownloadFirstAdaptiveAudioTrack = jt.Value<bool>();
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("automaticallyDownloadSecondAudioTrack");
 					if (jt != null)
 					{
-						config.AutomaticallyDownloadSecondAudioTrack = jt.Value<bool>();
+						config.AutomaticallyDownloadSecondAdaptiveAudioTrack = jt.Value<bool>();
 					}
 				}
 				{
 					JToken jt = json.Value<JToken>("automaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger");
 					if (jt != null)
 					{
-						config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = jt.Value<bool>();
+						config.AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger = jt.Value<bool>();
 					}
 				}
 				{
@@ -116,16 +116,16 @@ namespace YouTube_downloader
 				}
 				numericUpDownDelayAfterContainerCreated.Value = config.ExtraDelayAfterContainerWasBuilt;
 				checkBoxAutomaticallySaveVideoThumbnailImage.Checked = config.AutomaticallySaveVideoThumbnailImage;
-				checkBoxAutomaticallyDownloadFirstAudioTrack.Checked = config.AutomaticallyDownloadFirstAudioTrack;
-				checkBoxAutomaticallyDownloadSecondAudioTrack.Checked = config.AutomaticallyDownloadSecondAudioTrack;
-				checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Checked = config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
+				checkBoxAutomaticallyDownloadFirstAudioTrack.Checked = config.AutomaticallyDownloadFirstAdaptiveAudioTrack;
+				checkBoxAutomaticallyDownloadSecondAudioTrack.Checked = config.AutomaticallyDownloadSecondAdaptiveAudioTrack;
+				checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Checked = config.AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger;
 				checkBoxAutomaticallyDownloadAllAdaptiveAudioTracks.Checked = config.AutomaticallyDownloadAllAdaptiveAudioTracks;
 				checkBoxCheckUrlsAccessibilityBeforeDownloadStarted.Checked = config.CheckUrlsAccessibilityBeforeDownloadStarted;
 				if (!config.AutomaticallyDownloadAllAdaptiveAudioTracks)
 				{
 					checkBoxAutomaticallyDownloadFirstAudioTrack_CheckedChanged(null, null);
 					checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Enabled =
-						config.AutomaticallyDownloadFirstAudioTrack && config.AutomaticallyDownloadSecondAudioTrack;
+						config.AutomaticallyDownloadFirstAdaptiveAudioTrack && config.AutomaticallyDownloadSecondAdaptiveAudioTrack;
 				}
 			};
 		}
@@ -147,13 +147,13 @@ namespace YouTube_downloader
 		{
 			if (checkBoxAutomaticallyDownloadFirstAudioTrack.Checked)
 			{
-				config.AutomaticallyDownloadFirstAudioTrack = true;
+				config.AutomaticallyDownloadFirstAdaptiveAudioTrack = true;
 				checkBoxAutomaticallyDownloadSecondAudioTrack.Enabled = true;
 				checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Enabled = checkBoxAutomaticallyDownloadSecondAudioTrack.Checked;
 			}
 			else
 			{
-				config.AutomaticallyDownloadFirstAudioTrack = false;
+				config.AutomaticallyDownloadFirstAdaptiveAudioTrack = false;
 				checkBoxAutomaticallyDownloadSecondAudioTrack.Enabled = false;
 				checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Enabled = false;
 			}
@@ -161,13 +161,13 @@ namespace YouTube_downloader
 
 		private void checkBoxAutomaticallyDownloadSecondAudioTrack_CheckedChanged(object sender, EventArgs e)
 		{
-			config.AutomaticallyDownloadSecondAudioTrack = checkBoxAutomaticallyDownloadSecondAudioTrack.Checked;
-			checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Enabled = config.AutomaticallyDownloadSecondAudioTrack;
+			config.AutomaticallyDownloadSecondAdaptiveAudioTrack = checkBoxAutomaticallyDownloadSecondAudioTrack.Checked;
+			checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Enabled = config.AutomaticallyDownloadSecondAdaptiveAudioTrack;
 		}
 
 		private void checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger_CheckedChanged(object sender, EventArgs e)
 		{
-			config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Checked;
+			config.AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger = checkBoxAutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger.Checked;
 		}
 
 		private void checkBoxAutomaticallyDownloadAllAdaptiveVideoTracks_CheckedChanged(object sender, EventArgs e)

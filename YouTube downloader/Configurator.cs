@@ -44,9 +44,9 @@ namespace YouTube_downloader
 
 		#region Download options
 		public bool AutomaticallyDownloadAllAdaptiveVideoTracks { get; set; }
-		public bool AutomaticallyDownloadFirstAudioTrack { get; set; }
-		public bool AutomaticallyDownloadSecondAudioTrack { get; set; }
-		public bool AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger { get; set; }
+		public bool AutomaticallyDownloadFirstAdaptiveAudioTrack { get; set; }
+		public bool AutomaticallyDownloadSecondAdaptiveAudioTrack { get; set; }
+		public bool AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger { get; set; }
 		public bool AutomaticallyDownloadAllAdaptiveAudioTracks { get; set; }
 		public bool AutomaticallyMergeToContainer { get; set; }
 		public bool DeleteSourceFilesWhenMerged { get; set; }
@@ -61,11 +61,11 @@ namespace YouTube_downloader
 		#region System options
 		public string CipherDecryptionAlgorythm { get; set; }
 		public string YouTubeApiV3Key { get; set; }
-		public string ExternalRestApiServerUrl { get; set; }
+		public string ExternalRestApiServerAddress { get; set; }
 		public ushort ExternalRestApiServerPort { get; set; }
 		public int ConnectionTimeoutExternalRestApiServer { get; set; }
 		public bool UseExternalRestApiServerToGetBasicVideoInfo { get; set; }
-		public bool UseExternalRestApiServerToGetDownloadUrls { get; set; }
+		public bool UseExternalRestApiServerToGetDownloadableFormatList { get; set; }
 		public bool UseExternalRestApiServerToGetAdultVideos { get; set; }
 		public bool UseYtdl { get; set; }
 		public string YtdlParameters { get; set; }
@@ -171,9 +171,9 @@ namespace YouTube_downloader
 			ShowHlsTracksOnlyForStreams = other.ShowHlsTracksOnlyForStreams;
 
 			AutomaticallyDownloadAllAdaptiveVideoTracks = other.AutomaticallyDownloadAllAdaptiveVideoTracks;
-			AutomaticallyDownloadFirstAudioTrack = other.AutomaticallyDownloadFirstAudioTrack;
-			AutomaticallyDownloadSecondAudioTrack = other.AutomaticallyDownloadSecondAudioTrack;
-			AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = other.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger;
+			AutomaticallyDownloadFirstAdaptiveAudioTrack = other.AutomaticallyDownloadFirstAdaptiveAudioTrack;
+			AutomaticallyDownloadSecondAdaptiveAudioTrack = other.AutomaticallyDownloadSecondAdaptiveAudioTrack;
+			AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger = other.AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger;
 			AutomaticallyDownloadAllAdaptiveAudioTracks = other.AutomaticallyDownloadAllAdaptiveAudioTracks;
 			AutomaticallyMergeToContainer = other.AutomaticallyMergeToContainer;
 			DeleteSourceFilesWhenMerged = other.DeleteSourceFilesWhenMerged;
@@ -186,11 +186,11 @@ namespace YouTube_downloader
 
 			CipherDecryptionAlgorythm = other.CipherDecryptionAlgorythm;
 			YouTubeApiV3Key = other.YouTubeApiV3Key;
-			ExternalRestApiServerUrl = other.ExternalRestApiServerUrl;
+			ExternalRestApiServerAddress = other.ExternalRestApiServerAddress;
 			ExternalRestApiServerPort = other.ExternalRestApiServerPort;
 			ConnectionTimeoutExternalRestApiServer = other.ConnectionTimeoutExternalRestApiServer;
 			UseExternalRestApiServerToGetBasicVideoInfo = other.UseExternalRestApiServerToGetBasicVideoInfo;
-			UseExternalRestApiServerToGetDownloadUrls = other.UseExternalRestApiServerToGetDownloadUrls;
+			UseExternalRestApiServerToGetDownloadableFormatList = other.UseExternalRestApiServerToGetDownloadableFormatList;
 			UseExternalRestApiServerToGetAdultVideos = other.UseExternalRestApiServerToGetAdultVideos;
 			UseYtdl = other.UseYtdl;
 			YtdlParameters = other.YtdlParameters;
@@ -249,9 +249,9 @@ namespace YouTube_downloader
 
 			#region Download options
 			AutomaticallyDownloadAllAdaptiveVideoTracks = false;
-			AutomaticallyDownloadFirstAudioTrack = true;
-			AutomaticallyDownloadSecondAudioTrack = false;
-			AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger = true;
+			AutomaticallyDownloadFirstAdaptiveAudioTrack = true;
+			AutomaticallyDownloadSecondAdaptiveAudioTrack = false;
+			AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger = true;
 			AutomaticallyDownloadAllAdaptiveAudioTracks = false;
 			AutomaticallyMergeToContainer = true;
 			DeleteSourceFilesWhenMerged = true;
@@ -266,11 +266,11 @@ namespace YouTube_downloader
 			#region System options
 			CipherDecryptionAlgorythm = null;
 			YouTubeApiV3Key = null;
-			ExternalRestApiServerUrl = "http://127.0.0.1";
+			ExternalRestApiServerAddress = "http://127.0.0.1";
 			ExternalRestApiServerPort = 12345;
 			ConnectionTimeoutExternalRestApiServer = 15000;
 			UseExternalRestApiServerToGetBasicVideoInfo = false;
-			UseExternalRestApiServerToGetDownloadUrls = false;
+			UseExternalRestApiServerToGetDownloadableFormatList = false;
 			UseExternalRestApiServerToGetAdultVideos = false;
 			UseYtdl = false;
 			YtdlExeFilePath = "ytdlp.exe";

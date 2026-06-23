@@ -79,7 +79,7 @@ namespace YouTube_downloader
 				errorMessage = null;
 				if (config.UseExternalRestApiServerToGetBasicVideoInfo)
 				{
-					return new YouTubeClientRestApi(config.ExternalRestApiServerUrl, config.ExternalRestApiServerPort,
+					return new YouTubeClientRestApi(config.ExternalRestApiServerAddress, config.ExternalRestApiServerPort,
 						config.ConnectionTimeoutExternalRestApiServer, getDownloadUrls);
 				}
 				else if (config.UseYtdl)

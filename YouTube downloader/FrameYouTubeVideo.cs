@@ -1384,7 +1384,7 @@ namespace YouTube_downloader
 
 					#region Расшифровка Cipher
 					//TODO: Вынести это в отдельный метод.
-					if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadUrls)
+					if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadableFormatList)
 					{
 						if (string.IsNullOrEmpty(config.CipherDecryptionAlgorythm) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
 						{
@@ -1710,19 +1710,19 @@ namespace YouTube_downloader
 					}
 					else
 					{
-						if (config.AutomaticallyDownloadFirstAudioTrack)
+						if (config.AutomaticallyDownloadFirstAdaptiveAudioTrack)
 						{
 							tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[0]);
 						}
-						if (config.AutomaticallyDownloadSecondAudioTrack && _downloadableFormatList.AudioOnlyTracks.Count > 1)
+						if (config.AutomaticallyDownloadSecondAdaptiveAudioTrack && _downloadableFormatList.AudioOnlyTracks.Count > 1)
 						{
-							if (config.AutomaticallyDownloadSecondAudioTrackOnlyIfFileSizeIsBigger)
+							if (config.AutomaticallyDownloadSecondAdaptiveAudioTrackOnlyIfFileSizeIsBigger)
 							{
 								if (_downloadableFormatList.AudioOnlyTracks[1].ContentLength > _downloadableFormatList.AudioOnlyTracks[0].ContentLength)
 								{
 									tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[1]);
 								}
-								else if (!config.AutomaticallyDownloadFirstAudioTrack)
+								else if (!config.AutomaticallyDownloadFirstAdaptiveAudioTrack)
 								{
 									tracksToDownload.Add(_downloadableFormatList.AudioOnlyTracks[0]);
 								}
