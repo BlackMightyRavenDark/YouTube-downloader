@@ -310,5 +310,4 @@ namespace YouTube_downloader
 			Loaded?.Invoke(this);
 		}
 	}
-
 }
