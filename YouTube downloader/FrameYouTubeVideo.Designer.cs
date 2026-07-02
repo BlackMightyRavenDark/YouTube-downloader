@@ -173,6 +173,7 @@
 			this.lblStatus.Size = new System.Drawing.Size(47, 13);
 			this.lblStatus.TabIndex = 7;
 			this.lblStatus.Text = "lblStatus";
+			this.lblStatus.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblStatus_MouseDown);
 			// 
 			// lblDowndloadProgress
 			// 
@@ -182,6 +183,7 @@
 			this.lblDowndloadProgress.Size = new System.Drawing.Size(58, 13);
 			this.lblDowndloadProgress.TabIndex = 8;
 			this.lblDowndloadProgress.Text = "lblProgress";
+			this.lblDowndloadProgress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblDowndloadProgress_MouseDown);
 			// 
 			// pictureBoxFavoriteChannel
 			// 
@@ -503,6 +505,7 @@
 			this.lblBtnOpenFrameContextMenu.Text = "...";
 			this.lblBtnOpenFrameContextMenu.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip1.SetToolTip(this.lblBtnOpenFrameContextMenu, "Меню");
+			this.lblBtnOpenFrameContextMenu.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseDown);
 			this.lblBtnOpenFrameContextMenu.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblBtnOpenFrameContextMenu_MouseUp);
 			// 
 			// progressBarDownload
@@ -536,6 +539,7 @@
 			this.Name = "FrameYouTubeVideo";
 			this.Size = new System.Drawing.Size(496, 170);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.FrameYouTubeVideo_Paint);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FrameYouTubeVideo_MouseDown);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxVideoThumbnail)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteVideo)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBoxFavoriteChannel)).EndInit();

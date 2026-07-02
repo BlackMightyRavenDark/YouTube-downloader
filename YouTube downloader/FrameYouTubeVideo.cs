@@ -79,6 +79,11 @@ namespace YouTube_downloader
 			}
 		}
 
+		private void FrameYouTubeVideo_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+		}
+
 		private void pictureBoxVideoThumbnail_MouseDown(object sender, MouseEventArgs e)
 		{
 			Activated?.Invoke(this);
@@ -214,6 +219,11 @@ namespace YouTube_downloader
 			Activated?.Invoke(this);
 		}
 
+		private void lblBtnOpenFrameContextMenu_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+		}
+
 		private void lblChannelTitle_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			OpenChannel?.Invoke(this, VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelId);
@@ -257,6 +267,16 @@ namespace YouTube_downloader
 			{
 				contextMenuDate.Show(Cursor.Position);
 			}
+		}
+
+		private void lblStatus_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
+		}
+
+		private void lblDowndloadProgress_MouseDown(object sender, MouseEventArgs e)
+		{
+			Activated?.Invoke(this);
 		}
 
 		private void miOpenVideoInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
