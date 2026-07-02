@@ -708,11 +708,18 @@ namespace YouTube_downloader
 			miActionsToolStripMenuItem.Enabled =
 			miUpdateFormatListToolStripMenuItem.Enabled = false;
 
+			lblStatus.Text = "Состояние: Обновление списка форматов...";
+
 			string msg = null;
 			if (!await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
 				!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
 			{
+				lblStatus.Text = "Состояние: Ошибка обновления списка форматов!";
 				MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+			{
+				lblStatus.Text = null;
 			}
 
 			miUpdateFormatListToolStripMenuItem.Enabled =
@@ -1214,6 +1221,7 @@ namespace YouTube_downloader
 				bool letsWait = config.ShowYtdlConsoleWindow;
 				if (!(await Task.Run(() => ytdlVideo.UpdateTrackList())))
 				{
+					lblStatus.Text = "Состояние: Ошибка обновления списка форматов!";
 					_downloadableFormatList = new(ytdlVideo);
 
 					// Don't ask me why!
