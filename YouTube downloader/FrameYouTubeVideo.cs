@@ -350,10 +350,7 @@ namespace YouTube_downloader
 						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
 						sfd.FileName = FixFileName(FormatFileName(
 							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
-						if (sfd.ShowDialog() == DialogResult.OK)
-						{
-							ok = ActiveThumbnail.ImageData.SaveToFile(sfd.FileName, out _);
-						}
+						ok = sfd.ShowDialog() != DialogResult.OK || ActiveThumbnail.ImageData.SaveToFile(sfd.FileName, out _);
 					}
 				}
 
