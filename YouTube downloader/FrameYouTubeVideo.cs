@@ -692,16 +692,17 @@ namespace YouTube_downloader
 				return;
 			}
 
+			btnDownload.Enabled = false;
 			if (config.UseYtdl && (VideoInfo is YtdlVideo))
 			{
 				IsFormatListUpdating = true;
 				await UpdateYtdlFormatList();
 				IsFormatListUpdating = false;
+				btnDownload.Enabled = true;
 				return;
 			}
 
 			IsFormatListUpdating = true;
-			btnDownload.Enabled =
 			miActionsToolStripMenuItem.Enabled =
 			miUpdateFormatListToolStripMenuItem.Enabled = false;
 
@@ -1216,9 +1217,9 @@ namespace YouTube_downloader
 			{
 				lblStatus.Text = "Состояние: Обновление списка форматов (youtube-dl)...";
 				bool letsWait = config.ShowYtdlConsoleWindow;
-				if (!(await Task.Run(() => ytdlVideo.UpdateTrackList())))
+				if (await Task.Run(() => ytdlVideo.UpdateTrackList()))
 				{
-					lblStatus.Text = "Состояние: Ошибка обновления списка форматов!";
+					lblStatus.Text = null;
 					_downloadableFormatList = new(ytdlVideo);
 
 					// Don't ask me why!
@@ -1226,9 +1227,10 @@ namespace YouTube_downloader
 				}
 				else
 				{
+					lblStatus.Text = "Состояние: Ошибка обновления списка форматов!";
 					_downloadableFormatList = null;
 				}
-				lblStatus.Text = null;
+
 				return true;
 			}
 
