@@ -26,11 +26,11 @@ namespace YouTube_downloader
 						switch (Columns[i].Alignment)
 						{
 							case TableColumnAlignment.Right:
-								Rows[j].RawData[i] = Rows[j].RawData[i].PadLeft(max, ' ');
+								Rows[j].RawData[i] = (string.IsNullOrEmpty(Rows[j].RawData[i]) ? string.Empty : Rows[j].RawData[i]).PadLeft(max);
 								break;
 
 							case TableColumnAlignment.Left:
-								Rows[j].RawData[i] = Rows[j].RawData[i].PadRight(max, ' ');
+								Rows[j].RawData[i] = (string.IsNullOrEmpty(Rows[j].RawData[i]) ? string.Empty : Rows[j].RawData[i]).PadRight(max);
 								break;
 						}
 					}
@@ -43,7 +43,8 @@ namespace YouTube_downloader
 			int max = 0;
 			foreach (TableRow row in Rows)
 			{
-				int length = row.RawData[columnId].Length;
+				string t = row.RawData[columnId];
+				int length = string.IsNullOrEmpty(t) ? 0 : t.Length;
 				if (length > max) { max = length; }
 			}
 			return max;
