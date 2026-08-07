@@ -257,7 +257,8 @@ namespace YouTube_downloader
 		private static string GetFileExtension(string mime, bool isVideo, bool isContainer)
 		{
 			if (isContainer) { return "mp4"; }
-			bool isOpus = mime.Contains("opus") || mime.Contains("vp");
+			bool isOpus = !string.IsNullOrEmpty(mime) && !string.IsNullOrWhiteSpace(mime) &&
+				(mime.Contains("opus") || mime.Contains("vp"));
 			return isVideo ? (isOpus ? "webm" : "m4v") : (isOpus ? "weba" : "m4a");
 		}
 
