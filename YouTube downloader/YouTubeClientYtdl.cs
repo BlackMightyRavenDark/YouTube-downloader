@@ -215,8 +215,14 @@ namespace YouTube_downloader
 					{
 						string manifestUrl = jFormat.Value<string>("manifest_url");
 						string raw = jFormat.ToString();
+						string codecs = vcodec;
+						if (!isVideo && !string.IsNullOrEmpty(acodec) && !string.IsNullOrWhiteSpace(acodec))
+						{
+							// If audio codec defined.
+							codecs += $",{acodec}";
+						}
 						YouTubeBroadcast broadcast = new(formatId, width, height, frameRate,
-							averageBitrate > 0 ? averageBitrate : bitrate, $"{vcodec},{acodec}", url, raw);
+							averageBitrate > 0 ? averageBitrate : bitrate, codecs, url, raw);
 						yield return new YouTubeMediaTrackHlsStream(broadcast, manifestUrl, raw);
 					}
 					else if (isVideo)
