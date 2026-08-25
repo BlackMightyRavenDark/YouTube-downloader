@@ -19,9 +19,9 @@ namespace YouTube_downloader
 			for (int i = 0; i < Columns.Count; ++i)
 			{
 				int max = GetMaxColumnStringLength(i);
-				for (int j = 0; j < Rows.Count; ++j)
+				if (max > 0)
 				{
-					if (max > 0)
+					for (int j = 0; j < Rows.Count; ++j)
 					{
 						switch (Columns[i].Alignment)
 						{
