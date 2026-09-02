@@ -98,44 +98,39 @@ namespace YouTube_downloader
 		{
 			foreach (DownloadableTask downloadableTask in chunks)
 			{
-				double percent = 0.0;
+				double percent = downloadableTask.ChunkFileSize > 0L && downloadableTask.ProcessedBytes > 0L ?
+					(100.0 / downloadableTask.ChunkFileSize * downloadableTask.ProcessedBytes) : 0.0;
+				string percentFormatted = string.Format("{0:F2}", percent);
+				string triesFormatted = FormatTries(downloadableTask.InnerTryNumber, downloadableTask.InnerTryCountLimit,
+					downloadableTask.TryNumber, downloadableTask.TryCountLimit);
 				string itemText;
-				Color itemColor = Color.Lime;
+				Color itemColor;
+
 				switch (downloadableTask.State)
 				{
 					case DownloadableTaskState.Preparing:
-						itemText = "Подготовка...";
+						itemText = $"Подготовка... [{triesFormatted}]";
+						itemColor = Color.Orange;
 						break;
 
 					case DownloadableTaskState.Connecting:
-						itemText = "Подключение...";
+						itemText = $"Подключение... [{triesFormatted}]";
+						itemColor = Color.Orange;
 						break;
 
 					case DownloadableTaskState.Errored:
-						{
-							getPercentage(downloadableTask, out percent, out string percentFormatted);
-							itemText = $"{percentFormatted}% | Error!";
-							itemColor = Color.Orange;
-							break;
-						}
+						itemText = $"{percentFormatted}% | Error! | [{triesFormatted}]";
+						itemColor = Color.Orange;
+						break;
 
 					default:
-						{
-							getPercentage(downloadableTask, out percent, out string percentFormatted);
-							itemText = $"{percentFormatted}%";
-							break;
-						}
+						itemText = $"{percentFormatted}% | [{triesFormatted}]";
+						itemColor = Color.Lime;
+						break;
 				}
 
 				MultipleProgressBarItem mpi = new((int)percent, itemText, itemColor);
 				yield return mpi;
-			}
-
-			void getPercentage(DownloadableTask task, out double percent, out string percentFormatted)
-			{
-				percent = task.ChunkFileSize > 0L && task.ProcessedBytes > 0L ?
-					100.0 / task.ChunkFileSize * task.ProcessedBytes : 0L;
-				percentFormatted = string.Format("{0:F2}", percent);
 			}
 		}
 
@@ -154,6 +149,18 @@ namespace YouTube_downloader
 				}
 			}
 			return items;
+		}
+
+		private static string FormatTries(int innerTryNumber, int innerTryCountLimit, int taskTryNumber, int taskTryCountLimit)
+		{
+			const string infinitySymbol = "\u221E";
+
+			string t = $"№{innerTryNumber} / {(innerTryCountLimit > 0 ?
+				($"{innerTryCountLimit} | №{taskTryNumber} / " +
+					(taskTryCountLimit > 0 ? taskTryCountLimit.ToString() : infinitySymbol)) :
+				infinitySymbol)}";
+
+			return t;
 		}
 	}
 }
