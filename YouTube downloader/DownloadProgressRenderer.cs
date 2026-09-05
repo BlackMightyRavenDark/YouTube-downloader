@@ -154,13 +154,10 @@ namespace YouTube_downloader
 		private static string FormatTries(int innerTryNumber, int innerTryCountLimit, int taskTryNumber, int taskTryCountLimit)
 		{
 			const string infinitySymbol = "\u221E";
-
-			string t = $"№{innerTryNumber} / {(innerTryCountLimit > 0 ?
+			return $"№{innerTryNumber} / {(innerTryCountLimit > 0 ?
 				($"{innerTryCountLimit} | №{taskTryNumber} / " +
 					(taskTryCountLimit > 0 ? taskTryCountLimit.ToString() : infinitySymbol)) :
 				infinitySymbol)}";
-
-			return t;
 		}
 	}
 }
