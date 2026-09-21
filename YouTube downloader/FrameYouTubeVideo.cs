@@ -1040,7 +1040,7 @@ namespace YouTube_downloader
 					FavoriteItem item = new(VideoInfo.OwnerChannelTitle, VideoInfo.OwnerChannelTitle)
 					{
 						ChannelTitle = VideoInfo.OwnerChannelTitle,
-						ChannelId = VideoInfo.OwnerChannelId,
+						Id = VideoInfo.OwnerChannelId,
 						ItemType = FavoriteItemType.Channel
 					};
 
