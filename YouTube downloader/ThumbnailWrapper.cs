@@ -40,6 +40,10 @@ namespace YouTube_downloader
 			_isWebP = _isFileExtensionDetermined = false;
 			FileDownloader d = downloader ?? Utils.CreateConfiguredDownloader();
 			d.Url = Thumbnail.Url;
+			if (d.TryCountLimit <= 0)
+			{
+				d.TryCountLimit = 1;
+			}
 			ImageData = new MemoryStream();
 			int errorCode = d.Download(ImageData);
 			Image = errorCode == 200 ? Utils.TryGetImageFromStream(ImageData, out _, out _, out _) : null;
