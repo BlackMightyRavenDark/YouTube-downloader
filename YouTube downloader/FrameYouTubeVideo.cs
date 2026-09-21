@@ -1171,7 +1171,8 @@ namespace YouTube_downloader
 			if (rawVideoInfoResult.ErrorCode == 200)
 			{
 				bool isYtdlClient = client is YouTubeClientYtdl;
-				YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video : client.WebPage.GetVideo();
+				YouTubeVideo video = isYtdlClient ? (client as YouTubeClientYtdl).Video :
+					(client.WebPage != null ? client.WebPage.GetVideo() : rawVideoInfoResult.RawVideoInfo.ToVideo());
 				if (video != null)
 				{
 					if (IsVideoInfoFoundBySearch)
@@ -1181,7 +1182,7 @@ namespace YouTube_downloader
 							Invoke(new MethodInvoker(() =>
 							{
 								SetVideoInfo(video);
-								_playerCodeUrl = !isYtdlClient ? client.WebPage.ExtractYouTubeConfig()?.PlayerUrl : null;
+								_playerCodeUrl = !isYtdlClient ? client.WebPage?.ExtractYouTubeConfig()?.PlayerUrl : null;
 							}));
 						}
 					}
