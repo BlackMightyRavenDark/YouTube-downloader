@@ -107,6 +107,8 @@
     <Compile Include="FormHttpHeadersEditor.Designer.cs">
       <DependentUpon>FormHttpHeadersEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TableColumn.cs" />
+    <Compile Include="TableRow.cs" />
     <Compile Include="YouTubeDownloadResult.cs" />
     <Compile Include="FavoriteItem.cs" />
     <Compile Include="FormatListContextMenuRenderer.cs" />
