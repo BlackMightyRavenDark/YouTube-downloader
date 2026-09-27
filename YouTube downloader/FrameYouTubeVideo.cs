@@ -1160,7 +1160,7 @@ namespace YouTube_downloader
 
 		private bool GetDownloadableFormatList(string videoId, out DownloadableFormatList formatList, out string errorMessage)
 		{
-			IYouTubeClient client = GetYouTubeClient(true, out errorMessage);
+			IYouTubeClient client = GetYouTubeClient(VideoInfo, true, out errorMessage);
 			if (client == null)
 			{
 				formatList = null;

@@ -72,12 +72,14 @@ namespace YouTube_downloader
 			return null;
 		}
 
-		public static IYouTubeClient GetYouTubeClient(bool getDownloadUrls, out string errorMessage)
+		public static IYouTubeClient GetYouTubeClient(YouTubeVideo video, bool getDownloadUrls, out string errorMessage)
 		{
 			try
 			{
 				errorMessage = null;
-				if (config.UseExternalRestApiServerToGetBasicVideoInfo)
+				if ((config.UseExternalRestApiServerToGetBasicVideoInfo && video == null) ||
+					(getDownloadUrls && config.UseExternalRestApiServerToGetDownloadableFormatList) ||
+					(config.UseExternalRestApiServerToGetAdultVideos && video != null && !video.IsFamilySafe))
 				{
 					return new YouTubeClientRestApi(config.ExternalRestApiServerAddress, config.ExternalRestApiServerPort,
 						config.ConnectionTimeoutExternalRestApiServer, getDownloadUrls);
@@ -101,6 +103,11 @@ namespace YouTube_downloader
 				errorMessage = ex.Message;
 				return null;
 			}
+		}
+
+		public static IYouTubeClient GetYouTubeClient(bool getDownloadUrls, out string errorMessage)
+		{
+			return GetYouTubeClient(null, getDownloadUrls, out errorMessage);
 		}
 
 		public static IEnumerable<YouTubeMediaTrackVideo> FilterVideoTracks(IEnumerable<YouTubeMediaTrack> mediaTracks)
