@@ -239,9 +239,9 @@ namespace YouTube_downloader
             this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.AutoSize = true;
             this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Location = new System.Drawing.Point(6, 19);
             this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Name = "checkBoxUseExternalRestApiServerToGetBasicVideoInfo";
-            this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Size = new System.Drawing.Size(178, 17);
+            this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Size = new System.Drawing.Size(234, 17);
             this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.TabIndex = 6;
-            this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Text = "Базовая информация о видео";
+            this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.Text = "Получение базовой информации о видео";
             this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.UseVisualStyleBackColor = true;
             this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo.CheckedChanged += new System.EventHandler(this.checkBoxUseExternalRestApiServerToGetBasicVideoInfo_CheckedChanged);
             // 
@@ -250,9 +250,9 @@ namespace YouTube_downloader
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.AutoSize = true;
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.Location = new System.Drawing.Point(6, 65);
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.Name = "checkBoxUseExternalRestApiServerToGetAdultVideos";
-            this.checkBoxUseExternalRestApiServerToGetAdultVideos.Size = new System.Drawing.Size(238, 17);
+            this.checkBoxUseExternalRestApiServerToGetAdultVideos.Size = new System.Drawing.Size(135, 17);
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.TabIndex = 0;
-            this.checkBoxUseExternalRestApiServerToGetAdultVideos.Text = "Использовать этот сервер для видео 18+";
+            this.checkBoxUseExternalRestApiServerToGetAdultVideos.Text = "Обработка видео 18+";
             this.toolTip1.SetToolTip(this.checkBoxUseExternalRestApiServerToGetAdultVideos, "В новом API уже не работает :\\\'(");
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.UseVisualStyleBackColor = true;
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.CheckedChanged += new System.EventHandler(this.checkBoxUseExternalRestApiServerToGetAdultVideos_CheckedChanged);
