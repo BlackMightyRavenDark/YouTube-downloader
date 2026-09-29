@@ -56,9 +56,27 @@ namespace YouTube_downloader
 
 		private void SetupListView()
 		{
+			olvColumnVideoResolution.AspectToStringConverter = obj =>
+			{
+				if (obj is YouTubeMediaTrackAudio trackAudio)
+				{
+					if (trackAudio.Language == null) { return null; }
+
+					string name = trackAudio.Language.DisplayName;
+					return trackAudio.Language.IsOriginal ? $"*{name}" : name;
+				}
+
+				YouTubeMediaTrackVideo v = obj as YouTubeMediaTrackVideo;
+				return $"{v.VideoWidth}x{v.VideoHeight}";
+			};
 			olvColumnVideoFrameRate.AspectToStringConverter = obj =>
 			{
-				int n = (int)obj;
+				if (obj is YouTubeMediaTrackAudio)
+				{
+					return (obj as YouTubeMediaTrackAudio).FormatExtraInformation();
+				}
+
+				int n = (obj as YouTubeMediaTrackVideo).FrameRate;
 				return n > 0 ? $"{n} fps" : null;
 			};
 			olvColumnFormalBitrate.AspectToStringConverter = obj =>

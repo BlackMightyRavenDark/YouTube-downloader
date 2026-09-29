@@ -28,160 +28,160 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTrackSelector));
-			this.listViewTrackSelector = new BrightIdeasSoftware.ObjectListView();
-			this.olvColumnTrackType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnVideoResolution = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnVideoFrameRate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnFormalBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnAverageBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnFileExtension = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnFileSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvColumnChunkCount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.columnButtonRenderer1 = new BrightIdeasSoftware.ColumnButtonRenderer();
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.btnDownload = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.listViewTrackSelector)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// listViewTrackSelector
-			// 
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnTrackType);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnVideoResolution);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnVideoFrameRate);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnFormalBitrate);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnAverageBitrate);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnFileExtension);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnFileSize);
-			this.listViewTrackSelector.AllColumns.Add(this.olvColumnChunkCount);
-			this.listViewTrackSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-			| System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this.listViewTrackSelector.CellEditUseWholeCell = false;
-			this.listViewTrackSelector.CheckBoxes = true;
-			this.listViewTrackSelector.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvColumnTrackType,
-			this.olvColumnVideoResolution,
-			this.olvColumnVideoFrameRate,
-			this.olvColumnFormalBitrate,
-			this.olvColumnAverageBitrate,
-			this.olvColumnFileExtension,
-			this.olvColumnFileSize,
-			this.olvColumnChunkCount});
-			this.listViewTrackSelector.Cursor = System.Windows.Forms.Cursors.Default;
-			this.listViewTrackSelector.FullRowSelect = true;
-			this.listViewTrackSelector.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.listViewTrackSelector.HideSelection = false;
-			this.listViewTrackSelector.LabelWrap = false;
-			this.listViewTrackSelector.Location = new System.Drawing.Point(12, 12);
-			this.listViewTrackSelector.MultiSelect = false;
-			this.listViewTrackSelector.Name = "listViewTrackSelector";
-			this.listViewTrackSelector.ShowGroups = false;
-			this.listViewTrackSelector.Size = new System.Drawing.Size(794, 341);
-			this.listViewTrackSelector.TabIndex = 0;
-			this.listViewTrackSelector.UseCompatibleStateImageBehavior = false;
-			this.listViewTrackSelector.View = System.Windows.Forms.View.Details;
-			this.listViewTrackSelector.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.listViewTrackSelector_FormatRow);
-			// 
-			// olvColumnTrackType
-			// 
-			this.olvColumnTrackType.AspectName = "TrackType";
-			this.olvColumnTrackType.Text = "Тип";
-			this.olvColumnTrackType.Width = 65;
-			// 
-			// olvColumnVideoResolution
-			// 
-			this.olvColumnVideoResolution.AspectName = "Resolution";
-			this.olvColumnVideoResolution.Text = "Разрешение";
-			this.olvColumnVideoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnVideoResolution.Width = 96;
-			// 
-			// olvColumnVideoFrameRate
-			// 
-			this.olvColumnVideoFrameRate.AspectName = "FrameRate";
-			this.olvColumnVideoFrameRate.Text = "Частота кадров";
-			this.olvColumnVideoFrameRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnVideoFrameRate.Width = 96;
-			// 
-			// olvColumnFormalBitrate
-			// 
-			this.olvColumnFormalBitrate.AspectName = "FormalBitrate";
-			this.olvColumnFormalBitrate.Text = "Битрейт (формальный)";
-			this.olvColumnFormalBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnFormalBitrate.Width = 128;
-			// 
-			// olvColumnAverageBitrate
-			// 
-			this.olvColumnAverageBitrate.AspectName = "AverageBitrate";
-			this.olvColumnAverageBitrate.Text = "Битрейт (средний)";
-			this.olvColumnAverageBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnAverageBitrate.Width = 109;
-			// 
-			// olvColumnFileExtension
-			// 
-			this.olvColumnFileExtension.AspectName = "FileExtension";
-			this.olvColumnFileExtension.Text = "Тип файла";
-			this.olvColumnFileExtension.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnFileExtension.Width = 71;
-			// 
-			// olvColumnFileSize
-			// 
-			this.olvColumnFileSize.AspectName = "FileSize";
-			this.olvColumnFileSize.Text = "Размер файла";
-			this.olvColumnFileSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvColumnFileSize.Width = 90;
-			// 
-			// olvColumnChunkCount
-			// 
-			this.olvColumnChunkCount.AspectName = "ChunkCount";
-			this.olvColumnChunkCount.Text = "Количество чанков";
-			this.olvColumnChunkCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvColumnChunkCount.Width = 118;
-			// 
-			// columnButtonRenderer1
-			// 
-			this.columnButtonRenderer1.ButtonPadding = new System.Drawing.Size(10, 10);
-			// 
-			// btnCancel
-			// 
-			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnCancel.Location = new System.Drawing.Point(12, 359);
-			this.btnCancel.Name = "btnCancel";
-			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 1;
-			this.btnCancel.Text = "Отмена";
-			this.btnCancel.UseVisualStyleBackColor = true;
-			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-			// 
-			// btnDownload
-			// 
-			this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnDownload.Location = new System.Drawing.Point(731, 359);
-			this.btnDownload.Name = "btnDownload";
-			this.btnDownload.Size = new System.Drawing.Size(75, 23);
-			this.btnDownload.TabIndex = 2;
-			this.btnDownload.Text = "Скачать";
-			this.btnDownload.UseVisualStyleBackColor = true;
-			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
-			// 
-			// FormTrackSelector
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(818, 385);
-			this.Controls.Add(this.btnDownload);
-			this.Controls.Add(this.btnCancel);
-			this.Controls.Add(this.listViewTrackSelector);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(834, 400);
-			this.Name = "FormTrackSelector";
-			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Выбор форматов";
-			((System.ComponentModel.ISupportInitialize)(this.listViewTrackSelector)).EndInit();
-			this.ResumeLayout(false);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTrackSelector));
+            this.listViewTrackSelector = new BrightIdeasSoftware.ObjectListView();
+            this.olvColumnTrackType = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnVideoResolution = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnVideoFrameRate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnFormalBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnAverageBitrate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnFileExtension = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnFileSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumnChunkCount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.columnButtonRenderer1 = new BrightIdeasSoftware.ColumnButtonRenderer();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnDownload = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.listViewTrackSelector)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // listViewTrackSelector
+            // 
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnTrackType);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnVideoResolution);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnVideoFrameRate);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnFormalBitrate);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnAverageBitrate);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnFileExtension);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnFileSize);
+            this.listViewTrackSelector.AllColumns.Add(this.olvColumnChunkCount);
+            this.listViewTrackSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewTrackSelector.CellEditUseWholeCell = false;
+            this.listViewTrackSelector.CheckBoxes = true;
+            this.listViewTrackSelector.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.olvColumnTrackType,
+            this.olvColumnVideoResolution,
+            this.olvColumnVideoFrameRate,
+            this.olvColumnFormalBitrate,
+            this.olvColumnAverageBitrate,
+            this.olvColumnFileExtension,
+            this.olvColumnFileSize,
+            this.olvColumnChunkCount});
+            this.listViewTrackSelector.Cursor = System.Windows.Forms.Cursors.Default;
+            this.listViewTrackSelector.FullRowSelect = true;
+            this.listViewTrackSelector.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewTrackSelector.HideSelection = false;
+            this.listViewTrackSelector.LabelWrap = false;
+            this.listViewTrackSelector.Location = new System.Drawing.Point(12, 12);
+            this.listViewTrackSelector.MultiSelect = false;
+            this.listViewTrackSelector.Name = "listViewTrackSelector";
+            this.listViewTrackSelector.ShowGroups = false;
+            this.listViewTrackSelector.Size = new System.Drawing.Size(794, 341);
+            this.listViewTrackSelector.TabIndex = 0;
+            this.listViewTrackSelector.UseCompatibleStateImageBehavior = false;
+            this.listViewTrackSelector.View = System.Windows.Forms.View.Details;
+            this.listViewTrackSelector.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.listViewTrackSelector_FormatRow);
+            // 
+            // olvColumnTrackType
+            // 
+            this.olvColumnTrackType.AspectName = "TrackType";
+            this.olvColumnTrackType.Text = "Тип";
+            this.olvColumnTrackType.Width = 65;
+            // 
+            // olvColumnVideoResolution
+            // 
+            this.olvColumnVideoResolution.AspectName = "Tag";
+            this.olvColumnVideoResolution.Text = "Разрешение / Язык";
+            this.olvColumnVideoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnVideoResolution.Width = 96;
+            // 
+            // olvColumnVideoFrameRate
+            // 
+            this.olvColumnVideoFrameRate.AspectName = "Tag";
+            this.olvColumnVideoFrameRate.Text = "Частота кадров / Свойства аудио";
+            this.olvColumnVideoFrameRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnVideoFrameRate.Width = 96;
+            // 
+            // olvColumnFormalBitrate
+            // 
+            this.olvColumnFormalBitrate.AspectName = "FormalBitrate";
+            this.olvColumnFormalBitrate.Text = "Битрейт (формальный)";
+            this.olvColumnFormalBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnFormalBitrate.Width = 128;
+            // 
+            // olvColumnAverageBitrate
+            // 
+            this.olvColumnAverageBitrate.AspectName = "AverageBitrate";
+            this.olvColumnAverageBitrate.Text = "Битрейт (средний)";
+            this.olvColumnAverageBitrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnAverageBitrate.Width = 109;
+            // 
+            // olvColumnFileExtension
+            // 
+            this.olvColumnFileExtension.AspectName = "FileExtension";
+            this.olvColumnFileExtension.Text = "Тип файла";
+            this.olvColumnFileExtension.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnFileExtension.Width = 71;
+            // 
+            // olvColumnFileSize
+            // 
+            this.olvColumnFileSize.AspectName = "FileSize";
+            this.olvColumnFileSize.Text = "Размер файла";
+            this.olvColumnFileSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.olvColumnFileSize.Width = 90;
+            // 
+            // olvColumnChunkCount
+            // 
+            this.olvColumnChunkCount.AspectName = "ChunkCount";
+            this.olvColumnChunkCount.Text = "Количество чанков";
+            this.olvColumnChunkCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.olvColumnChunkCount.Width = 118;
+            // 
+            // columnButtonRenderer1
+            // 
+            this.columnButtonRenderer1.ButtonPadding = new System.Drawing.Size(10, 10);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnCancel.Location = new System.Drawing.Point(12, 359);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 1;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // btnDownload
+            // 
+            this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDownload.Location = new System.Drawing.Point(731, 359);
+            this.btnDownload.Name = "btnDownload";
+            this.btnDownload.Size = new System.Drawing.Size(75, 23);
+            this.btnDownload.TabIndex = 2;
+            this.btnDownload.Text = "Скачать";
+            this.btnDownload.UseVisualStyleBackColor = true;
+            this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
+            // 
+            // FormTrackSelector
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(818, 385);
+            this.Controls.Add(this.btnDownload);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.listViewTrackSelector);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(834, 400);
+            this.Name = "FormTrackSelector";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Выбор форматов";
+            ((System.ComponentModel.ISupportInitialize)(this.listViewTrackSelector)).EndInit();
+            this.ResumeLayout(false);
 
 		}
 

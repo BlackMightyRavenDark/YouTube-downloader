@@ -193,8 +193,19 @@ namespace YouTube_downloader
 		{
 			string trackType = track.GetTypeAsString();
 			string trackId = $"ID {track.FormatId,3}";
-			string resolution = track.GetFormattedResolution();
-			string fps = track.GetFormattedFrameRate();
+			YouTubeMediaTrackAudio trackAudio = track as YouTubeMediaTrackAudio;
+			string resolution = trackAudio == null ? track.GetFormattedResolution() : null;
+			if (trackAudio != null && trackAudio.Language != null)
+			{
+				resolution = trackAudio.Language.IsOriginal ?
+					$"*{trackAudio.Language.DisplayName}" :
+					trackAudio.Language.DisplayName;
+			}
+			string fps = trackAudio == null ? track.GetFormattedFrameRate() : null;
+			if (trackAudio != null)
+			{
+				fps = trackAudio.FormatExtraInformation();
+			}
 			int bitrate = track.AverageBitrate > 0 ? track.AverageBitrate : track.Bitrate;
 			string formattedBitrate = bitrate > 0 ? $"~{bitrate / 1024} kbps" : string.Empty;
 			string formattedFileSize = track.ContentLength > 0 ? FormatSize(track.ContentLength) : string.Empty;
@@ -207,6 +218,15 @@ namespace YouTube_downloader
 			};
 
 			return new(data, track);
+		}
+
+		public static string FormatExtraInformation(this YouTubeMediaTrackAudio track)
+		{
+			List<string> list = new() { Capacity = 3 };
+			if (track.IsDynamicRangeCompression) { list.Add("DRC"); }
+			if (track.IsVoiceBoosted) { list.Add("VB"); }
+			if (track.Language != null && track.Language.IsAutoDubbed) { list.Add("DUB"); }
+			return string.Join(",", list);
 		}
 
 		public static int GetLifeTimeSeconds(this YouTubeStreamingData streamingData)

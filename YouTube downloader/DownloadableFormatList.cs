@@ -151,7 +151,7 @@ namespace YouTube_downloader
 					new(TableColumnAlignment.Left),
 					new(TableColumnAlignment.Left),
 					new(TableColumnAlignment.Right),
-					new(TableColumnAlignment.Right),
+					new(TableColumnAlignment.Left),
 					new(TableColumnAlignment.Right),
 					new(TableColumnAlignment.Left),
 					new(TableColumnAlignment.Left),
