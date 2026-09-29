@@ -588,7 +588,7 @@ namespace YouTube_downloader
 
 			miGetDownloadUrlsToolStripMenuItem.Enabled = false;
 
-			IYouTubeClient client = new YouTubeClientAndroidVr();
+			IYouTubeClient client = new YouTubeClientVisionOs();
 			client.SetWebPage(WebPage);
 			YouTubeRawVideoInfoResult rawVideoInfoResult = await Task.Run(() => client.GetRawVideoInfo(new YouTubeVideoId(VideoInfo.Id), out _));
 			if (rawVideoInfoResult.ErrorCode == 200)
@@ -620,7 +620,7 @@ namespace YouTube_downloader
 
 			miGetDashManifestToolStripMenuItem.Enabled = false;
 
-			IYouTubeClient client = new YouTubeClientAndroidVr();
+			IYouTubeClient client = new YouTubeClientVisionOs();
 			client.SetWebPage(WebPage);
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
 			if (streamingDataResult.ErrorCode == 200)
@@ -657,7 +657,7 @@ namespace YouTube_downloader
 
 			miGetHlsManifestToolStripMenuItem.Enabled = false;
 
-			IYouTubeClient client = new YouTubeClientAndroidVr();
+			IYouTubeClient client = new YouTubeClientVisionOs();
 			client.SetWebPage(WebPage);
 			YouTubeStreamingDataResult streamingDataResult = await Task.Run(() => YouTubeStreamingData.Get(VideoInfo.Id, client));
 			if (streamingDataResult.ErrorCode == 200)

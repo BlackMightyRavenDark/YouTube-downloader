@@ -96,7 +96,7 @@ namespace YouTube_downloader
 					return new YouTubeClientYtdl(config.YtdlExeFilePath, config.YtdlParameters, config.ShowYtdlConsoleWindow);
 				}
 
-				return getDownloadUrls ? new YouTubeClientAndroidVr() : YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());
+				return getDownloadUrls ? new YouTubeClientVisionOs() : YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());
 			}
 			catch (Exception ex)
 			{

@@ -176,7 +176,7 @@
     <Compile Include="Table.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="YouTubeChannelInfo.cs" />
-    <Compile Include="YouTubeClientAndroidVr.cs" />
+    <Compile Include="YouTubeClientVisionOs.cs" />
     <Compile Include="YouTubeClientYtdl.cs" />
     <Compile Include="YouTubeQuerySearcherV3.cs" />
     <Compile Include="YouTubeSearcherV3Result.cs" />

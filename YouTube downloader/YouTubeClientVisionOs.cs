@@ -5,58 +5,49 @@ using YouTubeApiLib;
 
 namespace YouTube_downloader
 {
-	internal class YouTubeClientAndroidVr : IYouTubeClient
+	internal class YouTubeClientVisionOs : IYouTubeClient
 	{
-		public string DisplayName => "android vr";
+		public string DisplayName => "Vision OS";
 		public YouTubeVideoWebPage WebPage { get; private set; }
 		public FileDownloader Downloader { get; set; }
 
-		internal const string CLIENT_VERSION = "1.65.10";
-		internal const string OS_NAME = "Android";
-		internal const string OS_VERSION = "12L";
+		internal const string CLIENT_VERSION = "1.02";
+		internal const string OS_NAME = "VisionOS";
+		internal const string OS_VERSION = "26.5.23O471";
 
-		private readonly string _userAgent = $"com.google.android.apps.youtube.vr.oculus/{CLIENT_VERSION} (Linux; U; {OS_NAME} {OS_VERSION}; eureka-user Build/SQ3A.220605.009.A1) gzip";
+		private const string USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15";
 
 		public JObject GenerateRequestBody(string videoId, YouTubeConfig youTubeConfig = null)
 		{
-			if (youTubeConfig == null) { return null; }
-
-			JObject jContentPlaybackContext = new()
-			{
-				["html5Preference"] = "HTML5_PREF_WANTS",
-				["signatureTimestamp"] = youTubeConfig.SignatureTimestamp
-			};
-
-			JObject jPlaybackContext = new()
-			{
-				["contentPlaybackContext"] = jContentPlaybackContext
-			};
-
-			JObject jClient = new()
-			{
-				["clientName"] = "ANDROID_VR",
-				["clientVersion"] = CLIENT_VERSION,
-				["deviceMake"] = "Oculus",
-				["deviceModel"] = "Quest 3",
-				["androidSdkVersion"] = 32,
-				["userAgent"] = _userAgent,
-				["osName"] = OS_NAME,
-				["osVersion"] = OS_VERSION
-			};
-
-			JObject jContext = new()
-			{
-				["client"] = jClient
-			};
-
-			return new()
-			{
-				["context"] = jContext,
-				["playbackContext"] = jPlaybackContext,
-				["videoId"] = videoId,
-				["contentCheckOk"] = true,
-				["racyCheckOk"] = true
-			};
+			return youTubeConfig == null ? null :
+				JObject.Parse(
+				$$"""
+				{
+					"context": {
+						"client": {
+							"clientName": "VISIONOS",
+							"clientVersion": "{{CLIENT_VERSION}}",
+							"deviceMake": "Apple",
+							"deviceModel": "RealityDevice17,1",
+							"userAgent": "{{USER_AGENT}}",
+							"osName": "{{OS_NAME}}",
+							"osVersion": "{{OS_VERSION}}",
+							"hl": "en",
+							"timeZone": "UTC",
+							"utcOffsetMinutes": 0
+						}
+					},
+					"playbackContext": {
+						"contentPlaybackContext": {
+							"html5Preference": "HTML5_PREF_WANTS",
+							"signatureTimestamp": "{{youTubeConfig.SignatureTimestamp}}"
+						}
+					},
+					"videoId": "{{videoId}}",
+					"contentCheckOk": true,
+					"racyCheckOk": true
+				}
+				""");
 		}
 
 		public WebHeaderCollection GenerateRequestHeaders(string videoId, YouTubeConfig youTubeConfig = null)
@@ -65,9 +56,9 @@ namespace YouTube_downloader
 			{
 				{ "Origin", YouTubeApiLib.Utils.YOUTUBE_URL },
 				{ "X-Goog-Visitor-Id", youTubeConfig.VisitorData },
-				{ "X-YouTube-Client-Name", "28" },
+				{ "X-YouTube-Client-Name", "101" },
 				{ "X-YouTube-Client-Version", CLIENT_VERSION },
-				{ "User-Agent", _userAgent }
+				{ "User-Agent", USER_AGENT }
 			};
 		}
 
