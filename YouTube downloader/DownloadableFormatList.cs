@@ -129,15 +129,22 @@ namespace YouTube_downloader
 					});
 				}
 
-				if (config.AlwaysMoveAudioId140ToTopOfList && AudioOnlyTracks.Count > 1)
+				YouTubeMediaTrackAudio[] filteredAudioTracks = (config.ShowOnlyOriginalAudioTracks ? AudioOnlyTracks.FilterOriginalAudioTracks() : AudioOnlyTracks).ToArray();
+#if DEBUG
+				if (AudioOnlyTracks.Count > filteredAudioTracks.Length)
 				{
-					for (int i = 0; i < AudioOnlyTracks.Count; ++i)
+					System.Diagnostics.Debug.WriteLine($"Filtered {filteredAudioTracks.Length} audio tracks");
+				}
+#endif
+				if (config.AlwaysMoveAudioId140ToTopOfList && filteredAudioTracks.Length > 1)
+				{
+					for (int i = 0; i < filteredAudioTracks.Length; ++i)
 					{
-						if (AudioOnlyTracks[i].FormatId == 140)
+						if (filteredAudioTracks[i].FormatId == 140)
 						{
 							if (i != 0)
 							{
-								(AudioOnlyTracks[i], AudioOnlyTracks[0]) = (AudioOnlyTracks[0], AudioOnlyTracks[i]);
+								(filteredAudioTracks[i], filteredAudioTracks[0]) = (filteredAudioTracks[0], filteredAudioTracks[i]);
 							}
 
 							break;
@@ -179,7 +186,7 @@ namespace YouTube_downloader
 					tableRows.Add(trackContainer.ToTableRow());
 				}
 
-				foreach (YouTubeMediaTrackAudio trackAudio in AudioOnlyTracks)
+				foreach (YouTubeMediaTrackAudio trackAudio in filteredAudioTracks)
 				{
 					tableRows.Add(trackAudio.ToTableRow());
 				}
@@ -211,7 +218,7 @@ namespace YouTube_downloader
 						menu.Items.Add(mi);
 					}
 
-					if (VideoOnlyTracks.Count + AudioOnlyTracks.Count > 0)
+					if (VideoOnlyTracks.Count + filteredAudioTracks.Length > 0)
 					{
 						ToolStripMenuItem mi = new("Выбрать форматы...");
 						if (menuItemClickHandler != null)

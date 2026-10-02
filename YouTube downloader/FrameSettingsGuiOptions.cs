@@ -18,6 +18,7 @@ namespace YouTube_downloader
 				json["favoritesListFontSize"] = config.FavoritesListFontSize;
 				json["sortFormatsByFileSize"] = config.SortFormatsByFileSize;
 				json["sortDashFormatsByBitrate"] = config.SortDashFormatsByBitrate;
+				json["showOnlyOriginalAudioTracks"] = config.ShowOnlyOriginalAudioTracks;
 				json["alwaysMoveAudioId140ToTopOfList"] = config.AlwaysMoveAudioId140ToTopOfList;
 				json["showHlsFormatsOnlyForStreams"] = config.ShowHlsTracksOnlyForStreams;
 			};
@@ -60,6 +61,13 @@ namespace YouTube_downloader
 					}
 				}
 				{
+					JToken jt = json.Value<JToken>("showOnlyOriginalAudioTracks");
+					if (jt != null)
+					{
+						config.ShowOnlyOriginalAudioTracks = jt.Value<bool>();
+					}
+				}
+				{
 					JToken jt = json.Value<JToken>("alwaysMoveAudioId140ToTopOfList");
 					if (jt != null)
 					{
@@ -82,6 +90,7 @@ namespace YouTube_downloader
 				numericUpDownFavoritesListFontSize.Value = config.FavoritesListFontSize;
 				checkBoxSortAdaptiveFormatsByFileSize.Checked = config.SortFormatsByFileSize;
 				checkBoxSortDashFormatsByBitrate.Checked = config.SortDashFormatsByBitrate;
+				checkBoxShowOnlyOriginalAudioTracks.Checked = config.ShowOnlyOriginalAudioTracks;
 				checkBoxMoveAudioTrackId140ToTopOfList.Checked = config.AlwaysMoveAudioId140ToTopOfList;
 				checkBoxShowHlsTracksOnlyForStreams.Checked = config.ShowHlsTracksOnlyForStreams;
 			};
@@ -95,6 +104,11 @@ namespace YouTube_downloader
 		private void checkBoxSortDashFormatsByBitrate_CheckedChanged(object sender, EventArgs e)
 		{
 			config.SortDashFormatsByBitrate = checkBoxSortDashFormatsByBitrate.Checked;
+		}
+
+		private void checkBoxShowOnlyOriginalAudioTracks_CheckedChanged(object sender, EventArgs e)
+		{
+			config.ShowOnlyOriginalAudioTracks = checkBoxShowOnlyOriginalAudioTracks.Checked;
 		}
 
 		private void checkBoxMoveAudioTrackId140ToTopOfList_CheckedChanged(object sender, EventArgs e)

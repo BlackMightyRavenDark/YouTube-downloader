@@ -38,6 +38,7 @@ namespace YouTube_downloader
 		}
 		public bool SortFormatsByFileSize { get; set; }
 		public bool SortDashFormatsByBitrate { get; set; }
+		public bool ShowOnlyOriginalAudioTracks { get; set; }
 		public bool AlwaysMoveAudioId140ToTopOfList { get; set; }
 		public bool ShowHlsTracksOnlyForStreams { get; set; }
 		#endregion
@@ -167,6 +168,7 @@ namespace YouTube_downloader
 			FavoritesListFontSize = other.FavoritesListFontSize;
 			SortFormatsByFileSize = other.SortFormatsByFileSize;
 			SortDashFormatsByBitrate = other.SortDashFormatsByBitrate;
+			ShowOnlyOriginalAudioTracks = other.ShowOnlyOriginalAudioTracks;
 			AlwaysMoveAudioId140ToTopOfList = other.AlwaysMoveAudioId140ToTopOfList;
 			ShowHlsTracksOnlyForStreams = other.ShowHlsTracksOnlyForStreams;
 
@@ -243,6 +245,7 @@ namespace YouTube_downloader
 			FavoritesListFontSize = 8;
 			SortFormatsByFileSize = true;
 			SortDashFormatsByBitrate = true;
+			ShowOnlyOriginalAudioTracks = true;
 			AlwaysMoveAudioId140ToTopOfList = false;
 			ShowHlsTracksOnlyForStreams = true;
 			#endregion

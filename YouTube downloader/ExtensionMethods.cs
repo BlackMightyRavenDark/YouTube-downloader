@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using MultiThreadedDownloaderLib;
@@ -218,6 +219,13 @@ namespace YouTube_downloader
 			};
 
 			return new(data, track);
+		}
+
+		public static IEnumerable<YouTubeMediaTrackAudio> FilterOriginalAudioTracks(this IEnumerable<YouTubeMediaTrack> tracks)
+		{
+			return tracks.Where(track => (track is YouTubeMediaTrackAudio audioTrack) &&
+				!audioTrack.IsDynamicRangeCompression && !audioTrack.IsVoiceBoosted &&
+				(audioTrack.Language == null || !audioTrack.Language.IsAutoDubbed)).Cast<YouTubeMediaTrackAudio>();
 		}
 
 		public static string FormatExtraInformation(this YouTubeMediaTrackAudio track)

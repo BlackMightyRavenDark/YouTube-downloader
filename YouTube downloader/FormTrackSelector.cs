@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using YouTubeApiLib;
 
@@ -31,9 +32,12 @@ namespace YouTube_downloader
 					root.Add(trackItem);
 				}
 			}
-			foreach (YouTubeMediaTrack mediaTrack in mediaTracks)
+
+			YouTubeMediaTrackAudio[] filteredAudioTracks = (Utils.config.ShowOnlyOriginalAudioTracks ?
+				mediaTracks.FilterOriginalAudioTracks() : mediaTracks.Where(track => track is YouTubeMediaTrackAudio).Cast<YouTubeMediaTrackAudio>()).ToArray();
+			if (filteredAudioTracks.Length > 0)
 			{
-				if (mediaTrack.GetType() == typeof(YouTubeMediaTrackAudio))
+				foreach (YouTubeMediaTrack mediaTrack in filteredAudioTracks)
 				{
 					YouTubeMediaTrackAudio audioTrack = mediaTrack as YouTubeMediaTrackAudio;
 					int chunkCount = audioTrack.DashUrls != null ? audioTrack.DashUrls.Count : -1;
