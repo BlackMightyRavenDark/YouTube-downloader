@@ -130,7 +130,8 @@ namespace YouTube_downloader
 			if (track is YouTubeMediaTrackVideo)
 			{
 				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
-				return $"{video.VideoWidth}x{video.VideoHeight}";
+				string t = $"{video.VideoWidth}x{video.VideoHeight}";
+				return video.IsHdr() ? $"{t} HDR" : t.PadRight(t.Length + 4);
 			}
 			else if (track is YouTubeMediaTrackContainer)
 			{
@@ -159,6 +160,21 @@ namespace YouTube_downloader
 			{
 				return string.Empty;
 			}
+		}
+
+		public static bool IsHdr(this YouTubeMediaTrackVideo track)
+		{
+			JObject json = TryParseJson(track.RawInfo);
+			if (json != null)
+			{
+				string t = json.Value<string>("qualityLabel");
+				if (!string.IsNullOrWhiteSpace(t))
+				{
+					return t.ToUpper().EndsWith("HDR");
+				}
+			}
+
+			return false;
 		}
 
 		public static string GetFormattedDashChunkCount(this YouTubeMediaTrack track)

@@ -94,7 +94,7 @@
             this.olvColumnVideoResolution.AspectName = "Tag";
             this.olvColumnVideoResolution.Text = "Разрешение / Язык";
             this.olvColumnVideoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.olvColumnVideoResolution.Width = 96;
+            this.olvColumnVideoResolution.Width = 120;
             // 
             // olvColumnVideoFrameRate
             // 

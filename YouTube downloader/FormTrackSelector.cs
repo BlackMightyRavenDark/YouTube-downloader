@@ -25,6 +25,7 @@ namespace YouTube_downloader
 				{
 					YouTubeMediaTrackVideo videoFile = mediaTrack as YouTubeMediaTrackVideo;
 					string resolution = $"{videoFile.VideoWidth}x{videoFile.VideoHeight}";
+					if (videoFile.IsHdr()) { resolution += " HDR"; }
 					int chunkCount = videoFile.DashUrls != null ? videoFile.DashUrls.Count : -1;
 					TrackSelectorItem trackItem = new("Видео", resolution, videoFile.FrameRate,
 						videoFile.Bitrate, videoFile.AverageBitrate, videoFile.FileExtension,
@@ -71,7 +72,8 @@ namespace YouTube_downloader
 				}
 
 				YouTubeMediaTrackVideo v = obj as YouTubeMediaTrackVideo;
-				return $"{v.VideoWidth}x{v.VideoHeight}";
+				string t = $"{v.VideoWidth}x{v.VideoHeight}";
+				return v.IsHdr() ? $"{t} HDR" : t;
 			};
 			olvColumnVideoFrameRate.AspectToStringConverter = obj =>
 			{
