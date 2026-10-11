@@ -879,8 +879,9 @@ namespace YouTube_downloader
 				{
 					ThumbnailWrapper thumbnailWrapper = new(thumbnail);
 					Thumbnails.Add(thumbnailWrapper);
-					string fn = (!string.IsNullOrEmpty(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg").PadRight(maxFileNameLength);
-					string menuItemTitle = $"{fn} | {thumbnail.Width}x{thumbnail.Height}";
+					string fn = !string.IsNullOrEmpty(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg";
+					string menuItemTitle = thumbnail.Width > 0 && thumbnail.Height > 0 ?
+						$"{fn.PadRight(maxFileNameLength)} | {thumbnail.Width}x{thumbnail.Height}" : fn;
 					ToolStripMenuItem menuItem = new(menuItemTitle) { Tag = thumbnailWrapper };
 					menuItem.Click += async (s, e) =>
 					{
