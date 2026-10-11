@@ -125,13 +125,17 @@ namespace YouTube_downloader
 			else { return "Unknown"; }
 		}
 
-		public static string GetFormattedResolution(this YouTubeMediaTrack track)
+		/// <summary>
+		/// Сформировать строку с разрешением видео.
+		/// </summary>
+		/// <param name="hasHdr">Имеется ли в списке дорожек хотя-бы одна с HDR.</param>
+		public static string GetFormattedResolution(this YouTubeMediaTrack track, bool hasHdr)
 		{
 			if (track is YouTubeMediaTrackVideo)
 			{
 				YouTubeMediaTrackVideo video = track as YouTubeMediaTrackVideo;
 				string t = $"{video.VideoWidth}x{video.VideoHeight}";
-				return video.IsHdr() ? $"{t} HDR" : t.PadRight(t.Length + 4);
+				return video.IsHdr() ? $"{t} HDR" : (hasHdr ? t.PadRight(t.Length + 4) : t);
 			}
 			else if (track is YouTubeMediaTrackContainer)
 			{
@@ -206,12 +210,16 @@ namespace YouTube_downloader
 			return dashUrlList;
 		}
 
-		internal static TableRow ToTableRow(this YouTubeMediaTrack track)
+		/// <summary>
+		/// Сформировать элемент таблицы, содержащий параметры дорожки.
+		/// </summary>
+		/// <param name="hasHdr">Имеется ли в списке дорожек хотя-бы одна с HDR.</param>
+		internal static TableRow ToTableRow(this YouTubeMediaTrack track, bool hasHdr)
 		{
 			string trackType = track.GetTypeAsString();
 			string trackId = $"ID {track.FormatId,3}";
 			YouTubeMediaTrackAudio trackAudio = track as YouTubeMediaTrackAudio;
-			string resolution = trackAudio == null ? track.GetFormattedResolution() : null;
+			string resolution = trackAudio == null ? track.GetFormattedResolution(hasHdr) : null;
 			if (trackAudio != null && trackAudio.Language != null)
 			{
 				resolution = trackAudio.Language.IsOriginal ?

@@ -22,6 +22,7 @@ namespace YouTube_downloader
 		private readonly YouTubeVideo _video;
 		private readonly YouTubeStreamingData _streamingData;
 		private bool _isFormatsSplitted;
+		private bool _hasHdrTrack;
 		private readonly bool _isYtdlVideo;
 
 		internal DownloadableFormatList(YouTubeVideo video, YouTubeStreamingData streamingData)
@@ -65,6 +66,7 @@ namespace YouTube_downloader
 					AudioOnlyTracks = FilterAudioTracks(v.TrackList).ToList();
 					Containers = FilterContainerTracks(v.TrackList).ToList();
 					Streams = FilterHlsTracks(v.TrackList).ToList();
+					_hasHdrTrack = VideoOnlyTracks.Any(track => track.IsHdr());
 					_isFormatsSplitted = true;
 				}
 				else if (_streamingData != null)
@@ -74,6 +76,7 @@ namespace YouTube_downloader
 					AudioOnlyTracks = FilterAudioTracks(formatList.Tracks).ToList();
 					Containers = FilterContainerTracks(formatList.Tracks).ToList();
 					Streams = FilterHlsTracks(formatList.Tracks).ToList();
+					_hasHdrTrack = VideoOnlyTracks.Any(track => track.IsHdr());
 					_isFormatsSplitted = true;
 				}
 			}
@@ -172,23 +175,23 @@ namespace YouTube_downloader
 				{
 					foreach (YouTubeMediaTrackHlsStream trackHls in Streams)
 					{
-						tableRows.Add(trackHls.ToTableRow());
+						tableRows.Add(trackHls.ToTableRow(_hasHdrTrack));
 					}
 				}
 
 				foreach (YouTubeMediaTrackVideo trackVideo in VideoOnlyTracks)
 				{
-					tableRows.Add(trackVideo.ToTableRow());
+					tableRows.Add(trackVideo.ToTableRow(_hasHdrTrack));
 				}
 
 				foreach (YouTubeMediaTrackContainer trackContainer in Containers)
 				{
-					tableRows.Add(trackContainer.ToTableRow());
+					tableRows.Add(trackContainer.ToTableRow(_hasHdrTrack));
 				}
 
 				foreach (YouTubeMediaTrackAudio trackAudio in filteredAudioTracks)
 				{
-					tableRows.Add(trackAudio.ToTableRow());
+					tableRows.Add(trackAudio.ToTableRow(_hasHdrTrack));
 				}
 
 				Table table = new(tableRows, tableColumns);
