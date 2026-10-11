@@ -1962,13 +1962,11 @@ namespace YouTube_downloader
 				}
 
 				// Сохранение эскиза видео.
-				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk)
+				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk &&
+					!SaveThumbnailToFile(ActiveThumbnail, formattedFileName, out _))
 				{
-					if (!SaveThumbnailToFile(ActiveThumbnail, formattedFileName, out _))
-					{
-						MessageBox.Show("Обратите внимание! Не удалось сохранить картинку от видео!", "Обращатор на себя внимания",
-							MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					}
+					MessageBox.Show("Обратите внимание! Не удалось сохранить картинку от видео!", "Обращатор на себя внимания",
+						MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
 
 				lblStatus.Text = "Состояние: Ожидание нажатия кнопки \"OK\"";
