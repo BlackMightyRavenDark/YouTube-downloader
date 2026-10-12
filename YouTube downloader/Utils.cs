@@ -633,12 +633,27 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				if (!string.IsNullOrEmpty(formattedFileName) && !string.IsNullOrWhiteSpace(formattedFileName) && thumbnail.IsImageDataOk)
+				if (thumbnail == null)
 				{
-					string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
-						Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
-					return thumbnail.ImageData.SaveToFile(outputFilePath, out errorMessage);
+					errorMessage = "Объект эскиза равен 'null'!";
+					return false;
 				}
+
+				if (!thumbnail.IsImageDataOk)
+				{
+					errorMessage = "Эскиз не загружен, повреждён или пуст! Попробуйте перезагрузить эскиз.";
+					return false;
+				}
+
+				if (string.IsNullOrWhiteSpace(formattedFileName))
+				{
+					errorMessage = "Не указано имя файла для сохранения!";
+					return false;
+				}
+
+				string outputFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(
+					Path.Combine(config.DownloadDirectory, formattedFileName + thumbnail.GetThumbnailFileNameSuffix()));
+				return thumbnail.ImageData.SaveToFile(outputFilePath, out errorMessage);
 			}
 			catch (Exception ex)
 			{
@@ -648,9 +663,6 @@ namespace YouTube_downloader
 #endif
 				return false;
 			}
-
-			errorMessage = "Something went wrong!";
-			return false;
 		}
 
 		public static FileDownloader CreateConfiguredDownloader()

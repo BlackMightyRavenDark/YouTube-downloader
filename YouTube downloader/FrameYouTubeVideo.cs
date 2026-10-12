@@ -335,29 +335,31 @@ namespace YouTube_downloader
 		{
 			try
 			{
-				bool ok = false;
-				if (ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk)
+				if (!ActiveThumbnail.IsImageDataOk)
 				{
-					using (SaveFileDialog sfd = new())
-					{
-						string fileNameSuffix = ActiveThumbnail.GetThumbnailFileNameSuffix();
-						string fileExtension = Path.GetExtension(fileNameSuffix);
-
-						sfd.Title = "Сохранить изображение";
-						sfd.Filter = $"{fileExtension.Substring(1)}|*{fileExtension}";
-						sfd.DefaultExt = fileExtension;
-						sfd.AddExtension = true;
-						sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
-						sfd.FileName = FixFileName(FormatFileName(
-							config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
-						ok = sfd.ShowDialog() != DialogResult.OK || ActiveThumbnail.ImageData.SaveToFile(sfd.FileName, out _);
-					}
+					MessageBox.Show("Эскиз не загружен, повреждён или пуст! Попробуйте перезагрузить эскиз.", "Ошибка!",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return;
 				}
 
-				if (!ok)
+				using (SaveFileDialog sfd = new())
 				{
-					MessageBox.Show("Невозможно сохранить изображение!", "Ошибатор ошибок",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
+					string fileNameSuffix = ActiveThumbnail.GetThumbnailFileNameSuffix();
+					string fileExtension = Path.GetExtension(fileNameSuffix);
+
+					sfd.Title = "Сохранить изображение";
+					sfd.Filter = $"{fileExtension.Substring(1)}|*{fileExtension}";
+					sfd.DefaultExt = fileExtension;
+					sfd.AddExtension = true;
+					sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
+					sfd.FileName = FixFileName(FormatFileName(
+						config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
+
+					if (sfd.ShowDialog() == DialogResult.OK && !ActiveThumbnail.ImageData.SaveToFile(sfd.FileName, out string errorMessage))
+					{
+						MessageBox.Show($"Невозможно сохранить изображение!{Environment.NewLine}{errorMessage}", "Ошибатор ошибок",
+							MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
+					}
 				}
 			}
 			catch (Exception ex)
@@ -365,7 +367,7 @@ namespace YouTube_downloader
 #if DEBUG
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 #endif
-				MessageBox.Show(ex.Message, "Ошибатор ошибок",
+				MessageBox.Show($"Невозможно сохранить изображение!{Environment.NewLine}{ex.Message}", "Ошибатор ошибок",
 					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
 			}
 		}
@@ -1962,10 +1964,12 @@ namespace YouTube_downloader
 				}
 
 				// Сохранение эскиза видео.
-				if (config.AutomaticallySaveVideoThumbnailImage && ActiveThumbnail != null && ActiveThumbnail.IsImageDataOk &&
-					!SaveThumbnailToFile(ActiveThumbnail, formattedFileName, out _))
+				if (config.AutomaticallySaveVideoThumbnailImage &&
+					!SaveThumbnailToFile(ActiveThumbnail, formattedFileName, out string thumbnailErrorMessage))
 				{
-					MessageBox.Show("Обратите внимание! Не удалось сохранить картинку от видео!", "Обращатор на себя внимания",
+					MessageBox.Show(
+						$"Обратите внимание! Не удалось сохранить картинку от видео!{Environment.NewLine}{thumbnailErrorMessage}",
+						"Обращатор на себя внимания",
 						MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
 
