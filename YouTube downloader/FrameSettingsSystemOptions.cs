@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using static YouTube_downloader.Utils;
@@ -23,7 +24,10 @@ namespace YouTube_downloader
 				json["useExternalRestApiServerToGetDownloadUrls"] = config.UseExternalRestApiServerToGetDownloadableFormatList;
 				json["useExternalRestApiServerToGetAdultVideos"] = config.UseExternalRestApiServerToGetAdultVideos;
 				json["useYtdl"] = config.UseYtdl;
-				json["ytdlParameters"] = config.YtdlParameters;
+				if (config.YtdlCommandLinePresets != null && config.YtdlCommandLinePresets.Count > 0)
+				{
+					json["ytdlCommandLinePresets"] = JArray.FromObject(config.YtdlCommandLinePresets);
+				}
 				json["showYtdlConsoleWindow"] = config.ShowYtdlConsoleWindow;
 				json["userAgent"] = config.UserAgent;
 				if (config.HttpHeaders != null && config.HttpHeaders.Count > 0)
@@ -109,8 +113,10 @@ namespace YouTube_downloader
 					config.UseYtdl = jt != null && jt.Value<bool>();
 				}
 				{
-					string t = json.Value<string>("ytdlParameters");
-					config.YtdlParameters = string.IsNullOrEmpty(t) || string.IsNullOrWhiteSpace(t) ? Configurator.DEFAULT_YTDL_PARAMETERS : t;
+					JArray jaYtdlPresets = json.Value<JArray>("ytdlCommandLinePresets");
+					config.YtdlCommandLinePresets = jaYtdlPresets != null ?
+						jaYtdlPresets.ToObject<List<string>>() :
+						new() { Configurator.DEFAULT_YTDL_COMMAND_LINE };
 				}
 				{
 					JToken jt = json.Value<JToken>("showYtdlConsoleWindow");
@@ -233,7 +239,7 @@ namespace YouTube_downloader
 				checkBoxUseExternalRestApiServerToGetDownloadUrls.Checked = config.UseExternalRestApiServerToGetDownloadableFormatList;
 				checkBoxUseExternalRestApiServerToGetAdultVideos.Checked = config.UseExternalRestApiServerToGetAdultVideos;
 				checkBoxUseYtdl.Checked = config.UseYtdl;
-				textBoxYtdlParameters.Text = config.YtdlParameters;
+				UpdateDataInYtdlCommandLineSelector();
 				checkBoxShowYtdlConsoleWindow.Checked = config.ShowYtdlConsoleWindow;
 				textBoxUserAgent.Text = config.UserAgent;
 				numericUpDownThreadCountVideo.Value = config.ThreadCountVideo;
@@ -265,9 +271,14 @@ namespace YouTube_downloader
 			};
 		}
 
-		private void buttonRestoreYtdlDefaultParameters_Click(object sender, EventArgs e)
+		private void btnEditYtdlPresets_Click(object sender, EventArgs e)
 		{
-			textBoxYtdlParameters.Text = config.YtdlParameters = Configurator.DEFAULT_YTDL_PARAMETERS;
+			FormYtdlPresetEditor editor = new(config.YtdlCommandLinePresets);
+			if (editor.ShowDialog() == DialogResult.OK)
+			{
+				config.YtdlCommandLinePresets = new(editor.Presets);
+				UpdateDataInYtdlCommandLineSelector();
+			}
 		}
 
 		private void btnRestoreDefaultUserAgent_Click(object sender, EventArgs e)
@@ -341,6 +352,12 @@ namespace YouTube_downloader
 			btnWtfExternalRestApiServer.Enabled = true;
 		}
 
+		private void comboBoxYtdlPresets_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			config.SelectedYtdlCommandLinePresetIndex = comboBoxYtdlPresets.SelectedIndex;
+			config.SelectedYtdlCommandLine = comboBoxYtdlPresets.Items[comboBoxYtdlPresets.SelectedIndex].ToString();
+		}
+
 		private void textBoxYouTubeApiV3Key_Leave(object sender, EventArgs e)
 		{
 			config.YouTubeApiV3Key = textBoxYouTubeApiV3Key.Text;
@@ -354,11 +371,6 @@ namespace YouTube_downloader
 		private void textBoxExternalRestApiServerUrl_Leave(object sender, EventArgs e)
 		{
 			config.ExternalRestApiServerAddress = textBoxExternalRestApiServerUrl.Text;
-		}
-
-		private void textBoxYtdlParameters_TextChanged(object sender, EventArgs e)
-		{
-			config.YtdlParameters = textBoxYtdlParameters.Text;
 		}
 
 		private void textBoxUserAgent_Leave(object sender, EventArgs e)
@@ -523,6 +535,26 @@ namespace YouTube_downloader
 		private void numericUpDownIntervalBetweenThumbnailGroupsLoad_ValueChanged(object sender, EventArgs e)
 		{
 			config.IntervalBetweenThumbnailGroupsLoadMilliseconds = (int)numericUpDownIntervalBetweenThumbnailGroupsLoadMilliseconds.Value;
+		}
+
+		private void UpdateDataInYtdlCommandLineSelector()
+		{
+			comboBoxYtdlPresets.Items.Clear();
+			if (config.YtdlCommandLinePresets.Count > 0)
+			{
+				foreach (string str in config.YtdlCommandLinePresets)
+				{
+					comboBoxYtdlPresets.Items.Add(str);
+				}
+
+				if (config.SelectedYtdlCommandLinePresetIndex < 0 || config.SelectedYtdlCommandLinePresetIndex >= comboBoxYtdlPresets.Items.Count)
+				{
+					config.SelectedYtdlCommandLinePresetIndex = 0;
+				}
+
+				comboBoxYtdlPresets.SelectedIndex = config.SelectedYtdlCommandLinePresetIndex;
+				config.SelectedYtdlCommandLine = comboBoxYtdlPresets.Items[comboBoxYtdlPresets.SelectedIndex].ToString();
+			}
 		}
 	}
 }

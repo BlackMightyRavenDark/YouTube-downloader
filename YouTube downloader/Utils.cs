@@ -93,7 +93,13 @@ namespace YouTube_downloader
 						return null;
 					}
 
-					return new YouTubeClientYtdl(config.YtdlExeFilePath, config.YtdlParameters, config.ShowYtdlConsoleWindow);
+					if (string.IsNullOrEmpty(config.SelectedYtdlCommandLine) || string.IsNullOrWhiteSpace(config.SelectedYtdlCommandLine))
+					{
+						errorMessage = "Внимание! Включена опция \"Использовать youtube-dl вместо API YouTube\", но параметры YouTube-DL не указаны!";
+						return null;
+					}
+
+					return new YouTubeClientYtdl(config.YtdlExeFilePath, config.SelectedYtdlCommandLine, config.ShowYtdlConsoleWindow);
 				}
 
 				return getDownloadUrls ? new YouTubeClientVisionOs() : YouTubeApi.GetYouTubeClient(YouTubeApi.GetDefaultYouTubeClientId());

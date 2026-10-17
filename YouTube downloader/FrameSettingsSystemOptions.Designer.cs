@@ -32,9 +32,9 @@ namespace YouTube_downloader
             this.components = new System.ComponentModel.Container();
             this.groupBoxApi = new System.Windows.Forms.GroupBox();
             this.groupBoxYouTubeDlOptions = new System.Windows.Forms.GroupBox();
+            this.btnEditYtdlPresets = new System.Windows.Forms.Button();
+            this.comboBoxYtdlPresets = new System.Windows.Forms.ComboBox();
             this.checkBoxShowYtdlConsoleWindow = new System.Windows.Forms.CheckBox();
-            this.buttonRestoreYtdlDefaultParameters = new System.Windows.Forms.Button();
-            this.textBoxYtdlParameters = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.checkBoxUseYtdl = new System.Windows.Forms.CheckBox();
             this.groupBoxExternalRestApiServer = new System.Windows.Forms.GroupBox();
@@ -131,9 +131,9 @@ namespace YouTube_downloader
             // 
             // groupBoxYouTubeDlOptions
             // 
+            this.groupBoxYouTubeDlOptions.Controls.Add(this.btnEditYtdlPresets);
+            this.groupBoxYouTubeDlOptions.Controls.Add(this.comboBoxYtdlPresets);
             this.groupBoxYouTubeDlOptions.Controls.Add(this.checkBoxShowYtdlConsoleWindow);
-            this.groupBoxYouTubeDlOptions.Controls.Add(this.buttonRestoreYtdlDefaultParameters);
-            this.groupBoxYouTubeDlOptions.Controls.Add(this.textBoxYtdlParameters);
             this.groupBoxYouTubeDlOptions.Controls.Add(this.label3);
             this.groupBoxYouTubeDlOptions.Controls.Add(this.checkBoxUseYtdl);
             this.groupBoxYouTubeDlOptions.Location = new System.Drawing.Point(0, 351);
@@ -142,6 +142,27 @@ namespace YouTube_downloader
             this.groupBoxYouTubeDlOptions.TabIndex = 21;
             this.groupBoxYouTubeDlOptions.TabStop = false;
             this.groupBoxYouTubeDlOptions.Text = "YouTube-DL";
+            // 
+            // btnEditYtdlPresets
+            // 
+            this.btnEditYtdlPresets.Location = new System.Drawing.Point(352, 86);
+            this.btnEditYtdlPresets.Name = "btnEditYtdlPresets";
+            this.btnEditYtdlPresets.Size = new System.Drawing.Size(103, 20);
+            this.btnEditYtdlPresets.TabIndex = 6;
+            this.btnEditYtdlPresets.Text = "Редактировать";
+            this.btnEditYtdlPresets.UseVisualStyleBackColor = true;
+            this.btnEditYtdlPresets.Click += new System.EventHandler(this.btnEditYtdlPresets_Click);
+            // 
+            // comboBoxYtdlPresets
+            // 
+            this.comboBoxYtdlPresets.BackColor = System.Drawing.SystemColors.Window;
+            this.comboBoxYtdlPresets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxYtdlPresets.FormattingEnabled = true;
+            this.comboBoxYtdlPresets.Location = new System.Drawing.Point(14, 62);
+            this.comboBoxYtdlPresets.Name = "comboBoxYtdlPresets";
+            this.comboBoxYtdlPresets.Size = new System.Drawing.Size(439, 21);
+            this.comboBoxYtdlPresets.TabIndex = 5;
+            this.comboBoxYtdlPresets.SelectedIndexChanged += new System.EventHandler(this.comboBoxYtdlPresets_SelectedIndexChanged);
             // 
             // checkBoxShowYtdlConsoleWindow
             // 
@@ -153,24 +174,6 @@ namespace YouTube_downloader
             this.checkBoxShowYtdlConsoleWindow.Text = "Показывать окно консоли youtube-dl";
             this.checkBoxShowYtdlConsoleWindow.UseVisualStyleBackColor = true;
             this.checkBoxShowYtdlConsoleWindow.CheckedChanged += new System.EventHandler(this.checkBoxShowYtdlConsoleWindow_CheckedChanged);
-            // 
-            // buttonRestoreYtdlDefaultParameters
-            // 
-            this.buttonRestoreYtdlDefaultParameters.Location = new System.Drawing.Point(333, 85);
-            this.buttonRestoreYtdlDefaultParameters.Name = "buttonRestoreYtdlDefaultParameters";
-            this.buttonRestoreYtdlDefaultParameters.Size = new System.Drawing.Size(128, 23);
-            this.buttonRestoreYtdlDefaultParameters.TabIndex = 3;
-            this.buttonRestoreYtdlDefaultParameters.Text = "Вернуть как было";
-            this.buttonRestoreYtdlDefaultParameters.UseVisualStyleBackColor = true;
-            this.buttonRestoreYtdlDefaultParameters.Click += new System.EventHandler(this.buttonRestoreYtdlDefaultParameters_Click);
-            // 
-            // textBoxYtdlParameters
-            // 
-            this.textBoxYtdlParameters.Location = new System.Drawing.Point(14, 59);
-            this.textBoxYtdlParameters.Name = "textBoxYtdlParameters";
-            this.textBoxYtdlParameters.Size = new System.Drawing.Size(447, 20);
-            this.textBoxYtdlParameters.TabIndex = 2;
-            this.textBoxYtdlParameters.TextChanged += new System.EventHandler(this.textBoxYtdlParameters_TextChanged);
             // 
             // label3
             // 
@@ -253,7 +256,6 @@ namespace YouTube_downloader
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.Size = new System.Drawing.Size(135, 17);
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.TabIndex = 0;
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.Text = "Обработка видео 18+";
-            this.toolTip1.SetToolTip(this.checkBoxUseExternalRestApiServerToGetAdultVideos, "В новом API уже не работает :\\\'(");
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.UseVisualStyleBackColor = true;
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.CheckedChanged += new System.EventHandler(this.checkBoxUseExternalRestApiServerToGetAdultVideos_CheckedChanged);
             // 
@@ -528,7 +530,6 @@ namespace YouTube_downloader
             this.checkBoxUseAccurateMultithreading.Size = new System.Drawing.Size(124, 17);
             this.checkBoxUseAccurateMultithreading.TabIndex = 8;
             this.checkBoxUseAccurateMultithreading.Text = "Аккуратный режим";
-            this.toolTip1.SetToolTip(this.checkBoxUseAccurateMultithreading, "Не влияет на уже начатые загрузки");
             this.checkBoxUseAccurateMultithreading.UseVisualStyleBackColor = true;
             this.checkBoxUseAccurateMultithreading.CheckedChanged += new System.EventHandler(this.checkBoxUseAccurateMultithreading_CheckedChanged);
             // 
@@ -540,8 +541,6 @@ namespace YouTube_downloader
             this.label13.Size = new System.Drawing.Size(252, 13);
             this.label13.TabIndex = 7;
             this.label13.Text = "Максимальное суммарное количество потоков:";
-            this.toolTip1.SetToolTip(this.label13, "При достижении этого значения, новые потоки будут ждать завершения предыдущих, пр" +
-        "ежде чем запуститься");
             // 
             // numericUpDownGlobalThreadCountLimit
             // 
@@ -574,7 +573,6 @@ namespace YouTube_downloader
             this.panelWarningAudioThreads.Name = "panelWarningAudioThreads";
             this.panelWarningAudioThreads.Size = new System.Drawing.Size(25, 25);
             this.panelWarningAudioThreads.TabIndex = 5;
-            this.toolTip1.SetToolTip(this.panelWarningAudioThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
             this.panelWarningAudioThreads.Visible = false;
             // 
             // panelWarningVideoThreads
@@ -585,7 +583,6 @@ namespace YouTube_downloader
             this.panelWarningVideoThreads.Name = "panelWarningVideoThreads";
             this.panelWarningVideoThreads.Size = new System.Drawing.Size(25, 25);
             this.panelWarningVideoThreads.TabIndex = 4;
-            this.toolTip1.SetToolTip(this.panelWarningVideoThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
             this.panelWarningVideoThreads.Visible = false;
             // 
             // label10
@@ -793,7 +790,6 @@ namespace YouTube_downloader
             this.panelImageRamIsUnusable.Name = "panelImageRamIsUnusable";
             this.panelImageRamIsUnusable.Size = new System.Drawing.Size(32, 32);
             this.panelImageRamIsUnusable.TabIndex = 17;
-            this.toolTip1.SetToolTip(this.panelImageRamIsUnusable, "Доступно только в версии x64!");
             this.panelImageRamIsUnusable.Visible = false;
             // 
             // btnWtfUseRam
@@ -814,7 +810,6 @@ namespace YouTube_downloader
             this.checkBoxUseRamForTempFiles.TabIndex = 13;
             this.checkBoxUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)" +
     "";
-            this.toolTip1.SetToolTip(this.checkBoxUseRamForTempFiles, "Не применяется к DASH и HLS");
             this.checkBoxUseRamForTempFiles.UseVisualStyleBackColor = true;
             this.checkBoxUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.checkBoxUseRamForTempFiles_CheckedChanged);
             // 
@@ -1025,11 +1020,11 @@ namespace YouTube_downloader
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.GroupBox groupBoxYouTubeDlOptions;
 		private System.Windows.Forms.CheckBox checkBoxUseYtdl;
-		private System.Windows.Forms.TextBox textBoxYtdlParameters;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Button buttonRestoreYtdlDefaultParameters;
 		private System.Windows.Forms.CheckBox checkBoxShowYtdlConsoleWindow;
         private System.Windows.Forms.GroupBox groupBoxHttpRequestHeaders;
         private System.Windows.Forms.Button btnEditHttpRequestHeaders;
+        private System.Windows.Forms.Button btnEditYtdlPresets;
+        private System.Windows.Forms.ComboBox comboBoxYtdlPresets;
     }
 }

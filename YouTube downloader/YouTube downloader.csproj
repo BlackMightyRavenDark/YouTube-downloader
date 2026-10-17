@@ -107,6 +107,12 @@
     <Compile Include="FormHttpHeadersEditor.Designer.cs">
       <DependentUpon>FormHttpHeadersEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormYtdlPresetEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormYtdlPresetEditor.Designer.cs">
+      <DependentUpon>FormYtdlPresetEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="TableColumn.cs" />
     <Compile Include="TableRow.cs" />
     <Compile Include="YouTubeDownloadResult.cs" />
@@ -192,6 +198,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormTrackSelector.resx">
       <DependentUpon>FormTrackSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormYtdlPresetEditor.resx">
+      <DependentUpon>FormYtdlPresetEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrameSettingsDownloadOptions.resx">
       <DependentUpon>FrameSettingsDownloadOptions.cs</DependentUpon>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
@@ -69,7 +70,9 @@ namespace YouTube_downloader
 		public bool UseExternalRestApiServerToGetDownloadableFormatList { get; set; }
 		public bool UseExternalRestApiServerToGetAdultVideos { get; set; }
 		public bool UseYtdl { get; set; }
-		public string YtdlParameters { get; set; }
+		public List<string> YtdlCommandLinePresets { get; set; }
+		public int SelectedYtdlCommandLinePresetIndex { get; set; }
+		public string SelectedYtdlCommandLine { get; set; }
 		public bool ShowYtdlConsoleWindow { get; set; }
 		public string UserAgent { get; set; }
 		public WebHeaderCollection HttpHeaders { get; set; }
@@ -98,7 +101,7 @@ namespace YouTube_downloader
 		public const string FILENAME_FORMAT_DEFAULT_WITH_DATE =
 			"[<year>-<month>-<day> <hour>-<minute>-<second><GMT>] <video_title> (id_<video_id>)";
 		public const string FILENAME_FORMAT_DEFAULT_WITHOUT_DATE = "<video_title> (id_<video_id>)";
-		public const string DEFAULT_YTDL_PARAMETERS = "<video_url> --dump-json --js-runtimes node --remote-components ejs:github";
+		public const string DEFAULT_YTDL_COMMAND_LINE = "<video_url> --dump-json --js-runtimes node --remote-components ejs:github";
 		public const string DEFAULT_HTTP_REQUEST_HEADERS =
 			"""
 			Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
@@ -195,7 +198,10 @@ namespace YouTube_downloader
 			UseExternalRestApiServerToGetDownloadableFormatList = other.UseExternalRestApiServerToGetDownloadableFormatList;
 			UseExternalRestApiServerToGetAdultVideos = other.UseExternalRestApiServerToGetAdultVideos;
 			UseYtdl = other.UseYtdl;
-			YtdlParameters = other.YtdlParameters;
+			YtdlCommandLinePresets = other.YtdlCommandLinePresets != null && other.YtdlCommandLinePresets.Count > 0 ?
+				new List<string>(other.YtdlCommandLinePresets) : new List<string>() { DEFAULT_YTDL_COMMAND_LINE };
+			SelectedYtdlCommandLinePresetIndex = other.SelectedYtdlCommandLinePresetIndex;
+			SelectedYtdlCommandLine = other.SelectedYtdlCommandLine;
 			ShowYtdlConsoleWindow = other.ShowYtdlConsoleWindow;
 			UserAgent = other.UserAgent;
 			HttpHeaders = other.HttpHeaders != null && other.HttpHeaders.Count > 0 ? Utils.GetHttpHeadersCopy(other.HttpHeaders) : new();
@@ -276,6 +282,9 @@ namespace YouTube_downloader
 			UseExternalRestApiServerToGetDownloadableFormatList = false;
 			UseExternalRestApiServerToGetAdultVideos = false;
 			UseYtdl = false;
+			YtdlCommandLinePresets = new List<string>() { DEFAULT_YTDL_COMMAND_LINE };
+			SelectedYtdlCommandLinePresetIndex = 0;
+			SelectedYtdlCommandLine = DEFAULT_YTDL_COMMAND_LINE;
 			YtdlExeFilePath = "ytdlp.exe";
 			ShowYtdlConsoleWindow = false;
 			UserAgent = DEFAULT_USER_AGENT;
