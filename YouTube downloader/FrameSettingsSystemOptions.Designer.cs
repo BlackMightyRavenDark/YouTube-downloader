@@ -256,6 +256,7 @@ namespace YouTube_downloader
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.Size = new System.Drawing.Size(135, 17);
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.TabIndex = 0;
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.Text = "Обработка видео 18+";
+            this.toolTip1.SetToolTip(this.checkBoxUseExternalRestApiServerToGetAdultVideos, "В новом API уже не работает :\'(");
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.UseVisualStyleBackColor = true;
             this.checkBoxUseExternalRestApiServerToGetAdultVideos.CheckedChanged += new System.EventHandler(this.checkBoxUseExternalRestApiServerToGetAdultVideos_CheckedChanged);
             // 
@@ -530,6 +531,7 @@ namespace YouTube_downloader
             this.checkBoxUseAccurateMultithreading.Size = new System.Drawing.Size(124, 17);
             this.checkBoxUseAccurateMultithreading.TabIndex = 8;
             this.checkBoxUseAccurateMultithreading.Text = "Аккуратный режим";
+            this.toolTip1.SetToolTip(this.checkBoxUseAccurateMultithreading, "Не влияет на уже начатые загрузки");
             this.checkBoxUseAccurateMultithreading.UseVisualStyleBackColor = true;
             this.checkBoxUseAccurateMultithreading.CheckedChanged += new System.EventHandler(this.checkBoxUseAccurateMultithreading_CheckedChanged);
             // 
@@ -541,6 +543,8 @@ namespace YouTube_downloader
             this.label13.Size = new System.Drawing.Size(252, 13);
             this.label13.TabIndex = 7;
             this.label13.Text = "Максимальное суммарное количество потоков:";
+            this.toolTip1.SetToolTip(this.label13, "При достижении этого значения, новые потоки будут ждать завершения предыдущих, пр" +
+        "ежде чем запуститься");
             // 
             // numericUpDownGlobalThreadCountLimit
             // 
@@ -573,6 +577,7 @@ namespace YouTube_downloader
             this.panelWarningAudioThreads.Name = "panelWarningAudioThreads";
             this.panelWarningAudioThreads.Size = new System.Drawing.Size(25, 25);
             this.panelWarningAudioThreads.TabIndex = 5;
+            this.toolTip1.SetToolTip(this.panelWarningAudioThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
             this.panelWarningAudioThreads.Visible = false;
             // 
             // panelWarningVideoThreads
@@ -583,6 +588,7 @@ namespace YouTube_downloader
             this.panelWarningVideoThreads.Name = "panelWarningVideoThreads";
             this.panelWarningVideoThreads.Size = new System.Drawing.Size(25, 25);
             this.panelWarningVideoThreads.TabIndex = 4;
+            this.toolTip1.SetToolTip(this.panelWarningVideoThreads, "Слишком много потоков! Могут возникнуть проблемы со скачиванием!");
             this.panelWarningVideoThreads.Visible = false;
             // 
             // label10
@@ -790,6 +796,7 @@ namespace YouTube_downloader
             this.panelImageRamIsUnusable.Name = "panelImageRamIsUnusable";
             this.panelImageRamIsUnusable.Size = new System.Drawing.Size(32, 32);
             this.panelImageRamIsUnusable.TabIndex = 17;
+            this.toolTip1.SetToolTip(this.panelImageRamIsUnusable, "Доступно только в версии x64!");
             this.panelImageRamIsUnusable.Visible = false;
             // 
             // btnWtfUseRam
@@ -810,6 +817,7 @@ namespace YouTube_downloader
             this.checkBoxUseRamForTempFiles.TabIndex = 13;
             this.checkBoxUseRamForTempFiles.Text = "Использовать оперативную память для хранения временных файлов (экспериментально!)" +
     "";
+            this.toolTip1.SetToolTip(this.checkBoxUseRamForTempFiles, "Не применяется к DASH и HLS");
             this.checkBoxUseRamForTempFiles.UseVisualStyleBackColor = true;
             this.checkBoxUseRamForTempFiles.CheckedChanged += new System.EventHandler(this.checkBoxUseRamForTempFiles_CheckedChanged);
             // 
