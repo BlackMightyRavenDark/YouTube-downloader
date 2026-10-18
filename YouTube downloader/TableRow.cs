@@ -20,9 +20,7 @@ namespace YouTube_downloader
 			{
 				for (int i = 1; i < length; ++i)
 				{
-					if (i < length - 2 ||
-						(!string.IsNullOrEmpty(RawData[i]) &&
-						!string.IsNullOrWhiteSpace(RawData[i])))
+					if (i < length - 2 || !string.IsNullOrWhiteSpace(RawData[i]))
 					{
 						t += separator + RawData[i];
 					}

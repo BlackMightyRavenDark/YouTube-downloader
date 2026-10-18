@@ -45,8 +45,8 @@ namespace YouTube_downloader
 		{
 			return video.Status?.Status != null &&
 				(video.Status.Status.Equals("OK", StringComparison.OrdinalIgnoreCase) ||
-				!string.IsNullOrEmpty(video.Status.Reason) ||
-				!string.IsNullOrEmpty(video.Status.ReasonDetails));
+				!string.IsNullOrWhiteSpace(video.Status.Reason) ||
+				!string.IsNullOrWhiteSpace(video.Status.ReasonDetails));
 		}
 
 		public static bool IsCiphered(this YouTubeVideo video)

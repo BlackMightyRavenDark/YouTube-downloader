@@ -29,7 +29,7 @@ namespace YouTube_downloader
 		public bool DecryptCipherSignature(string encryptedCipherSignature, out string decryptionResult)
 		{
 			decryptionResult = Utils.DecryptCipherSignature(encryptedCipherSignature, CipherDecryptionAlgorithm);
-			return !string.IsNullOrEmpty(decryptionResult) && !string.IsNullOrWhiteSpace(decryptionResult);
+			return !string.IsNullOrWhiteSpace(decryptionResult);
 		}
 
 		public bool DecryptNParam(string encryptedNParam, out string decryptionResult)

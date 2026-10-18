@@ -63,7 +63,7 @@ namespace YouTube_downloader
 					return rawVideoInfoResult.RawVideoInfo.ToVideo();
 				}
 			}
-			else if (string.IsNullOrEmpty(errorMessage) || string.IsNullOrWhiteSpace(errorMessage))
+			else if (string.IsNullOrWhiteSpace(errorMessage))
 			{
 				errorMessage = "Can't load any YouTube client! Let's cry, baby, it's over! :'(";
 			}
@@ -86,14 +86,14 @@ namespace YouTube_downloader
 				}
 				else if (config.UseYtdl)
 				{
-					if (string.IsNullOrEmpty(config.YtdlExeFilePath) || string.IsNullOrWhiteSpace(config.YtdlExeFilePath) || !File.Exists(config.YtdlExeFilePath))
+					if (string.IsNullOrWhiteSpace(config.YtdlExeFilePath) || !File.Exists(config.YtdlExeFilePath))
 					{
 						errorMessage = "Внимание! Включена опция \"Использовать youtube-dl вместо API YouTube\", " +
 							"но путь к youtube-dl не указан в настройках или файл не найден!";
 						return null;
 					}
 
-					if (string.IsNullOrEmpty(config.SelectedYtdlCommandLine) || string.IsNullOrWhiteSpace(config.SelectedYtdlCommandLine))
+					if (string.IsNullOrWhiteSpace(config.SelectedYtdlCommandLine))
 					{
 						errorMessage = "Внимание! Включена опция \"Использовать youtube-dl вместо API YouTube\", но параметры YouTube-DL не указаны!";
 						return null;
@@ -149,17 +149,17 @@ namespace YouTube_downloader
 				res = string.Empty;
 				if (audio.AverageBitrate != 0)
 				{
-					string comma = !string.IsNullOrEmpty(res) ? "," : string.Empty;
+					string comma = !string.IsNullOrWhiteSpace(res) ? "," : string.Empty;
 					res += $"{comma} ~{audio.AverageBitrate / 1024} kbps";
 				}
-				if (!string.IsNullOrEmpty(audio.FileExtension))
+				if (!string.IsNullOrWhiteSpace(audio.FileExtension))
 				{
-					string comma = !string.IsNullOrEmpty(res) ? "," : string.Empty;
+					string comma = !string.IsNullOrWhiteSpace(res) ? "," : string.Empty;
 					res += $"{comma} {audio.FileExtension}";
 				}
-				if (!string.IsNullOrEmpty(audio.MimeCodecs))
+				if (!string.IsNullOrWhiteSpace(audio.MimeCodecs))
 				{
-					string comma = !string.IsNullOrEmpty(res) ? "," : string.Empty;
+					string comma = !string.IsNullOrWhiteSpace(res) ? "," : string.Empty;
 					res += $"{comma} {audio.MimeCodecs}";
 				}
 			}
@@ -200,7 +200,7 @@ namespace YouTube_downloader
 
 		public static FavoriteItem FindVideoItemInFavorites(string videoId, FavoriteItem rootNode)
 		{
-			if (string.IsNullOrEmpty(videoId) || string.IsNullOrWhiteSpace(videoId)) { return null; }
+			if (string.IsNullOrWhiteSpace(videoId)) { return null; }
 			if (rootNode.ItemType == FavoriteItemType.Video && string.CompareOrdinal(videoId, rootNode.Id) == 0)
 			{
 				return rootNode;
@@ -222,10 +222,10 @@ namespace YouTube_downloader
 
 		public static FavoriteItem FindChannelItemInFavorites(string channelId, FavoriteItem rootNode)
 		{
-			if (string.IsNullOrEmpty(channelId) || string.IsNullOrWhiteSpace(channelId)) { return null; }
+			if (string.IsNullOrWhiteSpace(channelId)) { return null; }
 			if (rootNode.ItemType == FavoriteItemType.Channel)
 			{
-				string idRoot = !string.IsNullOrEmpty(rootNode.ChannelId) && !string.IsNullOrWhiteSpace(rootNode.ChannelId) ? rootNode.ChannelId : rootNode.Id;
+				string idRoot = !string.IsNullOrWhiteSpace(rootNode.ChannelId) ? rootNode.ChannelId : rootNode.Id;
 				if (string.CompareOrdinal(channelId, idRoot) == 0) { return rootNode; }
 			}
 
@@ -279,11 +279,11 @@ namespace YouTube_downloader
 				long minimumFreeSpaceRequired = (long)(totalFileSize * 1.1);
 
 				char chunkMergerDirectoryDriveLetter;
-				if (!string.IsNullOrEmpty(config.ChunkMergerDirectory) && !string.IsNullOrWhiteSpace(config.ChunkMergerDirectory))
+				if (!string.IsNullOrWhiteSpace(config.ChunkMergerDirectory))
 				{
 					chunkMergerDirectoryDriveLetter = config.ChunkMergerDirectory[0];
 				}
-				else if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
+				else if (!string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 				{
 					chunkMergerDirectoryDriveLetter = config.TemporaryDirectory[0];
 				}
@@ -295,7 +295,7 @@ namespace YouTube_downloader
 				char tempDirectoryDriveLetter;
 				if (!config.UseRamToStoreTemporaryFiles)
 				{
-					if (!string.IsNullOrEmpty(config.TemporaryDirectory) && !string.IsNullOrWhiteSpace(config.TemporaryDirectory))
+					if (!string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 					{
 						tempDirectoryDriveLetter = config.TemporaryDirectory[0];
 					}
@@ -496,7 +496,7 @@ namespace YouTube_downloader
 			int result = 0;
 			foreach (YouTubeVideoThumbnail thumbnail in thumbnails)
 			{
-				int length = string.IsNullOrEmpty(thumbnail.FileName) ? 0 : thumbnail.FileName.Length;
+				int length = string.IsNullOrWhiteSpace(thumbnail.FileName) ? 0 : thumbnail.FileName.Length;
 				if (length > result) { result = length; }
 			}
 			return result;
@@ -545,7 +545,7 @@ namespace YouTube_downloader
 			var testTasks = tracks.Select((track, taskId) => Task.Run(() =>
 			{
 				string url = track.FileUrl?.Url;
-				int errorCode = !string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url) ?
+				int errorCode = !string.IsNullOrWhiteSpace(url) ?
 					MultiThreadedDownloaderLib.Utils.GetUrlResponseHttpHeaders("HEAD",
 					url, headers, null, null, connectionTimeout, out _, out _) : 400;
 				results[taskId] = errorCode;
@@ -559,7 +559,7 @@ namespace YouTube_downloader
 		{
 			string fixedFileName = FixFileName(FormatFileName(IsVideoDateAvailable(video) ?
 				config.OutputFileNameFormatWithDate : config.OutputFileNameFormatWithoutDate, video));
-			if (thumbnailWrapper == null || string.IsNullOrEmpty(containerFileExtension)) { return fixedFileName; }
+			if (thumbnailWrapper == null || string.IsNullOrWhiteSpace(containerFileExtension)) { return fixedFileName; }
 			string numberedVideoFilePath = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(Path.Combine(config.DownloadDirectory, fixedFileName + containerFileExtension));
 			int int1 = ExtractNumberFromVideoFileName(numberedVideoFilePath);
 			int int2 = GetThumbnailNextFreeFileNameNumber(thumbnailWrapper, Path.Combine(config.DownloadDirectory, fixedFileName), int1, out _);
@@ -570,10 +570,10 @@ namespace YouTube_downloader
 		private static int ExtractNumberFromVideoFileName(string fileName)
 		{
 			string numbered = MultiThreadedDownloaderLib.Utils.GetNumberedFileName(fileName);
-			if (!string.IsNullOrEmpty(numbered))
+			if (!string.IsNullOrWhiteSpace(numbered))
 			{
 				string t = FindRegExp(numbered, @"_(\d+)(?:\.[\w\d]+)$");
-				if (!string.IsNullOrEmpty(t) && int.TryParse(t, out int n)) { return n; }
+				if (!string.IsNullOrWhiteSpace(t) && int.TryParse(t, out int n)) { return n; }
 			}
 
 			return 0;
@@ -582,7 +582,7 @@ namespace YouTube_downloader
 		public static string ExtractFileNameFromThumbnailUrl(string url, string expression = @"\w/.{11}/([^\&\?]*)")
 		{
 			string fileName = YouTubeApiLib.Utils.FindRegexp(url, expression);
-			return !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
+			return !string.IsNullOrWhiteSpace(fileName) ? fileName : "unnamed.jpg";
 		}
 
 		private static int GetThumbnailNextFreeFileNameNumber(ThumbnailWrapper thumbnailWrapper,
@@ -622,7 +622,7 @@ namespace YouTube_downloader
 			{
 				string t = webPageCode.Substring(n + 9);
 				string res = t.Substring(0, t.IndexOf("\""));
-				if (!string.IsNullOrEmpty(res) && !string.IsNullOrWhiteSpace(res))
+				if (!string.IsNullOrWhiteSpace(res))
 				{
 					return YouTubeApiLib.Utils.YOUTUBE_URL + res;
 				}
@@ -722,7 +722,7 @@ namespace YouTube_downloader
 			foreach (JObject jHeader in jaHeaders.Cast<JObject>())
 			{
 				string name = jHeader.Value<string>("name");
-				if (!string.IsNullOrEmpty(name) && !string.IsNullOrWhiteSpace(name) &&
+				if (!string.IsNullOrWhiteSpace(name) &&
 					!string.Equals(name, "Range", StringComparison.OrdinalIgnoreCase))
 				{
 					result.Add(name, jHeader.Value<string>("value"));
@@ -794,7 +794,7 @@ namespace YouTube_downloader
 				string t = Path.GetFileName(config.FfmpegExeFilePath);
 				string ffmpegFileName = t.Contains(" ") ? $"\"{t}\"" : t;
 				string ffmpegDirectory = Path.GetDirectoryName(config.FfmpegExeFilePath);
-				if (!string.IsNullOrEmpty(ffmpegDirectory))
+				if (!string.IsNullOrWhiteSpace(ffmpegDirectory))
 				{
 					process.StartInfo.WorkingDirectory = ffmpegDirectory;
 				}
@@ -854,7 +854,7 @@ namespace YouTube_downloader
 				process.StartInfo.FileName = "cmd.exe";
 				string ffmpegFileName = Path.GetFileName(config.FfmpegExeFilePath);
 				string ffmpegDirectory = Path.GetDirectoryName(config.FfmpegExeFilePath);
-				if (!string.IsNullOrEmpty(config.FfmpegExeFilePath))
+				if (!string.IsNullOrWhiteSpace(config.FfmpegExeFilePath))
 				{
 					process.StartInfo.WorkingDirectory = ffmpegDirectory;
 				}
@@ -885,11 +885,10 @@ namespace YouTube_downloader
 			try
 			{
 				errorMessage = null;
-				if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
+				if (!string.IsNullOrWhiteSpace(url))
 				{
 					Process process = new();
-					if (!string.IsNullOrEmpty(config.WebBrowserExeFilePath) &&
-						!string.IsNullOrWhiteSpace(config.WebBrowserExeFilePath))
+					if (!string.IsNullOrWhiteSpace(config.WebBrowserExeFilePath))
 					{
 						process.StartInfo.FileName = config.WebBrowserExeFilePath;
 						process.StartInfo.Arguments = url;
@@ -915,8 +914,7 @@ namespace YouTube_downloader
 
 		public static bool IsFfmpegAvailable()
 		{
-			return !string.IsNullOrEmpty(config.FfmpegExeFilePath) &&
-				!string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
+			return !string.IsNullOrWhiteSpace(config.FfmpegExeFilePath) &&
 				File.Exists(config.FfmpegExeFilePath);
 		}
 

@@ -49,7 +49,7 @@ namespace YouTube_downloader
 						e.Graphics.SetClip(rect);
 						e.Graphics.DrawLine(Pens.Black, rect.Left, rect.Top, rect.Left, rect.Bottom);
 
-						if (!string.IsNullOrEmpty(item.Title) && !string.IsNullOrWhiteSpace(item.Title))
+						if (!string.IsNullOrWhiteSpace(item.Title))
 						{
 							SizeF size = e.Graphics.MeasureString(item.Title, Font);
 							float y = Height / 2.0f - size.Height / 2.0f;

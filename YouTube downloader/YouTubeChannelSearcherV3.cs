@@ -22,12 +22,12 @@ namespace YouTube_downloader
 			DateTime publishedAfter, DateTime publishedBefore,
 			ushort resultCountLimit, string pageToken, FileDownloader downloader = null)
 		{
-			if (string.IsNullOrEmpty(apiKey) || string.IsNullOrWhiteSpace(apiKey))
+			if (string.IsNullOrWhiteSpace(apiKey))
 			{
 				throw new ArgumentException("The API key is null or empty!");
 			}
 
-			if (string.IsNullOrEmpty(channelId) || string.IsNullOrWhiteSpace(channelId))
+			if (string.IsNullOrWhiteSpace(channelId))
 			{
 				throw new ArgumentException("The channel ID is null or empty!");
 			}
@@ -79,7 +79,7 @@ namespace YouTube_downloader
 				{
 					requestQuery["publishedBefore"] = PublishedBefore.ToString("O");
 				}
-				if (!string.IsNullOrEmpty(nextPageToken) && !string.IsNullOrWhiteSpace(nextPageToken))
+				if (!string.IsNullOrWhiteSpace(nextPageToken))
 				{
 					requestQuery["pageToken"] = nextPageToken;
 				}
@@ -151,7 +151,7 @@ namespace YouTube_downloader
 					break;
 				}
 			}
-			while (!string.IsNullOrEmpty(nextPageToken) && !string.IsNullOrWhiteSpace(nextPageToken) &&
+			while (!string.IsNullOrWhiteSpace(nextPageToken) &&
 				FoundVideos.Count < ResultCountLimit && exceptionInRowCount < 3);
 
 			if (FoundVideos.Count > 1)

@@ -135,7 +135,7 @@ namespace YouTube_downloader
 			string[] args = Environment.GetCommandLineArgs();
 			foreach (string arg in args)
 			{
-				if (!string.IsNullOrEmpty(arg) && arg.Equals("/standalone", StringComparison.OrdinalIgnoreCase))
+				if (!string.IsNullOrWhiteSpace(arg) && arg.Equals("/standalone", StringComparison.OrdinalIgnoreCase))
 				{
 					useAppData = true;
 					break;

@@ -24,12 +24,12 @@ namespace YouTube_downloader
 		internal YouTubeQuerySearcherV3(string apiKey, string searchQuery, DateTime publishedAfter, DateTime publishedBefore,
 			string resultTypes, string resultsOrder, ushort resultCountLimit, string pageToken, FileDownloader downloader = null)
 		{
-			if (string.IsNullOrEmpty(apiKey) || string.IsNullOrWhiteSpace(apiKey))
+			if (string.IsNullOrWhiteSpace(apiKey))
 			{
 				throw new ArgumentException("The API key is null or empty!");
 			}
 
-			if (string.IsNullOrEmpty(searchQuery) || string.IsNullOrWhiteSpace(searchQuery))
+			if (string.IsNullOrWhiteSpace(searchQuery))
 			{
 				throw new ArgumentException("The search query is null or empty!");
 			}
@@ -39,7 +39,7 @@ namespace YouTube_downloader
 				throw new ArgumentException("Invalid range of dates!");
 			}
 
-			if (string.IsNullOrEmpty(resultTypes) || string.IsNullOrWhiteSpace(resultTypes))
+			if (string.IsNullOrWhiteSpace(resultTypes))
 			{
 				throw new ArgumentException("The result types is null or empty!");
 			}
@@ -78,7 +78,7 @@ namespace YouTube_downloader
 					{ "type", ResultTypes },
 					{ "maxResults", ResultCountLimit.ToString() }
 				};
-				if (!string.IsNullOrEmpty(ResultsOrder) && !string.IsNullOrWhiteSpace(ResultsOrder))
+				if (!string.IsNullOrWhiteSpace(ResultsOrder))
 				{
 					requestQuery["order"] = ResultsOrder;
 				}
@@ -90,7 +90,7 @@ namespace YouTube_downloader
 				{
 					requestQuery["publishedBefore"] = PublishedBefore.ToString("O");
 				}
-				if (!string.IsNullOrEmpty(nextPageToken) && !string.IsNullOrWhiteSpace(nextPageToken))
+				if (!string.IsNullOrWhiteSpace(nextPageToken))
 				{
 					requestQuery["pageToken"] = nextPageToken;
 				}
@@ -168,7 +168,7 @@ namespace YouTube_downloader
 					break;
 				}
 			}
-			while (!string.IsNullOrEmpty(nextPageToken) && !string.IsNullOrWhiteSpace(nextPageToken) &&
+			while (!string.IsNullOrWhiteSpace(nextPageToken) &&
 				FoundVideos.Count + FoundChannels.Count < ResultCountLimit && exceptionInRowCount < 3);
 
 			if (FoundVideos.Count > 1)
@@ -207,7 +207,7 @@ namespace YouTube_downloader
 					if (isChannel)
 					{
 						string t = Utils.FindRegExp(url, "s(\\d{1,4})-?");
-						if (!string.IsNullOrEmpty(t) && !ushort.TryParse(t, out height)) { height = 0; }
+						if (!string.IsNullOrWhiteSpace(t) && !ushort.TryParse(t, out height)) { height = 0; }
 					}
 					string fileName = isVideo ? url.Substring(url.LastIndexOf("/") + 1) : $"{height}.jpg";
 					thumbnails.Add(new YouTubeVideoThumbnail(width, height, fileName, url));

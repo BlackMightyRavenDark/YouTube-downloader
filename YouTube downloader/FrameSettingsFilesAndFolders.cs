@@ -104,7 +104,7 @@ namespace YouTube_downloader
 				using (FolderBrowserDialog folderBrowserDialog = new()
 				{
 					Description = "Выберите папку для скачивания",
-					SelectedPath = (!string.IsNullOrEmpty(config.DownloadDirectory) && Directory.Exists(config.DownloadDirectory)) ?
+					SelectedPath = (!string.IsNullOrWhiteSpace(config.DownloadDirectory) && Directory.Exists(config.DownloadDirectory)) ?
 						config.DownloadDirectory : config.SelfDirectory
 				})
 				{
@@ -129,7 +129,7 @@ namespace YouTube_downloader
 				using (FolderBrowserDialog folderBrowserDialog = new()
 				{
 					Description = "Выберите папку для временных файлов",
-					SelectedPath = (!string.IsNullOrEmpty(config.TemporaryDirectory) && Directory.Exists(config.TemporaryDirectory)) ?
+					SelectedPath = (!string.IsNullOrWhiteSpace(config.TemporaryDirectory) && Directory.Exists(config.TemporaryDirectory)) ?
 						config.TemporaryDirectory : config.SelfDirectory
 				})
 				{
@@ -163,7 +163,7 @@ namespace YouTube_downloader
 				using (FolderBrowserDialog folderBrowserDialog = new()
 				{
 					Description = "Выберите папку для объединения чанков",
-					SelectedPath = !string.IsNullOrEmpty(config.ChunkMergerDirectory) && Directory.Exists(config.ChunkMergerDirectory) ?
+					SelectedPath = !string.IsNullOrWhiteSpace(config.ChunkMergerDirectory) && Directory.Exists(config.ChunkMergerDirectory) ?
 						config.ChunkMergerDirectory : config.SelfDirectory
 				})
 				{

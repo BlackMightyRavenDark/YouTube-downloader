@@ -293,7 +293,7 @@ namespace YouTube_downloader
 
 		private void miCopyPlayerUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (string.IsNullOrEmpty(_playerCodeUrl) || string.IsNullOrWhiteSpace(_playerCodeUrl))
+			if (string.IsNullOrWhiteSpace(_playerCodeUrl))
 			{
 				MessageBox.Show("Ссылка на плеер не найдена!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -305,7 +305,7 @@ namespace YouTube_downloader
 
 		private void miCopyChannelTitleToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!string.IsNullOrEmpty(VideoInfo.OwnerChannelTitle) && !string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
+			if (!string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelTitle))
 			{
 				SetClipboardText(VideoInfo.OwnerChannelTitle);
 			}
@@ -313,8 +313,7 @@ namespace YouTube_downloader
 
 		private void miCopyChannelIdToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (VideoInfo == null || string.IsNullOrEmpty(VideoInfo.OwnerChannelId) ||
-				string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelId))
+			if (VideoInfo == null || string.IsNullOrWhiteSpace(VideoInfo.OwnerChannelId))
 			{
 				string msg = "Произошла ошибация! По-этому, в настоящее время " +
 					"данное действие совершить невозможно! Сорян, бро!";
@@ -351,7 +350,7 @@ namespace YouTube_downloader
 					sfd.Filter = $"{fileExtension.Substring(1)}|*{fileExtension}";
 					sfd.DefaultExt = fileExtension;
 					sfd.AddExtension = true;
-					sfd.InitialDirectory = string.IsNullOrEmpty(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
+					sfd.InitialDirectory = string.IsNullOrWhiteSpace(config.DownloadDirectory) ? config.SelfDirectory : config.DownloadDirectory;
 					sfd.FileName = FixFileName(FormatFileName(
 						config.OutputFileNameFormatWithDate, VideoInfo)) + fileNameSuffix;
 
@@ -421,7 +420,7 @@ namespace YouTube_downloader
 		private void miOpenThumbnailImageInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string url = ActiveThumbnail?.Thumbnail?.Url;
-			if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
+			if (!string.IsNullOrWhiteSpace(url))
 			{
 				OpenUrlInBrowser(url, out _);
 			}
@@ -441,7 +440,7 @@ namespace YouTube_downloader
 		private void miCopyThumbnailUrlToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (VideoInfo.Thumbnails?.Count == 0 ||
-				string.IsNullOrEmpty(VideoInfo.Thumbnails[0].Url) || string.IsNullOrWhiteSpace(VideoInfo.Thumbnails[0].Url))
+				string.IsNullOrWhiteSpace(VideoInfo.Thumbnails[0].Url))
 			{
 				MessageBox.Show("Ссылка на изображение отсутствует!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -452,7 +451,7 @@ namespace YouTube_downloader
 
 		private void miCopyVideoIdToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (VideoInfo != null && !string.IsNullOrEmpty(VideoInfo.Id))
+			if (VideoInfo != null && !string.IsNullOrWhiteSpace(VideoInfo.Id))
 			{
 				SetClipboardText(VideoInfo.Id);
 			}
@@ -502,7 +501,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
+			if (WebPage != null && !string.IsNullOrWhiteSpace(WebPage.WebPageCode))
 			{
 				SetClipboardText(WebPage.WebPageCode);
 				MessageBox.Show("Скопировано в буфер обмена", "Код веб-страницы",
@@ -539,7 +538,7 @@ namespace YouTube_downloader
 			miGetVideoInfoToolStripMenuItem.Enabled = false;
 
 			{
-				if (WebPage != null && !string.IsNullOrEmpty(WebPage.WebPageCode))
+				if (WebPage != null && !string.IsNullOrWhiteSpace(WebPage.WebPageCode))
 				{
 					YouTubeVideoWebPageResult videoWebPageResult = YouTubeVideoWebPage.FromCode(WebPage.WebPageCode);
 					YouTubeRawVideoInfoResult rawVideoInfoResult =
@@ -628,7 +627,7 @@ namespace YouTube_downloader
 			if (streamingDataResult.ErrorCode == 200)
 			{
 				string url = streamingDataResult.Data.GetDashManifestUrl();
-				if (!string.IsNullOrEmpty(url))
+				if (!string.IsNullOrWhiteSpace(url))
 				{
 					FileDownloader d = CreateConfiguredDownloader();
 					d.Url = url;
@@ -665,7 +664,7 @@ namespace YouTube_downloader
 			if (streamingDataResult.ErrorCode == 200)
 			{
 				string url = streamingDataResult.Data.GetHlsManifestUrl();
-				if (!string.IsNullOrEmpty(url))
+				if (!string.IsNullOrWhiteSpace(url))
 				{
 					FileDownloader d = CreateConfiguredDownloader();
 					d.Url = url;
@@ -712,7 +711,7 @@ namespace YouTube_downloader
 
 			string msg = null;
 			if (!await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg)) &&
-				!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
+				!string.IsNullOrWhiteSpace(msg))
 			{
 				lblStatus.Text = "Состояние: Ошибка обновления списка форматов!";
 				MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -739,7 +738,7 @@ namespace YouTube_downloader
 
 			miGetPlayerCodeToolStripMenuItem.Enabled = false;
 			string page = WebPage?.WebPageCode;
-			if (string.IsNullOrEmpty(page) || string.IsNullOrWhiteSpace(page))
+			if (string.IsNullOrWhiteSpace(page))
 			{
 				YouTubeVideoId youTubeVideoId = new(VideoInfo.Id);
 				YouTubeVideoWebPageResult webPageResult = await Task.Run(() => YouTubeVideoWebPage.Get(youTubeVideoId));
@@ -755,7 +754,7 @@ namespace YouTube_downloader
 			}
 
 			string url = ExtractPlayerUrlFromWebPageCode(page);
-			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+			if (string.IsNullOrWhiteSpace(url))
 			{
 				MessageBox.Show("Ошибка скачивания кода плеера!", "Ошибатор ошибок!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -842,8 +841,7 @@ namespace YouTube_downloader
 			}
 
 			lblVideoTitle.Text = videoInfo.Title;
-			if (string.IsNullOrEmpty(videoInfo.OwnerChannelId) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelId) ||
-				string.IsNullOrEmpty(videoInfo.OwnerChannelTitle) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelTitle))
+			if (string.IsNullOrWhiteSpace(videoInfo.OwnerChannelId) || string.IsNullOrWhiteSpace(videoInfo.OwnerChannelTitle))
 			{
 				lblChannelTitle.Text = "Имя канала: Недоступно";
 				lblDatePublished.Text = "Дата публикации: Недоступно";
@@ -881,7 +879,7 @@ namespace YouTube_downloader
 				{
 					ThumbnailWrapper thumbnailWrapper = new(thumbnail);
 					Thumbnails.Add(thumbnailWrapper);
-					string fn = !string.IsNullOrEmpty(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg";
+					string fn = !string.IsNullOrWhiteSpace(thumbnail.FileName) ? thumbnail.FileName : "unnamed.jpg";
 					string menuItemTitle = thumbnail.Width > 0 && thumbnail.Height > 0 ?
 						$"{fn.PadRight(maxFileNameLength)} | {thumbnail.Width}x{thumbnail.Height}" : fn;
 					ToolStripMenuItem menuItem = new(menuItemTitle) { Tag = thumbnailWrapper };
@@ -1116,7 +1114,7 @@ namespace YouTube_downloader
 
 				string msg = null;
 				if (!(await Task.Run(() => GetDownloadableFormatList(VideoInfo.Id, out _downloadableFormatList, out msg))) &&
-					!string.IsNullOrEmpty(msg) && !string.IsNullOrWhiteSpace(msg))
+					!string.IsNullOrWhiteSpace(msg))
 				{
 					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
@@ -1418,7 +1416,7 @@ namespace YouTube_downloader
 					//TODO: Вынести это в отдельный метод.
 					if (mediaTrack.IsCiphered && !config.UseExternalRestApiServerToGetDownloadableFormatList)
 					{
-						if (string.IsNullOrEmpty(config.CipherDecryptionAlgorythm) || string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
+						if (string.IsNullOrWhiteSpace(config.CipherDecryptionAlgorythm))
 						{
 							return new YouTubeDownloadResult(ERROR_NO_CIPHER_DECRYPTION_ALGORITHM, null, null);
 						}
@@ -1511,7 +1509,7 @@ namespace YouTube_downloader
 									List<char> driveLetters = mtd.GetUsedDriveLetters();
 									if (!IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired, out string diskSpaceCheckErrorMessage))
 									{
-										bool isCheckedOk = string.IsNullOrEmpty(diskSpaceCheckErrorMessage) || string.IsNullOrWhiteSpace(diskSpaceCheckErrorMessage);
+										bool isCheckedOk = string.IsNullOrWhiteSpace(diskSpaceCheckErrorMessage);
 										customError.ErrorMessage = isCheckedOk ? "Недостаточно места на диске!" : diskSpaceCheckErrorMessage;
 										customError.ErrorCode = MultiThreadedDownloader.DOWNLOAD_ERROR_CUSTOM;
 										return;
@@ -1611,7 +1609,7 @@ namespace YouTube_downloader
 		{
 			btnDownload.Enabled = false;
 
-			if (string.IsNullOrEmpty(config.DownloadDirectory) || string.IsNullOrWhiteSpace(config.DownloadDirectory))
+			if (string.IsNullOrWhiteSpace(config.DownloadDirectory))
 			{
 				MessageBox.Show("Не указана папка для скачивания!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1627,7 +1625,7 @@ namespace YouTube_downloader
 			}
 			if (!config.UseRamToStoreTemporaryFiles)
 			{
-				if (string.IsNullOrEmpty(config.TemporaryDirectory) || string.IsNullOrWhiteSpace(config.TemporaryDirectory))
+				if (string.IsNullOrWhiteSpace(config.TemporaryDirectory))
 				{
 					MessageBox.Show("Не указана папка для временных файлов!", "Ошибка!",
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1642,8 +1640,7 @@ namespace YouTube_downloader
 					return;
 				}
 			}
-			if (!string.IsNullOrEmpty(config.ChunkMergerDirectory) &&
-				!string.IsNullOrWhiteSpace(config.ChunkMergerDirectory) &&
+			if (!string.IsNullOrWhiteSpace(config.ChunkMergerDirectory) &&
 				!Directory.Exists(config.ChunkMergerDirectory))
 			{
 				MessageBox.Show("Папка для объединения чанков не найдена!", "Ошибка!",
@@ -1795,7 +1792,7 @@ namespace YouTube_downloader
 
 				if (!IsEnoughDiskSpace(driveLetters, minimumFreeSpaceRequired, out string diskSpaceCheckErrorMessage))
 				{
-					bool isCheckedOk = string.IsNullOrEmpty(diskSpaceCheckErrorMessage) || string.IsNullOrWhiteSpace(diskSpaceCheckErrorMessage);
+					bool isCheckedOk = string.IsNullOrWhiteSpace(diskSpaceCheckErrorMessage);
 					string t = isCheckedOk ? "Недостаточно места на диске!" : diskSpaceCheckErrorMessage;
 					lblStatus.Text = $"Состояние: Ошибка: {t.Split(new string[] { "\r", "\r\n" }, StringSplitOptions.None)[0]}";
 					MessageBox.Show(VideoInfo.Title + Environment.NewLine + t, "Ошибка!",
@@ -2066,7 +2063,7 @@ namespace YouTube_downloader
 						{
 							lblStatus.Text = $"Состояние: Ошибка {downloadResult.ErrorCode}";
 							string t = $"{VideoInfo.Title}{Environment.NewLine}Скачивание прервано!{Environment.NewLine}Код ошибки: {downloadResult.ErrorCode}";
-							if (!string.IsNullOrEmpty(downloadResult.ErrorMessage))
+							if (!string.IsNullOrWhiteSpace(downloadResult.ErrorMessage))
 							{
 								t += Environment.NewLine + downloadResult.ErrorMessage;
 							}

@@ -72,7 +72,7 @@ namespace YouTube_downloader
 			else
 			{
 				Video = null;
-				errorMessage = string.IsNullOrEmpty(raw) || string.IsNullOrWhiteSpace(raw) ? "youtube-dl returned an empty string!" : raw;
+				errorMessage = string.IsNullOrWhiteSpace(raw) ? "youtube-dl returned an empty string!" : raw;
 				return 400;
 			}
 		}
@@ -84,7 +84,7 @@ namespace YouTube_downloader
 
 		private bool CallYtdl(string videoId, out string response)
 		{
-			if (string.IsNullOrEmpty(CommandLineArguments) || string.IsNullOrWhiteSpace(CommandLineArguments))
+			if (string.IsNullOrWhiteSpace(CommandLineArguments))
 			{
 				response = "No command line arguments passed!";
 				return false;
@@ -102,7 +102,7 @@ namespace YouTube_downloader
 				{
 					response = process.StandardOutput.ReadToEnd();
 					process.WaitForExit();
-					return !string.IsNullOrEmpty(response) && response.Length > 0 && response[0] == '{';
+					return !string.IsNullOrWhiteSpace(response) && response.Length > 0 && response[0] == '{';
 				}
 				else
 				{
@@ -216,7 +216,7 @@ namespace YouTube_downloader
 						string manifestUrl = jFormat.Value<string>("manifest_url");
 						string raw = jFormat.ToString();
 						string codecs = vcodec;
-						if (!isVideo && !string.IsNullOrEmpty(acodec) && !string.IsNullOrWhiteSpace(acodec))
+						if (!isVideo && !string.IsNullOrWhiteSpace(acodec))
 						{
 							// If audio codec defined.
 							codecs += $",{acodec}";
@@ -263,7 +263,7 @@ namespace YouTube_downloader
 		private static string GetFileExtension(string mime, bool isVideo, bool isContainer)
 		{
 			if (isContainer) { return "mp4"; }
-			bool isOpus = !string.IsNullOrEmpty(mime) && !string.IsNullOrWhiteSpace(mime) &&
+			bool isOpus = !string.IsNullOrWhiteSpace(mime) &&
 				(mime.Contains("opus") || mime.Contains("vp"));
 			return isVideo ? (isOpus ? "webm" : "m4v") : (isOpus ? "weba" : "m4a");
 		}

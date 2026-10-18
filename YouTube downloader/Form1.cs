@@ -161,7 +161,7 @@ namespace YouTube_downloader
 						if (MessageBox.Show($"Перейти на канал {item.DisplayName}?", "Переход на канал",
 							MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 						{
-							if (string.IsNullOrEmpty(config.YouTubeApiV3Key) || string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
+							if (string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
 							{
 								MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
 									"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -178,7 +178,7 @@ namespace YouTube_downloader
 								return;
 							}
 
-							string id = !string.IsNullOrEmpty(item.ChannelId) && !string.IsNullOrWhiteSpace(item.ChannelId) ? item.ChannelId : item.Id;
+							string id = !string.IsNullOrWhiteSpace(item.ChannelId) ? item.ChannelId : item.Id;
 							YouTubeChannel channel = new(id, item.Title);
 							OpenChannel(channel);
 						}
@@ -206,7 +206,7 @@ namespace YouTube_downloader
 		{
 			EnableControls(false);
 
-			if (string.IsNullOrEmpty(textBoxSearchQuery.Text) || string.IsNullOrWhiteSpace(textBoxSearchQuery.Text))
+			if (string.IsNullOrWhiteSpace(textBoxSearchQuery.Text))
 			{
 				MessageBox.Show("Введите поисковый запрос!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -215,7 +215,7 @@ namespace YouTube_downloader
 				return;
 			}
 
-			if (string.IsNullOrEmpty(config.YouTubeApiV3Key))
+			if (string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
 			{
 				MessageBox.Show("Для использования этой функции, необходимо ввести ключ от API ютуба!",
 					"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -316,7 +316,7 @@ namespace YouTube_downloader
 			EnableControls(false);
 
 			string url = textBoxVideoUrlOrId.Text;
-			if (string.IsNullOrEmpty(url) || string.IsNullOrWhiteSpace(url))
+			if (string.IsNullOrWhiteSpace(url))
 			{
 				MessageBox.Show("Не введена ссылка!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				EnableControls(true);
@@ -324,7 +324,7 @@ namespace YouTube_downloader
 			}
 
 			YouTubeVideoId videoId = ExtractVideoIdFromUrl(url);
-			if (videoId == null || string.IsNullOrEmpty(videoId.Id) || string.IsNullOrWhiteSpace(videoId.Id))
+			if (videoId == null || string.IsNullOrWhiteSpace(videoId.Id))
 			{
 				MessageBox.Show("Не удалось распознать ID видео!", "Ошибатор ошибок",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -359,7 +359,7 @@ namespace YouTube_downloader
 			EnableControls(false);
 
 			string webPageCode = richTextBoxWebPageCode.Text;
-			if (string.IsNullOrEmpty(webPageCode) || string.IsNullOrWhiteSpace(webPageCode))
+			if (string.IsNullOrWhiteSpace(webPageCode))
 			{
 				MessageBox.Show("Вставьте код веб-страницы с видео!", "Ошибка!",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -444,7 +444,7 @@ namespace YouTube_downloader
 		{
 			if (richTextBoxWebPageCode.TextLength > 0)
 			{
-				miCutTextToolStripMenuItem.Enabled = !string.IsNullOrEmpty(richTextBoxWebPageCode.SelectedText);
+				miCutTextToolStripMenuItem.Enabled = !string.IsNullOrWhiteSpace(richTextBoxWebPageCode.SelectedText);
 				miCopyTextToolStripMenuItem.Enabled = true;
 				miSelectAllTextToolStripMenuItem.Enabled = true;
 			}
@@ -572,7 +572,7 @@ namespace YouTube_downloader
 
 		private void miCutTextToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (!string.IsNullOrEmpty(richTextBoxWebPageCode.SelectedText))
+			if (!string.IsNullOrWhiteSpace(richTextBoxWebPageCode.SelectedText))
 			{
 				richTextBoxWebPageCode.Cut();
 			}
@@ -621,11 +621,11 @@ namespace YouTube_downloader
 
 				if (root.ItemType == FavoriteItemType.Video)
 				{
-					if (!string.IsNullOrEmpty(root.ChannelTitle))
+					if (!string.IsNullOrWhiteSpace(root.ChannelTitle))
 					{
 						json["channelTitle"] = root.ChannelTitle;
 					}
-					if (!string.IsNullOrEmpty(root.ChannelId))
+					if (!string.IsNullOrWhiteSpace(root.ChannelId))
 					{
 						json["channelId"] = root.ChannelId;
 					}
@@ -695,7 +695,7 @@ namespace YouTube_downloader
 				if (jt != null)
 				{
 					favoriteItem.ChannelId = jt.Value<string>();
-					if (string.IsNullOrEmpty(favoriteItem.ChannelId) || string.IsNullOrWhiteSpace(favoriteItem.ChannelId))
+					if (string.IsNullOrWhiteSpace(favoriteItem.ChannelId))
 					{
 						favoriteItem.ChannelId = favoriteItem.Id;
 					}
@@ -725,7 +725,7 @@ namespace YouTube_downloader
 				if (!(video is YtdlVideo) && !video.IsSucceed())
 				{
 					string msg = "Ошибка поиска видео!" + Environment.NewLine +
-						(!string.IsNullOrEmpty(errorMessage) ? errorMessage : "Что-то где-то пошло не так или не пошло вообще!");
+						(!string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "Что-то где-то пошло не так или не пошло вообще!");
 					MessageBox.Show(msg, "Ошибатор ошибок", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return false;
 				}
@@ -742,7 +742,7 @@ namespace YouTube_downloader
 			else
 			{
 				string msg = "Ошибка поиска видео!";
-				if (!string.IsNullOrEmpty(errorMessage) && !string.IsNullOrWhiteSpace(errorMessage))
+				if (!string.IsNullOrWhiteSpace(errorMessage))
 				{
 					msg += Environment.NewLine + errorMessage;
 				}
@@ -937,7 +937,7 @@ namespace YouTube_downloader
 			if (MessageBox.Show($"Перейти на канал {channelName}?", "Переход на канал",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 			{
-				if (string.IsNullOrEmpty(config.YouTubeApiV3Key) || string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
+				if (string.IsNullOrWhiteSpace(config.YouTubeApiV3Key))
 				{
 					MessageBox.Show("Для использования этой функции, необходимо ввести ключ от YouTube API V3! Так просто работать не будет!",
 						"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Information);
