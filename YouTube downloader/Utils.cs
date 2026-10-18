@@ -771,9 +771,8 @@ namespace YouTube_downloader
 
 		public static string FormatDateTime(DateTime dateTime)
 		{
-			DateTime dt = config.UseUniversalTime ? dateTime : dateTime.ToLocalTime();
-			string t = dt.ToString("yyyy.MM.dd, HH:mm:ss");
-			return config.UseUniversalTime ? $"{t} GMT" : t;
+			string formatted = dateTime.ToString("yyyy.MM.dd, HH:mm:ss");
+			return dateTime.Kind == DateTimeKind.Utc ? $"{formatted} GMT" : formatted;
 		}
 
 		public static string GetContainerFileExtension(IEnumerable<YouTubeMediaTrack> tracks)

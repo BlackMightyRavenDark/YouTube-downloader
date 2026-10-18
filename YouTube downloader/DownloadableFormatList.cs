@@ -221,6 +221,14 @@ namespace YouTube_downloader
 						menu.Items.Add(mi);
 					}
 
+					if (Count > 0)
+					{
+						TimeSpan timeRemaining = UrlsExpirationDate - DateTime.UtcNow;
+						string t = timeRemaining <= TimeSpan.Zero ? "Ссылки больше недействительны!" :
+							$"Ссылки действительны до {FormatDateTime(UrlsExpirationDate.ToLocalTime())} | Осталось: {timeRemaining.ToString("h':'mm':'ss")}";
+						menu.Items.Add(new ToolStripMenuItem(t) { Enabled = false });
+					}
+
 					if (VideoOnlyTracks.Count + filteredAudioTracks.Length > 0)
 					{
 						ToolStripMenuItem mi = new("Выбрать форматы...");
